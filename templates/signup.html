@@ -1,0 +1,15 @@
+{% extends '_layout.html' %}
+
+{% block title %}Sign Up | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+    <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+            {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+            <button type="submit" class="btn btn-success btn-block">Sign up</button>
+    </form>
+    <p class="text-center login-text">Already have an account? <a href="{{ login_url }}">Sign in!</a></p>
+{% endblock %}
