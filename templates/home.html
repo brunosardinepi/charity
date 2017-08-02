@@ -6,6 +6,7 @@
 {% block body_content %}
     {% if user.is_authenticated %}
         <p>logged in</p>
+        <p>{{ user.profile.zipcode }}</p>
     {% else %}
         <a href="{% url 'login' %}" role="button">Login</a>
         <a href="{% url 'signup' %}" role="button">Donate</a>
