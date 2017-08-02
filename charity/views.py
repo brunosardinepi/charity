@@ -13,3 +13,7 @@ class LoginView(views.LoginView):
 
 class SignupView(views.SignupView):
     template_name = 'signup.html'
+
+
+class PasswordResetView(views.PasswordResetView):
+    template_name = 'password_reset.html'
