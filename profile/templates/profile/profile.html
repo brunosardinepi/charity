@@ -1,0 +1,10 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} Profile | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+    <p>First name: {{ user.profile.first_name }}</p>
+    <p>Last name: {{ user.profile.last_name }}</p>
+    <p>Zip code: {{ user.profile.zipcode }}</p>
+{% endblock %}
