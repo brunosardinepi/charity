@@ -15,3 +15,13 @@ class SignupForm(forms.Form):
         user.profile.last_name = self.cleaned_data['last_name']
         user.profile.zipcode = self.cleaned_data['zipcode']
         user.profile.save()
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = models.Profile
+        fields = [
+            'first_name',
+            'last_name',
+            'zipcode',
+        ]
