@@ -1,5 +1,5 @@
 __pycache__/
-charityenv/
+charitysiteenv/
 db.sqlite3
 .DS_Store
 .vscode/
