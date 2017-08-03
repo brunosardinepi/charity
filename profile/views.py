@@ -1,9 +1,11 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
 
 from . import forms
 from . import models
 
 
+@login_required
 def profile(request):
     user_profile = get_object_or_404(models.Profile, user_id=request.user.id)
     if user_profile.user == request.user:
