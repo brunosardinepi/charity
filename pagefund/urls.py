@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^accounts/password/reset/', views.PasswordResetView.as_view(), name='password_reset'),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^profile/', include('userprofile.urls', namespace='userprofile')),
-    url(r'^(?P<page_pk>\d+)/', PageViews.page, name='page'),
+#    url(r'^(?P<page_pk>\d+)/', PageViews.page, name='page'),
+    url(r'^(?P<slug>[\w-]+)/', PageViews.page, name='page'),
     url(r'^$', views.home, name='home'),
 ]
