@@ -1,0 +1,12 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} Profile | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Update profile" />
+    </form>
+{% endblock %}

@@ -20,7 +20,7 @@
         <nav>
             <a href="{% url 'home' %}">Home</a>
             {% if user.is_authenticated %}
-                <a href="{% url 'profile:profile' %}">Profile</a>
+                <a href="{% url 'userprofile:userprofile' %}">Profile</a>
                 <a href="{% url 'account_logout' %}">Logout</a>
             {% else %}
                 <a href="{% url 'login' %}" role="button">Login</a>
