@@ -1,0 +1,9 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} {{ page.name }} | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+    <h1>{{ page.name }}</h1>
+    <p>Description: {{ page.description }}</p>
+{% endblock %}
