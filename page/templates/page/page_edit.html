@@ -1,0 +1,13 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} Edit {{ page.name }} | {{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+    <a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a> / Edit
+{% endblock %}
+
+{% block body_content %}
+    <h1>{{ page.name }}</h1>
+    <p>Description: {{ page.description }}</p>
+{% endblock %}

@@ -13,7 +13,8 @@ urlpatterns = [
     url(r'^accounts/password/reset/', views.PasswordResetView.as_view(), name='password_reset'),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^profile/', include('userprofile.urls', namespace='userprofile')),
-    url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_slug>[\w-]+)/', CampaignViews.campaign, name='campaign'),
-    url(r'^(?P<page_slug>[\w-]+)/', PageViews.page, name='page'),
+    url(r'^(?P<page_slug>[\w-]+)/c/(?P<campaign_slug>[\w-]+)/$', CampaignViews.campaign, name='campaign'),
+    url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),
+    url(r'^(?P<page_slug>[\w-]+)/$', PageViews.page, name='page'),
     url(r'^$', views.home, name='home'),
 ]
