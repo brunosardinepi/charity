@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.text import slugify
 
+from userprofile.models import UserProfile
+
 
 class Page(models.Model):
     name = models.CharField(max_length=255, db_index=True)
@@ -8,6 +10,7 @@ class Page(models.Model):
     description = models.TextField(blank=True)
     donation_count = models.IntegerField(default=0)
     donation_money = models.IntegerField(default=0)
+    admins = models.ManyToManyField(UserProfile)
 
     def __str__(self):
         return self.name

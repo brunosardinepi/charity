@@ -10,6 +10,12 @@ class UserProfile(models.Model):
     last_name = models.CharField(max_length=100, blank=True)
     zipcode = models.CharField(max_length=5, blank=True)
 
+    class Meta:
+        ordering = ('first_name', 'last_name',)
+
+    def __str__(self):
+        return ("%s %s" % (self.first_name, self.last_name))
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

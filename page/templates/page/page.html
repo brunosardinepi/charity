@@ -7,16 +7,24 @@
     <h1>{{ page.name }}</h1>
     <p>Description: {{ page.description }}</p>
     <p>${{ page.donation_money }} raised by {{ page.donation_count }} donors</p>
+
     <h3>Active Campaigns</h3>
     <ul>
         {% for campaign in active_campaigns %}
             <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a></li>
         {% endfor %}
     </ul>
+
     <h3>Past Campaigns</h3>
     <ul>
         {% for campaign in inactive_campaigns %}
             <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a></li>
         {% endfor %}
     </ul>
+
+    {% if request.user.userprofile in page.admins.all %}
+        <p>you're an admin</p>
+    {% else %}
+        <p>you're NOT an admin</p>
+    {% endif %}
 {% endblock %}
