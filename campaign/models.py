@@ -6,6 +6,7 @@ class Campaign(models.Model):
     name = models.CharField(max_length=255, db_index=True)
     campaign_slug = models.SlugField(max_length=100, unique=True)
     description = models.TextField(blank=True)
+    goal = models.IntegerField(default=0)
     donation_count = models.IntegerField(default=0)
     donation_money = models.IntegerField(default=0)
     TYPE_CHOICES = (
