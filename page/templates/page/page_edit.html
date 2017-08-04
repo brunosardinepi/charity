@@ -8,6 +8,9 @@
 {% endblock %}
 
 {% block body_content %}
-    <h1>{{ page.name }}</h1>
-    <p>Description: {{ page.description }}</p>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Update page" />
+    </form>
 {% endblock %}

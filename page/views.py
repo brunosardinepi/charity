@@ -1,6 +1,8 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 
+from . import forms
 from . import models
 from campaign import models as CampaignModels
 
@@ -15,9 +17,19 @@ def page(request, page_slug):
                                             'inactive_campaigns': inactive_campaigns
                                             })
 
+@login_required
 def page_edit(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
     if request.user.userprofile in page.admins.all():
-        return render(request, 'page/page_edit.html', {'page': page})
+        form = forms.PageForm(instance=page)
+        if request.method == 'POST':
+            form = forms.PageForm(instance=page, data=request.POST)
+            if form.is_valid():
+                name = form.cleaned_data['name']
+                page_slug = form.cleaned_data['description']
+                description = form.cleaned_data['page_slug']
+                form.save()
+                return HttpResponseRedirect(page.get_absolute_url())
     else:
         raise Http404
+    return render(request, 'page/page_edit.html', {'page': page, 'form': form})
