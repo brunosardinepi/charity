@@ -7,4 +7,10 @@
     <h1>{{ page.name }}</h1>
     <p>Description: {{ page.description }}</p>
     <p>${{ page.donation_money }} raised by {{ page.donation_count }} donors</p>
+    <h3>Campaigns</h3>
+    <ul>
+        {% for campaign in page.campaigns.all %}
+            <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a></li>
+        {% endfor %}
+    </ul>
 {% endblock %}

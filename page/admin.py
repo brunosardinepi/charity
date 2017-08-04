@@ -4,7 +4,7 @@ from . import models
 
 
 class PageAdmin(admin.ModelAdmin):
-  list_display = ('id', 'name', 'slug',)
-  ordering = ('id', 'name', 'slug',)
+  list_display = ('id', 'name', 'page_slug',)
+  ordering = ('id', 'name', 'page_slug',)
 
 admin.site.register(models.Page, PageAdmin)
