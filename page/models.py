@@ -11,7 +11,19 @@ class Page(models.Model):
     description = models.TextField(blank=True)
     donation_count = models.IntegerField(default=0)
     donation_money = models.IntegerField(default=0)
-    admins = models.ManyToManyField(UserProfile)
+    admins = models.ManyToManyField(UserProfile, blank=True)
+    CATEGORY_CHOICES = (
+        ('', '-----------'),
+        ('animal', 'Animal'),
+        ('environment', 'Environment'),
+        ('education', 'Education'),
+        ('religious', 'Religious'),
+    )
+    category = models.CharField(
+        max_length=255,
+        choices=CATEGORY_CHOICES,
+        default='',
+    )
 
     def __str__(self):
         return self.name
