@@ -33,7 +33,8 @@ class CampaignTest(TestCase):
                                                 name='Test Page',
                                                 description='This is a description for Test Page.',
                                                 donation_count='20',
-                                                donation_money='30'
+                                                donation_money='30',
+                                                category='Animal'
                                                 )
         self.page.admins.add(self.user.userprofile)
 
@@ -86,6 +87,7 @@ class CampaignTest(TestCase):
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count, status_code=200)
         self.assertContains(response, self.page.donation_money, status_code=200)
+        self.assertContains(response, self.page.category, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
         self.assertContains(response, self.campaign.goal, status_code=200)
         self.assertContains(response, self.campaign.donation_money, status_code=200)
@@ -113,6 +115,7 @@ class CampaignTest(TestCase):
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count, status_code=200)
         self.assertContains(response, self.page.donation_money, status_code=200)
+        self.assertContains(response, self.page.category, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
         self.assertContains(response, self.campaign.goal, status_code=200)
         self.assertContains(response, self.campaign.donation_money, status_code=200)
