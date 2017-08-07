@@ -6,7 +6,8 @@
 {% block head_extra %}
 <script>
 $(document).ready(function() {
-    $('#search').click(function() {
+    $('#search').click(function(event) {
+        event.preventDefault();
         q = $('#q').val();
         $('#results').html('&nbsp;').load('{% url 'search:results' %}?q=' + q);
     });
@@ -15,8 +16,10 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block body_content %}
+    <form>
     <input id="q" type="text" />
     <input id="search" type="submit" value="Search" />
+    </form>
 
     <p>Results:</p>
     <div id="results"></div>
