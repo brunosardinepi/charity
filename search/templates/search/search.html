@@ -1,0 +1,23 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} Search | {{ block.super }}{% endblock %}
+
+{% block head_extra %}
+<script>
+$(document).ready(function() {
+    $('#search').click(function() {
+        q = $('#q').val();
+        $('#results').html('&nbsp;').load('{% url 'search:results' %}?q=' + q);
+    });
+});
+</script>
+{% endblock %}
+
+{% block body_content %}
+    <input id="q" type="text" />
+    <input id="search" type="submit" value="Search" />
+
+    <p>Results:</p>
+    <div id="results"></div>
+{% endblock %}

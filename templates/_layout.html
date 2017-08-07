@@ -10,15 +10,19 @@
 
         <title>{% block title %}PageFund{% endblock %}</title>
 
-        {% block head_extra %}{% endblock %}
-
         <!-- stylesheets -->
         <link rel="stylesheet" href="{% static 'css/layout.css' %}?{% now 'U' %}">
+
+        <!-- scripts -->
+        <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+
+        {% block head_extra %}{% endblock %}
     </head>
 
     <body>
         <nav>
             <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'search:search' %}">Search</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'userprofile:userprofile' %}">Profile</a>
                 <a href="{% url 'account_logout' %}">Logout</a>

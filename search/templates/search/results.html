@@ -1,0 +1,5 @@
+{% if results %}
+    {% for result in results %}
+        <p><a href="{% url 'page' page_slug=result.page_slug %}">{{ result.name }}</a></p>
+    {% endfor %}
+{% endif %}
