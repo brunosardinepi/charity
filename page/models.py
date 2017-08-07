@@ -13,7 +13,6 @@ class Page(models.Model):
     donation_money = models.IntegerField(default=0)
     admins = models.ManyToManyField(UserProfile, blank=True)
     CATEGORY_CHOICES = (
-        ('', '-----------'),
         ('animal', 'Animal'),
         ('environment', 'Environment'),
         ('education', 'Education'),

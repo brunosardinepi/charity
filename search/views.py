@@ -1,11 +1,14 @@
 from django.db.models.functions import Lower
 from django.shortcuts import render
 
+from collections import OrderedDict
+
 from page import models as PageModels
 
 
 def search(request):
-    return render(request, 'search/search.html')
+    categories = OrderedDict(PageModels.Page._meta.get_field('category').choices)
+    return render(request, 'search/search.html', {'categories': categories})
 
 def results(request):
     if request.is_ajax():

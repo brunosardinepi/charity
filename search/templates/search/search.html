@@ -19,6 +19,11 @@ $(document).ready(function() {
     <form>
     <input id="q" type="text" />
     <input id="search" type="submit" value="Search" />
+
+    {% for k, v in categories.items %}
+        <input name="filters[]" type="checkbox" value="{{ k }}">{{ v }}</input>
+    {% endfor %}
+
     </form>
 
     <p>Results:</p>
