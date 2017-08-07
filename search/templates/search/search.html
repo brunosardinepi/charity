@@ -5,13 +5,29 @@
 
 {% block head_extra %}
 <script>
-$(document).ready(function() {
+$(function() {
     $('#search').click(function(event) {
         event.preventDefault();
         q = $('#q').val();
         $('#results').html('&nbsp;').load('{% url 'search:results' %}?q=' + q);
     });
 });
+
+function search(q, filters) {
+    $('#results').html('&nbsp;').load('{% url 'search:results' %}?q=' + q + '&f=' + filters);
+}
+
+function checkboxClick() {
+    var checked = document.getElementsByName('filters[]');
+    var filters = [];
+    for (c = 0; c < checked.length; c++) {
+        if (checked[c].checked) {
+            filters.push(checked[c].value);
+        }
+    }
+    var q = 0;
+    search(q, filters);
+}
 </script>
 {% endblock %}
 
@@ -21,7 +37,7 @@ $(document).ready(function() {
     <input id="search" type="submit" value="Search" />
 
     {% for k, v in categories.items %}
-        <input name="filters[]" type="checkbox" value="{{ k }}">{{ v }}</input>
+        <input name="filters[]" onclick="checkboxClick()" type="checkbox" value="{{ k }}">{{ v }}</input>
     {% endfor %}
 
     </form>
