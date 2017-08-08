@@ -22,6 +22,21 @@ function checkboxClick() {
 $(document).on('keyup', '#q', function() {
     checkboxClick();
 });
+
+$(document).on('click', '#checkall', function(event) {
+    console.log("good");
+    checkboxes = document.getElementsByName('filters[]');
+    for (var i = 0, n = checkboxes.length; i < n; i++) {
+        console.log("checkbox");
+        if ($(checkboxes[i]).attr('checked')) {
+            console.log("checked");
+            $(checkboxes[i]).attr('checked', false);
+        } else {
+            console.log("unchecked");
+            $(checkboxes[i]).attr('checked', true);
+        }
+    }
+});
 </script>
 {% endblock %}
 
@@ -29,10 +44,12 @@ $(document).on('keyup', '#q', function() {
     <form>
     <input id="q" type="text" placeholder="Search" />
 
+    <a href="#" id="checkall">Select all</a>
+
     {% for k, v in categories.items %}
         <input name="filters[]" onclick="checkboxClick()" type="checkbox" value="{{ k }}">{{ v }}</input>
     {% endfor %}
-     </form>
+    </form>
 
     <p>Results:</p>
     <div id="results"></div>
