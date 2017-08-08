@@ -23,19 +23,18 @@ $(document).on('keyup', '#q', function() {
     checkboxClick();
 });
 
-$(document).on('click', '#checkall', function(event) {
-    console.log("good");
-    checkboxes = document.getElementsByName('filters[]');
-    for (var i = 0, n = checkboxes.length; i < n; i++) {
-        console.log("checkbox");
-        if ($(checkboxes[i]).attr('checked')) {
-            console.log("checked");
-            $(checkboxes[i]).attr('checked', false);
-        } else {
-            console.log("unchecked");
-            $(checkboxes[i]).attr('checked', true);
-        }
-    }
+$(document).ready(function() {
+    $(":checkbox").change(function() {
+        console.log("detected checkbox state change");
+        checkboxClick();
+    });
+});
+
+$(document).ready(function() {
+    $("#checkall").click(function() {
+        var checkboxes = $(document.getElementsByName('filters[]'));
+        checkboxes.prop('checked', !checkboxes.prop('checked')).change();
+    });
 });
 </script>
 {% endblock %}
@@ -47,7 +46,7 @@ $(document).on('click', '#checkall', function(event) {
     <a href="#" id="checkall">Select all</a>
 
     {% for k, v in categories.items %}
-        <input name="filters[]" onclick="checkboxClick()" type="checkbox" value="{{ k }}">{{ v }}</input>
+        <input name="filters[]" type="checkbox" value="{{ k }}">{{ v }}</input>
     {% endfor %}
     </form>
 

@@ -22,11 +22,9 @@ def filter_list(f):
 
 def query_list(q):
     q = q.split(",")
-    print(q)
     results = PageModels.Page.objects.filter(name__unaccent__trigram_similar=q[0]).order_by('name')
     for x in q:
         if x:
-            print(x)
             results = results.filter(name__unaccent__trigram_similar=x).order_by('name')
     return results
 
@@ -39,8 +37,6 @@ def results(request):
             q = False
         elif f == "0":
             f = False
-
-        print(q)
 
         if all([q, f]):
             results = []
