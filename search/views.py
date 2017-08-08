@@ -20,6 +20,16 @@ def filter_list(f):
                 results.append(object)
     return results
 
+def query_list(q):
+    q = q.split(",")
+    print(q)
+    results = PageModels.Page.objects.filter(name__unaccent__trigram_similar=q[0]).order_by('name')
+    for x in q:
+        if x:
+            print(x)
+            results = results.filter(name__unaccent__trigram_similar=x).order_by('name')
+    return results
+
 def results(request):
     if request.is_ajax():
         q = request.GET.get('q')
@@ -30,16 +40,22 @@ def results(request):
         elif f == "0":
             f = False
 
+        print(q)
+
         if all([q, f]):
             results = []
-            pages = PageModels.Page.objects.filter(name__unaccent__trigram_similar=q)
+#            pages = PageModels.Page.objects.filter(name__unaccent__trigram_similar=q)
+            pages = query_list(q)
             f = f.split(",")
             for x in f:
                 p = pages.filter(category=x)
                 for y in p:
                     results.append(y)
         elif q:
-            results = PageModels.Page.objects.filter(name__unaccent__trigram_similar=q).order_by('name')
+#            results = PageModels.Page.objects.filter(name__unaccent__trigram_similar=q).order_by('name')
+            results = query_list(q)
         elif f:
             results = filter_list(f)
+        else:
+            results = None
         return render(request, 'search/results.html', {'results': results})

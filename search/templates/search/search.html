@@ -15,6 +15,7 @@ function checkboxClick() {
         }
     }
     q = $('#q').val();
+    q = q.split(/[ ]+/).join(',');
     $('#results').html('&nbsp;').load('{% url 'search:results' %}?q=' + q + '&f=' + filters);
 };
 
@@ -26,8 +27,7 @@ $(document).on('keyup', '#q', function() {
 
 {% block body_content %}
     <form>
-    <input id="q" type="text" />
-    <input id="search" onclick="checkboxClick(); return false;" type="submit" value="Search" />
+    <input id="q" type="text" placeholder="Search" />
 
     {% for k, v in categories.items %}
         <input name="filters[]" onclick="checkboxClick()" type="checkbox" value="{{ k }}">{{ v }}</input>
