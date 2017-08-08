@@ -1,7 +1,11 @@
+from django.contrib.postgres.search import SearchRank, SearchQuery, SearchVector
 from django.db.models.functions import Lower
 from django.shortcuts import render
 
 from collections import OrderedDict
+from functools import reduce
+
+import operator
 
 from page import models as PageModels
 
@@ -22,10 +26,10 @@ def filter_list(f):
 
 def query_list(q):
     q = q.split(",")
-    results = PageModels.Page.objects.filter(name__unaccent__trigram_similar=q[0]).order_by('name')
-    for x in q:
-        if x:
-            results = results.filter(name__unaccent__trigram_similar=x).order_by('name')
+    queries = [SearchQuery(query) for query in q]
+    query = reduce(operator.or_, queries)
+    vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
+    results = PageModels.Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2).order_by('-rank')
     return results
 
 def results(request):
@@ -40,7 +44,6 @@ def results(request):
 
         if all([q, f]):
             results = []
-#            pages = PageModels.Page.objects.filter(name__unaccent__trigram_similar=q)
             pages = query_list(q)
             f = f.split(",")
             for x in f:
@@ -48,7 +51,6 @@ def results(request):
                 for y in p:
                     results.append(y)
         elif q:
-#            results = PageModels.Page.objects.filter(name__unaccent__trigram_similar=q).order_by('name')
             results = query_list(q)
         elif f:
             results = filter_list(f)
