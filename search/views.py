@@ -31,44 +31,15 @@ def results(request):
             f = False
 
         if all([q, f]):
-            print("q and f")
             results = []
             pages = PageModels.Page.objects.filter(name__unaccent__trigram_similar=q)
-            print("pages")
-            print(pages)
-#            for page in pages:
-#                results.append(page)
-#            print("results")
-#            print(results)
-#            f_list = filter_list(f)
-#            print("f")
-#            print(f)
-#            print("f_list")
-#            print(f_list)
-#            for f in f_list:
-#                print("f")
-#                print(f)
-#                r = pages.filter(category=f)
-#                print("r")
-#                print(r)
-#                for i in r:
-#                    results.append(i)
-#            print("results")
-#            print(results)
             f = f.split(",")
-            print("f")
-            print(f)
             for x in f:
                 p = pages.filter(category=x)
-                print("pages")
-                print(pages)
                 for y in p:
                     results.append(y)
-#            results = pages
         elif q:
-            print("q")
             results = PageModels.Page.objects.filter(name__unaccent__trigram_similar=q).order_by('name')
         elif f:
-            print("f")
             results = filter_list(f)
         return render(request, 'search/results.html', {'results': results})

@@ -4,19 +4,8 @@
 {% block title %} Search | {{ block.super }}{% endblock %}
 
 {% block head_extra %}
+
 <script>
-$(function() {
-    $('#search').click(function(event) {
-        event.preventDefault();
-        q = $('#q').val();
-        $('#results').html('&nbsp;').load('{% url 'search:results' %}?q=' + q);
-    });
-});
-
-function search(q, filters) {
-    $('#results').html('&nbsp;').load('{% url 'search:results' %}?q=' + q + '&f=' + filters);
-}
-
 function checkboxClick() {
     var checked = document.getElementsByName('filters[]');
     var filters = [];
@@ -26,7 +15,7 @@ function checkboxClick() {
         }
     }
     q = $('#q').val();
-    search(q, filters);
+    $('#results').html('&nbsp;').load('{% url 'search:results' %}?q=' + q + '&f=' + filters);
 }
 </script>
 {% endblock %}
@@ -34,13 +23,12 @@ function checkboxClick() {
 {% block body_content %}
     <form>
     <input id="q" type="text" />
-    <input id="search" type="submit" value="Search" />
+    <input id="search" onclick="checkboxClick(); return false;" type="submit" value="Search" />
 
     {% for k, v in categories.items %}
         <input name="filters[]" onclick="checkboxClick()" type="checkbox" value="{{ k }}">{{ v }}</input>
     {% endfor %}
-
-    </form>
+     </form>
 
     <p>Results:</p>
     <div id="results"></div>
