@@ -16,7 +16,11 @@ function checkboxClick() {
     }
     q = $('#q').val();
     $('#results').html('&nbsp;').load('{% url 'search:results' %}?q=' + q + '&f=' + filters);
-}
+};
+
+$(document).on('keyup', '#q', function() {
+    checkboxClick();
+});
 </script>
 {% endblock %}
 
