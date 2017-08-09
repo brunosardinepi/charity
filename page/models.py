@@ -11,7 +11,8 @@ class Page(models.Model):
     description = models.TextField(blank=True)
     donation_count = models.IntegerField(default=0)
     donation_money = models.IntegerField(default=0)
-    admins = models.ManyToManyField(UserProfile, blank=True)
+    admins = models.ManyToManyField(UserProfile, related_name='admins', blank=True)
+    subscribers = models.ManyToManyField(UserProfile, related_name='subscribers', blank=True)
     CATEGORY_CHOICES = (
         ('animal', 'Animal'),
         ('environment', 'Environment'),

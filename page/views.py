@@ -25,9 +25,6 @@ def page_edit(request, page_slug):
         if request.method == 'POST':
             form = forms.PageForm(instance=page, data=request.POST)
             if form.is_valid():
-                name = form.cleaned_data['name']
-                page_slug = form.cleaned_data['description']
-                description = form.cleaned_data['page_slug']
                 form.save()
                 return HttpResponseRedirect(page.get_absolute_url())
     else:
