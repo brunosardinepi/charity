@@ -45,13 +45,10 @@ def page_edit(request, page_slug):
 
 def subscribe(request, page_pk, action=None):
     page = get_object_or_404(models.Page, pk=page_pk)
-    print("here")
     if action == "subscribe":
-        print("subscribe")
         page.subscribers.add(request.user.userprofile)
         new_subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe", "color": "red"}
     elif action == "unsubscribe":
-        print("unsubscribe")
         page.subscribers.remove(request.user.userprofile)
         new_subscribe_attr = {"name": "subscribe", "value": "Subscribe", "color": "green"}
     else:

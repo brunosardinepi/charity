@@ -8,7 +8,8 @@
         $(document).ready(function() {
             $("#subscribe").click(function () {
                 console.log("click")
-                var url = "{% url 'subscribe' page_pk=page.pk action=subscribe_attr.name %}";
+                var action = $("#subscribe").attr("name");
+                var url = "/subscribe/" + {{ page.pk }} + "/" + action + "/";
                 $.get(url, function (data) {
                     console.log("good")
                     subscribe_attr = JSON.parse(data);
