@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.test import Client, RequestFactory, TestCase
 
 from . import views
+from page.models import Page
 
 
 class UserProfileTest(TestCase):
@@ -18,6 +19,12 @@ class UserProfileTest(TestCase):
         self.user.userprofile.first_name = 'John'
         self.user.userprofile.last_name = 'Doe'
         self.user.userprofile.zipcode = '88888'
+
+        # create a test page
+        self.page = Page.objects.create(name="Buffalo")
+
+        # subscribe user to page
+        self.page.subscribers.add(self.user.userprofile)
 
     def test_user_exists(self):
         """
@@ -46,3 +53,4 @@ class UserProfileTest(TestCase):
 
         # check that the response is 200 OK
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user.userprofile.subscribers.get(id=self.page.pk).name, status_code=200)

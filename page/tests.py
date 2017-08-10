@@ -37,6 +37,7 @@ class CampaignTest(TestCase):
                                                 category='Animal'
                                                 )
         self.page.admins.add(self.user.userprofile)
+        self.page.subscribers.add(self.user.userprofile)
 
         self.campaign = CampaignModels.Campaign.objects.create(
                                             name='Test Campaign',
@@ -171,3 +172,33 @@ class CampaignTest(TestCase):
 
         # check that the response is 404
         self.assertEqual(response.status_code, 200)
+
+    def test_page_not_subscribed(self):
+        """Page returns 'subscribe' button"""
+
+        # create GET request
+        request = self.factory.get('home')
+
+        # simulate logged-in user
+        request.user = self.user2
+
+        # test the view
+        response = views.page(request, self.page.page_slug)
+
+        # check that the response is 200
+        self.assertContains(response, 'name="subscribe"', status_code=200)
+
+    def test_page_subscribed(self):
+        """Page returns 'unsubscribe' button"""
+
+        # create GET request
+        request = self.factory.get('home')
+
+        # simulate logged-in user
+        request.user = self.user
+
+        # test the view
+        response = views.page(request, self.page.page_slug)
+
+        # check that the response is 200
+        self.assertContains(response, 'name="unsubscribe"', status_code=200)
