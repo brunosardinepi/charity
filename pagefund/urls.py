@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
     url(r'^profile/', include('userprofile.urls', namespace='userprofile')),
     url(r'^search/', include('search.urls', namespace='search')),
+    url(r'^subscribe/$', PageViews.subscribe, name='subscribe'),
     url(r'^(?P<page_slug>[\w-]+)/c/(?P<campaign_slug>[\w-]+)/$', CampaignViews.campaign, name='campaign'),
     url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),
     url(r'^(?P<page_slug>[\w-]+)/$', PageViews.page, name='page'),

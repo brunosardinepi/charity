@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 
 from . import forms
 from . import models
@@ -30,3 +30,7 @@ def page_edit(request, page_slug):
     else:
         raise Http404
     return render(request, 'page/page_edit.html', {'page': page, 'form': form})
+
+def subscribe(request):
+    print("subscribe")
+    return HttpResponse("OK")
