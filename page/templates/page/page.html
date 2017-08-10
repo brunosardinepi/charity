@@ -5,12 +5,21 @@
 
 {% block head_extra %}
     <script>
-        function subscribe() {
-            $.get({% url 'subscribe' %}, function () {
-                console.log("good")
-                $("#subscribe").css('background-color', 'red');
+        $(document).ready(function() {
+            $("#subscribe").click(function () {
+                console.log("click")
+                var url = "{% url 'subscribe' page_pk=page.pk action=subscribe_attr.name %}";
+                $.get(url, function (data) {
+                    console.log("good")
+                    subscribe_attr = JSON.parse(data);
+                    console.log(subscribe_attr);
+                    console.log(subscribe_attr.name);
+                    $("#subscribe").attr("name", subscribe_attr.name);
+                    $("#subscribe").css("background-color", subscribe_attr.color);
+                    $("#subscribe").text(subscribe_attr.value);
+                });
             });
-        }
+        });
     </script>
 {% endblock %}
 
@@ -20,7 +29,7 @@
     <p>Category: {{ page.category }}</p>
     <p>${{ page.donation_money }} raised by {{ page.donation_count }} donors</p>
 
-    <p><button id="subscribe" onclick="subscribe();" style="background-color:green">Subscribe</button></p>
+    <button id="subscribe" name="{{ subscribe_attr.name }}" style="background-color:{{ subscribe_attr.color }}">{{ subscribe_attr.value  }}</button>
 
     <h3>Active Campaigns</h3>
     <ul>

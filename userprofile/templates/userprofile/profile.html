@@ -9,4 +9,12 @@
         {{ form.as_p }}
         <input type="submit" value="Update profile" />
     </form>
+
+    <h2>Subscriptions</h2>
+    <ul>
+        {% for s in subscriptions %}
+            <li><a href="{% url 'page' page_slug=s.page_slug %}">{{ s.name }}</a></li>
+        {% endfor %}
+    </ul>
+
 {% endblock %}
