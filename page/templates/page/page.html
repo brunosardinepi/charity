@@ -7,14 +7,10 @@
     <script>
         $(document).ready(function() {
             $("#subscribe").click(function () {
-                console.log("click")
                 var action = $("#subscribe").attr("name");
                 var url = "/subscribe/" + {{ page.pk }} + "/" + action + "/";
                 $.get(url, function (data) {
-                    console.log("good")
                     subscribe_attr = JSON.parse(data);
-                    console.log(subscribe_attr);
-                    console.log(subscribe_attr.name);
                     $("#subscribe").attr("name", subscribe_attr.name);
                     $("#subscribe").css("background-color", subscribe_attr.color);
                     $("#subscribe").text(subscribe_attr.value);
@@ -33,7 +29,7 @@
     {% if request.user.is_authenticated %}
         <button id="subscribe" name="{{ subscribe_attr.name }}" style="background-color:{{ subscribe_attr.color }}">{{ subscribe_attr.value  }}</button>
     {% else %}
-        <button id="subscribe" onclick="location.href='{% url 'signup' %}?next={{request.path}}'" style="background-color:green">Subscribe</button>
+        <button onclick="location.href='{% url 'signup' %}?next={{request.path}}'" style="background-color:green">Subscribe</button>
     {% endif %}
 
     <h3>Active Campaigns</h3>
