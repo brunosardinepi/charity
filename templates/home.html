@@ -1,11 +1,28 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
+{% load page_extras %}
 
 {% block title %} Home | {{ block.super }}{% endblock %}
 
 {% block body_content %}
     {% if user.is_authenticated %}
         <p>logged in</p>
+        {% if subscriptions %}
+            <h2>My Pages</h2>
+            <ul>
+                {% for page in subscriptions %}
+                    <li><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a></li>
+                    {% active_campaigns page.pk as a_campaigns %}
+                    {% if a_campaigns %}
+                        <ul>
+                            {% for campaign in a_campaigns %}
+                                <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        {% endif %}
     {% else %}
         <p>logged out</p>
     {% endif %}

@@ -4,7 +4,11 @@ from allauth.account import views
 
 
 def home(request):
-    return render(request, 'home.html')
+    if request.user.is_authenticated:
+        subscriptions = request.user.userprofile.subscribers.all()
+        return render(request, 'home.html', {'subscriptions': subscriptions})
+    else:
+        return render(request, 'home.html')
 
 
 class LoginView(views.LoginView):
