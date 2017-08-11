@@ -1,6 +1,10 @@
+from django.db.models import Sum
 from django.shortcuts import render
 
 from allauth.account import views
+
+from campaign.models import Campaign
+from page.models import Page
 
 
 def home(request):
@@ -8,7 +12,10 @@ def home(request):
         subscriptions = request.user.userprofile.subscribers.all()
         return render(request, 'home.html', {'subscriptions': subscriptions})
     else:
-        return render(request, 'home.html')
+        page_donations = Page.objects.aggregate(Sum('donation_money'))
+        campaign_donations = Campaign.objects.aggregate(Sum('donation_money'))
+        donations = int(page_donations["donation_money__sum"]) + int(campaign_donations["donation_money__sum"])
+        return render(request, 'home.html', {'donations': donations})
 
 
 class LoginView(views.LoginView):

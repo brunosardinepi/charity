@@ -34,31 +34,30 @@ class HomeTest(TestCase):
         self.user.userprofile.last_name = 'Doe'
         self.user.userprofile.zipcode = '88888'
 
-        self.page = Page.objects.create(name="Buffalo")
-        self.page2 = Page.objects.create(name="Antelope")
+        self.page = Page.objects.create(name="Buffalo", donation_money=600)
+        self.page2 = Page.objects.create(name="Antelope", donation_money=100)
 
         self.page.subscribers.add(self.user.userprofile)
 
-        self.campaign = Campaign.objects.create(name="Blue", page=self.page)
-        self.campaign2 = Campaign.objects.create(name="Green", page=self.page)
-        self.campaign3 = Campaign.objects.create(name="Yellow", page=self.page)
-        self.campaign4 = Campaign.objects.create(name="Red", page=self.page2)
+        self.campaign = Campaign.objects.create(name="Blue", page=self.page, donation_money=50)
+        self.campaign2 = Campaign.objects.create(name="Green", page=self.page, donation_money=900)
+        self.campaign3 = Campaign.objects.create(name="Yellow", page=self.page, donation_money=500)
+        self.campaign4 = Campaign.objects.create(name="Red", page=self.page2, donation_money=20)
 
 
     def test_home_logged_out(self):
         """Home page returns HTTP 200"""
 
-        # create GET request
         request = self.factory.get('home')
-
-        # simulate logged-out user
         request.user = AnonymousUser()
-
-        # test the view
         response = views.home(request)
 
-        # check that the response is 200 OK
+        page_donations = self.page.donation_money + self.page2.donation_money
+        campaign_donations = self.campaign.donation_money + self.campaign2.donation_money + self.campaign3.donation_money + self.campaign4.donation_money
+        donations = page_donations + campaign_donations
+
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, donations, status_code=200)
 
     def test_home_logged_in(self):
         """Home page returns HTTP 200"""
