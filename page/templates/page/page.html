@@ -30,7 +30,11 @@
     <p>Category: {{ page.category }}</p>
     <p>${{ page.donation_money }} raised by {{ page.donation_count }} donors</p>
 
-    <button id="subscribe" name="{{ subscribe_attr.name }}" style="background-color:{{ subscribe_attr.color }}">{{ subscribe_attr.value  }}</button>
+    {% if request.user.is_authenticated %}
+        <button id="subscribe" name="{{ subscribe_attr.name }}" style="background-color:{{ subscribe_attr.color }}">{{ subscribe_attr.value  }}</button>
+    {% else %}
+        <button id="subscribe" onclick="location.href='{% url 'signup' %}?next={{request.path}}'" style="background-color:green">Subscribe</button>
+    {% endif %}
 
     <h3>Active Campaigns</h3>
     <ul>

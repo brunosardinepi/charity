@@ -43,6 +43,7 @@ def page_edit(request, page_slug):
         raise Http404
     return render(request, 'page/page_edit.html', {'page': page, 'form': form})
 
+@login_required
 def subscribe(request, page_pk, action=None):
     page = get_object_or_404(models.Page, pk=page_pk)
     if action == "subscribe":
