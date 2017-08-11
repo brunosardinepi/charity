@@ -16,6 +16,8 @@ from allauth.account import app_settings
 from allauth.utils import get_user_model, get_username_max_length
 
 from . import views
+from page.models import Page
+from campaign.models import Campaign
 
 
 class HomeTest(TestCase):
@@ -23,13 +25,28 @@ class HomeTest(TestCase):
         self.factory = RequestFactory()
         self.client = Client()
 
-        # create a test user
-        self.user = User.objects.create_user(username='testuser', email='test@test.test', password='testpassword')
+        self.user = User.objects.create_user(
+                        username='testuser',
+                        email='test@test.test',
+                        password='testpassword',
+                        )
+        self.user.userprofile.first_name = 'John'
+        self.user.userprofile.last_name = 'Doe'
+        self.user.userprofile.zipcode = '88888'
 
-    def test_home_status(self):
-        """
-        Home page returns HTTP 200
-        """
+        self.page = Page.objects.create(name="Buffalo")
+        self.page2 = Page.objects.create(name="Antelope")
+
+        self.page.subscribers.add(self.user.userprofile)
+
+        self.campaign = Campaign.objects.create(name="Blue", page=self.page)
+        self.campaign2 = Campaign.objects.create(name="Green", page=self.page)
+        self.campaign3 = Campaign.objects.create(name="Yellow", page=self.page)
+        self.campaign4 = Campaign.objects.create(name="Red", page=self.page2)
+
+
+    def test_home_logged_out(self):
+        """Home page returns HTTP 200"""
 
         # create GET request
         request = self.factory.get('home')
@@ -42,6 +59,21 @@ class HomeTest(TestCase):
 
         # check that the response is 200 OK
         self.assertEqual(response.status_code, 200)
+
+    def test_home_logged_in(self):
+        """Home page returns HTTP 200"""
+
+        request = self.factory.get('home')
+        request.user = self.user
+        response = views.home(request)
+
+        page = self.user.userprofile.subscribers.get(id=self.page.pk)
+        campaigns = page.campaigns.all()
+
+        self.assertEqual(response.status_code, 200)
+        for c in campaigns:
+            if c.is_active == True:
+                self.assertContains(response, c.name, status_code=200)
 
 
 class AccountTests(TestCase):
