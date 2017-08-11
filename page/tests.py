@@ -202,3 +202,12 @@ class CampaignTest(TestCase):
 
         # check that the response is 200
         self.assertContains(response, 'name="unsubscribe"', status_code=200)
+
+    def test_page_subscribe_redirect(self):
+        """Page redirects to signup if you try to subscribe while logged out"""
+
+        request = self.factory.get('home')
+        request.user = AnonymousUser()
+        response = views.subscribe(request, self.page.pk, action="subscribe")
+
+        self.assertEqual(response.status_code, 302)
