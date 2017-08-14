@@ -12,4 +12,11 @@
     <p>Description: {{ campaign.description }}</p>
     <p>Goal: ${{ campaign.goal }}</p>
     <p>${{ campaign.donation_money }} raised by {{ campaign.donation_count }} donors</p>
+
+    {% if request.user.userprofile in page.admins.all %}
+        <h4>Admin</h4>
+        <p><a href="{% url 'campaign_delete' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
+    {% else %}
+        <p>you're NOT an admin</p>
+    {% endif %}
 {% endblock %}

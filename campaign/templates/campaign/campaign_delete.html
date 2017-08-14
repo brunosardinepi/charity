@@ -1,0 +1,16 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} Delete {{ campaign.name }} | {{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+    <a href="{% url 'campaign' page_slug=campaign.page.page_slug campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> / Delete
+{% endblock %}
+
+{% block body_content %}
+    <p>This is irreversible. Please confirm you want to delete this Campaign.</p>
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="submit" value="Delete campaign" />
+    </form>
+{% endblock %}
