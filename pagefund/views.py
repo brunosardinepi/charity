@@ -8,14 +8,15 @@ from page.models import Page
 
 
 def home(request):
+    sponsored = Page.objects.filter(is_sponsored=True)
     if request.user.is_authenticated:
         subscriptions = request.user.userprofile.subscribers.all()
-        return render(request, 'home.html', {'subscriptions': subscriptions})
+        return render(request, 'home.html', {'subscriptions': subscriptions, 'sponsored': sponsored})
     else:
         page_donations = Page.objects.aggregate(Sum('donation_money'))
         campaign_donations = Campaign.objects.aggregate(Sum('donation_money'))
         donations = int(page_donations["donation_money__sum"]) + int(campaign_donations["donation_money__sum"])
-        return render(request, 'home.html', {'donations': donations})
+        return render(request, 'home.html', {'donations': donations, 'sponsored': sponsored})
 
 
 class LoginView(views.LoginView):

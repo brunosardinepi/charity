@@ -13,6 +13,7 @@ class Page(models.Model):
     donation_money = models.IntegerField(default=0)
     admins = models.ManyToManyField(UserProfile, related_name='admins', blank=True)
     subscribers = models.ManyToManyField(UserProfile, related_name='subscribers', blank=True)
+    is_sponsored = models.BooleanField(default=False)
     CATEGORY_CHOICES = (
         ('animal', 'Animal'),
         ('environment', 'Environment'),

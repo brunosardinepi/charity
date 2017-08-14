@@ -5,8 +5,13 @@
 {% block title %} Home | {{ block.super }}{% endblock %}
 
 {% block body_content %}
+    <h2>Sponsored Pages</h2>
+    <ul>
+        {% for page in sponsored %}
+            <li><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a></li>
+        {% endfor %}
+    </ul>
     {% if user.is_authenticated %}
-        <p>logged in</p>
         {% if subscriptions %}
             <h2>My Pages</h2>
             <ul>
