@@ -23,7 +23,7 @@
 {% block body_content %}
     <h1>{{ page.name }}</h1>
     <p>Description: {{ page.description }}</p>
-    <p>Category: {{ page.category }}</p>
+    <p>Category: {{ page.get_category_display }}</p>
     <p>${{ page.donation_money }} raised by {{ page.donation_count }} donors</p>
 
     {% if request.user.is_authenticated %}
