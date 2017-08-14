@@ -11,7 +11,6 @@ from django.utils.timezone import now
 
 from allauth.account.auth_backends import AuthenticationBackend
 from allauth.account.forms import BaseSignupForm
-#from allauth.account.models import EmailAddress, EmailConfirmation, EmailConfirmationHMAC
 from allauth.account import app_settings
 from allauth.utils import get_user_model, get_username_max_length
 
@@ -34,8 +33,8 @@ class HomeTest(TestCase):
         self.user.userprofile.last_name = 'Doe'
         self.user.userprofile.zipcode = '88888'
 
-        self.page = Page.objects.create(name="Buffalo", donation_money=600)
-        self.page2 = Page.objects.create(name="Antelope", donation_money=100)
+        self.page = Page.objects.create(name="Buffalo", donation_money=600, is_sponsored=True)
+        self.page2 = Page.objects.create(name="Antelope", donation_money=100, is_sponsored=False)
 
         self.page.subscribers.add(self.user.userprofile)
 
@@ -58,6 +57,8 @@ class HomeTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, donations, status_code=200)
+        self.assertContains(response, self.page.name, status_code=200)
+        self.assertNotContains(response, self.page2.name, status_code=200)
 
     def test_home_logged_in(self):
         """Home page returns HTTP 200"""
@@ -73,6 +74,8 @@ class HomeTest(TestCase):
         for c in campaigns:
             if c.is_active == True:
                 self.assertContains(response, c.name, status_code=200)
+        self.assertContains(response, self.page.name, status_code=200)
+        self.assertNotContains(response, self.page2.name, status_code=200)
 
 
 class AccountTests(TestCase):
