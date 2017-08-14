@@ -17,20 +17,25 @@ def search(request):
 def filter_list(f):
     f = f.split(",")
     results = []
+    sponsored = []
     for i in f:
         query_objects = PageModels.Page.objects.filter(category=i).order_by('name')
         if query_objects:
             for object in query_objects:
-                results.append(object)
-    return results
+                if object.is_sponsored == True:
+                    sponsored.append(object)
+                else:
+                    results.append(object)
+    return (results, sponsored)
 
 def query_list(q):
     q = q.split(",")
     queries = [SearchQuery(query) for query in q]
     query = reduce(operator.or_, queries)
     vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
-    results = PageModels.Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2).order_by('-rank')
-    return results
+    results = PageModels.Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=False).order_by('-rank')
+    sponsored = PageModels.Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=True).order_by('-rank')
+    return (results, sponsored)
 
 def results(request):
     if request.is_ajax():
@@ -44,16 +49,21 @@ def results(request):
 
         if all([q, f]):
             results = []
-            pages = query_list(q)
+            sponsored = []
+            pages, sponsored_pages = query_list(q)
             f = f.split(",")
             for x in f:
                 p = pages.filter(category=x)
                 for y in p:
                     results.append(y)
+                s = sponsored_pages.filter(category=x)
+                for y in s:
+                    sponsored.append(y)
         elif q:
-            results = query_list(q)
+            results, sponsored = query_list(q)
         elif f:
-            results = filter_list(f)
+            results, sponsored = filter_list(f)
         else:
             results = None
-        return render(request, 'search/results.html', {'results': results})
+
+        return render(request, 'search/results.html', {'results': results, 'sponsored': sponsored})
