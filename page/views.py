@@ -30,6 +30,18 @@ def page(request, page_slug):
                                             })
 
 @login_required
+def page_create(request):
+    form = forms.PageForm()
+    if request.method == 'POST':
+        form = forms.PageForm(request.POST)
+        if form.is_valid():
+            page = form.save()
+            page.admins.add(request.user.userprofile)
+            page.subscribers.add(request.user.userprofile)
+            return HttpResponseRedirect(page.get_absolute_url())
+    return render(request, 'page/page_create.html', {'form': form})
+
+@login_required
 def page_edit(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
     if request.user.userprofile in page.admins.all():

@@ -211,3 +211,6 @@ class CampaignTest(TestCase):
         response = views.subscribe(request, self.page.pk, action="subscribe")
 
         self.assertEqual(response.status_code, 302)
+
+
+### test for page creation and redirects
