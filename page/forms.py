@@ -9,5 +9,6 @@ class PageForm(forms.ModelForm):
         fields = [
             'name',
             'page_slug',
+            'category',
             'description',
         ]
