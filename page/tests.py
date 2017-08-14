@@ -165,3 +165,16 @@ class CampaignTest(TestCase):
     def test_pageform_blank(self):
         form = forms.PageForm({})
         self.assertFalse(form.is_valid())
+
+    def test_deletepageform(self):
+        form = forms.DeletePageForm({
+            'name': self.page
+        })
+        self.assertTrue(form.is_valid())
+
+    def test_delete_page(self):
+        request = self.factory.get('home')
+        request.user = self.user
+        response = views.page_delete(request, self.page.page_slug)
+
+        self.assertContains(response, self.page.name, status_code=200)
