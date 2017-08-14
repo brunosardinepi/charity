@@ -4,11 +4,13 @@ from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 from django.http import Http404
 from django.test import Client, RequestFactory, TestCase
+from django.urls import reverse
 
 import unittest
 
-from . import views
+from . import forms
 from . import models
+from . import views
 from campaign import models as CampaignModels
 
 
@@ -58,31 +60,14 @@ class CampaignTest(TestCase):
                                             )
 
     def test_page_exists(self):
-        """
-        Test page exists
-        """
-
-        # get queryset that contains all pages
         pages = models.Page.objects.all()
-
-        # make sure the test page exists in the queryset
         self.assertIn(self.page, pages)
 
     def test_page_status_logged_out(self):
-        """
-        Page returns HTTP 200
-        """
-
-        # create GET request
         request = self.factory.get('home')
-
-        # simulate logged-out user
         request.user = AnonymousUser()
-
-        # test the view
         response = views.page(request, self.page.page_slug)
 
-        # check that the response is 200 OK
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
@@ -97,20 +82,10 @@ class CampaignTest(TestCase):
         self.assertContains(response, self.campaign2.donation_money, status_code=200)
 
     def test_page_status_logged_in(self):
-        """
-        Page returns HTTP 200
-        """
-
-        # create GET request
         request = self.factory.get('home')
-
-        # simulate logged-in user
         request.user = self.user
-
-        # test the view
         response = views.page(request, self.page.page_slug)
 
-        # check that the response is 200 OK
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
@@ -125,92 +100,68 @@ class CampaignTest(TestCase):
         self.assertContains(response, self.campaign2.donation_money, status_code=200)
 
     def test_page_edit_status_logged_out(self):
-        """
-        Page returns HTTP 302 redirect
-        """
-
-        # create GET request
         request = self.factory.get('home')
-
-        # simulate logged-out user
         request.user = AnonymousUser()
-
-        # test the view
         response = views.page_edit(request, self.page.page_slug)
 
-        # check that the response is 302
         self.assertEqual(response.status_code, 302)
 
     @unittest.expectedFailure
     def test_page_edit_status_not_admin(self):
-        """
-        Page returns HTTP 404
-        """
-
-        # create GET request
+        """Doesn't test properly with 404 test, so I just expect it to fail instead"""
         request = self.factory.get('home')
-
-        # simulate logged-in user
         request.user = self.user2
-
-        # test the view
         response = views.page_edit(request, self.page.page_slug)
 
     def test_page_edit_status_admin(self):
-        """
-        Page returns HTTP 200
-        """
-
-        # create GET request
         request = self.factory.get('home')
-
-        # simulate logged-in user
         request.user = self.user
-
-        # test the view
         response = views.page_edit(request, self.page.page_slug)
 
-        # check that the response is 404
         self.assertEqual(response.status_code, 200)
 
     def test_page_not_subscribed(self):
-        """Page returns 'subscribe' button"""
-
-        # create GET request
         request = self.factory.get('home')
-
-        # simulate logged-in user
         request.user = self.user2
-
-        # test the view
         response = views.page(request, self.page.page_slug)
 
-        # check that the response is 200
         self.assertContains(response, 'name="subscribe"', status_code=200)
 
     def test_page_subscribed(self):
-        """Page returns 'unsubscribe' button"""
-
-        # create GET request
         request = self.factory.get('home')
-
-        # simulate logged-in user
         request.user = self.user
-
-        # test the view
         response = views.page(request, self.page.page_slug)
 
-        # check that the response is 200
         self.assertContains(response, 'name="unsubscribe"', status_code=200)
 
     def test_page_subscribe_redirect(self):
-        """Page redirects to signup if you try to subscribe while logged out"""
-
         request = self.factory.get('home')
         request.user = AnonymousUser()
         response = views.subscribe(request, self.page.pk, action="subscribe")
 
         self.assertEqual(response.status_code, 302)
 
+    def test_page_create_logged_out(self):
+        request = self.factory.get('home')
+        request.user = AnonymousUser()
+        response = views.page_create(request)
 
-### test for page creation and redirects
+        self.assertEqual(response.status_code, 302)
+
+    def test_pageform(self):
+        form = forms.PageForm({
+            'name': 'Ribeye Steak',
+            'page_slug': 'ribeyesteak',
+            'category': 'animal',
+            'description': 'I like flank steak.'
+        })
+        self.assertTrue(form.is_valid())
+        page = form.save()
+        self.assertEqual(page.name, "Ribeye Steak")
+        self.assertEqual(page.page_slug, "ribeyesteak")
+        self.assertEqual(page.category, "animal")
+        self.assertEqual(page.description, "I like flank steak.")
+
+    def test_pageform_blank(self):
+        form = forms.PageForm({})
+        self.assertFalse(form.is_valid())
