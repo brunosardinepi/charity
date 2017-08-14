@@ -1,0 +1,16 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} Delete {{ page.name }} | {{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+    <a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a> / Delete
+{% endblock %}
+
+{% block body_content %}
+    <p>This is irreversible. Please confirm you want to delete this Page.</p>
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="submit" value="Delete page" />
+    </form>
+{% endblock %}

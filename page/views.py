@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 
 from . import forms
 from . import models
@@ -54,6 +55,19 @@ def page_edit(request, page_slug):
     else:
         raise Http404
     return render(request, 'page/page_edit.html', {'page': page, 'form': form})
+
+@login_required
+def page_delete(request, page_slug):
+    page = get_object_or_404(models.Page, page_slug=page_slug)
+    if request.user.userprofile in page.admins.all():
+        form = forms.DeletePageForm(instance=page)
+        if request.method == 'POST':
+            form = forms.DeletePageForm(request.POST, instance=page)
+            page.delete()
+            return HttpResponseRedirect(reverse('home'))
+    else:
+        raise Http404
+    return render(request, 'page/page_delete.html', {'form': form, 'page': page})
 
 @login_required
 def subscribe(request, page_pk, action=None):

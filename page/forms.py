@@ -12,3 +12,8 @@ class PageForm(forms.ModelForm):
             'category',
             'description',
         ]
+
+class DeletePageForm(forms.ModelForm):
+    class Meta:
+        model = models.Page
+        fields = ['name']
