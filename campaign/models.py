@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 
 
@@ -26,6 +27,12 @@ class Campaign(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('campaign', kwargs={
+            'page_slug': self.page.page_slug,
+            'campaign_slug': self.campaign_slug
+            })
 
     def save(self, *args, **kwargs):
         if self.id:
