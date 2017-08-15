@@ -73,3 +73,33 @@ class CampaignTest(TestCase):
         response = views.campaign_delete(request, self.page.page_slug, self.campaign.campaign_slug)
 
         self.assertContains(response, self.campaign.name, status_code=200)
+
+    def test_campaign_create_logged_out(self):
+        request = self.factory.get('home')
+        request.user = AnonymousUser()
+        response = views.campaign_create(request)
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_campaignform(self):
+        form = forms.CampaignForm({
+            'name': 'Headphones',
+            'campaign_slug': 'headphones',
+            'goal': '234',
+            'type': 'event',
+            'description': 'I wear headphones.'
+        })
+        self.assertTrue(form.is_valid())
+        campaign = form.save(commit=False)
+        campaign.page = self.page
+        campaign.save()
+        self.assertEqual(campaign.name, "Headphones")
+        self.assertEqual(campaign.page, self.page)
+        self.assertEqual(campaign.campaign_slug, "headphones")
+        self.assertEqual(campaign.goal, 234)
+        self.assertEqual(campaign.type, "event")
+        self.assertEqual(campaign.description, "I wear headphones.")
+
+    def test_campaignform_blank(self):
+        form = forms.CampaignForm({})
+        self.assertFalse(form.is_valid())
