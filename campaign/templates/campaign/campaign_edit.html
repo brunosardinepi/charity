@@ -1,0 +1,17 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} Edit {{ page.name }} | {{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+    <a href="{% url 'page' page_slug=campaign.page.page_slug %}">{{ campaign.page.name }}</a> / <a href="{% url 'campaign' page_slug=campaign.page.page_slug campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> / Edit
+{% endblock %}
+
+{% block body_content %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Update campaign" />
+    </form>
+{% endblock %}
+

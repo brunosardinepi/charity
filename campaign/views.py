@@ -26,6 +26,21 @@ def campaign_create(request, page_slug):
     return render(request, 'campaign/campaign_create.html', {'form': form})
 
 @login_required
+def campaign_edit(request, page_slug, campaign_slug):
+    page = get_object_or_404(Page, page_slug=page_slug)
+    campaign = get_object_or_404(models.Campaign, campaign_slug=campaign_slug)
+    if request.user.userprofile in page.admins.all():
+        form = forms.CampaignForm(instance=campaign)
+        if request.method == 'POST':
+            form = forms.CampaignForm(instance=campaign, data=request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(campaign.get_absolute_url())
+    else:
+        raise Http404
+    return render(request, 'campaign/campaign_edit.html', {'campaign': campaign, 'form': form})
+
+@login_required
 def campaign_delete(request, page_slug, campaign_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
     campaign = get_object_or_404(models.Campaign, campaign_slug=campaign_slug)

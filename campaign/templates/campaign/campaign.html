@@ -15,6 +15,7 @@
 
     {% if request.user.userprofile in page.admins.all %}
         <h4>Admin</h4>
+        <p><a href="{% url 'campaign_edit' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
         <p><a href="{% url 'campaign_delete' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
     {% else %}
         <p>you're NOT an admin</p>
