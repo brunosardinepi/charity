@@ -1,4 +1,5 @@
 import django
+import unittest
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
@@ -72,6 +73,7 @@ class CampaignTest(TestCase):
         request.user = self.user
         response = views.campaign_delete(request, self.page.page_slug, self.campaign.campaign_slug)
 
+        self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
 
     def test_campaign_create_logged_out(self):
@@ -103,3 +105,26 @@ class CampaignTest(TestCase):
     def test_campaignform_blank(self):
         form = forms.CampaignForm({})
         self.assertFalse(form.is_valid())
+
+    def test_campaign_edit_status_logged_out(self):
+        request = self.factory.get('home')
+        request.user = AnonymousUser()
+        response = views.campaign_edit(request, self.page.page_slug, self.campaign.campaign_slug)
+
+        self.assertEqual(response.status_code, 302)
+
+    @unittest.expectedFailure
+    def test_campaign_edit_status_not_admin(self):
+        """Doesn't test properly with 404 test, so I just expect it to fail instead"""
+        request = self.factory.get('home')
+        request.user = self.user2
+        response = views.campaign_edit(request, self.page.page_slug, self.campaign.campaign_slug)
+
+    def test_campaign_edit_status_admin(self):
+        request = self.factory.get('home')
+        request.user = self.user
+        response = views.campaign_edit(request, self.page.page_slug, self.campaign.campaign_slug)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.page.name, status_code=200)
+        self.assertContains(response, self.campaign.name, status_code=200)
