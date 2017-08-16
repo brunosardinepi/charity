@@ -1,3 +1,4 @@
+from allauth.account.signals import user_signed_up
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -24,3 +25,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.userprofile.save()
+
+@receiver(user_signed_up, dispatch_uid="user_signed_up")
+def user_signed_up_(request, user, **kwargs):
+    print("user signed up")
