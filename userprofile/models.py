@@ -1,8 +1,11 @@
 from allauth.account.signals import user_signed_up
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
+import smtplib
 
 
 class UserProfile(models.Model):
@@ -28,4 +31,18 @@ def save_user_profile(sender, instance, **kwargs):
 
 @receiver(user_signed_up, dispatch_uid="user_signed_up")
 def user_signed_up_(request, user, **kwargs):
-    print("user signed up")
+    username = 'noreply'
+    password = 'Ballsack1'
+
+    from_email = "noreply@page.fund"
+    subject = "Welcome to PageFund!"
+    msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % (from_email, user.email, subject)
+    body = "This is a test email for a user that has just signed up with PageFund."
+    msg+=body
+
+    server = smtplib.SMTP('10.132.5.139', 587)
+    server.ehlo()
+    server.starttls()
+    server.login(username, password)
+    server.sendmail(from_email, [user.email], msg)
+    server.quit()
