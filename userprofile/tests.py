@@ -11,10 +11,10 @@ class UserProfileTest(TestCase):
         self.client = Client()
 
         self.user = User.objects.create_user(
-                        username='testuser',
-                        email='test@test.test',
-                        password='testpassword',
-                        )
+            username='testuser',
+            email='test@test.test',
+            password='testpassword',
+        )
         self.user.userprofile.first_name = 'John'
         self.user.userprofile.last_name = 'Doe'
         self.user.userprofile.zipcode = '88888'

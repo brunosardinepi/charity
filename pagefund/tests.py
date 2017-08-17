@@ -1,4 +1,5 @@
 import django
+import os
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
@@ -280,3 +281,11 @@ class AuthenticationBackendTests(TestCase):
                 username=user.username,
                 password=user.username).pk,
             user.pk)
+
+
+class MailServerTest(TestCase):
+    def test_mail_server_ping(self):
+        host = "10.132.5.139"
+        response = os.system("ping -c 1 " + host)
+
+        self.assertEqual(response, 0)
