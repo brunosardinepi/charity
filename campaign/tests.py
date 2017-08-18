@@ -27,6 +27,7 @@ class CampaignTest(TestCase):
 
         self.campaign = models.Campaign.objects.create(
             name='Test Campaign',
+            user=self.user,
             page=self.page,
             type='Event',
             description='This is a description for Test Campaign.',
@@ -96,9 +97,11 @@ class CampaignTest(TestCase):
         })
         self.assertTrue(form.is_valid())
         campaign = form.save(commit=False)
+        campaign.user = self.user
         campaign.page = self.page
         campaign.save()
         self.assertEqual(campaign.name, "Headphones")
+        self.assertEqual(campaign.user, self.user)
         self.assertEqual(campaign.page, self.page)
         self.assertEqual(campaign.campaign_slug, "headphones")
         self.assertEqual(campaign.goal, 234)

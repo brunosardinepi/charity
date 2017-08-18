@@ -39,10 +39,10 @@ class HomeTest(TestCase):
 
         self.page.subscribers.add(self.user.userprofile)
 
-        self.campaign = Campaign.objects.create(name="Blue", page=self.page, donation_money=50)
-        self.campaign2 = Campaign.objects.create(name="Green", page=self.page, donation_money=900)
-        self.campaign3 = Campaign.objects.create(name="Yellow", page=self.page, donation_money=500)
-        self.campaign4 = Campaign.objects.create(name="Red", page=self.page2, donation_money=20)
+        self.campaign = Campaign.objects.create(name="Blue", user=self.user, page=self.page, donation_money=50)
+        self.campaign2 = Campaign.objects.create(name="Green", user=self.user, page=self.page, donation_money=900)
+        self.campaign3 = Campaign.objects.create(name="Yellow", user=self.user, page=self.page, donation_money=500)
+        self.campaign4 = Campaign.objects.create(name="Red", user=self.user, page=self.page2, donation_money=20)
 
 
     def test_home_logged_out(self):

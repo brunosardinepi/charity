@@ -20,7 +20,7 @@ def campaign_create(request, page_slug):
         form = forms.CampaignForm(request.POST)
         if form.is_valid():
             campaign = form.save(commit=False)
-            campaign.creator = request.user
+            campaign.user = request.user
             campaign.page = page
             campaign.save()
             return HttpResponseRedirect(campaign.get_absolute_url())
@@ -29,7 +29,7 @@ def campaign_create(request, page_slug):
 @login_required
 def campaign_edit(request, page_slug, campaign_slug):
     campaign = get_object_or_404(models.Campaign, campaign_slug=campaign_slug)
-    if request.user == campaign.creator:
+    if request.user == campaign.user:
         form = forms.CampaignForm(instance=campaign)
         if request.method == 'POST':
             form = forms.CampaignForm(instance=campaign, data=request.POST)
@@ -43,7 +43,7 @@ def campaign_edit(request, page_slug, campaign_slug):
 @login_required
 def campaign_delete(request, page_slug, campaign_slug):
     campaign = get_object_or_404(models.Campaign, campaign_slug=campaign_slug)
-    if request.user == campaign.creator:
+    if request.user == campaign.user:
         form = forms.DeleteCampaignForm(instance=campaign)
         if request.method == 'POST':
             form = forms.DeleteCampaignForm(request.POST, instance=campaign)

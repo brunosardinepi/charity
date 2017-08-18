@@ -20,44 +20,46 @@ class CampaignTest(TestCase):
         self.client = Client()
 
         self.user = User.objects.create_user(
-                                            username='testuser',
-                                            email='test@test.test',
-                                            password='testpassword'
-                                            )
+            username='testuser',
+            email='test@test.test',
+            password='testpassword'
+        )
 
         self.user2 = User.objects.create_user(
-                                            username='harrypotter',
-                                            email='harry@potter.com',
-                                            password='imawizard'
-                                            )
+            username='harrypotter',
+            email='harry@potter.com',
+            password='imawizard'
+        )
 
         self.page = models.Page.objects.create(
-                                                name='Test Page',
-                                                description='This is a description for Test Page.',
-                                                donation_count='20',
-                                                donation_money='30',
-                                                category='Animal'
-                                                )
+            name='Test Page',
+            description='This is a description for Test Page.',
+            donation_count='20',
+            donation_money='30',
+            category='Animal'
+        )
         self.page.admins.add(self.user.userprofile)
         self.page.subscribers.add(self.user.userprofile)
 
         self.campaign = CampaignModels.Campaign.objects.create(
-                                            name='Test Campaign',
-                                            page=self.page,
-                                            description='This is a description for Test Campaign.',
-                                            goal='11',
-                                            donation_count='21',
-                                            donation_money='31'
-                                            )
+            name='Test Campaign',
+            user=self.user,
+            page=self.page,
+            description='This is a description for Test Campaign.',
+            goal='11',
+            donation_count='21',
+            donation_money='31'
+        )
 
         self.campaign2 = CampaignModels.Campaign.objects.create(
-                                            name='Another One',
-                                            page=self.page,
-                                            description='My cat died yesterday',
-                                            goal='12',
-                                            donation_count='22',
-                                            donation_money='33'
-                                            )
+            name='Another One',
+            user=self.user2,
+            page=self.page,
+            description='My cat died yesterday',
+            goal='12',
+            donation_count='22',
+            donation_money='33'
+        )
 
     def test_page_exists(self):
         pages = models.Page.objects.all()
