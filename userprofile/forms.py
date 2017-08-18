@@ -1,6 +1,6 @@
-
 from django import forms
-
+from django.core.files.images import get_image_dimensions
+from PIL import Image
 from . import models
 
 
@@ -20,43 +20,14 @@ class SignupForm(forms.Form):
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
-        model = models.UserProfile
-        fields = [
-            'first_name',
-            'last_name',
-            'zipcode',
-        ]
-
-class UserProfileForm(forms.ModelForm):
-    class Meta:
         def clean_avatar(self):
+            CONTENT_TYPES = ['image']
+            MAX_UPLOAD_PHOTO_SIZE = ['260']
             avatar = self.cleaned_data.get('avatar',False)
-
-            try:
-                w, h = get_image_dimensions(avatar)
-
-                #validate dimensions
-                max_width = max_height = 100
-                if w > max_width or h > max_height:
-                    raise forms.ValidationError(
-                        u'Please use an image that is '
-                        '%s x %s pixels or smaller.' % (max_width, max_height))
-
-                #validate content type
-                main, sub = avatar.content_type.split('/')
-                if not (main == 'image' and sub in ['jpeg', 'pjpeg', 'gif', 'png']):
-                    raise forms.ValidationError(u'Please use a JPEG, '
-                        'GIF or PNG image.')
-
-                #validate file size
-                if len(avatar) > (20 * 1024):
-                    raise forms.ValidationError(
-                        u'Avatar file size may not exceed 20k.')
-
-            except AttributeError:
-                #Handles case when we are updating the user profile and do not supply a new avatar
-                pass
-
+            if content._size > MAX_UPLOAD_PHOTO_SIZE:
+                msg = 'Keep your file size under %s. actual size %s'\
+                        % (filesizeformat(settings.MAX_UPLOAD_PHOTO_SIZE), filesizeformat(content._size))
+                raise forms.ValidationError(msg)
             return avatar
         model = models.UserProfile
         fields = [
@@ -65,4 +36,3 @@ class UserProfileForm(forms.ModelForm):
             'zipcode',
             'avatar',
         ]
-
