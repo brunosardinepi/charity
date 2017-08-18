@@ -9,12 +9,13 @@
 
 {% block body_content %}
     <h1>{{ campaign.name }}</h1>
+    <p>Creator: {{ campaign.creator.first_name }} {{ campaign.creator.last_name  }}</p>
     <p>Type: {{ campaign.get_type_display }}</p>
     <p>Description: {{ campaign.description }}</p>
     <p>Goal: ${{ campaign.goal }}</p>
     <p>${{ campaign.donation_money }} raised by {{ campaign.donation_count }} donors</p>
 
-    {% if request.user.userprofile in page.admins.all %}
+    {% if request.user == campaign.creator %}
         <h4>Admin</h4>
         <p><a href="{% url 'campaign_edit' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
         <p><a href="{% url 'campaign_delete' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
