@@ -72,6 +72,8 @@ class CampaignTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.page.name, status_code=200)
+        self.assertContains(response, self.user.first_name, status_code=200)
+        self.assertContains(response, self.user.last_name, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count, status_code=200)
         self.assertContains(response, self.page.donation_money, status_code=200)
@@ -90,6 +92,8 @@ class CampaignTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.page.name, status_code=200)
+        self.assertContains(response, self.user.first_name, status_code=200)
+        self.assertContains(response, self.user.last_name, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count, status_code=200)
         self.assertContains(response, self.page.donation_money, status_code=200)

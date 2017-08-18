@@ -3,6 +3,7 @@ from django.test import Client, RequestFactory, TestCase
 
 from . import views
 from page.models import Page
+from campaign.models import Campaign
 
 
 class UserProfileTest(TestCase):
@@ -22,6 +23,17 @@ class UserProfileTest(TestCase):
         self.page = Page.objects.create(name="Buffalo")
         self.page.subscribers.add(self.user.userprofile)
 
+        self.campaign = Campaign.objects.create(
+            name='Test Campaign',
+            user=self.user,
+            page=self.page,
+            type='Event',
+            description='This is a description for Test Campaign.',
+            goal='666',
+            donation_count='5',
+            donation_money='100'
+        )
+
     def test_user_exists(self):
         users = User.objects.all()
         self.assertIn(self.user, users)
@@ -33,3 +45,4 @@ class UserProfileTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.userprofile.subscribers.get(id=self.page.pk).name, status_code=200)
+        self.assertContains(response, self.campaign.name, status_code=200)
