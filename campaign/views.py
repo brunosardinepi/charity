@@ -23,7 +23,7 @@ def campaign_create(request, page_slug):
             campaign.page = page
             campaign.save()
             return HttpResponseRedirect(campaign.get_absolute_url())
-    return render(request, 'campaign/campaign_create.html', {'form': form})
+    return render(request, 'campaign/campaign_create.html', {'form': form, 'page': page})
 
 @login_required
 def campaign_edit(request, page_slug, campaign_slug):

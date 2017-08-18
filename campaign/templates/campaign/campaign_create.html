@@ -4,7 +4,7 @@
 {% block title %} Create Campaign | {{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
-    <a href="{% url 'page' page_slug=campaign.page.page_slug %}">{{ campaign.page.name }}</a> / {{ campaign.name }}
+    <a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a> / Create
 {% endblock %}
 
 {% block body_content %}

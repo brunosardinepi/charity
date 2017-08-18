@@ -10,8 +10,16 @@ from page.models import Page
 def home(request):
     sponsored = Page.objects.filter(is_sponsored=True)
     page_donations = Page.objects.aggregate(Sum('donation_money'))
+    if page_donations["donation_money__sum"] == None:
+        page_donations = 0
+    else:
+        page_donations = int(page_donations["donation_money__sum"])
     campaign_donations = Campaign.objects.aggregate(Sum('donation_money'))
-    donations = int(page_donations["donation_money__sum"]) + int(campaign_donations["donation_money__sum"])
+    if campaign_donations["donation_money__sum"] == None:
+        campaign_donations = 0
+    else:
+        campaign_donations = int(campaign_donations["donation_money__sum"])
+    donations = page_donations + campaign_donations
     if request.user.is_authenticated:
         subscriptions = request.user.userprofile.subscribers.all()
         return render(request, 'home.html', {'subscriptions': subscriptions, 'donations': donations, 'sponsored': sponsored})
