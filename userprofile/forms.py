@@ -1,5 +1,6 @@
 from django import forms
-
+from django.core.files.images import get_image_dimensions
+from PIL import Image
 from . import models
 
 
@@ -19,9 +20,19 @@ class SignupForm(forms.Form):
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
+        def clean_avatar(self):
+            CONTENT_TYPES = ['image']
+            MAX_UPLOAD_PHOTO_SIZE = ['260']
+            avatar = self.cleaned_data.get('avatar',False)
+            if content._size > MAX_UPLOAD_PHOTO_SIZE:
+                msg = 'Keep your file size under %s. actual size %s'\
+                        % (filesizeformat(settings.MAX_UPLOAD_PHOTO_SIZE), filesizeformat(content._size))
+                raise forms.ValidationError(msg)
+            return avatar
         model = models.UserProfile
         fields = [
             'first_name',
             'last_name',
             'zipcode',
+            'avatar',
         ]

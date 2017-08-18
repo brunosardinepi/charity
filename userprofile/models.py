@@ -13,7 +13,7 @@ class UserProfile(models.Model):
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
     zipcode = models.CharField(max_length=5, blank=True)
-
+    avatar = models.ImageField(upload_to="media/", blank=True, null=True)
     class Meta:
         ordering = ('first_name', 'last_name',)
 
