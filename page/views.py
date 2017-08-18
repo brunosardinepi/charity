@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -9,7 +10,23 @@ from campaign import models as CampaignModels
 from userprofile.models import UserProfile
 
 import json
+import smtplib
 
+
+def page_email(user, subject, body):
+    username = 'noreply'
+    password = 'Ballsack1'
+
+    from_email = "noreply@page.fund"
+    msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % (from_email, user.email, subject)
+    msg+=body
+
+    server = smtplib.SMTP('10.132.5.139', 587)
+    server.ehlo()
+    server.starttls()
+    server.login(username, password)
+    server.sendmail(from_email, [user.email], msg)
+    server.quit()
 
 def page(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
@@ -39,6 +56,10 @@ def page_create(request):
             page = form.save()
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
+
+            subject = "Page created!"
+            body = "You just created a Page for: %s" % page.name
+            page_email(request.user, subject, body)
             return HttpResponseRedirect(page.get_absolute_url())
     return render(request, 'page/page_create.html', {'form': form})
 
