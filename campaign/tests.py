@@ -28,6 +28,7 @@ class CampaignTest(TestCase):
         self.campaign = models.Campaign.objects.create(
             name='Test Campaign',
             page=self.page,
+            type='Event',
             description='This is a description for Test Campaign.',
             goal='666',
             donation_count='5',
@@ -45,6 +46,7 @@ class CampaignTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.campaign.name, status_code=200)
+        self.assertContains(response, self.campaign.type, status_code=200)
         self.assertContains(response, self.campaign.description, status_code=200)
         self.assertContains(response, self.campaign.goal, status_code=200)
         self.assertContains(response, self.campaign.donation_count, status_code=200)
@@ -57,6 +59,7 @@ class CampaignTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.campaign.name, status_code=200)
+        self.assertContains(response, self.campaign.type, status_code=200)
         self.assertContains(response, self.campaign.description, status_code=200)
         self.assertContains(response, self.campaign.goal, status_code=200)
         self.assertContains(response, self.campaign.donation_count, status_code=200)
