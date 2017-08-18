@@ -24,11 +24,11 @@ def page(request, page_slug):
     else:
         subscribe_attr = {"name": "subscribe", "value": "Subscribe", "color": "green"}
     return render(request, 'page/page.html', {
-                                            'page': page,
-                                            'active_campaigns': active_campaigns,
-                                            'inactive_campaigns': inactive_campaigns,
-                                            'subscribe_attr': subscribe_attr
-                                            })
+        'page': page,
+        'active_campaigns': active_campaigns,
+        'inactive_campaigns': inactive_campaigns,
+        'subscribe_attr': subscribe_attr
+    })
 
 @login_required
 def page_create(request):
