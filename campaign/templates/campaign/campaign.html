@@ -9,6 +9,7 @@
 
 {% block body_content %}
     <h1>{{ campaign.name }}</h1>
+    <p>Type: {{ campaign.get_type_display }}</p>
     <p>Description: {{ campaign.description }}</p>
     <p>Goal: ${{ campaign.goal }}</p>
     <p>${{ campaign.donation_money }} raised by {{ campaign.donation_count }} donors</p>
