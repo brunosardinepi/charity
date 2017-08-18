@@ -1,6 +1,7 @@
 from django import forms
 from django.core.files.images import get_image_dimensions
 from PIL import Image
+
 from . import models
 
 
@@ -25,10 +26,11 @@ class UserProfileForm(forms.ModelForm):
             MAX_UPLOAD_PHOTO_SIZE = ['260']
             avatar = self.cleaned_data.get('avatar',False)
             if content._size > MAX_UPLOAD_PHOTO_SIZE:
-                msg = 'Keep your file size under %s. actual size %s'\
+                msg = 'The file size limit is %s. Your file size is %s.'\
                         % (filesizeformat(settings.MAX_UPLOAD_PHOTO_SIZE), filesizeformat(content._size))
                 raise forms.ValidationError(msg)
             return avatar
+
         model = models.UserProfile
         fields = [
             'first_name',

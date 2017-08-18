@@ -5,9 +5,9 @@
 
 {% block body_content %}
 
-{% if user.userprofile.avatar %}
-    <img src="{{ user.userprofile.avatar.url }}">
-{% endif %}
+    {% if user.userprofile.avatar %}
+        <img src="{{ user.userprofile.avatar.url }}" />
+    {% endif %}
     
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
