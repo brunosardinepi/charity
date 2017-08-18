@@ -10,6 +10,7 @@ from page import models as PageModels
 def userprofile(request):
     userprofile = get_object_or_404(models.UserProfile, user_id=request.user.id)
     subscriptions = userprofile.subscribers.all()
+    campaigns = request.user.campaign_set.all()
     if userprofile.user == request.user:
         form = forms.UserProfileForm(instance=userprofile)
         if request.method == 'POST':
@@ -19,4 +20,4 @@ def userprofile(request):
                 last_name = form.cleaned_data['last_name']
                 zipcode = form.cleaned_data['zipcode']
                 form.save()
-    return render(request, 'userprofile/profile.html', {'subscriptions': subscriptions, 'form': form})
+    return render(request, 'userprofile/profile.html', {'subscriptions': subscriptions, 'campaigns': campaigns, 'form': form})

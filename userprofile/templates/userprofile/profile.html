@@ -10,7 +10,15 @@
         <input type="submit" value="Update profile" />
     </form>
 
-    <h2>Subscriptions</h2>
+    <h2>Campaigns I Created</h2>
+    <ul>
+        {% for c in campaigns %}
+            <li><a href="{% url 'campaign' page_slug=c.page.page_slug campaign_slug=c.campaign_slug %}">{{ c.name }}</a></li>
+        {% endfor %}
+    </ul>
+   
+
+    <h2>Page Subscriptions</h2>
     <ul>
         {% for s in subscriptions %}
             <li><a href="{% url 'page' page_slug=s.page_slug %}">{{ s.name }}</a></li>
