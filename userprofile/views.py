@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
@@ -15,8 +17,25 @@ def userprofile(request):
     if userprofile.user == request.user:
         form = forms.UserProfileForm(instance=userprofile)
         if request.method == 'POST':
-            form = forms.UserProfileForm(instance=userprofile, data=request.POST, files=request.FILES)
+            form = forms.UserProfileForm(
+                instance=userprofile,
+                data=request.POST,
+                files=request.FILES
+            )
             if form.is_valid():
-                form.save()
-                return HttpResponseRedirect(userprofile.get_absolute_url())
-    return render(request, 'userprofile/profile.html', {'subscriptions': subscriptions, 'campaigns': campaigns, 'form': form})
+                image = form.cleaned_data.get('avatar',False)
+                image_type = image.content_type.split('/')[0]
+                if image_type in settings.UPLOAD_TYPES:
+                    if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
+                        msg = 'The file size limit is %s. Your file size is %s.' % (
+                            settings.MAX_IMAGE_UPLOAD_SIZE,
+                            image._size
+                        )
+                        raise ValidationError(msg)
+                    form.save()
+                    return HttpResponseRedirect(userprofile.get_absolute_url())
+    return render(request, 'userprofile/profile.html', {
+        'subscriptions': subscriptions,
+        'campaigns': campaigns,
+        'form': form
+    })
