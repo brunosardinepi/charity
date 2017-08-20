@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, RequestFactory, TestCase
 
+from . import forms
 from . import views
 from page.models import Page
 from campaign.models import Campaign
@@ -46,3 +48,16 @@ class UserProfileTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.userprofile.subscribers.get(id=self.page.pk).name, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
+
+    def test_userprofileform(self):
+        form = forms.UserProfileForm({
+            'user': self.user,
+            'first_name': 'Blanket',
+            'last_name': 'Towel',
+            'zipcode': 99999
+        })
+        self.assertTrue(form.is_valid())
+
+    def test_userprofileform_blank(self):
+        form = forms.UserProfileForm({})
+        self.assertTrue(form.is_valid())
