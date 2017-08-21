@@ -6,6 +6,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 
+from pagefund import config
+
 import smtplib
 
 
@@ -35,8 +37,8 @@ def save_user_profile(sender, instance, **kwargs):
 
 @receiver(user_signed_up, dispatch_uid="user_signed_up")
 def user_signed_up_(request, user, **kwargs):
-    username = 'noreply'
-    password = 'Ballsack1'
+    username = config.settings['email_user']
+    password = config.settings['email_password']
 
     from_email = "noreply@page.fund"
     subject = "Welcome to PageFund!"
@@ -44,7 +46,7 @@ def user_signed_up_(request, user, **kwargs):
     body = "This is a test email for a user that has just signed up with PageFund."
     msg+=body
 
-    server = smtplib.SMTP('10.132.5.139', 587)
+    server = smtplib.SMTP(config.settings['email_host'], 587)
     server.ehlo()
     server.starttls()
     server.login(username, password)
