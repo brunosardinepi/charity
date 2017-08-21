@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, render
 from . import forms
 from . import models
 from page.models import Page
+from pagefund.email import email
 
 
 def campaign(request, page_slug, campaign_slug):
@@ -23,6 +24,15 @@ def campaign_create(request, page_slug):
             campaign.user = request.user
             campaign.page = page
             campaign.save()
+
+            subject = "Campaign created!"
+            body = "A Campaign called '%s' has just been created by %s for the '%s' Page." % (
+                campaign.name,
+                request.user.email,
+                page.name
+            )
+            email(request.user, subject, body)
+            # once the page admins have been re-structured, need to email them when a campaign is created for their page
             return HttpResponseRedirect(campaign.get_absolute_url())
     return render(request, 'campaign/campaign_create.html', {'form': form, 'page': page})
 
