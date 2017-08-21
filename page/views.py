@@ -7,21 +7,22 @@ from django.urls import reverse
 from . import forms
 from . import models
 from campaign import models as CampaignModels
+from pagefund import config
 from userprofile.models import UserProfile
 
 import json
 import smtplib
 
 
-def page_email(user, subject, body):
-    username = 'noreply'
-    password = 'Ballsack1'
+def email(user, subject, body):
+    username = config.settings['email_user']
+    password = config.settings['email_password']
 
     from_email = "noreply@page.fund"
     msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % (from_email, user.email, subject)
     msg+=body
 
-    server = smtplib.SMTP('10.132.5.139', 587)
+    server = smtplib.SMTP(config.settings['email_host'], 587)
     server.ehlo()
     server.starttls()
     server.login(username, password)
