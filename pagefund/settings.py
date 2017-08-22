@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'page',
     'campaign',
     'search',
+    'guardian',
 ]
 
 MIDDLEWARE = [
@@ -99,6 +100,7 @@ DATABASES = {
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
 )
 
 # Password validation
