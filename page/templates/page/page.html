@@ -55,11 +55,24 @@
         <p><a href="{% url 'page_delete' page_slug=page.page_slug %}">Delete Page</a></p>
         {% if managers %}
             <h5>Managers</h5>
-            <ul>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                    <th>Invite</th>
+                </tr>
             {% for manager in managers %}
-                <li>{{ manager.first_name }} {{ manager.last_name }}</li>
+                {% get_obj_perms manager.user for page as "page_perms" %}
+                <tr>
+                    <td>{{ manager.first_name }} {{ manager.last_name }}</td>
+                    <td>{{ manager.user.email }}</td>
+                    <td>{% if "manager_edit_page" in page_perms %}True{% else %}False{% endif %}</td>
+                    <td>{% if "manager_delete_page" in page_perms %}True{% else %}False{% endif %}</td>
+                    <td>{% if "manager_invite_page" in page_perms %}True{% else %}False{% endif %}</td>
             {% endfor %}
-            </ul>
+            </table>
         {% endif %}
     {% else %}
         <p>you're NOT an admin</p>
