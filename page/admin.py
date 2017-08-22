@@ -8,6 +8,6 @@ class PageAdmin(GuardedModelAdmin):
     list_display = ('id', 'name', 'page_slug', 'category',)
     ordering = ('id', 'name', 'page_slug',)
     list_filter = ('category',)
-    filter_horizontal = ('admins',)
+    filter_horizontal = ('admins', 'managers',)
 
 admin.site.register(models.Page, PageAdmin)
