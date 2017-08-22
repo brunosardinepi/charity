@@ -16,6 +16,7 @@ def page(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
     active_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=True)
     inactive_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=False)
+    managers = page.managers.all()
     try:
         user_subscription_check = page.subscribers.get(user_id=request.user.pk)
     except UserProfile.DoesNotExist:
@@ -28,6 +29,7 @@ def page(request, page_slug):
         'page': page,
         'active_campaigns': active_campaigns,
         'inactive_campaigns': inactive_campaigns,
+        'managers': managers,
         'subscribe_attr': subscribe_attr
     })
 
