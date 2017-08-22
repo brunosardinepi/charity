@@ -89,6 +89,6 @@
         <p><a href="{% url 'page_delete' page_slug=page.page_slug %}">Delete Page</a></p>
     {% endif %}
     {% if "manager_invite_page" in page_perms %}
-        <p><a href="#">Invite others to manage Page</a></p>
+        <p><a href="{% url 'page_invite' page_slug=page.page_slug  %}">Invite others to manage Page</a></p>
     {% endif %}
 {% endblock %}

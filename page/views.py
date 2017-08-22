@@ -89,3 +89,19 @@ def subscribe(request, page_pk, action=None):
         print("something went wrong")
     new_subscribe_attr = json.dumps(new_subscribe_attr)
     return HttpResponse(new_subscribe_attr)
+
+@login_required
+def page_invite(request, page_slug):
+    page = get_object_or_404(models.Page, page_slug=page_slug)
+    admin = request.user.userprofile in page.admins.all()
+    print("admin = %s" % admin)
+    manager = request.user.userprofile in page.managers.all()
+    print("manager = %s" % manager)
+    if admin or manager:
+        print("True")
+        form = forms.ManagerInviteForm()
+        if request.method == 'POST':
+            form = forms.ManagerInviteForm(request.POST)
+            if form.is_valid():
+                return HttpResponseRedirect(page.get_absolute_url())
+        return render(request, 'page/page_invite.html', {'form': form, 'page': page})
