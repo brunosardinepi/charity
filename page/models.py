@@ -26,6 +26,13 @@ class Page(models.Model):
         default='',
     )
 
+    class Meta:
+        permissions = (
+            ('manager_edit_page', 'Manager -- edit Page'),
+            ('manager_delete_page', 'Manager -- delete Page'),
+            ('manager_invite_page', 'Manager -- invite users to manage Page'),
+        )
+
     def __str__(self):
         return self.name
 
