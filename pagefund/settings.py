@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'campaign',
     'search',
     'guardian',
+    'invitations',
 ]
 
 MIDDLEWARE = [
