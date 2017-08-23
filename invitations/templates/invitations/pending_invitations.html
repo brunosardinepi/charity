@@ -9,7 +9,7 @@
     {% if invitations %}
         <ul>
             {% for i in invitations %}
-                <li>From: {{ i.invite_from.user.first_name }} {{ i.invite_from.user.last_name }}</li>
+                <li>{{ i.page.name }} (from {{ i.invite_from.first_name }} {{ i.invite_from.last_name }})</li>
             {% endfor %}
         </ul>
     {% endif %}

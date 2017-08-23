@@ -6,6 +6,7 @@ from django.urls import reverse
 from . import forms
 from . import models
 from campaign import models as CampaignModels
+from invitations.models import ManagerInvitation
 from pagefund.email import email
 from userprofile.models import UserProfile
 
@@ -103,5 +104,13 @@ def page_invite(request, page_slug):
         if request.method == 'POST':
             form = forms.ManagerInviteForm(request.POST)
             if form.is_valid():
+                invitation = ManagerInvitation.objects.create(
+                    invite_to=form.cleaned_data['email'],
+                    invite_from=request.user,
+                    page=page,
+                    can_edit=form.cleaned_data['can_edit'],
+                    can_delete=form.cleaned_data['can_delete'],
+                    can_invite=form.cleaned_data['can_invite'],
+                )
                 return HttpResponseRedirect(page.get_absolute_url())
         return render(request, 'page/page_invite.html', {'form': form, 'page': page})
