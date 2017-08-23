@@ -1,0 +1,17 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} Pending Invitations | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+
+    <h1>Pending Invitations</h1>
+    {% if invitations %}
+        <ul>
+            {% for i in invitations %}
+                <li>From: {{ i.invite_from.user.first_name }} {{ i.invite_from.user.last_name }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+{% endblock %}
