@@ -218,9 +218,22 @@ class CampaignTest(TestCase):
         })
         self.assertTrue(form.is_valid())
 
-    def test_delete_page(self):
+    def test_delete_page_admin(self):
         request = self.factory.get('home')
         request.user = self.user
+        response = views.page_delete(request, self.page.page_slug)
+
+        self.assertContains(response, self.page.name, status_code=200)
+
+    @unittest.expectedFailure
+    def test_delete_page_not_admin(self):
+        request = self.factory.get('home')
+        request.user = AnonymousUser()
+        response = views.page_delete(request, self.page.page_slug)
+
+    def test_delete_page_manager(self):
+        request = self.factory.get('home')
+        request.user = self.user3
         response = views.page_delete(request, self.page.page_slug)
 
         self.assertContains(response, self.page.name, status_code=200)
