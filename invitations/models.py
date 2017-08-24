@@ -13,6 +13,7 @@ def random_key(size=32, chars=string.ascii_uppercase + string.digits):
 class ManagerInvitation(models.Model):
     expired = models.BooleanField(default=False)
     accepted = models.BooleanField(default=False)
+    declined = models.BooleanField(default=False)
     key = models.CharField(max_length=32, default=random_key)
     date_created = models.DateTimeField(auto_now_add=True)
     invite_to = models.EmailField()

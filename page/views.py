@@ -97,11 +97,14 @@ def subscribe(request, page_pk, action=None):
 @login_required
 def page_invite(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
+    # True if the user is an admin
     admin = request.user.userprofile in page.admins.all()
+    # True if the user is a manager and has the 'invite' permission
     if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_invite_page', page):
         manager = True
     else:
         manager = False
+    # if the user is either an admin or a manager, so either must be True
     if admin or manager:
         form = forms.ManagerInviteForm()
         if request.method == 'POST':
@@ -109,6 +112,7 @@ def page_invite(request, page_slug):
             if form.is_valid():
                 email = form.cleaned_data['email']
 
+                # check if the person we are inviting is already a manager
                 try:
                     user = User.objects.get(email=email)
                     if user.userprofile in page.managers.all():
@@ -116,18 +120,26 @@ def page_invite(request, page_slug):
                 except User.DoesNotExist:
                     print("no user found")
 
+                # check if the user has already been invited by this admin/manager for this page
+                # expired should be False, otherwise the previous invitation has expired and we are OK with them getting a new one
+                # accepted/declined are irrelevant if the invite has expired, so we don't check these
                 try:
                     invitation = ManagerInvitation.objects.get(
                         invite_to=email,
                         invite_from=request.user,
-                        page=page
+                        page=page,
+                        expired=False
                     )
                 except ManagerInvitation.DoesNotExist:
                     invitation = None
 
+                # if this user has already been invited, redirect the admin/manager
+                # need to notify the admin/manager that the person has already been invited
                 if invitation:
                     return HttpResponseRedirect(page.get_absolute_url())
+                # if the user hasn't been invited already, create the invite and send it to them
                 else:
+                    # create the invitation object and set the permissions
                     invitation = ManagerInvitation.objects.create(
                         invite_to=form.cleaned_data['email'],
                         invite_from=request.user,
@@ -137,6 +149,7 @@ def page_invite(request, page_slug):
                         manager_invite_page=form.cleaned_data['manager_invite_page'],
                     )
 
+                    # create the email
                     msg = MIMEMultipart('alternative')
                     subject = "Page invitation!"
                     body = """
@@ -157,7 +170,10 @@ def page_invite(request, page_slug):
                     print(msg)
     #                print(msg.as_string())
     #                email(user, subject, body)
+                    # redirect the admin/manager to the Page
                     return HttpResponseRedirect(page.get_absolute_url())
         return render(request, 'page/page_invite.html', {'form': form, 'page': page})
+    # the user isn't an admin or a manager, so they can't invite someone
+    # the only way someone got here was by typing the url manually
     else:
         return HttpResponseRedirect(page.get_absolute_url())

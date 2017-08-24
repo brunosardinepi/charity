@@ -7,10 +7,11 @@ from guardian.shortcuts import assign_perm
 from . import models
 
 
-def remove_invitation(invitation_pk, accepted):
+def remove_invitation(invitation_pk, accepted, declined):
     invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
     invitation.expired = "True"
     invitation.accepted = accepted
+    invitation.declined = declined
     invitation.save()
 
 @login_required
@@ -18,7 +19,8 @@ def pending_invitations(request):
     invitations = models.ManagerInvitation.objects.filter(
         invite_to=request.user.email,
         expired=False,
-        accepted=False
+        accepted=False,
+        declined=False
     )
     return render(request, 'invitations/pending_invitations.html', {'invitations': invitations})
 
@@ -35,7 +37,7 @@ def accept_invitation(request, invitation_pk, key):
         for k, v in permissions.items():
             if v == True:
                 assign_perm(k, request.user, invitation.page)
-        remove_invitation(invitation_pk, "True")
+        remove_invitation(invitation_pk, "True", "False")
     else:
         print("bad")
     return HttpResponseRedirect(invitation.page.get_absolute_url())
@@ -43,13 +45,13 @@ def accept_invitation(request, invitation_pk, key):
 def decline_invitation(request, invitation_pk, key):
     invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
     if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key):
-        invitation.delete()
+        remove_invitation(invitation_pk, "False", "True")
     else:
         print("bad")
 
+    # if the user is logged in and declined the invitation, redirect them to their other pending invitations
     if request.user.is_authenticated():
-        print("user logged in")
         return HttpResponseRedirect(reverse('invitations:pending_invitations'))
+    # if the user isn't logged in and declined the invitation, redirect them to the homepage
     else:
-        print("user logged out")
         return HttpResponseRedirect(reverse('home'))
