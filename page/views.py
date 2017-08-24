@@ -3,8 +3,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+#from email.mime.multipart import MIMEMultipart
+#from email.mime.text import MIMEText
 
 from . import forms
 from . import models
@@ -110,11 +110,11 @@ def page_invite(request, page_slug):
         if request.method == 'POST':
             form = forms.ManagerInviteForm(request.POST)
             if form.is_valid():
-                email = form.cleaned_data['email']
+                user_email = form.cleaned_data['email']
 
                 # check if the person we are inviting is already a manager
                 try:
-                    user = User.objects.get(email=email)
+                    user = User.objects.get(email=user_email)
                     if user.userprofile in page.managers.all():
                         return HttpResponseRedirect(page.get_absolute_url())
                 except User.DoesNotExist:
@@ -125,7 +125,7 @@ def page_invite(request, page_slug):
                 # accepted/declined are irrelevant if the invite has expired, so we don't check these
                 try:
                     invitation = ManagerInvitation.objects.get(
-                        invite_to=email,
+                        invite_to=user_email,
                         invite_from=request.user,
                         page=page,
                         expired=False
@@ -150,13 +150,9 @@ def page_invite(request, page_slug):
                     )
 
                     # create the email
-                    msg = MIMEMultipart('alternative')
+#                    msg = MIMEMultipart('alternative')
                     subject = "Page invitation!"
-                    body = """
-                        %s %s has invited you to become an admin of the '%s' Page.
-                        <a href='http://garrett.page.fund:8000/invite/accept/%s/%s'>Click here to accept.</a>
-                        <a href='http://garrett.page.fund:8000/invite/decline/%s/%s'>Click here to decline.</a>
-                        """ % (
+                    body = "%s %s has invited you to become an admin of the '%s' Page. <a href='http://garrett.page.fund:8000/invite/accept/%s/%s'>Click here to accept.</a> <a href='http://garrett.page.fund:8000/invite/decline/%s/%s'>Click here to decline.</a>" % (
                             request.user.userprofile.first_name,
                             request.user.userprofile.last_name,
                             page.name,
@@ -165,11 +161,11 @@ def page_invite(request, page_slug):
                             invitation.pk,
                             invitation.key
                         )
-                    body = MIMEText(body, 'html')
-                    msg.attach(body)
-                    print(msg)
+#                    body = MIMEText(body, 'html')
+#                    msg.attach(body)
+#                    print(msg)
     #                print(msg.as_string())
-    #                email(user, subject, body)
+                    email(user, subject, body)
                     # redirect the admin/manager to the Page
                     return HttpResponseRedirect(page.get_absolute_url())
         return render(request, 'page/page_invite.html', {'form': form, 'page': page})
