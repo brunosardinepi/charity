@@ -18,7 +18,7 @@ class ManagerInvitation(models.Model):
     invite_to = models.EmailField()
     invite_from = models.ForeignKey(User, on_delete=models.CASCADE)
     page = models.ForeignKey(Page, on_delete=models.CASCADE)
-    can_edit = models.BooleanField(default=False)
-    can_delete = models.BooleanField(default=False)
-    can_invite = models.BooleanField(default=False)
+    manager_edit_page = models.BooleanField(default=False)
+    manager_delete_page = models.BooleanField(default=False)
+    manager_invite_page = models.BooleanField(default=False)
 
