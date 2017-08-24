@@ -2,6 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 from . import forms
 from . import models
@@ -104,13 +106,45 @@ def page_invite(request, page_slug):
         if request.method == 'POST':
             form = forms.ManagerInviteForm(request.POST)
             if form.is_valid():
-                invitation = ManagerInvitation.objects.create(
-                    invite_to=form.cleaned_data['email'],
-                    invite_from=request.user,
-                    page=page,
-                    can_edit=form.cleaned_data['can_edit'],
-                    can_delete=form.cleaned_data['can_delete'],
-                    can_invite=form.cleaned_data['can_invite'],
-                )
-                return HttpResponseRedirect(page.get_absolute_url())
+                email = form.cleaned_data['email']
+                try:
+                    invitation = ManagerInvitation.objects.get(
+                        invite_to=email,
+                        invite_from=request.user,
+                        page=page
+                    )
+                except ManagerInvitation.DoesNotExist:
+                    invitation = None
+
+                if invitation:
+                    print("invitation already exists")
+                    return HttpResponseRedirect(page.get_absolute_url())
+                else:
+                    invitation = ManagerInvitation.objects.create(
+                        invite_to=form.cleaned_data['email'],
+                        invite_from=request.user,
+                        page=page,
+                        can_edit=form.cleaned_data['can_edit'],
+                        can_delete=form.cleaned_data['can_delete'],
+                        can_invite=form.cleaned_data['can_invite'],
+                    )
+
+                    msg = MIMEMultipart('alternative')
+                    subject = "Page invitation!"
+                    body = """
+                        %s %s has invited you to become an admin of the '%s' Page.
+                        <a href='http://garrett.page.fund:8000/invite/accept/%s/%s'>Click here to accept.</a>
+                        """ % (
+                            request.user.userprofile.first_name,
+                            request.user.userprofile.last_name,
+                            page.name,
+                            invitation.pk,
+                            invitation.key
+                        )
+                    body = MIMEText(body, 'html')
+                    msg.attach(body)
+                    print(msg)
+    #                print(msg.as_string())
+    #                email(user, subject, body)
+                    return HttpResponseRedirect(page.get_absolute_url())
         return render(request, 'page/page_invite.html', {'form': form, 'page': page})
