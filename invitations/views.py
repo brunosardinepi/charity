@@ -6,6 +6,12 @@ from guardian.shortcuts import assign_perm
 from . import models
 
 
+def remove_invitation(invitation_pk, accepted):
+    invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
+    invitation.expired = "True"
+    invitation.accepted = accepted
+    invitation.save()
+
 @login_required
 def pending_invitations(request):
     invitations = models.ManagerInvitation.objects.filter(
@@ -29,6 +35,7 @@ def accept_invitation(request, invitation_pk, key):
             print("%s = %s" % (k, v))
             if v == True:
                 assign_perm(k, request.user, invitation.page)
+        remove_invitation(invitation_pk, "True")
     else:
         print("bad")
     return HttpResponseRedirect(invitation.page.get_absolute_url())

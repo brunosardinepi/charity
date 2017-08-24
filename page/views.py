@@ -142,9 +142,9 @@ def page_invite(request, page_slug):
                         invite_to=form.cleaned_data['email'],
                         invite_from=request.user,
                         page=page,
-                        can_edit=form.cleaned_data['can_edit'],
-                        can_delete=form.cleaned_data['can_delete'],
-                        can_invite=form.cleaned_data['can_invite'],
+                        manager_edit_page=form.cleaned_data['manager_edit_page'],
+                        manager_delete_page=form.cleaned_data['manager_delete_page'],
+                        manager_invite_page=form.cleaned_data['manager_invite_page'],
                     )
 
                     msg = MIMEMultipart('alternative')

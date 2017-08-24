@@ -20,6 +20,6 @@ class DeletePageForm(forms.ModelForm):
 
 class ManagerInviteForm(forms.Form):
     email = forms.EmailField()
-    can_edit = forms.BooleanField(required=False)
-    can_delete = forms.BooleanField(required=False)
-    can_invite = forms.BooleanField(required=False)
+    manager_edit_page = forms.BooleanField(required=False, label='Edit Page')
+    manager_delete_page = forms.BooleanField(required=False, label='Delete Page')
+    manager_invite_page = forms.BooleanField(required=False, label='Invite users to manage Page')
