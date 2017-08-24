@@ -26,6 +26,7 @@ def accept_invitation(request, invitation_pk, key):
     invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
     if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key) and (request.user.email == invitation.invite_to):
         print("good")
+        invitation.page.managers.add(request.user.userprofile)
         permissions = {
             'manager_edit_page': invitation.manager_edit_page,
             'manager_delete_page': invitation.manager_delete_page,
