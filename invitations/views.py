@@ -17,6 +17,8 @@ def pending_invitations(request):
 @login_required
 def accept_invitation(request, invitation_pk, key):
     invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
-    print(invitation.pk)
-    print(invitation.key)
+    if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key) and (request.user.email == invitation.invite_to):
+        print("good")
+    else:
+        print("bad")
     return HttpResponseRedirect(invitation.page.get_absolute_url())
