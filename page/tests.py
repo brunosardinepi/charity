@@ -5,6 +5,7 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.http import Http404
 from django.test import Client, RequestFactory, TestCase
 from django.urls import reverse
+from guardian.shortcuts import assign_perm
 
 import unittest
 
@@ -31,6 +32,12 @@ class CampaignTest(TestCase):
             password='imawizard'
         )
 
+        self.user3 = User.objects.create_user(
+            username='bobdole',
+            email='bob@dole.com',
+            password='dogsarecool'
+        )
+
         self.page = models.Page.objects.create(
             name='Test Page',
             description='This is a description for Test Page.',
@@ -40,6 +47,10 @@ class CampaignTest(TestCase):
         )
         self.page.admins.add(self.user.userprofile)
         self.page.subscribers.add(self.user.userprofile)
+        self.page.managers.add(self.user3.userprofile)
+        assign_perm('manager_edit_page', self.user3, self.page)
+        assign_perm('manager_delete_page', self.user3, self.page)
+        assign_perm('manager_invite_page', self.user3, self.page)
 
         self.campaign = CampaignModels.Campaign.objects.create(
             name='Test Campaign',
@@ -105,6 +116,28 @@ class CampaignTest(TestCase):
         self.assertContains(response, self.campaign2.goal, status_code=200)
         self.assertContains(response, self.campaign2.donation_money, status_code=200)
 
+    def test_page_admin_logged_out(self):
+        request = self.factory.get('home')
+        request.user = AnonymousUser()
+        response = views.page(request, self.page.page_slug)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Admin", status_code=200)
+        self.assertNotContains(response, "Edit Page", status_code=200)
+        self.assertNotContains(response, "Delete Page", status_code=200)
+        self.assertNotContains(response, "Manager", status_code=200)
+        self.assertNotContains(response, "Invite others to manage Page", status_code=200)
+
+    def test_page_admin_logged_in(self):
+        request = self.factory.get('home')
+        request.user = self.user
+        response = views.page(request, self.page.page_slug)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Admin", status_code=200)
+        self.assertContains(response, "Edit Page", status_code=200)
+        self.assertContains(response, "Delete Page", status_code=200)
+
     def test_page_edit_status_logged_out(self):
         request = self.factory.get('home')
         request.user = AnonymousUser()
@@ -122,6 +155,13 @@ class CampaignTest(TestCase):
     def test_page_edit_status_admin(self):
         request = self.factory.get('home')
         request.user = self.user
+        response = views.page_edit(request, self.page.page_slug)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_page_edit_status_manager(self):
+        request = self.factory.get('home')
+        request.user = self.user3
         response = views.page_edit(request, self.page.page_slug)
 
         self.assertEqual(response.status_code, 200)
