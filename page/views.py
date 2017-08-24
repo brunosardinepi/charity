@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -99,6 +100,7 @@ def page_invite(request, page_slug):
     admin = request.user.userprofile in page.admins.all()
     print("admin = %s" % admin)
     manager = request.user.userprofile in page.managers.all()
+    # need to check if they have the invite permission
     print("manager = %s" % manager)
     if admin or manager:
         print("True")
@@ -107,6 +109,17 @@ def page_invite(request, page_slug):
             form = forms.ManagerInviteForm(request.POST)
             if form.is_valid():
                 email = form.cleaned_data['email']
+
+                # need to check if the invitee is already a manager
+                try:
+                    user = User.objects.get(email=email)
+                    print("user found")
+                    if user.userprofile in page.managers.all():
+                        print("user is already a manager")
+                        return HttpResponseRedirect(page.get_absolute_url())
+                except User.DoesNotExist:
+                    print("no user found")
+
                 try:
                     invitation = ManagerInvitation.objects.get(
                         invite_to=email,
