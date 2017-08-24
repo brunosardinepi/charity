@@ -98,18 +98,11 @@ def subscribe(request, page_pk, action=None):
 def page_invite(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
     admin = request.user.userprofile in page.admins.all()
-    print("admin = %s" % admin)
-#    manager = request.user.userprofile in page.managers.all()
-    # need to check if they have the invite permission
     if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_invite_page', page):
         manager = True
-        print("manager = True")
     else:
         manager = False
-        print("manager = False")
-#    print("manager = %s" % manager)
     if admin or manager:
-        print("True")
         form = forms.ManagerInviteForm()
         if request.method == 'POST':
             form = forms.ManagerInviteForm(request.POST)
@@ -118,9 +111,7 @@ def page_invite(request, page_slug):
 
                 try:
                     user = User.objects.get(email=email)
-                    print("user found")
                     if user.userprofile in page.managers.all():
-                        print("user is already a manager")
                         return HttpResponseRedirect(page.get_absolute_url())
                 except User.DoesNotExist:
                     print("no user found")
@@ -135,7 +126,6 @@ def page_invite(request, page_slug):
                     invitation = None
 
                 if invitation:
-                    print("invitation already exists")
                     return HttpResponseRedirect(page.get_absolute_url())
                 else:
                     invitation = ManagerInvitation.objects.create(
@@ -152,10 +142,13 @@ def page_invite(request, page_slug):
                     body = """
                         %s %s has invited you to become an admin of the '%s' Page.
                         <a href='http://garrett.page.fund:8000/invite/accept/%s/%s'>Click here to accept.</a>
+                        <a href='http://garrett.page.fund:8000/invite/decline/%s/%s'>Click here to decline.</a>
                         """ % (
                             request.user.userprofile.first_name,
                             request.user.userprofile.last_name,
                             page.name,
+                            invitation.pk,
+                            invitation.key,
                             invitation.pk,
                             invitation.key
                         )
