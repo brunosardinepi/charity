@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
-#from email.mime.multipart import MIMEMultipart
-#from email.mime.text import MIMEText
 
 from . import forms
 from . import models
@@ -56,7 +54,12 @@ def page_create(request):
 @login_required
 def page_edit(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
-    if request.user.userprofile in page.admins.all():
+    admin = request.user.userprofile in page.admins.all()
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_edit_page', page):
+        manager = True
+    else:
+        manager = False
+    if admin or manager:
         form = forms.PageForm(instance=page)
         if request.method == 'POST':
             form = forms.PageForm(instance=page, data=request.POST)
