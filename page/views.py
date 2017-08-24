@@ -99,9 +99,15 @@ def page_invite(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
     admin = request.user.userprofile in page.admins.all()
     print("admin = %s" % admin)
-    manager = request.user.userprofile in page.managers.all()
+#    manager = request.user.userprofile in page.managers.all()
     # need to check if they have the invite permission
-    print("manager = %s" % manager)
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_invite_page', page):
+        manager = True
+        print("manager = True")
+    else:
+        manager = False
+        print("manager = False")
+#    print("manager = %s" % manager)
     if admin or manager:
         print("True")
         form = forms.ManagerInviteForm()
@@ -110,7 +116,6 @@ def page_invite(request, page_slug):
             if form.is_valid():
                 email = form.cleaned_data['email']
 
-                # need to check if the invitee is already a manager
                 try:
                     user = User.objects.get(email=email)
                     print("user found")
@@ -161,3 +166,5 @@ def page_invite(request, page_slug):
     #                email(user, subject, body)
                     return HttpResponseRedirect(page.get_absolute_url())
         return render(request, 'page/page_invite.html', {'form': form, 'page': page})
+    else:
+        return HttpResponseRedirect(page.get_absolute_url())
