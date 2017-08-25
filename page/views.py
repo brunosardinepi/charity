@@ -160,7 +160,7 @@ def page_invite(request, page_slug):
                     # create the email
 #                    msg = MIMEMultipart('alternative')
                     subject = "Page invitation!"
-                    body = "%s %s has invited you to become an admin of the '%s' Page. <a href='http://garrett.page.fund:8000/invite/accept/%s/%s'>Click here to accept.</a> <a href='http://garrett.page.fund:8000/invite/decline/%s/%s'>Click here to decline.</a>" % (
+                    body = "%s %s has invited you to become an admin of the '%s' Page. <a href='http://garrett.page.fund:8000/invite/accept/%s/%s/'>Click here to accept.</a> <a href='http://garrett.page.fund:8000/invite/decline/%s/%s/'>Click here to decline.</a>" % (
                             request.user.userprofile.first_name,
                             request.user.userprofile.last_name,
                             page.name,
