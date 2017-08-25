@@ -73,7 +73,12 @@ def page_edit(request, page_slug):
 @login_required
 def page_delete(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
-    if request.user.userprofile in page.admins.all():
+    admin = request.user.userprofile in page.admins.all()
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete_page', page):
+        manager = True
+    else:
+        manager = False
+    if admin or manager:
         form = forms.DeletePageForm(instance=page)
         if request.method == 'POST':
             form = forms.DeletePageForm(request.POST, instance=page)

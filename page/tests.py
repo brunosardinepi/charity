@@ -225,11 +225,12 @@ class CampaignTest(TestCase):
 
         self.assertContains(response, self.page.name, status_code=200)
 
-    @unittest.expectedFailure
     def test_delete_page_not_admin(self):
         request = self.factory.get('home')
         request.user = AnonymousUser()
         response = views.page_delete(request, self.page.page_slug)
+
+        self.assertEqual(response.status_code, 302)
 
     def test_delete_page_manager(self):
         request = self.factory.get('home')
