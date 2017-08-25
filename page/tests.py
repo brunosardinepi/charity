@@ -13,6 +13,7 @@ from . import forms
 from . import models
 from . import views
 from campaign import models as CampaignModels
+from invitations.models import ManagerInvitation
 
 
 class CampaignTest(TestCase):
@@ -44,8 +45,15 @@ class CampaignTest(TestCase):
             password='imbatman'
         )
 
+        self.user5 = User.objects.create_user(
+            username='newguy',
+            email='its@me.com',
+            password='imnewhere'
+        )
+
         self.page = models.Page.objects.create(
             name='Test Page',
+            page_slug='testpage',
             description='This is a description for Test Page.',
             donation_count='20',
             donation_money='30',
@@ -77,6 +85,12 @@ class CampaignTest(TestCase):
             goal='12',
             donation_count='22',
             donation_money='33'
+        )
+
+        self.invitation = ManagerInvitation.objects.create(
+            invite_to=self.user2.email,
+            invite_from=self.user,
+            page=self.page
         )
 
     def test_page_exists(self):
@@ -269,3 +283,77 @@ class CampaignTest(TestCase):
         request = self.factory.get('home')
         request.user = self.user4
         response = views.page_delete(request, self.page.page_slug)
+
+    @unittest.expectedFailure
+    def test_page_invite_not_admin_not_manager(self):
+        request = self.factory.get('home')
+        request.user = self.user2
+        response = views.page_invite(request, self.page.page_slug)
+        response.client = self.client
+
+    def test_page_invite_admin_not_manager(self):
+        request = self.factory.get('home')
+        request.user = self.user
+        response = views.page_invite(request, self.page.page_slug)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.page.name, status_code=200)
+        self.assertContains(response, "Invite", status_code=200)
+
+    @unittest.expectedFailure
+    def test_page_invite_not_admin_manager_no_perms(self):
+        request = self.factory.get('home')
+        request.user = self.user4
+        response = views.page_invite(request, self.page.page_slug)
+
+    def test_page_invite_not_admin_manager_perms(self):
+        request = self.factory.get('home')
+        request.user = self.user3
+        response = views.page_invite(request, self.page.page_slug)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.page.name, status_code=200)
+        self.assertContains(response, "Invite", status_code=200)
+
+    def test_page_invite(self):
+        data = {
+            'email': self.user3.email,
+            'manager_edit_page': "True",
+            'manager_delete_page': "True",
+            'manager_invite_page': "True"
+        }
+
+        self.client.login(username='testuser', password='testpassword')
+
+        # user is already a manager
+        response = self.client.post('/%s/invite/' % self.page.page_slug, data)
+        self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
+
+        # user already has an invite
+        data['email'] = self.user2.email
+        response = self.client.post('/%s/invite/' % self.page.page_slug, data)
+        self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
+
+        # user isn't a manager and doesn't have an invite
+        data['email'] = self.user5.email
+        response = self.client.post('/%s/invite/' % self.page.page_slug, data)
+        self.assertTrue(ManagerInvitation.objects.all().count(), 2)
+        self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
+
+    def test_ManagerInviteForm(self):
+        data = {
+            'email': self.user2.email,
+            'manager_edit_page': "True",
+            'manager_delete_page': "True",
+            'manager_invite_page': "True"
+        }
+        form = forms.ManagerInviteForm(data)
+        self.assertTrue(form.is_valid())
+        self.assertTrue(form['email'], self.user2.email)
+        self.assertTrue(form['manager_edit_page'], "True")
+        self.assertTrue(form['manager_delete_page'], "True")
+        self.assertTrue(form['manager_invite_page'], "True")
+
+    def test_ManagerInviteForm_blank(self):
+        form = forms.ManagerInviteForm({})
+        self.assertFalse(form.is_valid())

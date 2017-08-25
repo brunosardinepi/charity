@@ -26,11 +26,14 @@ class ManagerInvitationTest(TestCase):
 
         self.page = models.Page.objects.create(
             name='Test Page',
+            page_slug='testpage',
             description='This is a description for Test Page.',
             donation_count='20',
             donation_money='30',
             category='Animal'
         )
+
+        self.page.admins.add(self.user.userprofile)
 
         self.invitation = models.ManagerInvitation.objects.create(
             invite_to=self.user2.email,
@@ -73,6 +76,11 @@ class ManagerInvitationTest(TestCase):
         invitations = models.ManagerInvitation.objects.filter(expired=False)
         self.assertNotIn(self.invitation, invitations)
 
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/testpage/')
+        self.assertContains(response, "%s %s" % (self.user2.userprofile.first_name, self.user2.userprofile.last_name), status_code=200)
+        self.assertContains(response, self.user2.email, status_code=200)
+
     # need to write tests for these when the view has been built:
         # wrong user accepts invite
         # bad invitation pk
@@ -98,7 +106,6 @@ class ManagerInvitationTest(TestCase):
         response = views.decline_invitation(request, self.invitation.pk, self.invitation.key)
         response.client = self.client
 
-#        self.assertRedirects(response, 'invite/pending', 302, 200)
         self.assertEqual(response.status_code, 302)
         self.assertFalse(self.user2.has_perm('manager_edit_page', self.page))
         self.assertFalse(self.user2.has_perm('manager_delete_page', self.page))
@@ -107,20 +114,10 @@ class ManagerInvitationTest(TestCase):
         invitations = models.ManagerInvitation.objects.filter(expired=False)
         self.assertNotIn(self.invitation, invitations)
 
+    def test_remove_invitation(self):
+        invitations = models.ManagerInvitation.objects.filter(expired=False)
+        self.assertIn(self.invitation, invitations)
 
-
-
-
-#def decline_invitation(request, invitation_pk, key):
-#    invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
-#    if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key):
-#        remove_invitation(invitation_pk, "False", "True")
-#    else:
-#        print("bad")
-
-#    # if the user is logged in and declined the invitation, redirect them to their other pending invitations
-#    if request.user.is_authenticated():
-#        return HttpResponseRedirect(reverse('invitations:pending_invitations'))
-#    # if the user isn't logged in and declined the invitation, redirect them to the homepage
-#    else:
-#        return HttpResponseRedirect(reverse('home'))
+        views.remove_invitation(self.invitation.pk, "True", "False")
+        invitations = models.ManagerInvitation.objects.filter(expired=False)
+        self.assertNotIn(self.invitation, invitations)

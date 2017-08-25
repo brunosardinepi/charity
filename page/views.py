@@ -180,4 +180,4 @@ def page_invite(request, page_slug):
     # the user isn't an admin or a manager, so they can't invite someone
     # the only way someone got here was by typing the url manually
     else:
-        return HttpResponseRedirect(page.get_absolute_url())
+        raise Http404
