@@ -38,6 +38,12 @@ class CampaignTest(TestCase):
             password='dogsarecool'
         )
 
+        self.user4 = User.objects.create_user(
+            username='batman',
+            email='batman@bat.cave',
+            password='imbatman'
+        )
+
         self.page = models.Page.objects.create(
             name='Test Page',
             description='This is a description for Test Page.',
@@ -48,6 +54,7 @@ class CampaignTest(TestCase):
         self.page.admins.add(self.user.userprofile)
         self.page.subscribers.add(self.user.userprofile)
         self.page.managers.add(self.user3.userprofile)
+        self.page.managers.add(self.user4.userprofile)
         assign_perm('manager_edit_page', self.user3, self.page)
         assign_perm('manager_delete_page', self.user3, self.page)
         assign_perm('manager_invite_page', self.user3, self.page)
@@ -138,7 +145,7 @@ class CampaignTest(TestCase):
         self.assertContains(response, "Edit Page", status_code=200)
         self.assertContains(response, "Delete Page", status_code=200)
 
-    def test_page_edit_status_logged_out(self):
+    def test_page_edit_logged_out(self):
         request = self.factory.get('home')
         request.user = AnonymousUser()
         response = views.page_edit(request, self.page.page_slug)
@@ -146,25 +153,30 @@ class CampaignTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     @unittest.expectedFailure
-    def test_page_edit_status_not_admin(self):
-        """Doesn't test properly with 404 test, so I just expect it to fail instead"""
+    def test_page_edit_not_admin(self):
         request = self.factory.get('home')
         request.user = self.user2
         response = views.page_edit(request, self.page.page_slug)
 
-    def test_page_edit_status_admin(self):
+    def test_page_edit_admin(self):
         request = self.factory.get('home')
         request.user = self.user
         response = views.page_edit(request, self.page.page_slug)
 
         self.assertEqual(response.status_code, 200)
 
-    def test_page_edit_status_manager(self):
+    def test_page_edit_manager_perms(self):
         request = self.factory.get('home')
         request.user = self.user3
         response = views.page_edit(request, self.page.page_slug)
 
         self.assertEqual(response.status_code, 200)
+
+    @unittest.expectedFailure
+    def test_page_edit_manager_no_perms(self):
+        request = self.factory.get('home')
+        request.user = self.user4
+        response = views.page_edit(request, self.page.page_slug)
 
     def test_page_not_subscribed(self):
         request = self.factory.get('home')
@@ -194,6 +206,13 @@ class CampaignTest(TestCase):
 
         self.assertEqual(response.status_code, 302)
 
+    def test_page_create_logged_in(self):
+        request = self.factory.get('home')
+        request.user = self.user
+        response = views.page_create(request)
+
+        self.assertEqual(response.status_code, 200)
+
     def test_pageform(self):
         form = forms.PageForm({
             'name': 'Ribeye Steak',
@@ -218,6 +237,13 @@ class CampaignTest(TestCase):
         })
         self.assertTrue(form.is_valid())
 
+    def test_delete_page_logged_out(self):
+        request = self.factory.get('home')
+        request.user = AnonymousUser()
+        response = views.page_delete(request, self.page.page_slug)
+
+        self.assertEqual(response.status_code, 302)
+
     def test_delete_page_admin(self):
         request = self.factory.get('home')
         request.user = self.user
@@ -225,16 +251,21 @@ class CampaignTest(TestCase):
 
         self.assertContains(response, self.page.name, status_code=200)
 
+    @unittest.expectedFailure
     def test_delete_page_not_admin(self):
         request = self.factory.get('home')
-        request.user = AnonymousUser()
+        request.user = self.user2
         response = views.page_delete(request, self.page.page_slug)
 
-        self.assertEqual(response.status_code, 302)
-
-    def test_delete_page_manager(self):
+    def test_delete_page_manager_perms(self):
         request = self.factory.get('home')
         request.user = self.user3
         response = views.page_delete(request, self.page.page_slug)
 
         self.assertContains(response, self.page.name, status_code=200)
+
+    @unittest.expectedFailure
+    def test_delete_page_manager_no_perms(self):
+        request = self.factory.get('home')
+        request.user = self.user4
+        response = views.page_delete(request, self.page.page_slug)
