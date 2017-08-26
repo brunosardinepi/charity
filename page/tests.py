@@ -16,7 +16,7 @@ from campaign import models as CampaignModels
 from invitations.models import ManagerInvitation
 
 
-class CampaignTest(TestCase):
+class PageTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.client = Client()
@@ -326,17 +326,17 @@ class CampaignTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
 
         # user is already a manager
-        response = self.client.post('/%s/invite/' % self.page.page_slug, data)
+        response = self.client.post('/%s/managers/invite/' % self.page.page_slug, data)
         self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
 
         # user already has an invite
         data['email'] = self.user2.email
-        response = self.client.post('/%s/invite/' % self.page.page_slug, data)
+        response = self.client.post('/%s/managers/invite/' % self.page.page_slug, data)
         self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
 
         # user isn't a manager and doesn't have an invite
         data['email'] = self.user5.email
-        response = self.client.post('/%s/invite/' % self.page.page_slug, data)
+        response = self.client.post('/%s/managers/invite/' % self.page.page_slug, data)
         self.assertTrue(ManagerInvitation.objects.all().count(), 2)
         self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
 
@@ -357,3 +357,37 @@ class CampaignTest(TestCase):
     def test_ManagerInviteForm_blank(self):
         form = forms.ManagerInviteForm({})
         self.assertFalse(form.is_valid())
+
+    def test_remove_manager_logged_out(self):
+        request = self.factory.get('home')
+        request.user = AnonymousUser()
+        response = views.remove_manager(request, self.page.page_slug, self.user3.pk)
+
+        self.assertEqual(response.status_code, 302)
+
+    @unittest.expectedFailure
+    def test_remove_manager_logged_in_not_admin(self):
+        request = self.factory.get('home')
+        request.user = self.user2
+        response = views.remove_manager(request, self.page.page_slug, self.user3.pk)
+
+    def test_remove_manager_logged_in_admin(self):
+        request = self.factory.get('home')
+        request.user = self.user
+        response = views.remove_manager(request, self.page.page_slug, self.user3.pk)
+        response.client = self.client
+
+        self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
+
+    def test_remove_manager(self):
+        request = self.factory.get('home')
+        request.user = self.user
+        response = views.remove_manager(request, self.page.page_slug, self.user3.pk)
+        response.client = self.client
+
+        managers = self.page.managers.all()
+        self.assertNotIn(self.user3, managers)
+        self.assertFalse(self.user3.has_perm('manager_edit_page', self.page))
+        self.assertFalse(self.user3.has_perm('manager_delete_page', self.page))
+        self.assertFalse(self.user3.has_perm('manager_invite_page', self.page))
+        self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
