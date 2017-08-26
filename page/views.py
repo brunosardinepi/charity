@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from guardian.shortcuts import remove_perm
 
 from . import forms
 from . import models
@@ -158,7 +159,6 @@ def page_invite(request, page_slug):
                     )
 
                     # create the email
-#                    msg = MIMEMultipart('alternative')
                     subject = "Page invitation!"
                     body = "%s %s has invited you to become an admin of the '%s' Page. <a href='http://garrett.page.fund:8000/invite/accept/%s/%s/'>Click here to accept.</a> <a href='http://garrett.page.fund:8000/invite/decline/%s/%s/'>Click here to decline.</a>" % (
                             request.user.userprofile.first_name,
@@ -169,15 +169,28 @@ def page_invite(request, page_slug):
                             invitation.pk,
                             invitation.key
                         )
-#                    body = MIMEText(body, 'html')
-#                    msg.attach(body)
-#                    print(msg)
-    #                print(msg.as_string())
                     email(user, subject, body)
                     # redirect the admin/manager to the Page
                     return HttpResponseRedirect(page.get_absolute_url())
         return render(request, 'page/page_invite.html', {'form': form, 'page': page})
     # the user isn't an admin or a manager, so they can't invite someone
     # the only way someone got here was by typing the url manually
+    else:
+        raise Http404
+
+@login_required
+def remove_manager(request, page_slug, manager_pk):
+    page = get_object_or_404(models.Page, page_slug=page_slug)
+    manager = get_object_or_404(User, pk=manager_pk)
+    # only page admins can remove managers
+    if request.user.userprofile in page.admins.all():
+        # remove the manager
+        page.managers.remove(manager.userprofile)
+        # revoke the permissions
+        remove_perm('manager_edit_page', manager, page)
+        remove_perm('manager_delete_page', manager, page)
+        remove_perm('manager_invite_page', manager, page)
+        # redirect to page
+        return HttpResponseRedirect(page.get_absolute_url())
     else:
         raise Http404

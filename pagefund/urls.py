@@ -21,7 +21,8 @@ urlpatterns = [
     url(r'^create/$', PageViews.page_create, name='page_create'),
     url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),
     url(r'^(?P<page_slug>[\w-]+)/delete/$', PageViews.page_delete, name='page_delete'),
-    url(r'^(?P<page_slug>[\w-]+)/invite/$', PageViews.page_invite, name='page_invite'),
+    url(r'^(?P<page_slug>[\w-]+)/managers/invite/$', PageViews.page_invite, name='page_invite'),
+    url(r'^(?P<page_slug>[\w-]+)/managers/(?P<manager_pk>\d+)/remove/$', PageViews.remove_manager, name='remove_manager'),
     url(r'^(?P<page_slug>[\w-]+)/$', PageViews.page, name='page'),
 
     url(r'^(?P<page_slug>[\w-]+)/campaign/create/$', CampaignViews.campaign_create, name='campaign_create'),
