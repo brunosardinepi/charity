@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
-
+from pagefund import config
 
 class Campaign(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -12,6 +12,7 @@ class Campaign(models.Model):
     goal = models.IntegerField(default=0)
     donation_count = models.IntegerField(default=0)
     donation_money = models.IntegerField(default=0)
+    camp_icon = models.ImageField(upload_to='media/campaigns/', blank=True, null=True)
     TYPE_CHOICES = (
         ('event', 'Event'),
     )

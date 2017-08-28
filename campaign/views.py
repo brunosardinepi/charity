@@ -1,7 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-
+from django.conf import settings
+from django.core.exceptions import ValidationError
 from . import forms
 from . import models
 from page.models import Page
@@ -18,8 +19,17 @@ def campaign_create(request, page_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
     form = forms.CampaignForm()
     if request.method == 'POST':
-        form = forms.CampaignForm(request.POST)
+        form = forms.CampaignForm(request.POST, request.FILES)
         if form.is_valid():
+            image = form.cleaned_data.get('camp_icon',FALSE)
+            image_type = image.content_type.split('/')[0]
+            if image_type in settings.UPLOAD_TYPES:
+                if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
+                        msg = 'The file size limit is %s. Your file size is %s.' % (
+                            settings.MAX_IMAGE_UPLOAD_SIZE,
+                            image._size
+                        )
+                        raise ValidationError(msg)
             campaign = form.save(commit=False)
             campaign.user = request.user
             campaign.page = page
@@ -42,8 +52,18 @@ def campaign_edit(request, page_slug, campaign_slug):
     if request.user == campaign.user:
         form = forms.CampaignForm(instance=campaign)
         if request.method == 'POST':
-            form = forms.CampaignForm(instance=campaign, data=request.POST)
+            form = forms.CampaignForm(instance=campaign, data=request.POST, files=request.FILES)
             if form.is_valid():
+                image = form.cleaned_data.get('camp_icon',False)
+                image_type = image.content_type.split('/')[0]
+                if image_type in settings.UPLOAD_TYPES:
+                    if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
+                        msg = 'The file size limit is %s. Your file size is %s.' % (
+                            settings.MAX_IMAGE_UPLOAD_SIZE,
+                            image._size
+                        )
+                        raise ValidationError(msg)
+
                 form.save()
                 return HttpResponseRedirect(campaign.get_absolute_url())
     else:

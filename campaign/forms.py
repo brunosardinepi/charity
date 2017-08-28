@@ -12,6 +12,7 @@ class CampaignForm(forms.ModelForm):
             'type',
             'goal',
             'description',
+            'camp_icon',
         ]
 
 class DeleteCampaignForm(forms.ModelForm):
