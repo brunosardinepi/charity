@@ -55,26 +55,30 @@
         <p><a href="{% url 'page_delete' page_slug=page.page_slug %}">Delete Page</a></p>
         {% if managers %}
             <h5>Managers</h5>
-            <table>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
-                    <th>Invite</th>
-                    <th></th>
-                </tr>
-            {% for manager in managers %}
-                {% get_obj_perms manager.user for page as "page_perms" %}
-                <tr>
-                    <td>{{ manager.first_name }} {{ manager.last_name }}</td>
-                    <td>{{ manager.user.email }}</td>
-                    <td>{% if "manager_edit_page" in page_perms %}True{% else %}False{% endif %}</td>
-                    <td>{% if "manager_delete_page" in page_perms %}True{% else %}False{% endif %}</td>
-                    <td>{% if "manager_invite_page" in page_perms %}True{% else %}False{% endif %}</td>
-                    <td><a href="{% url 'remove_manager' page_slug=page.page_slug manager_pk=manager.pk %}">Remove<a/></td>
-            {% endfor %}
-            </table>
+            <form method="POST" action"">
+                {% csrf_token %}
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                        <th>Invite</th>
+                        <th></th>
+                    </tr>
+                {% for manager in managers %}
+                    {% get_obj_perms manager.user for page as "page_perms" %}
+                    <tr>
+                        <td>{{ manager.first_name }} {{ manager.last_name }}</td>
+                        <td>{{ manager.user.email }}</td>
+                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_edit_page" {% if 'manager_edit_page' in page_perms %}checked{% endif %} /></td>
+                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_delete_page" {% if 'manager_delete_page' in page_perms %}checked{% endif %} /></td>
+                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_invite_page" {% if 'manager_invite_page' in page_perms %}checked{% endif %} /></td>
+                        <td><a href="{% url 'remove_manager' page_slug=page.page_slug manager_pk=manager.pk %}">Remove<a/></td>
+                {% endfor %}
+                </table>
+                <input type="submit" value="Save" />
+            </form>
         {% endif %}
     {% else %}
         <p>you're NOT an admin</p>
