@@ -30,5 +30,12 @@
         {% endfor %}
     </ul>
 
-    <p><a href="{% url 'invitations:pending_invitations'  %}">Pending Page invitations</a></p>
+    <h2><a href="{% url 'invitations:pending_invitations'  %}">My Pending Page invitations</a></h2>
+
+    <h2>Invitations I've Sent</h2>
+    <ul>
+        {% for i in invitations %}
+            <li>Invitation to {{ page.name }} sent to {{ i.invite_to }} on {{ i.date_created }}</li>
+        {% endfor %}
+    </ul>
 {% endblock %}

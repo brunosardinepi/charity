@@ -1,20 +1,22 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.http import HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
 from . import forms
 from . import models
+from invitations.models import ManagerInvitation
 from page import models as PageModels
 
 
 @login_required
 def userprofile(request):
     userprofile = get_object_or_404(models.UserProfile, user_id=request.user.id)
-    subscriptions = userprofile.subscribers.all()
-    campaigns = request.user.campaign_set.all()
     if userprofile.user == request.user:
+        subscriptions = userprofile.subscribers.all()
+        campaigns = request.user.campaign_set.all()
+        invitations = ManagerInvitation.objects.filter(invite_from=request.user, expired=False)
         form = forms.UserProfileForm(instance=userprofile)
         if request.method == 'POST':
             form = forms.UserProfileForm(
@@ -34,8 +36,11 @@ def userprofile(request):
                         raise ValidationError(msg)
                     form.save()
                     return HttpResponseRedirect(userprofile.get_absolute_url())
-    return render(request, 'userprofile/profile.html', {
-        'subscriptions': subscriptions,
-        'campaigns': campaigns,
-        'form': form
-    })
+        return render(request, 'userprofile/profile.html', {
+            'subscriptions': subscriptions,
+            'campaigns': campaigns,
+            'invitations': invitations,
+            'form': form
+        })
+    else:
+        raise Http404
