@@ -158,6 +158,8 @@ class PageTest(TestCase):
         self.assertContains(response, "Admin", status_code=200)
         self.assertContains(response, "Edit Page", status_code=200)
         self.assertContains(response, "Delete Page", status_code=200)
+        self.assertContains(response, "/%s/managers/%s/remove/" % (self.page.page_slug, self.user3.pk), status_code=200)
+        self.assertContains(response, "/%s/managers/%s/remove/" % (self.page.page_slug, self.user4.pk), status_code=200)
 
     def test_page_edit_logged_out(self):
         request = self.factory.get('home')
