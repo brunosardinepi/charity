@@ -391,3 +391,50 @@ class PageTest(TestCase):
         self.assertFalse(self.user3.has_perm('manager_delete_page', self.page))
         self.assertFalse(self.user3.has_perm('manager_invite_page', self.page))
         self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
+
+    def test_page_permissions_add(self):
+        permissions = []
+        permissions.append(str(self.user4.pk) + "_manager_edit_page")
+        permissions.append(str(self.user4.pk) + "_manager_delete_page")
+        permissions.append(str(self.user4.pk) + "_manager_invite_page")
+        data = {'permissions[]': permissions}
+
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post('/%s/' % self.page.page_slug, data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(self.user4.has_perm('manager_edit_page', self.page))
+        self.assertTrue(self.user4.has_perm('manager_delete_page', self.page))
+        self.assertTrue(self.user4.has_perm('manager_invite_page', self.page))
+
+    def test_page_permissions_remove(self):
+        permissions = []
+        permissions.append(str(self.user3.pk) + "_manager_invite_page")
+        data = {'permissions[]': permissions}
+
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post('/%s/' % self.page.page_slug, data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(self.user3.has_perm('manager_edit_page', self.page))
+        self.assertFalse(self.user3.has_perm('manager_delete_page', self.page))
+        self.assertTrue(self.user3.has_perm('manager_invite_page', self.page))
+
+    def test_page_permissions_multiple(self):
+        permissions = []
+        permissions.append(str(self.user3.pk) + "_manager_invite_page")
+        permissions.append(str(self.user4.pk) + "_manager_edit_page")
+        permissions.append(str(self.user4.pk) + "_manager_delete_page")
+        permissions.append(str(self.user4.pk) + "_manager_invite_page")
+        data = {'permissions[]': permissions}
+
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post('/%s/' % self.page.page_slug, data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(self.user3.has_perm('manager_edit_page', self.page))
+        self.assertFalse(self.user3.has_perm('manager_delete_page', self.page))
+        self.assertTrue(self.user3.has_perm('manager_invite_page', self.page))
+        self.assertTrue(self.user4.has_perm('manager_edit_page', self.page))
+        self.assertTrue(self.user4.has_perm('manager_delete_page', self.page))
+        self.assertTrue(self.user4.has_perm('manager_invite_page', self.page))
