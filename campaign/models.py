@@ -12,7 +12,7 @@ class Campaign(models.Model):
     goal = models.IntegerField(default=0)
     donation_count = models.IntegerField(default=0)
     donation_money = models.IntegerField(default=0)
-    camp_icon = models.ImageField(upload_to='media/campaigns/', blank=True, null=True)
+    campaign_icon = models.ImageField(upload_to='media/campaigns/', blank=True, null=True)
     TYPE_CHOICES = (
         ('event', 'Event'),
     )

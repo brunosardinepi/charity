@@ -21,7 +21,7 @@ def campaign_create(request, page_slug):
     if request.method == 'POST':
         form = forms.CampaignForm(request.POST, request.FILES)
         if form.is_valid():
-            image = form.cleaned_data.get('camp_icon',FALSE)
+            image = form.cleaned_data.get('campaign_icon',FALSE)
             image_type = image.content_type.split('/')[0]
             if image_type in settings.UPLOAD_TYPES:
                 if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
@@ -54,7 +54,7 @@ def campaign_edit(request, page_slug, campaign_slug):
         if request.method == 'POST':
             form = forms.CampaignForm(instance=campaign, data=request.POST, files=request.FILES)
             if form.is_valid():
-                image = form.cleaned_data.get('camp_icon',False)
+                image = form.cleaned_data.get('campaign_icon',False)
                 image_type = image.content_type.split('/')[0]
                 if image_type in settings.UPLOAD_TYPES:
                     if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
