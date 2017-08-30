@@ -3,6 +3,7 @@ from django.test import Client, RequestFactory, TestCase
 
 from . import forms
 from . import views
+from invitations.models import ManagerInvitation
 from page.models import Page
 from campaign.models import Campaign
 
@@ -35,6 +36,15 @@ class UserProfileTest(TestCase):
             donation_money='100'
         )
 
+        self.invitation = ManagerInvitation.objects.create(
+            invite_to="rupert@oi.mate",
+            invite_from=self.user,
+            page=self.page,
+            manager_edit_page=True,
+            manager_delete_page=True,
+            manager_invite_page=True
+        )
+
     def test_user_exists(self):
         users = User.objects.all()
         self.assertIn(self.user, users)
@@ -60,3 +70,15 @@ class UserProfileTest(TestCase):
     def test_userprofileform_blank(self):
         form = forms.UserProfileForm({})
         self.assertTrue(form.is_valid())
+
+    def test_sent_invitations(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/profile/')
+
+        self.assertContains(response, "rupert@oi.mate", status_code=200)
+
+        self.invitation.expired = True
+        self.invitation.save()
+
+        response = self.client.get('/profile/')
+        self.assertNotContains(response, "rupert@oi.mate", status_code=200)
