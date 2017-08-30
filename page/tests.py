@@ -162,11 +162,8 @@ class PageTest(TestCase):
         self.assertContains(response, "/%s/managers/%s/remove/" % (self.page.page_slug, self.user4.pk), status_code=200)
 
     def test_page_edit_logged_out(self):
-        request = self.factory.get('home')
-        request.user = AnonymousUser()
-        response = views.page_edit(request, self.page.page_slug)
-
-        self.assertEqual(response.status_code, 302)
+        response = self.client.get('/%s/edit/' % self.page.page_slug)
+        self.assertRedirects(response, '/accounts/login/?next=/%s/edit/' % self.page.page_slug, 302, 200)
 
     @unittest.expectedFailure
     def test_page_edit_not_admin(self):
@@ -209,18 +206,12 @@ class PageTest(TestCase):
         self.assertContains(response, 'name="unsubscribe"', status_code=200)
 
     def test_page_subscribe_redirect(self):
-        request = self.factory.get('home')
-        request.user = AnonymousUser()
-        response = views.subscribe(request, self.page.pk, action="subscribe")
-
-        self.assertEqual(response.status_code, 302)
+        response = self.client.get('/subscribe/%s/subscribe/' % self.page.pk)
+        self.assertRedirects(response, '/accounts/login/?next=/subscribe/%s/subscribe/' % self.page.pk, 302, 200)
 
     def test_page_create_logged_out(self):
-        request = self.factory.get('home')
-        request.user = AnonymousUser()
-        response = views.page_create(request)
-
-        self.assertEqual(response.status_code, 302)
+        response = self.client.get('/create/')
+        self.assertRedirects(response, '/accounts/signup/?next=/create/', 302, 200)
 
     def test_page_create_logged_in(self):
         request = self.factory.get('home')
@@ -254,11 +245,8 @@ class PageTest(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_delete_page_logged_out(self):
-        request = self.factory.get('home')
-        request.user = AnonymousUser()
-        response = views.page_delete(request, self.page.page_slug)
-
-        self.assertEqual(response.status_code, 302)
+        response = self.client.get('/%s/delete/' % self.page.page_slug)
+        self.assertRedirects(response, '/accounts/login/?next=/%s/delete/' % self.page.page_slug, 302, 200)
 
     def test_delete_page_admin(self):
         request = self.factory.get('home')
@@ -361,11 +349,8 @@ class PageTest(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_remove_manager_logged_out(self):
-        request = self.factory.get('home')
-        request.user = AnonymousUser()
-        response = views.remove_manager(request, self.page.page_slug, self.user3.pk)
-
-        self.assertEqual(response.status_code, 302)
+        response = self.client.get('/%s/managers/%s/remove/' % (self.page.page_slug, self.user3.pk))
+        self.assertRedirects(response, '/accounts/login/?next=/%s/managers/%s/remove/' % (self.page.page_slug, self.user3.pk), 302, 200)
 
     @unittest.expectedFailure
     def test_remove_manager_logged_in_not_admin(self):

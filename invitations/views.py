@@ -24,7 +24,7 @@ def pending_invitations(request):
     )
     return render(request, 'invitations/pending_invitations.html', {'invitations': invitations})
 
-@login_required
+@login_required(login_url='signup')
 def accept_invitation(request, invitation_pk, key):
     invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
     if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key) and (request.user.email == invitation.invite_to):

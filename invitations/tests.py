@@ -56,11 +56,8 @@ class ManagerInvitationTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_accept_invitation_logged_out(self):
-        request = self.factory.get('home')
-        request.user = AnonymousUser()
-        response = views.accept_invitation(request, self.invitation.pk, self.invitation.key)
-
-        self.assertEqual(response.status_code, 302)
+        response = self.client.get('/invite/accept/%s/%s/' % (self.invitation.pk, self.invitation.key))
+        self.assertRedirects(response, '/accounts/signup/?next=/invite/accept/%s/%s/' % (self.invitation.pk, self.invitation.key), 302, 200)
 
     def test_accept_invitation_logged_in_correct_user(self):
         request = self.factory.get('home')
@@ -106,7 +103,9 @@ class ManagerInvitationTest(TestCase):
         response = views.decline_invitation(request, self.invitation.pk, self.invitation.key)
         response.client = self.client
 
-        self.assertEqual(response.status_code, 302)
+        self.client.login(username='harrypotter', password='imawizard')
+        response = self.client.get('/invite/decline/%s/%s/' % (self.invitation.pk, self.invitation.key))
+        self.assertRedirects(response, '/invite/pending/', 302, 200)
         self.assertFalse(self.user2.has_perm('manager_edit_page', self.page))
         self.assertFalse(self.user2.has_perm('manager_delete_page', self.page))
         self.assertFalse(self.user2.has_perm('manager_invite_page', self.page))

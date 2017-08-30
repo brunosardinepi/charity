@@ -81,11 +81,8 @@ class CampaignTest(TestCase):
         self.assertContains(response, self.campaign.name, status_code=200)
 
     def test_campaign_create_logged_out(self):
-        request = self.factory.get('home')
-        request.user = AnonymousUser()
-        response = views.campaign_create(request)
-
-        self.assertEqual(response.status_code, 302)
+        response = self.client.get('/%s/campaign/create/' % self.page.page_slug)
+        self.assertRedirects(response, '/accounts/login/?next=/%s/campaign/create/' % self.page.page_slug, 302, 200)
 
     def test_campaignform(self):
         form = forms.CampaignForm({
@@ -113,11 +110,8 @@ class CampaignTest(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_campaign_edit_status_logged_out(self):
-        request = self.factory.get('home')
-        request.user = AnonymousUser()
-        response = views.campaign_edit(request, self.page.page_slug, self.campaign.campaign_slug)
-
-        self.assertEqual(response.status_code, 302)
+        response = self.client.get('/%s/campaign/%s/edit/' % (self.page.page_slug, self.campaign.campaign_slug))
+        self.assertRedirects(response, '/accounts/login/?next=/%s/campaign/%s/edit/' % (self.page.page_slug, self.campaign.campaign_slug), 302, 200)
 
     @unittest.expectedFailure
     def test_campaign_edit_status_not_admin(self):
