@@ -72,7 +72,7 @@ def page(request, page_slug):
         'subscribe_attr': subscribe_attr
     })
 
-@login_required
+@login_required(login_url='signup')
 def page_create(request):
     form = forms.PageForm()
     if request.method == 'POST':
