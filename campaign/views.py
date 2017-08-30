@@ -32,7 +32,14 @@ def campaign_create(request, page_slug):
                 page.name
             )
             email(request.user, subject, body)
-            # once the page admins have been re-structured, need to email them when a campaign is created for their page
+
+            admins = page.admins.all()
+            for admin in admins:
+                email(admin.user, subject, body)
+            managers = page.managers.all()
+            for manager in managers:
+                email(manager.user, subject, body)
+
             return HttpResponseRedirect(campaign.get_absolute_url())
     return render(request, 'campaign/campaign_create.html', {'form': form, 'page': page})
 
