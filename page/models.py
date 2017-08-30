@@ -12,6 +12,7 @@ class Page(models.Model):
     donation_count = models.IntegerField(default=0)
     donation_money = models.IntegerField(default=0)
     admins = models.ManyToManyField(UserProfile, related_name='admins', blank=True)
+    managers = models.ManyToManyField(UserProfile, related_name='managers', blank=True)
     subscribers = models.ManyToManyField(UserProfile, related_name='subscribers', blank=True)
     is_sponsored = models.BooleanField(default=False)
     CATEGORY_CHOICES = (
@@ -25,6 +26,13 @@ class Page(models.Model):
         choices=CATEGORY_CHOICES,
         default='',
     )
+
+    class Meta:
+        permissions = (
+            ('manager_edit_page', 'Manager -- edit Page'),
+            ('manager_delete_page', 'Manager -- delete Page'),
+            ('manager_invite_page', 'Manager -- invite users to manage Page'),
+        )
 
     def __str__(self):
         return self.name

@@ -5,6 +5,7 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.http import Http404
 from django.test import Client, RequestFactory, TestCase
 from django.urls import reverse
+from guardian.shortcuts import assign_perm
 
 import unittest
 
@@ -12,9 +13,10 @@ from . import forms
 from . import models
 from . import views
 from campaign import models as CampaignModels
+from invitations.models import ManagerInvitation
 
 
-class CampaignTest(TestCase):
+class PageTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.client = Client()
@@ -31,8 +33,27 @@ class CampaignTest(TestCase):
             password='imawizard'
         )
 
+        self.user3 = User.objects.create_user(
+            username='bobdole',
+            email='bob@dole.com',
+            password='dogsarecool'
+        )
+
+        self.user4 = User.objects.create_user(
+            username='batman',
+            email='batman@bat.cave',
+            password='imbatman'
+        )
+
+        self.user5 = User.objects.create_user(
+            username='newguy',
+            email='its@me.com',
+            password='imnewhere'
+        )
+
         self.page = models.Page.objects.create(
             name='Test Page',
+            page_slug='testpage',
             description='This is a description for Test Page.',
             donation_count='20',
             donation_money='30',
@@ -40,6 +61,11 @@ class CampaignTest(TestCase):
         )
         self.page.admins.add(self.user.userprofile)
         self.page.subscribers.add(self.user.userprofile)
+        self.page.managers.add(self.user3.userprofile)
+        self.page.managers.add(self.user4.userprofile)
+        assign_perm('manager_edit_page', self.user3, self.page)
+        assign_perm('manager_delete_page', self.user3, self.page)
+        assign_perm('manager_invite_page', self.user3, self.page)
 
         self.campaign = CampaignModels.Campaign.objects.create(
             name='Test Campaign',
@@ -59,6 +85,12 @@ class CampaignTest(TestCase):
             goal='12',
             donation_count='22',
             donation_money='33'
+        )
+
+        self.invitation = ManagerInvitation.objects.create(
+            invite_to=self.user2.email,
+            invite_from=self.user,
+            page=self.page
         )
 
     def test_page_exists(self):
@@ -105,7 +137,29 @@ class CampaignTest(TestCase):
         self.assertContains(response, self.campaign2.goal, status_code=200)
         self.assertContains(response, self.campaign2.donation_money, status_code=200)
 
-    def test_page_edit_status_logged_out(self):
+    def test_page_admin_logged_out(self):
+        request = self.factory.get('home')
+        request.user = AnonymousUser()
+        response = views.page(request, self.page.page_slug)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Admin", status_code=200)
+        self.assertNotContains(response, "Edit Page", status_code=200)
+        self.assertNotContains(response, "Delete Page", status_code=200)
+        self.assertNotContains(response, "Manager", status_code=200)
+        self.assertNotContains(response, "Invite others to manage Page", status_code=200)
+
+    def test_page_admin_logged_in(self):
+        request = self.factory.get('home')
+        request.user = self.user
+        response = views.page(request, self.page.page_slug)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Admin", status_code=200)
+        self.assertContains(response, "Edit Page", status_code=200)
+        self.assertContains(response, "Delete Page", status_code=200)
+
+    def test_page_edit_logged_out(self):
         request = self.factory.get('home')
         request.user = AnonymousUser()
         response = views.page_edit(request, self.page.page_slug)
@@ -113,18 +167,30 @@ class CampaignTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     @unittest.expectedFailure
-    def test_page_edit_status_not_admin(self):
-        """Doesn't test properly with 404 test, so I just expect it to fail instead"""
+    def test_page_edit_not_admin(self):
         request = self.factory.get('home')
         request.user = self.user2
         response = views.page_edit(request, self.page.page_slug)
 
-    def test_page_edit_status_admin(self):
+    def test_page_edit_admin(self):
         request = self.factory.get('home')
         request.user = self.user
         response = views.page_edit(request, self.page.page_slug)
 
         self.assertEqual(response.status_code, 200)
+
+    def test_page_edit_manager_perms(self):
+        request = self.factory.get('home')
+        request.user = self.user3
+        response = views.page_edit(request, self.page.page_slug)
+
+        self.assertEqual(response.status_code, 200)
+
+    @unittest.expectedFailure
+    def test_page_edit_manager_no_perms(self):
+        request = self.factory.get('home')
+        request.user = self.user4
+        response = views.page_edit(request, self.page.page_slug)
 
     def test_page_not_subscribed(self):
         request = self.factory.get('home')
@@ -154,6 +220,13 @@ class CampaignTest(TestCase):
 
         self.assertEqual(response.status_code, 302)
 
+    def test_page_create_logged_in(self):
+        request = self.factory.get('home')
+        request.user = self.user
+        response = views.page_create(request)
+
+        self.assertEqual(response.status_code, 200)
+
     def test_pageform(self):
         form = forms.PageForm({
             'name': 'Ribeye Steak',
@@ -178,9 +251,190 @@ class CampaignTest(TestCase):
         })
         self.assertTrue(form.is_valid())
 
-    def test_delete_page(self):
+    def test_delete_page_logged_out(self):
+        request = self.factory.get('home')
+        request.user = AnonymousUser()
+        response = views.page_delete(request, self.page.page_slug)
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_delete_page_admin(self):
         request = self.factory.get('home')
         request.user = self.user
         response = views.page_delete(request, self.page.page_slug)
 
         self.assertContains(response, self.page.name, status_code=200)
+
+    @unittest.expectedFailure
+    def test_delete_page_not_admin(self):
+        request = self.factory.get('home')
+        request.user = self.user2
+        response = views.page_delete(request, self.page.page_slug)
+
+    def test_delete_page_manager_perms(self):
+        request = self.factory.get('home')
+        request.user = self.user3
+        response = views.page_delete(request, self.page.page_slug)
+
+        self.assertContains(response, self.page.name, status_code=200)
+
+    @unittest.expectedFailure
+    def test_delete_page_manager_no_perms(self):
+        request = self.factory.get('home')
+        request.user = self.user4
+        response = views.page_delete(request, self.page.page_slug)
+
+    @unittest.expectedFailure
+    def test_page_invite_not_admin_not_manager(self):
+        request = self.factory.get('home')
+        request.user = self.user2
+        response = views.page_invite(request, self.page.page_slug)
+        response.client = self.client
+
+    def test_page_invite_admin_not_manager(self):
+        request = self.factory.get('home')
+        request.user = self.user
+        response = views.page_invite(request, self.page.page_slug)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.page.name, status_code=200)
+        self.assertContains(response, "Invite", status_code=200)
+
+    @unittest.expectedFailure
+    def test_page_invite_not_admin_manager_no_perms(self):
+        request = self.factory.get('home')
+        request.user = self.user4
+        response = views.page_invite(request, self.page.page_slug)
+
+    def test_page_invite_not_admin_manager_perms(self):
+        request = self.factory.get('home')
+        request.user = self.user3
+        response = views.page_invite(request, self.page.page_slug)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.page.name, status_code=200)
+        self.assertContains(response, "Invite", status_code=200)
+
+    def test_page_invite(self):
+        data = {
+            'email': self.user3.email,
+            'manager_edit_page': "True",
+            'manager_delete_page': "True",
+            'manager_invite_page': "True"
+        }
+
+        self.client.login(username='testuser', password='testpassword')
+
+        # user is already a manager
+        response = self.client.post('/%s/managers/invite/' % self.page.page_slug, data)
+        self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
+
+        # user already has an invite
+        data['email'] = self.user2.email
+        response = self.client.post('/%s/managers/invite/' % self.page.page_slug, data)
+        self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
+
+        # user isn't a manager and doesn't have an invite
+        data['email'] = self.user5.email
+        response = self.client.post('/%s/managers/invite/' % self.page.page_slug, data)
+        self.assertTrue(ManagerInvitation.objects.all().count(), 2)
+        self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
+
+    def test_ManagerInviteForm(self):
+        data = {
+            'email': self.user2.email,
+            'manager_edit_page': "True",
+            'manager_delete_page': "True",
+            'manager_invite_page': "True"
+        }
+        form = forms.ManagerInviteForm(data)
+        self.assertTrue(form.is_valid())
+        self.assertTrue(form['email'], self.user2.email)
+        self.assertTrue(form['manager_edit_page'], "True")
+        self.assertTrue(form['manager_delete_page'], "True")
+        self.assertTrue(form['manager_invite_page'], "True")
+
+    def test_ManagerInviteForm_blank(self):
+        form = forms.ManagerInviteForm({})
+        self.assertFalse(form.is_valid())
+
+    def test_remove_manager_logged_out(self):
+        request = self.factory.get('home')
+        request.user = AnonymousUser()
+        response = views.remove_manager(request, self.page.page_slug, self.user3.pk)
+
+        self.assertEqual(response.status_code, 302)
+
+    @unittest.expectedFailure
+    def test_remove_manager_logged_in_not_admin(self):
+        request = self.factory.get('home')
+        request.user = self.user2
+        response = views.remove_manager(request, self.page.page_slug, self.user3.pk)
+
+    def test_remove_manager_logged_in_admin(self):
+        request = self.factory.get('home')
+        request.user = self.user
+        response = views.remove_manager(request, self.page.page_slug, self.user3.pk)
+        response.client = self.client
+
+        self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
+
+    def test_remove_manager(self):
+        request = self.factory.get('home')
+        request.user = self.user
+        response = views.remove_manager(request, self.page.page_slug, self.user3.pk)
+        response.client = self.client
+
+        managers = self.page.managers.all()
+        self.assertNotIn(self.user3, managers)
+        self.assertFalse(self.user3.has_perm('manager_edit_page', self.page))
+        self.assertFalse(self.user3.has_perm('manager_delete_page', self.page))
+        self.assertFalse(self.user3.has_perm('manager_invite_page', self.page))
+        self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
+
+    def test_page_permissions_add(self):
+        permissions = []
+        permissions.append(str(self.user4.pk) + "_manager_edit_page")
+        permissions.append(str(self.user4.pk) + "_manager_delete_page")
+        permissions.append(str(self.user4.pk) + "_manager_invite_page")
+        data = {'permissions[]': permissions}
+
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post('/%s/' % self.page.page_slug, data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(self.user4.has_perm('manager_edit_page', self.page))
+        self.assertTrue(self.user4.has_perm('manager_delete_page', self.page))
+        self.assertTrue(self.user4.has_perm('manager_invite_page', self.page))
+
+    def test_page_permissions_remove(self):
+        permissions = []
+        permissions.append(str(self.user3.pk) + "_manager_invite_page")
+        data = {'permissions[]': permissions}
+
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post('/%s/' % self.page.page_slug, data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(self.user3.has_perm('manager_edit_page', self.page))
+        self.assertFalse(self.user3.has_perm('manager_delete_page', self.page))
+        self.assertTrue(self.user3.has_perm('manager_invite_page', self.page))
+
+    def test_page_permissions_multiple(self):
+        permissions = []
+        permissions.append(str(self.user3.pk) + "_manager_invite_page")
+        permissions.append(str(self.user4.pk) + "_manager_edit_page")
+        permissions.append(str(self.user4.pk) + "_manager_delete_page")
+        permissions.append(str(self.user4.pk) + "_manager_invite_page")
+        data = {'permissions[]': permissions}
+
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post('/%s/' % self.page.page_slug, data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(self.user3.has_perm('manager_edit_page', self.page))
+        self.assertFalse(self.user3.has_perm('manager_delete_page', self.page))
+        self.assertTrue(self.user3.has_perm('manager_invite_page', self.page))
+        self.assertTrue(self.user4.has_perm('manager_edit_page', self.page))
+        self.assertTrue(self.user4.has_perm('manager_delete_page', self.page))
+        self.assertTrue(self.user4.has_perm('manager_invite_page', self.page))

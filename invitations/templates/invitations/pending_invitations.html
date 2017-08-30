@@ -1,0 +1,17 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} Pending Invitations | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+
+    <h1>Pending Invitations</h1>
+    {% if invitations %}
+        <ul>
+            {% for i in invitations %}
+                <li>{{ i.page.name }} (from {{ i.invite_from.first_name }} {{ i.invite_from.last_name }}) - <a href="{% url 'invitations:accept_invitation' invitation_pk=i.pk key=i.key  %}">Accept</a> - <a href="{% url 'invitations:decline_invitation' invitation_pk=i.pk key=i.key %}">Decline</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+{% endblock %}
