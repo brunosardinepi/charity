@@ -22,6 +22,9 @@
 
 {% block body_content %}
     <h1>{{ page.name }}</h1>
+    {% if page.icon %}
+        <img src="{{ page.icon.url }}" width="300" />
+    {% endif %}
     <p>Description: {{ page.description }}</p>
     <p>Category: {{ page.get_category_display }}</p>
     <p>${{ page.donation_money }} raised by {{ page.donation_count }} donors</p>

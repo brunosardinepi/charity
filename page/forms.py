@@ -11,6 +11,7 @@ class PageForm(forms.ModelForm):
             'page_slug',
             'category',
             'description',
+            'icon',
         ]
 
 class DeletePageForm(forms.ModelForm):

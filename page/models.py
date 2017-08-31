@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.utils.text import slugify
-
+from pagefund import config
 from userprofile.models import UserProfile
 
 
@@ -14,6 +14,7 @@ class Page(models.Model):
     admins = models.ManyToManyField(UserProfile, related_name='admins', blank=True)
     subscribers = models.ManyToManyField(UserProfile, related_name='subscribers', blank=True)
     is_sponsored = models.BooleanField(default=False)
+    icon = models.ImageField(upload_to='media/pages/', blank=True, null=True)
     CATEGORY_CHOICES = (
         ('animal', 'Animal'),
         ('environment', 'Environment'),
