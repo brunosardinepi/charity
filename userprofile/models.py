@@ -37,18 +37,6 @@ def save_user_profile(sender, instance, **kwargs):
 
 @receiver(user_signed_up, dispatch_uid="user_signed_up")
 def user_signed_up_(request, user, **kwargs):
-    username = config.settings['email_user']
-    password = config.settings['email_password']
-
-    from_email = "noreply@page.fund"
     subject = "Welcome to PageFund!"
-    msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % (from_email, user.email, subject)
     body = "This is a test email for a user that has just signed up with PageFund."
-    msg+=body
-
-    server = smtplib.SMTP(config.settings['email_host'], 587)
-    server.ehlo()
-    server.starttls()
-    server.login(username, password)
-    server.sendmail(from_email, [user.email], msg)
-    server.quit()
+    email(user.email, subject, body)
