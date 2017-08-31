@@ -3,6 +3,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
+from userprofile.models import UserProfile
+
 
 class Campaign(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -12,6 +14,10 @@ class Campaign(models.Model):
     goal = models.IntegerField(default=0)
     donation_count = models.IntegerField(default=0)
     donation_money = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    page = models.ForeignKey('page.Page', on_delete=models.CASCADE, related_name='campaigns',)
+    campaign_admins = models.ManyToManyField(UserProfile, related_name='campaign_admins', blank=True)
+    campaign_managers = models.ManyToManyField(UserProfile, related_name='campaign_managers', blank=True)
     TYPE_CHOICES = (
         ('event', 'Event'),
     )
@@ -20,12 +26,13 @@ class Campaign(models.Model):
         choices=TYPE_CHOICES,
         default='Event',
     )
-    page = models.ForeignKey(
-        'page.Page',
-        on_delete=models.CASCADE,
-        related_name='campaigns',
-    )
-    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        permissions = (
+            ('manager_edit_campaign', 'Manager -- edit Campaign'),
+            ('manager_delete_campaign', 'Manager -- delete Campaign'),
+            ('manager_invite_campaign', 'Manager -- invite users to manage Campaign'),
+        )
 
     def __str__(self):
         return self.name
@@ -43,3 +50,12 @@ class Campaign(models.Model):
         elif not self.id:
             self.campaign_slug = slugify(self.name)
             super(Campaign, self).save(*args, **kwargs)
+
+
+
+
+
+
+
+
+
