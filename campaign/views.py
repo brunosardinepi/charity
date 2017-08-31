@@ -56,6 +56,7 @@ def campaign_edit(request, page_slug, campaign_slug):
             if form.is_valid():
                 image = form.cleaned_data.get('campaign_icon',False)
                 image_type = image.content_type.split('/')[0]
+                print(image.content_type)
                 if image_type in settings.UPLOAD_TYPES:
                     if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
                         msg = 'The file size limit is %s. Your file size is %s.' % (

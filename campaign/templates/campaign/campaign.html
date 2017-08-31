@@ -9,7 +9,7 @@
 
 {% block body_content %}
     <h1>{{ campaign.name }}</h1>
-    {% if campaign.camp_icon %}
+    {% if campaign.campaign_icon %}
         <img src="{{ campaign.campaign_icon.url }}" width="200" />
     {% endif %}
     <p>Creator: {{ campaign.user.first_name }} {{ campaign.user.last_name  }}</p>
