@@ -21,7 +21,13 @@
             <li><a href="{% url 'campaign' page_slug=c.page.page_slug campaign_slug=c.campaign_slug %}">{{ c.name }}</a></li>
         {% endfor %}
     </ul>
-   
+
+    <h2>Pages I Admin</h2>
+    <ul>
+        {% for p in admin_pages %}
+            <li><a href="{% url 'page' page_slug=p.page_slug %}">{{ p.name }}</a></li>
+        {% endfor %}
+    </ul>   
 
     <h2>Page Subscriptions</h2>
     <ul>
