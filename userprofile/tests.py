@@ -23,7 +23,9 @@ class UserProfileTest(TestCase):
         self.user.userprofile.zipcode = '88888'
 
         self.page = Page.objects.create(name="Buffalo")
+        self.page2 = Page.objects.create(name="Remote")
         self.page.subscribers.add(self.user.userprofile)
+        self.page2.admins.add(self.user.userprofile)
 
         self.campaign = Campaign.objects.create(
             name='Test Campaign',
@@ -50,13 +52,13 @@ class UserProfileTest(TestCase):
         self.assertIn(self.user, users)
 
     def test_userprofile_page(self):
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.userprofile(request)
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/profile/')
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.userprofile.subscribers.get(id=self.page.pk).name, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
+        self.assertContains(response, "Remote", status_code=200)
 
     def test_userprofileform(self):
         form = forms.UserProfileForm({
