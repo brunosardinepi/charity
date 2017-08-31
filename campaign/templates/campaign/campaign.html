@@ -1,5 +1,6 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
+{% load guardian_tags %}
 
 {% block title %} {{ campaign.name }} | {{ block.super }}{% endblock %}
 
@@ -15,11 +16,52 @@
     <p>Goal: ${{ campaign.goal }}</p>
     <p>${{ campaign.donation_money }} raised by {{ campaign.donation_count }} donors</p>
 
-    {% if request.user == campaign.user %}
+    {% if request.user.userprofile in campaign.campaign_admins.all %}
         <h4>Admin</h4>
         <p><a href="{% url 'campaign_edit' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
         <p><a href="{% url 'campaign_delete' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
+        {% if managers %}
+            <h5>Managers</h5>
+            <form method="POST" action"">
+                {% csrf_token %}
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                        <th>Invite</th>
+                        <th></th>
+                    </tr>
+                {% for manager in managers %}
+                    {% get_obj_perms manager.user for campaign as "campaign_perms" %}
+                    <tr>
+                        <td>{{ manager.first_name }} {{ manager.last_name }}</td>
+                        <td>{{ manager.user.email }}</td>
+                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_edit_campaign" {% if 'manager_edit_campaign' in campaign_perms %}checked{% endif %} /></td>
+                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_delete_campaign" {% if 'manager_delete_campaign' in campaign_perms %}checked{% endif %} /></td>
+                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_invite_campaign" {% if 'manager_invite_campaign' in campaign_perms %}checked{% endif %} /></td>
+                        <td><a href="{% url 'remove_manager' page_slug=page.page_slug campaign_slug=campaign.campaign_slug manager_pk=manager.pk %}">Remove<a/></td>
+                {% endfor %}
+                </table>
+                <input type="submit" value="Save" />
+            </form>
+        {% endif %}
     {% else %}
         <p>you're NOT an admin</p>
+    {% endif %}
+
+    {% get_obj_perms request.user for campaign as "campaign_perms" %}
+    {% if campaign_perms %}
+        <h4>Manager</h4>
+    {% endif %}
+    {% if "manager_edit_campaign" in campaign_perms %}
+        <p><a href="{% url 'campaign_edit' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
+    {% endif %}
+    {% if "manager_delete_campaign" in campaign_perms %}
+        <p><a href="{% url 'campaign_delete' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
+    {% endif %}
+    {% if "manager_invite_campaign" in campaign_perms %}
+        <p><a href="{% url 'campaign_invite' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
     {% endif %}
 {% endblock %}

@@ -18,3 +18,9 @@ class DeleteCampaignForm(forms.ModelForm):
     class Meta:
         model = models.Campaign
         fields = ['name']
+
+class ManagerInviteForm(forms.Form):
+    email = forms.EmailField()
+    manager_edit_campaign = forms.BooleanField(required=False, label='Edit Campaign')
+    manager_delete_campaign = forms.BooleanField(required=False, label='Delete Campaign')
+    manager_invite_campaign = forms.BooleanField(required=False, label='Invite users to manage Campaign')
