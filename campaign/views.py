@@ -45,12 +45,12 @@ def campaign(request, page_slug, campaign_slug):
                     new_permissions[k].remove(e)
                 # if that item is not in the list, remove the perm
                 else:
-                    remove_perm(e, user, page)
+                    remove_perm(e, user, campaign)
         # for every item in the new list, give the user the perms for that item
         for k,v in new_permissions.items():
             user = get_object_or_404(User, pk=k)
             for e in v:
-                assign_perm(e, user, page)
+                assign_perm(e, user, campaign)
     return render(request, 'campaign/campaign.html', {'page': page, 'campaign': campaign, 'managers': managers})
 
 @login_required
