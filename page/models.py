@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.utils.text import slugify
-from pagefund import config
 from userprofile.models import UserProfile
 
 
