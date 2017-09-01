@@ -37,9 +37,9 @@
                     <tr>
                         <td>{{ manager.first_name }} {{ manager.last_name }}</td>
                         <td>{{ manager.user.email }}</td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_edit_campaign" {% if 'manager_edit_campaign' in campaign_perms %}checked{% endif %} /></td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_delete_campaign" {% if 'manager_delete_campaign' in campaign_perms %}checked{% endif %} /></td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_invite_campaign" {% if 'manager_invite_campaign' in campaign_perms %}checked{% endif %} /></td>
+                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_edit" {% if 'manager_edit' in campaign_perms %}checked{% endif %} /></td>
+                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_delete" {% if 'manager_delete' in campaign_perms %}checked{% endif %} /></td>
+                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_invite" {% if 'manager_invite' in campaign_perms %}checked{% endif %} /></td>
                         <td><a href="{% url 'remove_manager' page_slug=page.page_slug campaign_slug=campaign.campaign_slug manager_pk=manager.pk %}">Remove<a/></td>
                 {% endfor %}
                 </table>
