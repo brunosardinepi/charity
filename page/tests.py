@@ -159,6 +159,17 @@ class PageTest(TestCase):
         self.assertContains(response, "/%s/managers/%s/remove/" % (self.page.page_slug, self.user3.pk), status_code=200)
         self.assertContains(response, "/%s/managers/%s/remove/" % (self.page.page_slug, self.user4.pk), status_code=200)
 
+    def test_page_manager_logged_in(self):
+        request = self.factory.get('home')
+        request.user = self.user3
+        response = views.page(request, self.page.page_slug)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Manager", status_code=200)
+        self.assertContains(response, "Edit Page", status_code=200)
+        self.assertContains(response, "Delete Page", status_code=200)
+        self.assertContains(response, "Invite others to manage Page", status_code=200)
+
     def test_page_edit_logged_out(self):
         response = self.client.get('/%s/edit/' % self.page.page_slug)
         self.assertRedirects(response, '/accounts/login/?next=/%s/edit/' % self.page.page_slug, 302, 200)
@@ -423,3 +434,4 @@ class PageTest(TestCase):
         self.assertTrue(self.user4.has_perm('manager_edit', self.page))
         self.assertTrue(self.user4.has_perm('manager_delete', self.page))
         self.assertTrue(self.user4.has_perm('manager_invite', self.page))
+

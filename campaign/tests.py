@@ -4,6 +4,7 @@ import unittest
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import Client, RequestFactory, TestCase
+from guardian.shortcuts import assign_perm
 
 from . import forms
 from . import models
@@ -22,6 +23,18 @@ class CampaignTest(TestCase):
             password='testpassword'
         )
 
+        self.user2 = User.objects.create_user(
+            username='pizza',
+            email='my@pizza.pie',
+            password='mehungry'
+        )
+
+        self.user3 = User.objects.create_user(
+            username='ineedfood',
+            email='give@food.pls',
+            password='stomachwantsit'
+        )
+
         self.page = Page.objects.create(name='Test Page',)
         self.page.admins.add(self.user.userprofile)
 
@@ -36,6 +49,10 @@ class CampaignTest(TestCase):
         )
 
         self.campaign.campaign_admins.add(self.user.userprofile)
+        self.campaign.campaign_managers.add(self.user2.userprofile)
+        assign_perm('manager_edit', self.user2, self.campaign)
+        assign_perm('manager_delete', self.user2, self.campaign)
+        assign_perm('manager_invite', self.user2, self.campaign)
 
     def test_campaign_exists(self):
         campaigns = models.Campaign.objects.all()
@@ -66,6 +83,44 @@ class CampaignTest(TestCase):
         self.assertContains(response, self.campaign.goal, status_code=200)
         self.assertContains(response, self.campaign.donation_count, status_code=200)
         self.assertContains(response, self.campaign.donation_money, status_code=200)
+
+    def test_campaign_admin_logged_out(self):
+        request = self.factory.get('home')
+        request.user = AnonymousUser()
+        response = views.campaign(request, self.page.page_slug, self.campaign.campaign_slug)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Admin", status_code=200)
+        self.assertNotContains(response, "Edit Campaign", status_code=200)
+        self.assertNotContains(response, "Delete Campaign", status_code=200)
+        self.assertNotContains(response, "Manager", status_code=200)
+        self.assertNotContains(response, "Invite others to manage Campaign", status_code=200)
+
+    def test_campaign_admin_logged_in(self):
+        request = self.factory.get('home')
+        request.user = self.user
+        response = views.campaign(request, self.page.page_slug, self.campaign.campaign_slug)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Admin", status_code=200)
+        self.assertContains(response, "Edit Campaign", status_code=200)
+        self.assertContains(response, "Delete Campaign", status_code=200)
+        self.assertContains(response, "/%s/campaign/%s/managers/%s/remove/" % (
+            self.page.page_slug,
+            self.campaign.campaign_slug,
+            self.user2.pk
+            ), status_code=200)
+
+    def test_page_manager_logged_in(self):
+        request = self.factory.get('home')
+        request.user = self.user2
+        response = views.campaign(request, self.page.page_slug, self.campaign.campaign_slug)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Manager", status_code=200)
+        self.assertContains(response, "Edit Campaign", status_code=200)
+        self.assertContains(response, "Delete Campaign", status_code=200)
+        self.assertContains(response, "Invite others to manage Campaign", status_code=200)
 
     def test_deletecampaignform(self):
         form = forms.DeleteCampaignForm({
@@ -118,7 +173,7 @@ class CampaignTest(TestCase):
     def test_campaign_edit_status_not_admin(self):
         """Doesn't test properly with 404 test, so I just expect it to fail instead"""
         request = self.factory.get('home')
-        request.user = self.user2
+        request.user = self.user3
         response = views.campaign_edit(request, self.page.page_slug, self.campaign.campaign_slug)
 
     def test_campaign_edit_status_admin(self):
