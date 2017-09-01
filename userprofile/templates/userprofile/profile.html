@@ -25,7 +25,7 @@
     <h2>Campaigns I Admin</h2>
     <ul>
         {% for c in campaigns %}
-            <li><a href="{% url 'campaign' page_slug=c.page.page_slug campaign_slug=c.campaign_slug %}">{{ c.name }}</a></li>
+            <li><a href="{% url 'campaign' page_slug=c.page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a></li>
         {% endfor %}
     </ul>
 

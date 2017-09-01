@@ -11,9 +11,9 @@ from page.models import Page
 from pagefund.email import email
 
 
-def campaign(request, page_slug, campaign_slug):
+def campaign(request, page_slug, campaign_pk, campaign_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(models.Campaign, campaign_slug=campaign_slug)
+    campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
     managers = campaign.campaign_managers.all()
 
     if request.method == "POST":
@@ -85,8 +85,9 @@ def campaign_create(request, page_slug):
     return render(request, 'campaign/campaign_create.html', {'form': form, 'page': page})
 
 @login_required
-def campaign_edit(request, page_slug, campaign_slug):
-    campaign = get_object_or_404(models.Campaign, campaign_slug=campaign_slug)
+def campaign_edit(request, page_slug, campaign_pk, campaign_slug):
+    page = get_object_or_404(Page, page_slug=page_slug)
+    campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
     admin = request.user.userprofile in campaign.campaign_admins.all()
     if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_edit', campaign):
         manager = True
@@ -104,8 +105,9 @@ def campaign_edit(request, page_slug, campaign_slug):
     return render(request, 'campaign/campaign_edit.html', {'campaign': campaign, 'form': form})
 
 @login_required
-def campaign_delete(request, page_slug, campaign_slug):
-    campaign = get_object_or_404(models.Campaign, campaign_slug=campaign_slug)
+def campaign_delete(request, page_slug, campaign_pk, campaign_slug):
+    page = get_object_or_404(Page, page_slug=page_slug)
+    campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
     admin = request.user.userprofile in campaign.campaign_admins.all()
     if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_delete', campaign):
         manager = True
@@ -122,9 +124,9 @@ def campaign_delete(request, page_slug, campaign_slug):
     return render(request, 'campaign/campaign_delete.html', {'form': form, 'campaign': campaign})
 
 @login_required
-def campaign_invite(request, page_slug, campaign_slug):
+def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(models.Campaign, page=page, campaign_slug=campaign_slug)
+    campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
     # True if the user is an admin
     admin = request.user.userprofile in campaign.campaign_admins.all()
     # True if the user is a manager and has the 'invite' permission
@@ -199,8 +201,9 @@ def campaign_invite(request, page_slug, campaign_slug):
         raise Http404
 
 @login_required
-def remove_manager(request, campaign_slug, manager_pk):
-    campaign = get_object_or_404(models.Campaign, campaign_slug=campaign_slug)
+def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
+    page = get_object_or_404(Page, page_slug=page_slug)
+    campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
     manager = get_object_or_404(User, pk=manager_pk)
     # only campaign admins can remove managers
     if request.user.userprofile in campaign.campaign_admins.all():

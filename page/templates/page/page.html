@@ -36,14 +36,14 @@
     <h3>Active Campaigns</h3>
     <ul>
         {% for campaign in active_campaigns %}
-            <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> (${{ campaign.donation_money }} of ${{ campaign.goal }} goal)</li>
+            <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> (${{ campaign.donation_money }} of ${{ campaign.goal }} goal)</li>
         {% endfor %}
     </ul>
 
     <h3>Past Campaigns</h3>
     <ul>
         {% for campaign in inactive_campaigns %}
-            <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> (${{ campaign.donation_money }} of ${{ campaign.goal }} goal)</li>
+            <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> (${{ campaign.donation_money }} of ${{ campaign.goal }} goal)</li>
         {% endfor %}
     </ul>
 

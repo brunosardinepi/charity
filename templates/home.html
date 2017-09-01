@@ -21,7 +21,7 @@
                     {% if a_campaigns %}
                         <ul>
                             {% for campaign in a_campaigns %}
-                                <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a></li>
+                                <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a></li>
                             {% endfor %}
                         </ul>
                     {% endif %}

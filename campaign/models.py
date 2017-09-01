@@ -39,6 +39,7 @@ class Campaign(models.Model):
     def get_absolute_url(self):
         return reverse('campaign', kwargs={
             'page_slug': self.page.page_slug,
+            'campaign_pk': self.pk,
             'campaign_slug': self.campaign_slug
             })
 

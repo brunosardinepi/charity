@@ -81,7 +81,7 @@ class CampaignTest(TestCase):
     def test_campaign_status_logged_out(self):
         request = self.factory.get('home')
         request.user = AnonymousUser()
-        response = views.campaign(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.campaign.name, status_code=200)
@@ -94,7 +94,7 @@ class CampaignTest(TestCase):
     def test_campaign_status_logged_in(self):
         request = self.factory.get('home')
         request.user = self.user
-        response = views.campaign(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.campaign.name, status_code=200)
@@ -107,7 +107,7 @@ class CampaignTest(TestCase):
     def test_campaign_admin_logged_out(self):
         request = self.factory.get('home')
         request.user = AnonymousUser()
-        response = views.campaign(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Admin", status_code=200)
@@ -119,14 +119,15 @@ class CampaignTest(TestCase):
     def test_campaign_admin_logged_in(self):
         request = self.factory.get('home')
         request.user = self.user
-        response = views.campaign(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Admin", status_code=200)
         self.assertContains(response, "Edit Campaign", status_code=200)
         self.assertContains(response, "Delete Campaign", status_code=200)
-        self.assertContains(response, "/%s/campaign/%s/managers/%s/remove/" % (
+        self.assertContains(response, "/%s/%s/%s/managers/%s/remove/" % (
             self.page.page_slug,
+            self.campaign.pk,
             self.campaign.campaign_slug,
             self.user2.pk
             ), status_code=200)
@@ -134,7 +135,7 @@ class CampaignTest(TestCase):
     def test_campaign_manager_logged_in(self):
         request = self.factory.get('home')
         request.user = self.user2
-        response = views.campaign(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Manager", status_code=200)
@@ -146,19 +147,19 @@ class CampaignTest(TestCase):
     def test_campaign_edit_not_admin(self):
         request = self.factory.get('home')
         request.user = self.user3
-        response = views.campaign_edit(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign_edit(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
     def test_campaign_edit_admin(self):
         request = self.factory.get('home')
         request.user = self.user
-        response = views.campaign_edit(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign_edit(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
         self.assertEqual(response.status_code, 200)
 
     def test_campaign_edit_manager_perms(self):
         request = self.factory.get('home')
         request.user = self.user2
-        response = views.campaign_edit(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign_edit(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
         self.assertEqual(response.status_code, 200)
 
@@ -166,7 +167,7 @@ class CampaignTest(TestCase):
     def test_campaign_edit_manager_no_perms(self):
         request = self.factory.get('home')
         request.user = self.user4
-        response = views.campaign_edit(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign_edit(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
     def test_deletecampaignform(self):
         form = forms.DeleteCampaignForm({
@@ -177,25 +178,30 @@ class CampaignTest(TestCase):
     def test_delete_campaign_admin(self):
         request = self.factory.get('home')
         request.user = self.user
-        response = views.campaign_delete(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign_delete(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
 
     def test_delete_campaign_logged_out(self):
-        response = self.client.get('/%s/campaign/%s/delete/' % (self.page.page_slug, self.campaign.campaign_slug))
-        self.assertRedirects(response, '/accounts/login/?next=/%s/campaign/%s/delete/' % (self.page.page_slug, self.campaign.campaign_slug), 302, 200)
+        response = self.client.get('/%s/%s/%s/delete/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        self.assertRedirects(response, '/accounts/login/?next=/%s/%s/%s/delete/' % (
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug
+            ), 302, 200
+        )
 
     @unittest.expectedFailure
     def test_delete_campaign_not_admin(self):
         request = self.factory.get('home')
         request.user = self.user3
-        response = views.campaign_delete(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign_delete(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
     def test_delete_campaign_manager_perms(self):
         request = self.factory.get('home')
         request.user = self.user2
-        response = views.campaign_delete(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign_delete(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
@@ -204,7 +210,7 @@ class CampaignTest(TestCase):
     def test_delete_campaign_manager_no_perms(self):
         request = self.factory.get('home')
         request.user = self.user4
-        response = views.campaign_delete(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign_delete(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
     def test_campaign_create_logged_out(self):
         response = self.client.get('/%s/campaign/create/' % self.page.page_slug)
@@ -243,20 +249,25 @@ class CampaignTest(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_campaign_edit_status_logged_out(self):
-        response = self.client.get('/%s/campaign/%s/edit/' % (self.page.page_slug, self.campaign.campaign_slug))
-        self.assertRedirects(response, '/accounts/login/?next=/%s/campaign/%s/edit/' % (self.page.page_slug, self.campaign.campaign_slug), 302, 200)
+        response = self.client.get('/%s/%s/%s/edit/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        self.assertRedirects(response, '/accounts/login/?next=/%s/%s/%s/edit/' % (
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug
+            ), 302, 200
+        )
 
     @unittest.expectedFailure
     def test_campaign_edit_status_not_admin(self):
         """Doesn't test properly with 404 test, so I just expect it to fail instead"""
         request = self.factory.get('home')
         request.user = self.user3
-        response = views.campaign_edit(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign_edit(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
     def test_campaign_edit_status_admin(self):
         request = self.factory.get('home')
         request.user = self.user
-        response = views.campaign_edit(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign_edit(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.page.name, status_code=200)
@@ -266,13 +277,13 @@ class CampaignTest(TestCase):
     def test_campaign_invite_not_admin_not_manager(self):
         request = self.factory.get('home')
         request.user = self.user3
-        response = views.campaign_invite(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign_invite(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
         response.client = self.client
 
     def test_campaign_invite_admin_not_manager(self):
         request = self.factory.get('home')
         request.user = self.user
-        response = views.campaign_invite(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign_invite(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.campaign.name, status_code=200)
@@ -282,12 +293,12 @@ class CampaignTest(TestCase):
     def test_campaign_invite_not_admin_manager_no_perms(self):
         request = self.factory.get('home')
         request.user = self.user4
-        response = views.campaign_invite(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign_invite(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
     def test_campaign_invite_not_admin_manager_perms(self):
         request = self.factory.get('home')
         request.user = self.user2
-        response = views.campaign_invite(request, self.page.page_slug, self.campaign.campaign_slug)
+        response = views.campaign_invite(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.campaign.name, status_code=200)
@@ -304,17 +315,32 @@ class CampaignTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
 
         # user is already a manager
-        response = self.client.post('/%s/campaign/%s/managers/invite/' % (self.page.page_slug, self.campaign.campaign_slug), data)
+        response = self.client.post('/%s/%s/%s/managers/invite/' % (
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug
+            ), data
+        )
         self.assertRedirects(response, self.campaign.get_absolute_url(), 302, 200)
 
         # user already has an invite
         data['email'] = self.user3.email
-        response = self.client.post('/%s/campaign/%s/managers/invite/' % (self.page.page_slug, self.campaign.campaign_slug), data)
+        response = self.client.post('/%s/%s/%s/managers/invite/' % (
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug
+            ), data
+        )
         self.assertRedirects(response, self.campaign.get_absolute_url(), 302, 200)
 
         # user isn't a manager and doesn't have an invite
         data['email'] = self.user5.email
-        response = self.client.post('/%s/campaign/%s/managers/invite/' % (self.page.page_slug, self.campaign.campaign_slug), data)
+        response = self.client.post('/%s/%s/%s/managers/invite/' % (
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug
+            ), data
+        )
         self.assertTrue(ManagerInvitation.objects.all().count(), 2)
         self.assertRedirects(response, self.campaign.get_absolute_url(), 302, 200)
 
@@ -337,19 +363,31 @@ class CampaignTest(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_remove_manager_logged_out(self):
-        response = self.client.get('/%s/campaign/%s/managers/%s/remove/' % (self.page.page_slug, self.campaign.campaign_slug, self.user3.pk))
-        self.assertRedirects(response, '/accounts/login/?next=/%s/campaign/%s/managers/%s/remove/' % (self.page.page_slug, self.campaign.campaign_slug, self.user3.pk), 302, 200)
+        response = self.client.get('/%s/%s/%s/managers/%s/remove/' % (
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug,
+            self.user3.pk
+            )
+        )
+        self.assertRedirects(response, '/accounts/login/?next=/%s/%s/%s/managers/%s/remove/' % (
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug,
+            self.user3.pk
+            ), 302, 200
+        )
 
     @unittest.expectedFailure
     def test_remove_manager_logged_in_not_admin(self):
         request = self.factory.get('home')
         request.user = self.user3
-        response = views.remove_manager(request, self.campaign.campaign_slug, self.user2.pk)
+        response = views.remove_manager(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug, self.user2.pk)
 
     def test_remove_manager_logged_in_admin(self):
         request = self.factory.get('home')
         request.user = self.user
-        response = views.remove_manager(request, self.campaign.campaign_slug, self.user2.pk)
+        response = views.remove_manager(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug, self.user2.pk)
         response.client = self.client
 
         self.assertRedirects(response, self.campaign.get_absolute_url(), 302, 200)
@@ -357,7 +395,7 @@ class CampaignTest(TestCase):
     def test_remove_manager(self):
         request = self.factory.get('home')
         request.user = self.user
-        response = views.remove_manager(request, self.campaign.campaign_slug, self.user2.pk)
+        response = views.remove_manager(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug, self.user2.pk)
         response.client = self.client
 
         managers = self.campaign.campaign_managers.all()
@@ -375,7 +413,7 @@ class CampaignTest(TestCase):
         data = {'permissions[]': permissions}
 
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.post('/%s/campaign/%s/' % (self.page.page_slug, self.campaign.campaign_slug), data)
+        response = self.client.post('/%s/%s/%s/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug), data)
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(self.user4.has_perm('manager_edit', self.campaign))
@@ -388,7 +426,7 @@ class CampaignTest(TestCase):
         data = {'permissions[]': permissions}
 
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.post('/%s/campaign/%s/' % (self.page.page_slug, self.campaign.campaign_slug), data)
+        response = self.client.post('/%s/%s/%s/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug), data)
 
         self.assertEqual(response.status_code, 200)
         self.assertFalse(self.user2.has_perm('manager_edit', self.campaign))
@@ -404,7 +442,7 @@ class CampaignTest(TestCase):
         data = {'permissions[]': permissions}
 
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.post('/%s/campaign/%s/' % (self.page.page_slug, self.campaign.campaign_slug), data)
+        response = self.client.post('/%s/%s/%s/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug), data)
 
         self.assertEqual(response.status_code, 200)
         self.assertFalse(self.user2.has_perm('manager_edit', self.campaign))

@@ -4,7 +4,7 @@
 {% block title %} Invite to {{ campaign.name }} | {{ block.super }}{% endblock %}
 
 {% block breadcrumbs %}
-    <a href="{% url 'page' page_slug=campaign.page.page_slug %}">{{ campaign.page.name }}</a> / <a href="{% url 'campaign' page_slug=campaign.page.page_slug campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> / Invite
+    <a href="{% url 'page' page_slug=campaign.page.page_slug %}">{{ campaign.page.name }}</a> / <a href="{% url 'campaign' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> / Invite
 {% endblock %}
 
 {% block body_content %}
