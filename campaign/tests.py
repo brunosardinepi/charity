@@ -80,15 +80,15 @@ class CampaignTest(TestCase):
         self.assertIn(self.campaign, campaigns)
 
     def test_duplicate_campaign_slug(self):
-        self.page2 = Page.objects.create(name='MyPage',)
-        self.campaign2 = models.Campaign.objects.create(
-            name='MyCampaign',
-            campaign_slug='campaignslug',
-            page=self.page2,
-            type='Event',
-        )
+        self.client.login(username='testuser', password='testpassword')
 
-        self.assertTrue(models.Campaign.objects.all().count(), 2)
+        data = {
+            'name': "MyCampaign",
+            'campaign_slug': "campaignslug"
+        }
+
+        response = self.client.post('/%s/campaign/create/' % self.page.page_slug, data)
+        self.assertEqual(models.Campaign.objects.all().count(), 1)
 
     def test_campaign_status_logged_out(self):
         request = self.factory.get('home')

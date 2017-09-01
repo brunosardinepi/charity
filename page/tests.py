@@ -59,6 +59,7 @@ class PageTest(TestCase):
             donation_money='30',
             category='Animal'
         )
+
         self.page.admins.add(self.user.userprofile)
         self.page.subscribers.add(self.user.userprofile)
         self.page.managers.add(self.user3.userprofile)
@@ -94,6 +95,17 @@ class PageTest(TestCase):
     def test_page_exists(self):
         pages = models.Page.objects.all()
         self.assertIn(self.page, pages)
+
+    def test_duplicate_page_slug(self):
+        self.client.login(username='testuser', password='testpassword')
+
+        data = {
+            'name': "Tester2",
+            'page_slug': "testpage"
+        }
+
+        response = self.client.post('/create/', data)
+        self.assertEqual(models.Page.objects.all().count(), 1)
 
     def test_page_status_logged_out(self):
         request = self.factory.get('home')
