@@ -27,7 +27,6 @@ class CampaignTest(TestCase):
 
         self.campaign = models.Campaign.objects.create(
             name='Test Campaign',
-            user=self.user,
             page=self.page,
             type='Event',
             description='This is a description for Test Campaign.',
@@ -35,6 +34,8 @@ class CampaignTest(TestCase):
             donation_count='5',
             donation_money='100'
         )
+
+        self.campaign.campaign_admins.add(self.user.userprofile)
 
     def test_campaign_exists(self):
         campaigns = models.Campaign.objects.all()

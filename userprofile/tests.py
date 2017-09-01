@@ -29,7 +29,6 @@ class UserProfileTest(TestCase):
 
         self.campaign = Campaign.objects.create(
             name='Test Campaign',
-            user=self.user,
             page=self.page,
             type='Event',
             description='This is a description for Test Campaign.',
@@ -38,13 +37,15 @@ class UserProfileTest(TestCase):
             donation_money='100'
         )
 
+        self.campaign.campaign_admins.add(self.user.userprofile)
+
         self.invitation = ManagerInvitation.objects.create(
             invite_to="rupert@oi.mate",
             invite_from=self.user,
             page=self.page,
-            manager_edit_page=True,
-            manager_delete_page=True,
-            manager_invite_page=True
+            manager_edit=True,
+            manager_delete=True,
+            manager_invite=True
         )
 
     def test_user_exists(self):

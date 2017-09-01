@@ -28,19 +28,27 @@ def pending_invitations(request):
 def accept_invitation(request, invitation_pk, key):
     invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
     if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key) and (request.user.email == invitation.invite_to):
-        invitation.page.managers.add(request.user.userprofile)
         permissions = {
-            'manager_edit_page': invitation.manager_edit_page,
-            'manager_delete_page': invitation.manager_delete_page,
-            'manager_invite_page': invitation.manager_invite_page,
+            'manager_edit': invitation.manager_edit,
+            'manager_delete': invitation.manager_delete,
+            'manager_invite': invitation.manager_invite,
         }
-        for k, v in permissions.items():
-            if v == True:
-                assign_perm(k, request.user, invitation.page)
-        remove_invitation(invitation_pk, "True", "False")
+        if invitation.page:
+            invitation.page.managers.add(request.user.userprofile)
+            for k, v in permissions.items():
+                if v == True:
+                    assign_perm(k, request.user, invitation.page)
+            remove_invitation(invitation_pk, "True", "False")
+            return HttpResponseRedirect(invitation.page.get_absolute_url())
+        elif invitation.campaign:
+            invitation.campaign.campaign_managers.add(request.user.userprofile)
+            for k, v in permissions.items():
+                if v == True:
+                    assign_perm(k, request.user, invitation.campaign)
+            remove_invitation(invitation_pk, "True", "False")
+            return HttpResponseRedirect(invitation.campaign.get_absolute_url())
     else:
         print("bad")
-    return HttpResponseRedirect(invitation.page.get_absolute_url())
 
 def decline_invitation(request, invitation_pk, key):
     invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)

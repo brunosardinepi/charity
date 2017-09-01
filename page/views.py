@@ -92,7 +92,7 @@ def page_create(request):
 def page_edit(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
     admin = request.user.userprofile in page.admins.all()
-    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_edit_page', page):
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_edit', page):
         manager = True
     else:
         manager = False
@@ -111,7 +111,7 @@ def page_edit(request, page_slug):
 def page_delete(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
     admin = request.user.userprofile in page.admins.all()
-    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete_page', page):
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', page):
         manager = True
     else:
         manager = False
@@ -145,7 +145,7 @@ def page_invite(request, page_slug):
     # True if the user is an admin
     admin = request.user.userprofile in page.admins.all()
     # True if the user is a manager and has the 'invite' permission
-    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_invite_page', page):
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_invite', page):
         manager = True
     else:
         manager = False
@@ -190,9 +190,9 @@ def page_invite(request, page_slug):
                         invite_to=form.cleaned_data['email'],
                         invite_from=request.user,
                         page=page,
-                        manager_edit_page=form.cleaned_data['manager_edit_page'],
-                        manager_delete_page=form.cleaned_data['manager_delete_page'],
-                        manager_invite_page=form.cleaned_data['manager_invite_page'],
+                        manager_edit=form.cleaned_data['manager_edit'],
+                        manager_delete=form.cleaned_data['manager_delete'],
+                        manager_invite=form.cleaned_data['manager_invite'],
                     )
 
                     # create the email
@@ -224,9 +224,9 @@ def remove_manager(request, page_slug, manager_pk):
         # remove the manager
         page.managers.remove(manager.userprofile)
         # revoke the permissions
-        remove_perm('manager_edit_page', manager, page)
-        remove_perm('manager_delete_page', manager, page)
-        remove_perm('manager_invite_page', manager, page)
+        remove_perm('manager_edit', manager, page)
+        remove_perm('manager_delete', manager, page)
+        remove_perm('manager_invite', manager, page)
         # redirect to page
         return HttpResponseRedirect(page.get_absolute_url())
     else:

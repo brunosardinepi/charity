@@ -7,7 +7,6 @@ from userprofile.models import UserProfile
 
 
 class Campaign(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, db_index=True)
     campaign_slug = models.SlugField(max_length=100, unique=True)
     description = models.TextField(blank=True)
@@ -29,9 +28,9 @@ class Campaign(models.Model):
 
     class Meta:
         permissions = (
-            ('manager_edit_campaign', 'Manager -- edit Campaign'),
-            ('manager_delete_campaign', 'Manager -- delete Campaign'),
-            ('manager_invite_campaign', 'Manager -- invite users to manage Campaign'),
+            ('manager_edit', 'Manager -- edit Campaign'),
+            ('manager_delete', 'Manager -- delete Campaign'),
+            ('manager_invite', 'Manager -- invite users to manage Campaign'),
         )
 
     def __str__(self):
@@ -50,12 +49,3 @@ class Campaign(models.Model):
         elif not self.id:
             self.campaign_slug = slugify(self.name)
             super(Campaign, self).save(*args, **kwargs)
-
-
-
-
-
-
-
-
-

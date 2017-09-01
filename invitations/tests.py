@@ -39,9 +39,9 @@ class ManagerInvitationTest(TestCase):
             invite_to=self.user2.email,
             invite_from=self.user,
             page=self.page,
-            manager_edit_page=True,
-            manager_delete_page=True,
-            manager_invite_page=True
+            manager_edit=True,
+            manager_delete=True,
+            manager_invite=True
         )
 
     def test_invitation_exists(self):
@@ -66,9 +66,9 @@ class ManagerInvitationTest(TestCase):
         response.client = self.client
 
         self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
-        self.assertTrue(self.user2.has_perm('manager_edit_page', self.page))
-        self.assertTrue(self.user2.has_perm('manager_delete_page', self.page))
-        self.assertTrue(self.user2.has_perm('manager_invite_page', self.page))
+        self.assertTrue(self.user2.has_perm('manager_edit', self.page))
+        self.assertTrue(self.user2.has_perm('manager_delete', self.page))
+        self.assertTrue(self.user2.has_perm('manager_invite', self.page))
 
         invitations = models.ManagerInvitation.objects.filter(expired=False)
         self.assertNotIn(self.invitation, invitations)
@@ -90,9 +90,9 @@ class ManagerInvitationTest(TestCase):
         response.client = self.client
 
         self.assertRedirects(response, reverse('home'), 302, 200)
-        self.assertFalse(self.user2.has_perm('manager_edit_page', self.page))
-        self.assertFalse(self.user2.has_perm('manager_delete_page', self.page))
-        self.assertFalse(self.user2.has_perm('manager_invite_page', self.page))
+        self.assertFalse(self.user2.has_perm('manager_edit', self.page))
+        self.assertFalse(self.user2.has_perm('manager_delete', self.page))
+        self.assertFalse(self.user2.has_perm('manager_invite', self.page))
 
         invitations = models.ManagerInvitation.objects.filter(expired=False)
         self.assertNotIn(self.invitation, invitations)
@@ -106,9 +106,9 @@ class ManagerInvitationTest(TestCase):
         self.client.login(username='harrypotter', password='imawizard')
         response = self.client.get('/invite/decline/%s/%s/' % (self.invitation.pk, self.invitation.key))
         self.assertRedirects(response, '/invite/pending/', 302, 200)
-        self.assertFalse(self.user2.has_perm('manager_edit_page', self.page))
-        self.assertFalse(self.user2.has_perm('manager_delete_page', self.page))
-        self.assertFalse(self.user2.has_perm('manager_invite_page', self.page))
+        self.assertFalse(self.user2.has_perm('manager_edit', self.page))
+        self.assertFalse(self.user2.has_perm('manager_delete', self.page))
+        self.assertFalse(self.user2.has_perm('manager_invite', self.page))
 
         invitations = models.ManagerInvitation.objects.filter(expired=False)
         self.assertNotIn(self.invitation, invitations)

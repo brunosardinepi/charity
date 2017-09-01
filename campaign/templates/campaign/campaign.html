@@ -10,7 +10,6 @@
 
 {% block body_content %}
     <h1>{{ campaign.name }}</h1>
-    <p>Creator: {{ campaign.user.first_name }} {{ campaign.user.last_name  }}</p>
     <p>Type: {{ campaign.get_type_display }}</p>
     <p>Description: {{ campaign.description }}</p>
     <p>Goal: ${{ campaign.goal }}</p>
@@ -55,13 +54,13 @@
     {% if campaign_perms %}
         <h4>Manager</h4>
     {% endif %}
-    {% if "manager_edit_campaign" in campaign_perms %}
+    {% if "manager_edit" in campaign_perms %}
         <p><a href="{% url 'campaign_edit' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
     {% endif %}
-    {% if "manager_delete_campaign" in campaign_perms %}
+    {% if "manager_delete" in campaign_perms %}
         <p><a href="{% url 'campaign_delete' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
     {% endif %}
-    {% if "manager_invite_campaign" in campaign_perms %}
+    {% if "manager_invite" in campaign_perms %}
         <p><a href="{% url 'campaign_invite' page_slug=page.page_slug campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
     {% endif %}
 {% endblock %}

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from campaign.models import Campaign
 from page.models import Page
 
 import string
@@ -18,8 +19,8 @@ class ManagerInvitation(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     invite_to = models.EmailField()
     invite_from = models.ForeignKey(User, on_delete=models.CASCADE)
-    page = models.ForeignKey(Page, on_delete=models.CASCADE)
-    manager_edit_page = models.BooleanField(default=False)
-    manager_delete_page = models.BooleanField(default=False)
-    manager_invite_page = models.BooleanField(default=False)
-
+    page = models.ForeignKey(Page, null=True, blank=True, on_delete=models.CASCADE)
+    campaign = models.ForeignKey(Campaign, null=True, blank=True, on_delete=models.CASCADE)
+    manager_edit = models.BooleanField(default=False)
+    manager_delete = models.BooleanField(default=False)
+    manager_invite = models.BooleanField(default=False)

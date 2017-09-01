@@ -16,7 +16,7 @@ def userprofile(request):
     if userprofile.user == request.user:
         admin_pages = userprofile.admins.all()
         subscriptions = userprofile.subscribers.all()
-        campaigns = request.user.campaign_set.all()
+        campaigns = userprofile.campaign_admins.all()
         invitations = ManagerInvitation.objects.filter(invite_from=request.user, expired=False)
         form = forms.UserProfileForm(instance=userprofile)
         if request.method == 'POST':
