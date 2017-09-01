@@ -14,7 +14,7 @@ from page import models as PageModels
 def userprofile(request):
     userprofile = get_object_or_404(models.UserProfile, user_id=request.user.id)
     if userprofile.user == request.user:
-        admin_pages = userprofile.admins.all()
+        admin_pages = userprofile.page_admins.all()
         subscriptions = userprofile.subscribers.all()
         campaigns = userprofile.campaign_admins.all()
         invitations = ManagerInvitation.objects.filter(invite_from=request.user, expired=False)

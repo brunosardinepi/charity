@@ -11,8 +11,8 @@ class Page(models.Model):
     description = models.TextField(blank=True)
     donation_count = models.IntegerField(default=0)
     donation_money = models.IntegerField(default=0)
-    admins = models.ManyToManyField(UserProfile, related_name='admins', blank=True)
-    managers = models.ManyToManyField(UserProfile, related_name='managers', blank=True)
+    admins = models.ManyToManyField(UserProfile, related_name='page_admins', blank=True)
+    managers = models.ManyToManyField(UserProfile, related_name='page_managers', blank=True)
     subscribers = models.ManyToManyField(UserProfile, related_name='subscribers', blank=True)
     is_sponsored = models.BooleanField(default=False)
     CATEGORY_CHOICES = (
