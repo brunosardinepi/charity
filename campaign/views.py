@@ -67,13 +67,17 @@ def campaign_create(request, page_slug):
             campaign.campaign_admins.add(request.user.userprofile)
 
             subject = "Campaign created!"
+            body = "You just created a Campaign called '%s' for the '%s' Page." % (
+                campaign.name,
+                page.name
+            )
+            email(request.user, subject, body)
+
             body = "A Campaign called '%s' has just been created by %s for the '%s' Page." % (
                 campaign.name,
                 request.user.email,
                 page.name
             )
-            email(request.user, subject, body)
-
             admins = page.admins.all()
             for admin in admins:
                 email(admin.user, subject, body)
