@@ -166,7 +166,7 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
                 # if this user has already been invited, redirect the admin/manager
                 # need to notify the admin/manager that the person has already been invited
                 if invitation:
-                    print("this user has already been invited, so do nothing")
+                    # this user has already been invited, so do nothing
                     return HttpResponseRedirect(campaign.get_absolute_url())
                 # if the user hasn't been invited already, create the invite and send it to them
                 else:

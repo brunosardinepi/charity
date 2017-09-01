@@ -53,6 +53,7 @@ class CampaignTest(TestCase):
 
         self.campaign = models.Campaign.objects.create(
             name='Test Campaign',
+            campaign_slug='campaignslug',
             page=self.page,
             type='Event',
             description='This is a description for Test Campaign.',
@@ -77,6 +78,17 @@ class CampaignTest(TestCase):
     def test_campaign_exists(self):
         campaigns = models.Campaign.objects.all()
         self.assertIn(self.campaign, campaigns)
+
+    def test_duplicate_campaign_slug(self):
+        self.page2 = Page.objects.create(name='MyPage',)
+        self.campaign2 = models.Campaign.objects.create(
+            name='MyCampaign',
+            campaign_slug='campaignslug',
+            page=self.page2,
+            type='Event',
+        )
+
+        self.assertTrue(models.Campaign.objects.all().count(), 2)
 
     def test_campaign_status_logged_out(self):
         request = self.factory.get('home')
