@@ -1,6 +1,7 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
 {% load guardian_tags %}
+{% load comment_extras %}
 
 {% block title %} {{ campaign.name }} | {{ block.super }}{% endblock %}
 
@@ -23,6 +24,14 @@
         <ul>
             {% for c in comments %}
                 <li>{{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date }}</li>
+                {% comment_replies c.pk as replies %}
+                {% if replies %}
+                    <ul>
+                        {% for r in replies %}
+                            <li>{{ r.content }} - {{ r.user.userprofile.first_name }} {{ r.user.userprofile.last_name }} @ {{ r.date }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             {% endfor %}
         </ul>
     {% else %}
