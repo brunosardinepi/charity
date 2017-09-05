@@ -6,6 +6,7 @@ from django.utils.text import slugify
 from page.models import Page
 from userprofile.models import UserProfile
 
+from pagefund import config
 
 class Campaign(models.Model):
     name = models.CharField(max_length=255, db_index=True)
@@ -18,6 +19,7 @@ class Campaign(models.Model):
     page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='campaigns',)
     campaign_admins = models.ManyToManyField(UserProfile, related_name='campaign_admins', blank=True)
     campaign_managers = models.ManyToManyField(UserProfile, related_name='campaign_managers', blank=True)
+    campaign_icon = models.ImageField(upload_to='media/campaigns/', blank=True, null=True)
     TYPE_CHOICES = (
         ('event', 'Event'),
     )

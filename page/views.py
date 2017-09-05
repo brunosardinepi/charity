@@ -11,6 +11,7 @@ from campaign import models as CampaignModels
 from invitations.models import ManagerInvitation
 from pagefund.email import email
 from userprofile.models import UserProfile
+from pagefund.image import image_upload
 
 import json
 
@@ -76,8 +77,9 @@ def page(request, page_slug):
 def page_create(request):
     form = forms.PageForm()
     if request.method == 'POST':
-        form = forms.PageForm(request.POST)
+        form = forms.PageForm(request.POST, request.FILES)
         if form.is_valid():
+            image_upload(form)
             page = form.save()
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
@@ -99,8 +101,9 @@ def page_edit(request, page_slug):
     if admin or manager:
         form = forms.PageForm(instance=page)
         if request.method == 'POST':
-            form = forms.PageForm(instance=page, data=request.POST)
+            form = forms.PageForm(instance=page, data=request.POST, files=request.FILES)
             if form.is_valid():
+                image_upload(form)
                 form.save()
                 return HttpResponseRedirect(page.get_absolute_url())
     else:
