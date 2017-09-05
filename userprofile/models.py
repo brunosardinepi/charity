@@ -7,6 +7,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 
 from pagefund import config
+from pagefund.email import email
 
 import smtplib
 
