@@ -22,3 +22,6 @@ class Comment(CommentTemplate):
 
 class Reply(CommentTemplate):
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = "replies"
