@@ -8,6 +8,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from . import forms
 from . import models
+from comments.forms import CommentForm
 from comments.models import Comment
 from invitations.models import ManagerInvitation
 from page.models import Page
@@ -19,6 +20,7 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
     campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
     managers = campaign.campaign_managers.all()
     comments = Comment.objects.filter(campaign=campaign).order_by('-date')
+    form = CommentForm
 
     if request.method == "POST":
         post_data = request.POST.getlist('permissions[]')
@@ -59,7 +61,8 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
         'page': page,
         'campaign': campaign,
         'managers': managers,
-        'comments': comments
+        'comments': comments,
+        'form': form
     })
 
 @login_required

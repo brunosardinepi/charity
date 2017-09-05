@@ -54,6 +54,11 @@
     <p><a href="{% url 'campaign_create' page_slug=page.page_slug %}">Create Campaign</a></p>
 
     <h3>Comments</h3>
+    <form action="{% url 'comments:comment_page' page_pk=page.pk %}" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Comment" />
+    </form>
     {% if comments %}
         <ul>
             {% for c in comments %}
