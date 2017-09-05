@@ -8,6 +8,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from . import forms
 from . import models
+from comments.models import Comment
 from invitations.models import ManagerInvitation
 from page.models import Page
 from pagefund.email import email
@@ -17,6 +18,7 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
     campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
     managers = campaign.campaign_managers.all()
+    comments = Comment.objects.filter(campaign=campaign).order_by('-date')
 
     if request.method == "POST":
         post_data = request.POST.getlist('permissions[]')
@@ -53,7 +55,12 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
             user = get_object_or_404(User, pk=k)
             for e in v:
                 assign_perm(e, user, campaign)
-    return render(request, 'campaign/campaign.html', {'page': page, 'campaign': campaign, 'managers': managers})
+    return render(request, 'campaign/campaign.html', {
+        'page': page,
+        'campaign': campaign,
+        'managers': managers,
+        'comments': comments
+    })
 
 @login_required
 def campaign_create(request, page_slug):

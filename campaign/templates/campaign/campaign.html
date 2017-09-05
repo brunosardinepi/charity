@@ -18,6 +18,17 @@
     <p>Goal: ${{ campaign.goal }}</p>
     <p>${{ campaign.donation_money }} raised by {{ campaign.donation_count }} donors</p>
 
+    <h3>Comments</h3>
+    {% if comments %}
+        <ul>
+            {% for c in comments %}
+                <li>{{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No comments</p>
+    {% endif %}
+
     {% if request.user.userprofile in campaign.campaign_admins.all %}
         <h4>Admin</h4>
         <p><a href="{% url 'campaign_edit' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
