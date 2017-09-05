@@ -8,6 +8,7 @@
 {% block head_extra %}
     <script>
         $(document).ready(function() {
+
             $("#subscribe").click(function () {
                 var action = $("#subscribe").attr("name");
                 var url = "/subscribe/" + {{ page.pk }} + "/" + action + "/";
@@ -18,6 +19,18 @@
                     $("#subscribe").text(subscribe_attr.value);
                 });
             });
+
+            function comment() {
+                console.log("comment function accessed");
+                console.log($("#comment-text").val());
+            };
+
+            $("#comment").on('submit', function(event) {
+                event.preventDefault();
+                console.log("comment submit found");
+                comment();
+            });
+
         });
     </script>
 {% endblock %}
@@ -54,7 +67,7 @@
     <p><a href="{% url 'campaign_create' page_slug=page.page_slug %}">Create Campaign</a></p>
 
     <h3>Comments</h3>
-    <form action="{% url 'comments:comment_page' page_pk=page.pk %}" method="POST">
+    <form id="comment" action="{% url 'comments:comment_page' page_pk=page.pk %}" method="POST">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Comment" />
