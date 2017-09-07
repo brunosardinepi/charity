@@ -23,7 +23,6 @@ def comment_page(request, page_pk):
             page=page
         )
 
-        response_data['result'] = "success"
         response_data['content'] = comment.content
         response_data['user'] = "%s %s" % (comment.user.userprofile.first_name, comment.user.userprofile.last_name)
         response_data['date'] = localtime(comment.date)

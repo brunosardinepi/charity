@@ -20,6 +20,10 @@ class CommentTest(TestCase):
             password='testpassword'
         )
 
+        self.user.userprofile.first_name = 'John'
+        self.user.userprofile.last_name = 'Doe'
+        self.user.save()
+
         self.user2 = User.objects.create_user(
             username='harrypotter',
             email='harry@potter.com',
@@ -107,8 +111,22 @@ class CommentTest(TestCase):
         self.assertIn(self.comment, comments)
         self.assertIn(self.comment2, comments)
 
-    def test_comment_exists(self):
+    def test_reply_exists(self):
         replies = models.Reply.objects.all()
 
         self.assertIn(self.reply, replies)
         self.assertIn(self.reply2, replies)
+
+    def test_comment_page(self):
+        self.client.login(username='testuser', password='testpassword')
+        self.assertEqual(models.Comment.objects.all().count(), 2)
+        data = {'comment_text': "Hello my name is Testy McTestface."}
+        response = self.client.post('/comments/page/%s/comment/' % self.page.pk, data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(models.Comment.objects.all().count(), 3)
+
+        response = self.client.get('/testpage/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Hello my name is Testy McTestface.", status_code=200)
+        self.assertContains(response, "%s %s" % (self.user.userprofile.first_name, self.user.userprofile.last_name), status_code=200)
