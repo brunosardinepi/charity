@@ -143,7 +143,7 @@
                 {% if replies %}
                     <ul id="reply_list">
                         {% for r in replies %}
-                            <li>{{ r.content }} - {{ r.user.userprofile.first_name }} {{ r.user.userprofile.last_name }} @ {{ r.date }}</li>
+                            <li>{{ r.content }} - {{ r.user.userprofile.first_name }} {{ r.user.userprofile.last_name }} @ {{ r.date|date:"m/d/y g:i A" }}</li>
                         {% endfor %}
                     </ul>
                 {% endif %}
