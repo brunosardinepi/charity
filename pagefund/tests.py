@@ -98,13 +98,6 @@ class AccountTests(TestCase):
         c.force_login(user)
         return user
 
-    def test_redirect_when_authenticated(self):
-        self._create_user_and_login()
-        c = self.client
-        resp = c.get(reverse('account_login'))
-        self.assertRedirects(resp, 'http://localhost/',
-                             fetch_redirect_response=False)
-
     def test_password_reset_get(self):
         resp = self.client.get(reverse('account_reset_password'))
         self.assertTemplateUsed(resp, 'password_reset.html')

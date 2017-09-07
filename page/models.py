@@ -1,5 +1,6 @@
 from django.db import models
-from django.core.urlresolvers import reverse
+#from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.text import slugify
 from userprofile.models import UserProfile
 
