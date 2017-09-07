@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import Client, RequestFactory, TestCase
 from django.urls import reverse
+from django.utils import timezone
 from guardian.shortcuts import assign_perm
 
 from . import models
@@ -36,18 +37,6 @@ class CommentTest(TestCase):
             password='dogsarecool'
         )
 
-        self.user4 = User.objects.create_user(
-            username='batman',
-            email='batman@bat.cave',
-            password='imbatman'
-        )
-
-        self.user5 = User.objects.create_user(
-            username='newguy',
-            email='its@me.com',
-            password='imnewhere'
-        )
-
         self.page = Page.objects.create(
             name='Test Page',
             page_slug='testpage',
@@ -57,12 +46,6 @@ class CommentTest(TestCase):
             category='Animal'
         )
 
-        self.page.admins.add(self.user.userprofile)
-        self.page.managers.add(self.user3.userprofile)
-        assign_perm('manager_edit', self.user3, self.page)
-        assign_perm('manager_delete', self.user3, self.page)
-        assign_perm('manager_invite', self.user3, self.page)
-
         self.campaign = Campaign.objects.create(
             name='Test Campaign',
             page=self.page,
@@ -70,15 +53,6 @@ class CommentTest(TestCase):
             goal='11',
             donation_count='21',
             donation_money='31'
-        )
-
-        self.campaign2 = Campaign.objects.create(
-            name='Another One',
-            page=self.page,
-            description='My cat died yesterday',
-            goal='12',
-            donation_count='22',
-            donation_money='33'
         )
 
         self.comment = models.Comment.objects.create(
@@ -110,6 +84,9 @@ class CommentTest(TestCase):
 
         self.assertIn(self.comment, comments)
         self.assertIn(self.comment2, comments)
+
+        now = timezone.now()
+        self.assertLess(self.comment.date, now)
 
     def test_reply_exists(self):
         replies = models.Reply.objects.all()
