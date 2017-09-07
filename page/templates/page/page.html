@@ -20,9 +20,46 @@
                 });
             });
 
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            var csrftoken = getCookie('csrftoken');
+
+            function csrfSafeMethod(method) {
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
             function comment() {
                 console.log("comment function accessed");
-                console.log($("#comment-text").val());
+                $.ajax({
+                    url : "{% url 'comments:comment_page' page_pk=page.pk %}",
+                    type : "POST",
+                    data : { comment_text : $("#comment-text").val() },
+                    success : function(json) {
+                        $("#comment-text").val('');
+                        console.log(json);
+                        $("#comment_list").prepend("<li>" + json.content + " - " + json.user + " @ " + json.date + "</li>");
+                        console.log("success");
+                    }
+                });
             };
 
             $("#comment").on('submit', function(event) {
@@ -73,9 +110,9 @@
         <input type="submit" value="Comment" />
     </form>
     {% if comments %}
-        <ul>
+        <ul id="comment_list">
             {% for c in comments %}
-                <li>{{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date }}</li>
+                <li>{{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date|date:"m/d/y g:i A" }}</li>
                 {% comment_replies c.pk as replies %}
                 {% if replies %}
                     <ul>
