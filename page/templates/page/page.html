@@ -64,13 +64,34 @@
                 comment();
             });
 
-            function show_reply_textarea(target) {
-                $(target).parent().after("<textarea></textarea>");
+            function show_reply_textarea(event) {
+                var url = "{% url 'comments:reply' comment_pk=0 %}".replace(0, event.target.id);
+                $(event.target).parent().after("<form id='reply' action=" + url + " method='POST'>{% csrf_token %}<textarea id='reply-text'></textarea><input type='submit' value='Reply' /></form>");
             };
 
-            $(".reply").click(function() {
+            function reply(id) {
+                $.ajax({
+                    url : "{% url 'comments:reply' comment_pk=0 %}".replace(0, id),
+                    type : "POST",
+                    data : { reply_text : $("#reply-text").val() },
+                    success : function(json) {
+                        $("#reply").remove();
+                        if ($("#reply_list")) {
+                            $("#reply_list").append("<li>" + json.content + " - " + json.user + " @ " + json.date + "</li>");
+                        }
+                    }
+                });
+            };
+
+            $(".show-reply").click(function() {
                 event.preventDefault();
-                show_reply_textarea($(event.target));
+                show_reply_textarea(event);
+            });
+
+            $(document).on('submit', "#reply", function(event) {
+                event.preventDefault();
+                var id = $("#reply").prev().find(".show-reply").attr("id");
+                reply(id);
             });
 
         });
@@ -117,10 +138,10 @@
     {% if comments %}
         <ul id="comment_list">
             {% for c in comments %}
-                <li class="comment">{{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="reply" href="">Reply</a></li>
+                <li class="comment">{{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="show-reply" id="{{ c.pk }}" href="">Reply</a></li>
                 {% comment_replies c.pk as replies %}
                 {% if replies %}
-                    <ul>
+                    <ul id="reply_list">
                         {% for r in replies %}
                             <li>{{ r.content }} - {{ r.user.userprofile.first_name }} {{ r.user.userprofile.last_name }} @ {{ r.date }}</li>
                         {% endfor %}

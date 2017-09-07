@@ -32,6 +32,27 @@ def comment_page(request, page_pk):
             content_type="application/json"
         )
 
+def reply(request, comment_pk):
+    comment = get_object_or_404(models.Comment, pk=comment_pk)
+    if request.method == 'POST':
+        reply_text = request.POST.get('reply_text')
+        response_data = {}
+
+        reply = models.Reply.objects.create(
+            user=request.user,
+            content=reply_text,
+            comment=comment
+        )
+
+        response_data['content'] = reply.content
+        response_data['user'] = "%s %s" % (reply.user.userprofile.first_name, reply.user.userprofile.last_name)
+        response_data['date'] = localtime(reply.date)
+        response_data['date'] = response_data['date'].strftime('%m/%d/%y %-I:%M %p')
+        return HttpResponse(
+            json.dumps(response_data),
+            content_type="application/json"
+        )
+
 def comment_campaign(request, campaign_pk):
     campaign = get_object_or_404(Campaign, pk=campaign_pk)
     form = forms.CommentForm()
