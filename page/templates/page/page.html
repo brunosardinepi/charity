@@ -48,23 +48,19 @@
             });
 
             function comment() {
-                console.log("comment function accessed");
                 $.ajax({
                     url : "{% url 'comments:comment_page' page_pk=page.pk %}",
                     type : "POST",
                     data : { comment_text : $("#comment-text").val() },
                     success : function(json) {
                         $("#comment-text").val('');
-                        console.log(json);
                         $("#comment_list").prepend("<li>" + json.content + " - " + json.user + " @ " + json.date + "</li>");
-                        console.log("success");
                     }
                 });
             };
 
             $("#comment").on('submit', function(event) {
                 event.preventDefault();
-                console.log("comment submit found");
                 comment();
             });
 
