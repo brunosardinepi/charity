@@ -64,6 +64,15 @@
                 comment();
             });
 
+            function show_reply_textarea(target) {
+                $(target).parent().after("<textarea></textarea>");
+            };
+
+            $(".reply").click(function() {
+                event.preventDefault();
+                show_reply_textarea($(event.target));
+            });
+
         });
     </script>
 {% endblock %}
@@ -108,7 +117,7 @@
     {% if comments %}
         <ul id="comment_list">
             {% for c in comments %}
-                <li>{{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date|date:"m/d/y g:i A" }}</li>
+                <li class="comment">{{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="reply" href="">Reply</a></li>
                 {% comment_replies c.pk as replies %}
                 {% if replies %}
                     <ul>
