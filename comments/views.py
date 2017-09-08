@@ -27,6 +27,7 @@ def comment_page(request, page_pk):
         response_data['user'] = "%s %s" % (comment.user.userprofile.first_name, comment.user.userprofile.last_name)
         response_data['date'] = localtime(comment.date)
         response_data['date'] = response_data['date'].strftime('%m/%d/%y %-I:%M %p')
+        response_data['id'] = comment.pk
         return HttpResponse(
             json.dumps(response_data),
             content_type="application/json"

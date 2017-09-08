@@ -54,7 +54,7 @@
                     data : { comment_text : $("#comment-text").val() },
                     success : function(json) {
                         $("#comment-text").val('');
-                        $("#comment_list").prepend("<li>" + json.content + " - " + json.user + " @ " + json.date + "</li>");
+                        $("#comment_list").prepend("<li>" + json.content + " - " + json.user + " @ " + json.date + " <a class='show-reply' id='" + json.id + "' href=''>Reply</a></li>");
                     }
                 });
             };
@@ -76,8 +76,8 @@
                     data : { reply_text : $("#reply-text").val() },
                     success : function(json) {
                         $("#reply").remove();
-                        if ($("#reply_list")) {
-                            $("#reply_list").append("<li>" + json.content + " - " + json.user + " @ " + json.date + "</li>");
+                        if ($("#comment-" + id + "-replies")) {
+                            $("#comment-" + id + "-replies").append("<li>" + json.content + " - " + json.user + " @ " + json.date + "</li>");
                         }
                     }
                 });
@@ -138,15 +138,17 @@
     {% if comments %}
         <ul id="comment_list">
             {% for c in comments %}
-                <li class="comment">{{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="show-reply" id="{{ c.pk }}" href="">Reply</a></li>
-                {% comment_replies c.pk as replies %}
-                {% if replies %}
-                    <ul id="reply_list">
-                        {% for r in replies %}
-                            <li>{{ r.content }} - {{ r.user.userprofile.first_name }} {{ r.user.userprofile.last_name }} @ {{ r.date|date:"m/d/y g:i A" }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
+                <li id="comment-{{ c.pk }}" class="comment">
+                    {{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="show-reply" id="{{ c.pk }}" href="">Reply</a>
+                    {% comment_replies c.pk as replies %}
+                    {% if replies %}
+                        <ul id="comment-{{ c.pk }}-replies" class="reply-list">
+                            {% for r in replies %}
+                                <li id="reply-{{ r.pk }}" class="reply">{{ r.content }} - {{ r.user.userprofile.first_name }} {{ r.user.userprofile.last_name }} @ {{ r.date|date:"m/d/y g:i A" }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
             {% endfor %}
         </ul>
     {% else %}
