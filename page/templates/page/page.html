@@ -77,13 +77,9 @@
                     success : function(json) {
                         $("#reply").remove();
                         if (!$("#comment-" + id + "-replies").length) {
-                            console.log("couldn't find comment-" + id + "-replies");
                             $("#" + id).after("<ul id='comment-" + id + "-replies' class='reply-list'></ul>");
                         }
-                        if ($("#comment-" + id + "-replies")) {
-                            console.log("found comment-" + id + "-replies");
-                            $("#comment-" + id + "-replies").append("<li>" + json.content + " - " + json.user + " @ " + json.date + "</li>");
-                        }
+                        $("#comment-" + id + "-replies").append("<li>" + json.content + " - " + json.user + " @ " + json.date + "</li>");
                     }
                 });
             };
