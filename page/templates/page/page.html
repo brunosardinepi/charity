@@ -95,6 +95,19 @@
                 reply(id);
             });
 
+            function delete_obj(event) {
+                var arr = event.target.id.split('-');
+                var url = "{% url 'comments:delete' model=0 pk=1 %}".replace(0, arr[1]).replace(1, arr[2]);
+                $.get(url, function () {
+                    $("#" + arr[1] + "-" + arr[2]).remove();
+                });
+            };
+
+            $(document).on('click', ".delete-comment", function(event) {
+                event.preventDefault();
+                delete_obj(event);
+            });
+
         });
     </script>
 {% endblock %}
@@ -140,7 +153,7 @@
         <ul id="comment_list">
             {% for c in comments %}
                 <li id="comment-{{ c.pk }}" class="comment">
-                    {{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="show-reply" id="{{ c.pk }}" href="">Reply</a>
+                    {{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="show-reply" id="{{ c.pk }}" href="">Reply</a>{% if c.user == request.user %} - <a id="delete-comment-{{ c.pk }}" class="delete-comment" href="">Delete</a>{% endif %}</a>
                     {% comment_replies c.pk as replies %}
                     {% if replies %}
                         <ul id="comment-{{ c.pk }}-replies" class="reply-list">

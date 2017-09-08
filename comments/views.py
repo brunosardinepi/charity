@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -11,6 +12,7 @@ from page.models import Page
 import json
 
 
+@login_required
 def comment_page(request, page_pk):
     page = get_object_or_404(Page, pk=page_pk)
     if request.method == 'POST':
@@ -33,6 +35,7 @@ def comment_page(request, page_pk):
             content_type="application/json"
         )
 
+@login_required
 def reply(request, comment_pk):
     comment = get_object_or_404(models.Comment, pk=comment_pk)
     if request.method == 'POST':
@@ -54,6 +57,7 @@ def reply(request, comment_pk):
             content_type="application/json"
         )
 
+@login_required
 def comment_campaign(request, campaign_pk):
     campaign = get_object_or_404(Campaign, pk=campaign_pk)
     form = forms.CommentForm()
@@ -67,3 +71,15 @@ def comment_campaign(request, campaign_pk):
             return HttpResponseRedirect(campaign.get_absolute_url())
         else:
             return Http404
+
+@login_required
+def delete(request, model, pk):
+    if model == "comment":
+        obj = get_object_or_404(models.Comment, pk=pk)
+    elif model == "reply":
+        obj = get_object_or_404(models.Reply, pk=pk)
+    if obj.user == request.user:
+        obj.delete()
+        return HttpResponse('')
+    else:
+        return Http404
