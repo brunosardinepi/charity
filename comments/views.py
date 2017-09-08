@@ -52,6 +52,7 @@ def reply(request, comment_pk):
         response_data['user'] = "%s %s" % (reply.user.userprofile.first_name, reply.user.userprofile.last_name)
         response_data['date'] = localtime(reply.date)
         response_data['date'] = response_data['date'].strftime('%m/%d/%y %-I:%M %p')
+        response_data['id'] = reply.pk
         return HttpResponse(
             json.dumps(response_data),
             content_type="application/json"

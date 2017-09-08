@@ -54,7 +54,7 @@
                     data : { comment_text : $("#comment-text").val() },
                     success : function(json) {
                         $("#comment-text").val('');
-                        $("#comment_list").prepend("<li>" + json.content + " - " + json.user + " @ " + json.date + " - <a class='show-reply' id='" + json.id + "' href=''>Reply</a></li>");
+                        $("#comment_list").prepend("<li id='comment-" + json.id + "'>" + json.content + " - " + json.user + " @ " + json.date + " - <a class='show-reply' id='" + json.id + "' href=''>Reply</a> - <a id='delete-comment-" + json.id + "' class='delete-cr' href=''>Delete</a></li>");
                     }
                 });
             };
@@ -77,9 +77,9 @@
                     success : function(json) {
                         $("#reply").remove();
                         if (!$("#comment-" + id + "-replies").length) {
-                            $("#" + id).after("<ul id='comment-" + id + "-replies' class='reply-list'></ul>");
+                            $("#delete-comment-" + id).after("<ul id='comment-" + id + "-replies' class='reply-list'></ul>");
                         }
-                        $("#comment-" + id + "-replies").append("<li>" + json.content + " - " + json.user + " @ " + json.date + "</li>");
+                        $("#comment-" + id + "-replies").append("<li id='reply-" + json.id + "'>" + json.content + " - " + json.user + " @ " + json.date + " - <a id='delete-reply-" + json.id + "' class='delete-cr' href=''>Delete</a></li>");
                     }
                 });
             };
@@ -103,7 +103,7 @@
                 });
             };
 
-            $(document).on('click', ".delete-comment", function(event) {
+            $(document).on('click', ".delete-cr", function(event) {
                 event.preventDefault();
                 delete_obj(event);
             });
@@ -153,12 +153,12 @@
         <ul id="comment_list">
             {% for c in comments %}
                 <li id="comment-{{ c.pk }}" class="comment">
-                    {{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="show-reply" id="{{ c.pk }}" href="">Reply</a>{% if c.user == request.user %} - <a id="delete-comment-{{ c.pk }}" class="delete-comment" href="">Delete</a>{% endif %}</a>
+                    {{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="show-reply" id="{{ c.pk }}" href="">Reply</a>{% if c.user == request.user %} - <a id="delete-comment-{{ c.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</a>
                     {% comment_replies c.pk as replies %}
                     {% if replies %}
                         <ul id="comment-{{ c.pk }}-replies" class="reply-list">
                             {% for r in replies %}
-                                <li id="reply-{{ r.pk }}" class="reply">{{ r.content }} - {{ r.user.userprofile.first_name }} {{ r.user.userprofile.last_name }} @ {{ r.date|date:"m/d/y g:i A" }}</li>
+                                <li id="reply-{{ r.pk }}" class="reply">{{ r.content }} - {{ r.user.userprofile.first_name }} {{ r.user.userprofile.last_name }} @ {{ r.date|date:"m/d/y g:i A" }} {% if c.user == request.user %} - <a id="delete-reply-{{ r.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</li>
                             {% endfor %}
                         </ul>
                     {% endif %}
