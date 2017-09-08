@@ -54,7 +54,7 @@
                     data : { comment_text : $("#comment-text").val() },
                     success : function(json) {
                         $("#comment-text").val('');
-                        $("#comment_list").prepend("<li>" + json.content + " - " + json.user + " @ " + json.date + " <a class='show-reply' id='" + json.id + "' href=''>Reply</a></li>");
+                        $("#comment_list").prepend("<li>" + json.content + " - " + json.user + " @ " + json.date + " - <a class='show-reply' id='" + json.id + "' href=''>Reply</a></li>");
                     }
                 });
             };
@@ -76,14 +76,19 @@
                     data : { reply_text : $("#reply-text").val() },
                     success : function(json) {
                         $("#reply").remove();
+                        if (!$("#comment-" + id + "-replies").length) {
+                            console.log("couldn't find comment-" + id + "-replies");
+                            $("#" + id).after("<ul id='comment-" + id + "-replies' class='reply-list'></ul>");
+                        }
                         if ($("#comment-" + id + "-replies")) {
+                            console.log("found comment-" + id + "-replies");
                             $("#comment-" + id + "-replies").append("<li>" + json.content + " - " + json.user + " @ " + json.date + "</li>");
                         }
                     }
                 });
             };
 
-            $(".show-reply").click(function() {
+            $(document).on('click', ".show-reply", function(event) {
                 event.preventDefault();
                 show_reply_textarea(event);
             });
