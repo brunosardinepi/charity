@@ -28,6 +28,10 @@
                     data : { comment_text : $("#comment-text").val() },
                     success : function(json) {
                         $("#comment-text").val('');
+                        if (!$("#comment_list").length) {
+                            $("#no-comments").remove();
+                            $("#comment").after("<ul id='comment_list'></ul>");
+                        }
                         $("#comment_list").prepend("<li id='comment-" + json.id + "' class='comment'>" + json.content + " - " + json.user + " @ " + json.date + " - <a class='show-reply' id='" + json.id + "' href=''>Reply</a> - <a id='delete-comment-" + json.id + "' class='delete-cr' href=''>Delete</a></li>");
                     }
                 });
@@ -144,7 +148,7 @@
             {% endfor %}
         </ul>
     {% else %}
-        <p>No comments</p>
+        <p id="no-comments">No comments</p>
     {% endif %}
 
     {% if request.user.userprofile in page.admins.all %}
