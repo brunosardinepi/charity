@@ -55,9 +55,9 @@
                     success : function(json) {
                         $("#reply").remove();
                         if (!$("#comment-" + id + "-replies").length) {
-                            if ($("#delete-comment-" + id)) {
+                            if ($("#delete-comment-" + id).length) {
                                 $("#delete-comment-" + id).after("<ul id='comment-" + id + "-replies' class='reply-list'></ul>");
-                            } else if ("#" + id) {
+                            } else if ("#" + id.length) {
                                 $("#" + id).after("<ul id='comment-" + id + "-replies' class='reply-list'></ul>");
                             }
                         }
@@ -88,7 +88,7 @@
             $(document).on('click', ".delete-cr", function(event) {
                 event.preventDefault();
                 delete_obj(event);
-                if ($("#comment_list").children().length <= 1) {
+                if ($("#comment_list").children().length < 1) {
                     $("#comment_list").remove();
                     $("#comment").after("<p id='no-comments'>No comments</p>");
                 }
