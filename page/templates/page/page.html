@@ -6,6 +6,7 @@
 {% block title %} {{ page.name }} | {{ block.super }}{% endblock %}
 
 {% block head_extra %}
+    <script src="{% static 'page/js/csrf.js' %}"></script>
     <script>
         $(document).ready(function() {
 
@@ -20,33 +21,6 @@
                 });
             });
 
-            function getCookie(name) {
-                var cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    var cookies = document.cookie.split(';');
-                    for (var i = 0; i < cookies.length; i++) {
-                        var cookie = jQuery.trim(cookies[i]);
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
-            var csrftoken = getCookie('csrftoken');
-
-            function csrfSafeMethod(method) {
-                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-            }
-            $.ajaxSetup({
-                beforeSend: function(xhr, settings) {
-                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                    }
-                }
-            });
-
             function comment() {
                 $.ajax({
                     url : "{% url 'comments:comment_page' page_pk=page.pk %}",
@@ -54,7 +28,7 @@
                     data : { comment_text : $("#comment-text").val() },
                     success : function(json) {
                         $("#comment-text").val('');
-                        $("#comment_list").prepend("<li id='comment-" + json.id + "'>" + json.content + " - " + json.user + " @ " + json.date + " - <a class='show-reply' id='" + json.id + "' href=''>Reply</a> - <a id='delete-comment-" + json.id + "' class='delete-cr' href=''>Delete</a></li>");
+                        $("#comment_list").prepend("<li id='comment-" + json.id + "' class='comment'>" + json.content + " - " + json.user + " @ " + json.date + " - <a class='show-reply' id='" + json.id + "' href=''>Reply</a> - <a id='delete-comment-" + json.id + "' class='delete-cr' href=''>Delete</a></li>");
                     }
                 });
             };
@@ -77,7 +51,11 @@
                     success : function(json) {
                         $("#reply").remove();
                         if (!$("#comment-" + id + "-replies").length) {
-                            $("#delete-comment-" + id).after("<ul id='comment-" + id + "-replies' class='reply-list'></ul>");
+                            if ($("#delete-comment-" + id)) {
+                                $("#delete-comment-" + id).after("<ul id='comment-" + id + "-replies' class='reply-list'></ul>");
+                            } else if ("#" + id) {
+                                $("#" + id).after("<ul id='comment-" + id + "-replies' class='reply-list'></ul>");
+                            }
                         }
                         $("#comment-" + id + "-replies").append("<li id='reply-" + json.id + "'>" + json.content + " - " + json.user + " @ " + json.date + " - <a id='delete-reply-" + json.id + "' class='delete-cr' href=''>Delete</a></li>");
                     }
@@ -158,7 +136,7 @@
                     {% if replies %}
                         <ul id="comment-{{ c.pk }}-replies" class="reply-list">
                             {% for r in replies %}
-                                <li id="reply-{{ r.pk }}" class="reply">{{ r.content }} - {{ r.user.userprofile.first_name }} {{ r.user.userprofile.last_name }} @ {{ r.date|date:"m/d/y g:i A" }} {% if c.user == request.user %} - <a id="delete-reply-{{ r.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</li>
+                                <li id="reply-{{ r.pk }}" class="reply">{{ r.content }} - {{ r.user.userprofile.first_name }} {{ r.user.userprofile.last_name }} @ {{ r.date|date:"m/d/y g:i A" }} {% if r.user == request.user %} - <a id="delete-reply-{{ r.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</li>
                             {% endfor %}
                         </ul>
                     {% endif %}
