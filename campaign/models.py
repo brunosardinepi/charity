@@ -3,6 +3,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
+from page.models import Page
 from userprofile.models import UserProfile
 
 from pagefund import config
@@ -15,7 +16,7 @@ class Campaign(models.Model):
     donation_count = models.IntegerField(default=0)
     donation_money = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
-    page = models.ForeignKey('page.Page', on_delete=models.CASCADE, related_name='campaigns',)
+    page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='campaigns',)
     campaign_admins = models.ManyToManyField(UserProfile, related_name='campaign_admins', blank=True)
     campaign_managers = models.ManyToManyField(UserProfile, related_name='campaign_managers', blank=True)
     campaign_icon = models.ImageField(upload_to='media/campaigns/', blank=True, null=True)

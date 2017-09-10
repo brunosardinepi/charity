@@ -8,6 +8,8 @@ from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 from . import forms
 from . import models
 from campaign import models as CampaignModels
+from comments.forms import CommentForm
+from comments.models import Comment
 from invitations.models import ManagerInvitation
 from pagefund.email import email
 from userprofile.models import UserProfile
@@ -21,6 +23,8 @@ def page(request, page_slug):
     active_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=True)
     inactive_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=False)
     managers = page.managers.all()
+    comments = Comment.objects.filter(page=page).order_by('-date')
+    form = CommentForm
     try:
         user_subscription_check = page.subscribers.get(user_id=request.user.pk)
     except UserProfile.DoesNotExist:
@@ -70,6 +74,8 @@ def page(request, page_slug):
         'active_campaigns': active_campaigns,
         'inactive_campaigns': inactive_campaigns,
         'managers': managers,
+        'comments': comments,
+        'form': form,
         'subscribe_attr': subscribe_attr
     })
 
