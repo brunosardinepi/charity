@@ -99,6 +99,13 @@ class CommentTest(TestCase):
         self.assertIn(self.reply2, replies)
 
     def test_comment_page(self):
+        data = {'comment_text': "I am anonymous!"}
+        response = self.client.post('/comments/page/%s/comment/' % self.page.pk, data)
+        self.assertRedirects(response, '/accounts/login/?next=/comments/page/%s/comment/' % self.page.pk, 302, 200)
+        response = self.client.get('/testpage/')
+        self.assertNotContains(response, "I am anonymous!", status_code=200)
+        self.assertContains(response, "You must be logged in to comment!", status_code=200)
+
         self.client.login(username='testuser', password='testpassword')
         self.assertEqual(models.Comment.objects.all().count(), 2)
         data = {'comment_text': "Hello my name is Testy McTestface."}
