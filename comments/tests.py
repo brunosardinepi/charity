@@ -9,6 +9,8 @@ from . import views
 from campaign.models import Campaign
 from page.models import Page
 
+import unittest
+
 
 class CommentTest(TestCase):
     def setUp(self):
@@ -20,7 +22,6 @@ class CommentTest(TestCase):
             email='test@test.test',
             password='testpassword'
         )
-
         self.user.userprofile.first_name = 'John'
         self.user.userprofile.last_name = 'Doe'
         self.user.save()
@@ -30,6 +31,9 @@ class CommentTest(TestCase):
             email='harry@potter.com',
             password='imawizard'
         )
+        self.user2.userprofile.first_name = 'Lord'
+        self.user2.userprofile.last_name = 'Voldemort'
+        self.user2.save()
 
         self.user3 = User.objects.create_user(
             username='bobdole',
@@ -107,3 +111,51 @@ class CommentTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Hello my name is Testy McTestface.", status_code=200)
         self.assertContains(response, "%s %s" % (self.user.userprofile.first_name, self.user.userprofile.last_name), status_code=200)
+
+        comment = models.Comment.objects.get(content="Hello my name is Testy McTestface.")
+        response = self.client.get('/comments/delete/comment/%s/' % comment.pk)
+        response = self.client.get('/testpage/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, comment.content, status_code=200)
+
+    def test_reply(self):
+        self.client.login(username='testuser', password='testpassword')
+        data = {'reply_text': "This is my reply."}
+        response = self.client.post('/comments/%s/reply/' % self.comment.pk, data)
+        response = self.client.get('/testpage/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This is my reply.", status_code=200)
+        self.assertContains(response, "%s %s" % (self.user.userprofile.first_name, self.user.userprofile.last_name), status_code=200)
+
+        self.client.login(username='harrypotter', password='imawizard')
+        data = {'reply_text': "Yankee Doodle went to town."}
+        response = self.client.post('/comments/%s/reply/' % self.comment.pk, data)
+        response = self.client.get('/testpage/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Yankee Doodle went to town.", status_code=200)
+        self.assertContains(response, "%s %s" % (self.user2.userprofile.first_name, self.user2.userprofile.last_name), status_code=200)
+
+        self.assertContains(response, self.reply.content, status_code=200)
+        response = self.client.get('/comments/delete/reply/%s/' % self.reply.pk)
+        response = self.client.get('/testpage/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.reply.content, status_code=200)
+
+        self.client.login(username='testuser', password='testpassword')
+        replies = models.Reply.objects.filter(comment=self.comment)
+        response = self.client.get('/comments/delete/comment/%s/' % self.comment.pk)
+        response = self.client.get('/testpage/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.comment.content, status_code=200)
+        for r in replies:
+            self.assertNotContains(response, r.content, status_code=200)
+
+    @unittest.expectedFailure
+    def test_delete_comment_not_owner(self):
+        self.client.login(username='harrypotter', password='imawizard')
+        response = self.client.get('/comments/delete/comment/%s/' % self.comment.pk)
+
+    @unittest.expectedFailure
+    def test_delete_reply_not_owner(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/comments/delete/reply/%s/' % self.reply.pk)
