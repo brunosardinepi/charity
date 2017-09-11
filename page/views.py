@@ -75,12 +75,15 @@ def page(request, page_slug):
 
 @login_required(login_url='signup')
 def page_create(request):
-    form = forms.PageForm()
+    page_form = forms.PageForm()
+    image_form = forms.PageImageForm()
     if request.method == 'POST':
-        form = forms.PageForm(request.POST, request.FILES)
-        if form.is_valid():
-            image_upload(form)
-            page = form.save()
+        page_form = forms.PageForm(request.POST, request.FILES)
+        image_form = forms.PageImageForm(request.POST, request.FILES)
+        if page_form.is_valid() and image_form.is_valid():
+            image_upload(image_form)
+            page = page_form.save()
+            image = image_form.save()
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
 
@@ -88,7 +91,7 @@ def page_create(request):
             body = "You just created a Page for: %s" % page.name
             email(request.user, subject, body)
             return HttpResponseRedirect(page.get_absolute_url())
-    return render(request, 'page/page_create.html', {'form': form})
+    return render(request, 'page/page_create.html', {'page_form': page_form, 'image_form': image_form})
 
 @login_required
 def page_edit(request, page_slug):

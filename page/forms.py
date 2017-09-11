@@ -11,6 +11,12 @@ class PageForm(forms.ModelForm):
             'page_slug',
             'category',
             'description',
+        ]
+
+class PageImageForm(forms.ModelForm):
+    class Meta:
+        model = models.PageImage
+        fields = [
             'icon',
         ]
 
