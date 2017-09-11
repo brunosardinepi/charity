@@ -52,5 +52,4 @@ class Page(models.Model):
 
 class PageImage(models.Model):
     icon = models.ImageField(upload_to='media/pages/', blank=True, null=True)
-    page_id = models.ForeignKey(Page)
-
+    page = models.ForeignKey('page.Page', on_delete=models.CASCADE)
