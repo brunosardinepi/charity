@@ -52,6 +52,7 @@ class CommentTest(TestCase):
 
         self.campaign = Campaign.objects.create(
             name='Test Campaign',
+            campaign_slug='testcampaign',
             page=self.page,
             description='This is a description for Test Campaign.',
             goal='11',
@@ -122,6 +123,33 @@ class CommentTest(TestCase):
         comment = models.Comment.objects.get(content="Hello my name is Testy McTestface.")
         response = self.client.get('/comments/delete/comment/%s/' % comment.pk)
         response = self.client.get('/testpage/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, comment.content, status_code=200)
+
+    def test_comment_campaign(self):
+        data = {'comment_text': "Oi mate!"}
+        response = self.client.post('/comments/campaign/%s/comment/' % self.campaign.pk, data)
+        self.assertRedirects(response, '/accounts/login/?next=/comments/campaign/%s/comment/' % self.campaign.pk, 302, 200)
+        response = self.client.get('/%s/%s/%s/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        self.assertNotContains(response, "Oi mate!", status_code=200)
+        self.assertContains(response, "You must be logged in to comment!", status_code=200)
+
+        self.client.login(username='testuser', password='testpassword')
+        self.assertEqual(models.Comment.objects.all().count(), 2)
+        data = {'comment_text': "First night in town."}
+        response = self.client.post('/comments/campaign/%s/comment/' % self.campaign.pk, data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(models.Comment.objects.all().count(), 3)
+
+        response = self.client.get('/%s/%s/%s/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "First night in town.", status_code=200)
+        self.assertContains(response, "%s %s" % (self.user.userprofile.first_name, self.user.userprofile.last_name), status_code=200)
+
+        comment = models.Comment.objects.get(content="First night in town.")
+        response = self.client.get('/comments/delete/comment/%s/' % comment.pk)
+        response = self.client.get('/%s/%s/%s/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, comment.content, status_code=200)
 
