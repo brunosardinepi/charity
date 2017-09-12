@@ -91,4 +91,4 @@ def delete(request, model, pk):
         obj.delete()
         return HttpResponse('')
     else:
-        return Http404
+        raise Http404
