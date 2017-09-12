@@ -5,6 +5,84 @@
 
 {% block title %} {{ campaign.name }} | {{ block.super }}{% endblock %}
 
+{% block head_extra %}
+    <script src="{% static 'page/js/csrf.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+
+            function comment() {
+                $.ajax({
+                    url : "{% url 'comments:comment_campaign' campaign_pk=campaign.pk %}",
+                    type : "POST",
+                    data : { comment_text : $("#comment-text").val() },
+                    success : function(json) {
+                        $("#comment-text").val('');
+                        if (!$("#comment_list").length) {
+                            $("#no-comments").remove();
+                            $("#comment").after("<ul id='comment_list'></ul>");
+                        }
+                        $("#comment_list").prepend("<li id='comment-" + json.id + "' class='comment'>" + json.content + " - " + json.user + " @ " + json.date + " - <a class='show-reply' id='" + json.id + "' href=''>Reply</a> - <a id='delete-comment-" + json.id + "' class='delete-cr' href=''>Delete</a></li>");
+                    }
+                });
+            };
+
+            $("#comment").on('submit', function(event) {
+                event.preventDefault();
+                comment();
+            });
+
+            function show_reply_textarea(event) {
+                var url = "{% url 'comments:reply' comment_pk=0 %}".replace(0, event.target.id);
+                $(event.target).parent().after("<form id='reply' action=" + url + " method='POST'>{% csrf_token %}<textarea id='reply-text'></textarea><input type='submit' value='Reply' /></form>");
+            };
+
+            function reply(id) {
+                $.ajax({
+                    url : "{% url 'comments:reply' comment_pk=0 %}".replace(0, id),
+                    type : "POST",
+                    data : { reply_text : $("#reply-text").val() },
+                    success : function(json) {
+                        $("#reply").remove();
+                        if (!$("#comment-" + id + "-replies").length) {
+                            if ($("#delete-comment-" + id).length) {
+                                $("#delete-comment-" + id).after("<ul id='comment-" + id + "-replies' class='reply-list'></ul>");
+                            } else if ("#" + id.length) {
+                                $("#" + id).after("<ul id='comment-" + id + "-replies' class='reply-list'></ul>");
+                            }
+                        }
+                        $("#comment-" + id + "-replies").append("<li id='reply-" + json.id + "'>" + json.content + " - " + json.user + " @ " + json.date + " - <a id='delete-reply-" + json.id + "' class='delete-cr' href=''>Delete</a></li>");
+                    }
+                });
+            };
+
+            $(document).on('click', ".show-reply", function(event) {
+                event.preventDefault();
+                show_reply_textarea(event);
+            });
+
+            $(document).on('submit', "#reply", function(event) {
+                event.preventDefault();
+                var id = $("#reply").prev().find(".show-reply").attr("id");
+                reply(id);
+            });
+
+            function delete_obj(event) {
+                var arr = event.target.id.split('-');
+                var url = "{% url 'comments:delete' model=0 pk=1 %}".replace(0, arr[1]).replace(1, arr[2]);
+                $.get(url, function () {
+                    $("#" + arr[1] + "-" + arr[2]).remove();
+                });
+            };
+
+            $(document).on('click', ".delete-cr", function(event) {
+                event.preventDefault();
+                delete_obj(event);
+            });
+
+        });
+    </script>
+{% endblock %}
+
 {% block breadcrumbs %}
     <a href="{% url 'page' page_slug=campaign.page.page_slug %}">{{ campaign.page.name }}</a> / {{ campaign.name }}
 {% endblock %}
@@ -20,27 +98,33 @@
     <p>${{ campaign.donation_money }} raised by {{ campaign.donation_count }} donors</p>
 
     <h3>Comments</h3>
-    <form action="{% url 'comments:comment_campaign' campaign_pk=campaign.pk %}" method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Comment" />
-    </form>
+    {% if request.user.is_authenticated %}
+        <form id="comment" action="{% url 'comments:comment_campaign' campaign_pk=campaign.pk %}" method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Comment" />
+        </form>
+    {% else %}
+        <p>You must be logged in to comment!</p>
+    {% endif %}
     {% if comments %}
-        <ul>
+        <ul id="comment_list">
             {% for c in comments %}
-                <li>{{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date }}</li>
-                {% comment_replies c.pk as replies %}
-                {% if replies %}
-                    <ul>
-                        {% for r in replies %}
-                            <li>{{ r.content }} - {{ r.user.userprofile.first_name }} {{ r.user.userprofile.last_name }} @ {{ r.date }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
+                <li id="comment-{{ c.pk }}" class="comment">
+                    {{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="show-reply" id="{{ c.pk }}" href="">Reply</a>{% if c.user == request.user %} - <a id="delete-comment-{{ c.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</a>
+                    {% comment_replies c.pk as replies %}
+                    {% if replies %}
+                        <ul id="comment-{{ c.pk }}-replies" class="reply-list">
+                            {% for r in replies %}
+                                <li id="reply-{{ r.pk }}" class="reply">{{ r.content }} - {{ r.user.userprofile.first_name }} {{ r.user.userprofile.last_name }} @ {{ r.date|date:"m/d/y g:i A" }} {% if r.user == request.user %} - <a id="delete-reply-{{ r.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
             {% endfor %}
         </ul>
     {% else %}
-        <p>No comments</p>
+        <p id="no-comments">No comments</p>
     {% endif %}
 
     {% if request.user.userprofile in campaign.campaign_admins.all %}
