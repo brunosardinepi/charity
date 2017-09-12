@@ -110,6 +110,7 @@ def page_create(request):
 @login_required
 def page_edit(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
+    pageimage = get_object_or_404(models.PageImage, page=page)
     admin = request.user.userprofile in page.admins.all()
     if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_edit', page):
         manager = True
@@ -117,10 +118,10 @@ def page_edit(request, page_slug):
         manager = False
     if admin or manager:
         page_form = forms.PageForm(instance=page)
-        image_form = forms.PageImageForm(instance=page)
+        image_form = forms.PageImageForm(instance=pageimage)
         if request.method == 'POST':
             page_form = forms.PageForm(instance=page, data=request.POST)
-            image_form = forms.PageImageForm(instance=page, data=request.POST, files=request.FILES)
+            image_form = forms.PageImageForm(instance=pageimage, data=request.POST, files=request.FILES)
             if page_form.is_valid() and image_form.is_valid():
                 page = page_form.save()
                 image = image_form.cleaned_data.get('icon',False)
