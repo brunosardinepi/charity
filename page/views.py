@@ -119,12 +119,22 @@ def page_edit(request, page_slug):
         page_form = forms.PageForm(instance=page)
         image_form = forms.PageImageForm(instance=page)
         if request.method == 'POST':
-            page_form = forms.PageForm(instance=page, data=request.POST, files=request.FILES)
+            page_form = forms.PageForm(instance=page, data=request.POST)
             image_form = forms.PageImageForm(instance=page, data=request.POST, files=request.FILES)
             if page_form.is_valid() and image_form.is_valid():
-                image_upload(image_form)
-                image_form.save()
-                page_form.save()
+                page = page_form.save()
+                image = image_form.cleaned_data.get('icon',False)
+                image_type = image.content_type.split('/')[0]
+                if image_type in settings.UPLOAD_TYPES:
+                    imageupload = image_form.save(commit=False)
+                    imageupload.page = page
+                    imageupload.save() 
+                    if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
+                        msg = 'The file size limit is %s. Your file size is %s.' % (
+                            settings.MAX_IMAGE_UPLOAD_SIZE,
+                            image._size
+                        )
+                        raise ValidationError(msg)
                 return HttpResponseRedirect(page.get_absolute_url())
     else:
         raise Http404
