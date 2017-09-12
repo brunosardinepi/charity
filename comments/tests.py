@@ -185,12 +185,12 @@ class CommentTest(TestCase):
         for r in replies:
             self.assertNotContains(response, r.content, status_code=200)
 
-    @unittest.expectedFailure
     def test_delete_comment_not_owner(self):
         self.client.login(username='harrypotter', password='imawizard')
         response = self.client.get('/comments/delete/comment/%s/' % self.comment.pk)
+        self.assertEqual(response.status_code, 404)
 
-    @unittest.expectedFailure
     def test_delete_reply_not_owner(self):
         self.client.login(username='testuser', password='testpassword')
         response = self.client.get('/comments/delete/reply/%s/' % self.reply.pk)
+        self.assertEqual(response.status_code, 404)
