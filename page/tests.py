@@ -186,11 +186,10 @@ class PageTest(TestCase):
         response = self.client.get('/%s/edit/' % self.page.page_slug)
         self.assertRedirects(response, '/accounts/login/?next=/%s/edit/' % self.page.page_slug, 302, 200)
 
-    @unittest.expectedFailure
     def test_page_edit_not_admin(self):
-        request = self.factory.get('home')
-        request.user = self.user2
-        response = views.page_edit(request, self.page.page_slug)
+        self.client.login(username='harrypotter', password='imawizard')
+        response = self.client.get('/%s/edit/' % self.page.page_slug)
+        self.assertEqual(response.status_code, 404)
 
     def test_page_edit_admin(self):
         request = self.factory.get('home')
@@ -206,11 +205,10 @@ class PageTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
-    @unittest.expectedFailure
     def test_page_edit_manager_no_perms(self):
-        request = self.factory.get('home')
-        request.user = self.user4
-        response = views.page_edit(request, self.page.page_slug)
+        self.client.login(username='batman', password='imbatman')
+        response = self.client.get('/%s/edit/' % self.page.page_slug)
+        self.assertEqual(response.status_code, 404)
 
     def test_page_not_subscribed(self):
         request = self.factory.get('home')
@@ -276,11 +274,10 @@ class PageTest(TestCase):
 
         self.assertContains(response, self.page.name, status_code=200)
 
-    @unittest.expectedFailure
     def test_delete_page_not_admin(self):
-        request = self.factory.get('home')
-        request.user = self.user2
-        response = views.page_delete(request, self.page.page_slug)
+        self.client.login(username='harrypotter', password='imawizard')
+        response = self.client.get('/%s/delete/' % self.page.page_slug)
+        self.assertEqual(response.status_code, 404)
 
     def test_delete_page_manager_perms(self):
         request = self.factory.get('home')
@@ -289,18 +286,15 @@ class PageTest(TestCase):
 
         self.assertContains(response, self.page.name, status_code=200)
 
-    @unittest.expectedFailure
     def test_delete_page_manager_no_perms(self):
-        request = self.factory.get('home')
-        request.user = self.user4
-        response = views.page_delete(request, self.page.page_slug)
+        self.client.login(username='batman', password='imbatman')
+        response = self.client.get('/%s/edit/' % self.page.page_slug)
+        self.assertEqual(response.status_code, 404)
 
-    @unittest.expectedFailure
     def test_page_invite_not_admin_not_manager(self):
-        request = self.factory.get('home')
-        request.user = self.user2
-        response = views.page_invite(request, self.page.page_slug)
-        response.client = self.client
+        self.client.login(username='harrypotter', password='imawizard')
+        response = self.client.get('/%s/managers/invite/' % self.page.page_slug)
+        self.assertEqual(response.status_code, 404)
 
     def test_page_invite_admin_not_manager(self):
         request = self.factory.get('home')
@@ -311,11 +305,10 @@ class PageTest(TestCase):
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, "Invite", status_code=200)
 
-    @unittest.expectedFailure
     def test_page_invite_not_admin_manager_no_perms(self):
-        request = self.factory.get('home')
-        request.user = self.user4
-        response = views.page_invite(request, self.page.page_slug)
+        self.client.login(username='batman', password='imbatman')
+        response = self.client.get('/%s/managers/invite/' % self.page.page_slug)
+        self.assertEqual(response.status_code, 404)
 
     def test_page_invite_not_admin_manager_perms(self):
         request = self.factory.get('home')
@@ -373,11 +366,10 @@ class PageTest(TestCase):
         response = self.client.get('/%s/managers/%s/remove/' % (self.page.page_slug, self.user3.pk))
         self.assertRedirects(response, '/accounts/login/?next=/%s/managers/%s/remove/' % (self.page.page_slug, self.user3.pk), 302, 200)
 
-    @unittest.expectedFailure
     def test_remove_manager_logged_in_not_admin(self):
-        request = self.factory.get('home')
-        request.user = self.user2
-        response = views.remove_manager(request, self.page.page_slug, self.user3.pk)
+        self.client.login(username='harrypotter', password='imawizard')
+        response = self.client.get('/%s/managers/%s/remove/' % (self.page.page_slug, self.user3.pk))
+        self.assertEqual(response.status_code, 404)
 
     def test_remove_manager_logged_in_admin(self):
         request = self.factory.get('home')
