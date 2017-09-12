@@ -6,7 +6,7 @@
 {% block title %} {{ page.name }} | {{ block.super }}{% endblock %}
 
 {% block head_extra %}
-    <script src="{% static 'page/js/csrf.js' %}"></script>
+    <script src="{% static 'js/comment_csrf.js' %}"></script>
     <script>
         $(document).ready(function() {
 
