@@ -23,6 +23,13 @@ $(document).on('keyup', '#q', function() {
     checkboxClick();
 });
 
+$(document).on('keypress', '#q', function(event) {
+    if (event.keyCode == 13) {
+        console.log("pressed enter");
+        return false;
+    }
+});
+
 $(document).ready(function() {
     $(":checkbox").change(function() {
         console.log("detected checkbox state change");
