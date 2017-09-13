@@ -25,14 +25,13 @@ $(document).on('keyup', '#q', function() {
 
 $(document).on('keypress', '#q', function(event) {
     if (event.keyCode == 13) {
-        console.log("pressed enter");
+        event.preventDefault();
         return false;
     }
 });
 
 $(document).ready(function() {
     $(":checkbox").change(function() {
-        console.log("detected checkbox state change");
         checkboxClick();
     });
 });
