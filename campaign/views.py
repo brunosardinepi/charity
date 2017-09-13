@@ -92,7 +92,7 @@ def campaign_create(request, page_slug):
                 campaign.name,
                 page.name
             )
-            email(request.user, subject, body)
+            email(request.user.email, subject, body)
 
             body = "A Campaign called '%s' has just been created by %s for the '%s' Page." % (
                 campaign.name,
@@ -101,10 +101,10 @@ def campaign_create(request, page_slug):
             )
             admins = page.admins.all()
             for admin in admins:
-                email(admin.user, subject, body)
+                email(admin.user.email, subject, body)
             managers = page.managers.all()
             for manager in managers:
-                email(manager.user, subject, body)
+                email(manager.user.email, subject, body)
 
             return HttpResponseRedirect(campaign.get_absolute_url())
     return render(request, 'campaign/campaign_create.html', {'form': form, 'page': page})
@@ -176,11 +176,9 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
         if request.method == 'POST':
             form = forms.ManagerInviteForm(request.POST)
             if form.is_valid():
-                user_email = form.cleaned_data['email']
-
                 # check if the person we are inviting is already a manager
                 try:
-                    user = User.objects.get(email=user_email)
+                    user = User.objects.get(email=form.cleaned_data['email'])
                     if user.userprofile in campaign.campaign_managers.all():
                         return HttpResponseRedirect(campaign.get_absolute_url())
                 except User.DoesNotExist:
@@ -191,7 +189,7 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
                 # accepted/declined are irrelevant if the invite has expired, so we don't check these
                 try:
                     invitation = ManagerInvitation.objects.get(
-                        invite_to=user_email,
+                        invite_to=form.cleaned_data['email'],
                         invite_from=request.user,
                         campaign=campaign,
                         expired=False
@@ -227,7 +225,7 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
                             invitation.pk,
                             invitation.key
                         )
-                    email(user, subject, body)
+                    email(form.cleaned_data['email'], subject, body)
                     # redirect the admin/manager to the campaign
                     return HttpResponseRedirect(campaign.get_absolute_url())
         return render(request, 'campaign/campaign_invite.html', {'form': form, 'campaign': campaign})

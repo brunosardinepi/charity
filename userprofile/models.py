@@ -40,4 +40,4 @@ def save_user_profile(sender, instance, **kwargs):
 def user_signed_up_(request, user, **kwargs):
     subject = "Welcome to PageFund!"
     body = "This is a test email for a user that has just signed up with PageFund."
-    email(user, subject, body)
+    email(user.email, subject, body)
