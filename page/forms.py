@@ -11,6 +11,7 @@ class PageForm(forms.ModelForm):
             'page_slug',
             'category',
             'city',
+            'state',
             'description',
             'icon',
         ]
