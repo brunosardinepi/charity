@@ -11,6 +11,7 @@ class CampaignForm(forms.ModelForm):
             'campaign_slug',
             'type',
             'goal',
+            'city',
             'description',
             'campaign_icon',
         ]

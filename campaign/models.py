@@ -20,6 +20,7 @@ class Campaign(models.Model):
     campaign_admins = models.ManyToManyField(UserProfile, related_name='campaign_admins', blank=True)
     campaign_managers = models.ManyToManyField(UserProfile, related_name='campaign_managers', blank=True)
     campaign_icon = models.ImageField(upload_to='media/campaigns/', blank=True, null=True)
+    city = models.CharField(max_length=255, blank=True)
     TYPE_CHOICES = (
         ('event', 'Event'),
     )
