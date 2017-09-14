@@ -1,13 +1,13 @@
 {% if sponsored %}
     <h2>Sponsored Pages</h2>
     {% for page in sponsored %}
-        <p><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a></p>
+        <p><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a>{% if page.city %} ({{ page.city }}){% endif %}</p>
     {% endfor %}
 {% endif %}
 
 {% if results %}
     <h2>Search Results</h2>
     {% for result in results %}
-        <p><a href="{% url 'page' page_slug=result.page_slug %}">{{ result.name }}</a></p>
+        <p><a href="{% url 'page' page_slug=result.page_slug %}">{{ result.name }}</a>{% if result.city %} ({{ result.city }}){% endif %}</p>
     {% endfor %}
 {% endif %}
