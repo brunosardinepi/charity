@@ -56,6 +56,7 @@ class CampaignTest(TestCase):
             page=self.page,
             type='Event',
             city='Dallas',
+            state='Texas',
             description='This is a description for Test Campaign.',
             goal='666',
             donation_count='5',
@@ -99,6 +100,7 @@ class CampaignTest(TestCase):
         self.assertContains(response, self.campaign.name, status_code=200)
         self.assertContains(response, self.campaign.type, status_code=200)
         self.assertContains(response, self.campaign.city, status_code=200)
+        self.assertContains(response, self.campaign.state, status_code=200)
         self.assertContains(response, self.campaign.description, status_code=200)
         self.assertContains(response, self.campaign.goal, status_code=200)
         self.assertContains(response, self.campaign.donation_count, status_code=200)
@@ -113,6 +115,7 @@ class CampaignTest(TestCase):
         self.assertContains(response, self.campaign.name, status_code=200)
         self.assertContains(response, self.campaign.type, status_code=200)
         self.assertContains(response, self.campaign.city, status_code=200)
+        self.assertContains(response, self.campaign.state, status_code=200)
         self.assertContains(response, self.campaign.description, status_code=200)
         self.assertContains(response, self.campaign.goal, status_code=200)
         self.assertContains(response, self.campaign.donation_count, status_code=200)
@@ -237,6 +240,7 @@ class CampaignTest(TestCase):
         form = forms.CampaignForm({
             'name': 'Headphones',
             'city': 'Austin',
+            'state': 'TX',
             'campaign_slug': 'headphones',
             'goal': '234',
             'type': 'event',
@@ -251,6 +255,7 @@ class CampaignTest(TestCase):
         self.assertEqual(campaign.user, self.user)
         self.assertEqual(campaign.page, self.page)
         self.assertEqual(campaign.city, "Austin")
+        self.assertEqual(campaign.state, "TX")
         self.assertEqual(campaign.campaign_slug, "headphones")
         self.assertEqual(campaign.goal, 234)
         self.assertEqual(campaign.type, "event")

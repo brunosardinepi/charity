@@ -55,6 +55,7 @@ class PageTest(TestCase):
             name='Test Page',
             page_slug='testpage',
             city='Houston',
+            state='Texas',
             description='This is a description for Test Page.',
             donation_count='20',
             donation_money='30',
@@ -118,6 +119,7 @@ class PageTest(TestCase):
         self.assertContains(response, self.user.first_name, status_code=200)
         self.assertContains(response, self.user.last_name, status_code=200)
         self.assertContains(response, self.page.city, status_code=200)
+        self.assertContains(response, self.page.state, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count, status_code=200)
         self.assertContains(response, self.page.donation_money, status_code=200)
@@ -139,6 +141,7 @@ class PageTest(TestCase):
         self.assertContains(response, self.user.first_name, status_code=200)
         self.assertContains(response, self.user.last_name, status_code=200)
         self.assertContains(response, self.page.city, status_code=200)
+        self.assertContains(response, self.page.state, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count, status_code=200)
         self.assertContains(response, self.page.donation_money, status_code=200)
@@ -247,6 +250,7 @@ class PageTest(TestCase):
             'name': 'Ribeye Steak',
             'page_slug': 'ribeyesteak',
             'city': 'Atlanta',
+            'state': 'GA',
             'category': 'animal',
             'description': 'I like flank steak.'
         })
@@ -255,6 +259,7 @@ class PageTest(TestCase):
         self.assertEqual(page.name, "Ribeye Steak")
         self.assertEqual(page.page_slug, "ribeyesteak")
         self.assertEqual(page.city, "Atlanta")
+        self.assertEqual(page.state, "GA")
         self.assertEqual(page.category, "animal")
         self.assertEqual(page.description, "I like flank steak.")
 

@@ -20,7 +20,7 @@ class UserProfileTest(TestCase):
         )
         self.user.userprofile.first_name = 'John'
         self.user.userprofile.last_name = 'Doe'
-        self.user.userprofile.zipcode = '88888'
+        self.user.userprofile.state = 'Kansas'
 
         self.page = Page.objects.create(name="Buffalo")
         self.page2 = Page.objects.create(name="Remote")
@@ -58,6 +58,7 @@ class UserProfileTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.userprofile.subscribers.get(id=self.page.pk).name, status_code=200)
+        self.assertContains(response, self.user.userprofile.state, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
         self.assertContains(response, "Remote", status_code=200)
 
@@ -66,13 +67,13 @@ class UserProfileTest(TestCase):
             'user': self.user,
             'first_name': 'Blanket',
             'last_name': 'Towel',
-            'zipcode': 99999
+            'state': 'KS'
         })
         self.assertTrue(form.is_valid())
 
     def test_userprofileform_blank(self):
         form = forms.UserProfileForm({})
-        self.assertTrue(form.is_valid())
+        self.assertFalse(form.is_valid())
 
     def test_sent_invitations(self):
         self.client.login(username='testuser', password='testpassword')
