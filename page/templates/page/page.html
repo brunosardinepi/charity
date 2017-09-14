@@ -56,6 +56,7 @@
         <h4>Admin</h4>
         <p><a href="{% url 'page_edit' page_slug=page.page_slug %}">Edit Page</a></p>
         <p><a href="{% url 'page_delete' page_slug=page.page_slug %}">Delete Page</a></p>
+        <p><a href="{% url 'page_image_upload' page_slug=page.page_slug %}">Upload Image</a></p>
         {% if managers %}
             <h5>Managers</h5>
             <form method="POST" action"">
@@ -100,4 +101,15 @@
     {% if "manager_invite" in page_perms %}
         <p><a href="{% url 'page_invite' page_slug=page.page_slug  %}">Invite others to manage Page</a></p>
     {% endif %}
+
+    <h3>Page Images</h3>
+    <ul>
+        {% for image in images %}
+            <li><img src="{{ pageimages.image.url }}" width="200" />({{ pageimages.caption }}</li>
+        {% endfor %}
+    </ul>
+
+
+
 {% endblock %}
+

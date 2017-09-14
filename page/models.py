@@ -50,6 +50,8 @@ class Page(models.Model):
             self.page_slug = slugify(self.name).replace('-', '')
             super(Page, self).save(*args, **kwargs)
 
-class PageImage(models.Model):
+class PageIcon(models.Model):
+    pageid = models.ForeignKey('page.Page', on_delete=models.CASCADE)
     icon = models.ImageField(upload_to='media/pages/', blank=True, null=True)
-    page = models.ForeignKey('page.Page', on_delete=models.CASCADE)
+
+

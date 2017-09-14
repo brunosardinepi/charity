@@ -19,7 +19,7 @@ import json
 
 def page(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
-    pageimage = get_object_or_404(models.PageImage, page=page)
+    pageimages = get_object_or_404(models.PageImages, page=page)
     active_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=True)
     inactive_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=False)
     managers = page.managers.all()
@@ -69,7 +69,7 @@ def page(request, page_slug):
                 assign_perm(e, user, page)
     return render(request, 'page/page.html', {
         'page': page,
-        'pageimage': pageimage,
+        'pageimages': pageimages,
         'active_campaigns': active_campaigns,
         'inactive_campaigns': inactive_campaigns,
         'managers': managers,
@@ -79,10 +79,10 @@ def page(request, page_slug):
 @login_required(login_url='signup')
 def page_create(request):
     page_form = forms.PageForm()
-    image_form = forms.PageImageForm()
+    image_form = forms.PageImagesForm()
     if request.method == 'POST':
         page_form = forms.PageForm(request.POST)
-        image_form = forms.PageImageForm(request.POST, request.FILES)
+        image_form = forms.PageImagesForm(request.POST, request.FILES)
         if page_form.is_valid() and image_form.is_valid():
             page = page_form.save()
             image = image_form.cleaned_data.get('icon',False)
@@ -110,7 +110,7 @@ def page_create(request):
 @login_required
 def page_edit(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
-    pageimage = get_object_or_404(models.PageImage, page=page)
+    pageimage = get_object_or_404(models.PageImages, page=page)
     admin = request.user.userprofile in page.admins.all()
     if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_edit', page):
         manager = True
@@ -118,10 +118,10 @@ def page_edit(request, page_slug):
         manager = False
     if admin or manager:
         page_form = forms.PageForm(instance=page)
-        image_form = forms.PageImageForm(instance=pageimage)
+        image_form = forms.PageImagesForm(instance=pageimage)
         if request.method == 'POST':
             page_form = forms.PageForm(instance=page, data=request.POST)
-            image_form = forms.PageImageForm(instance=pageimage, data=request.POST, files=request.FILES)
+            image_form = forms.PageImagesForm(instance=pageimage, data=request.POST, files=request.FILES)
             if page_form.is_valid() and image_form.is_valid():
                 page = page_form.save()
                 image = image_form.cleaned_data.get('icon',False)
@@ -265,3 +265,38 @@ def remove_manager(request, page_slug, manager_pk):
         return HttpResponseRedirect(page.get_absolute_url())
     else:
         raise Http404
+
+@login_required
+def page_image_upload(request, page_slug):
+    page = get_object_or_404(models.Page, page_slug=page_slug)
+    pageimages = get_object_or_404(models.PageImages, page=page)
+    admin = request.user.userprofile in page.admins.all()
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', page):
+        manager = True
+    else:
+        manager = False
+    if admin or manager:
+        form = forms.PageImagesForm(instance=page)
+        if request.method == 'POST':
+            form = forms.PageImagesForm(data=request.POST, files=request.FILES)
+            if form.is_valid():
+                print("form is valid")
+                image = form.cleaned_data.get('image',False)
+                image_type = image.content_type.split('/')[0]
+                print(image.content_type)
+                if image_type in settings.UPLOAD_TYPES:
+                    if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
+                        msg = 'The file size limit is %s. Your file size is %s.' % (
+                            settings.MAX_IMAGE_UPLOAD_SIZE,
+                            image._size
+                        )
+                        raise ValidationError(msg)
+#                form.page=page  
+                form.save()
+                return HttpResponseRedirect(page.get_absolute_url())
+            else:
+                print("form not valid")
+    else:
+        raise Http404
+    return render(request, 'page/page_image_upload.html', {'page': page, 'form': page })
+

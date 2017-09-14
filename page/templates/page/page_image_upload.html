@@ -1,0 +1,17 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} Upload {{ page.name }} | {{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+    <a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a> / Upload
+{% endblock %}
+
+{% block body_content %}
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Upload Image" />
+    </form>
+{% endblock %}
+

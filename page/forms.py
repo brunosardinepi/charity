@@ -13,11 +13,12 @@ class PageForm(forms.ModelForm):
             'description',
         ]
 
-class PageImageForm(forms.ModelForm):
+class PageIconForm(forms.ModelForm):
     class Meta:
-        model = models.PageImage
+        model = models.PageIcon
         fields = [
             'icon',
+            'pageid',
         ]
 
 class DeletePageForm(forms.ModelForm):
