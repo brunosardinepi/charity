@@ -19,8 +19,9 @@ import json
 
 def page(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
-    pageicon = get_object_or_404(models.PageIcon, page=page)
+#    pageicon = get_object_or_404(models.PageIcon, page=page)
     pageimages = models.PageImages.objects.filter(page=page)
+    pagecover = models.PageImages.objects.filter(page=page, is_cover=True)
     active_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=True)
     inactive_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=False)
     managers = page.managers.all()
@@ -70,7 +71,8 @@ def page(request, page_slug):
                 assign_perm(e, user, page)
     return render(request, 'page/page.html', {
         'page': page,
-        'pageicon': pageicon,
+        'pageimages': pageimages,
+        'pagecover': pagecover,
         'active_campaigns': active_campaigns,
         'inactive_campaigns': inactive_campaigns,
         'managers': managers,
@@ -80,24 +82,24 @@ def page(request, page_slug):
 @login_required(login_url='signup')
 def page_create(request):
     page_form = forms.PageForm()
-    image_form = forms.PageIconForm()
+#    image_form = forms.PageIconForm()
     if request.method == 'POST':
         page_form = forms.PageForm(request.POST)
-        image_form = forms.PageIconForm(request.POST, request.FILES)
-        if page_form.is_valid() and image_form.is_valid():
+#        image_form = forms.PageIconForm(request.POST, request.FILES)
+        if page_form.is_valid():
             page = page_form.save()
-            image = image_form.cleaned_data.get('icon',False)
-            image_type = image.content_type.split('/')[0]
-            if image_type in settings.UPLOAD_TYPES:
-                imageupload = image_form.save(commit=False)
-                imageupload.page = page
-                imageupload.save()
-                if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
-                    msg = 'The file size limit is %s. Your file size is %s.' % (
-                        settings.MAX_IMAGE_UPLOAD_SIZE,
-                        image._size
-                    )
-                    raise ValidationError(msg)
+#            image = image_form.cleaned_data.get('icon',False)
+#            image_type = image.content_type.split('/')[0]
+#            if image_type in settings.UPLOAD_TYPES:
+#                imageupload = image_form.save(commit=False)
+#                imageupload.page = page
+#                imageupload.save()
+#                if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
+#                    msg = 'The file size limit is %s. Your file size is %s.' % (
+#                        settings.MAX_IMAGE_UPLOAD_SIZE,
+#                        image._size
+#                    )
+#                    raise ValidationError(msg)
 
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
@@ -106,12 +108,12 @@ def page_create(request):
             body = "You just created a Page for: %s" % page.name
             email(request.user, subject, body)
             return HttpResponseRedirect(page.get_absolute_url())
-    return render(request, 'page/page_create.html', {'page_form': page_form, 'image_form': image_form})
+    return render(request, 'page/page_create.html', {'page_form': page_form})
 
 @login_required
 def page_edit(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
-    pageimage = get_object_or_404(models.PageIcon, page=page)
+#    pageimage = get_object_or_404(models.PageIcon, page=page)
     admin = request.user.userprofile in page.admins.all()
     if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_edit', page):
         manager = True
@@ -119,28 +121,28 @@ def page_edit(request, page_slug):
         manager = False
     if admin or manager:
         page_form = forms.PageForm(instance=page)
-        image_form = forms.PageIconForm(instance=pageimage)
+#        image_form = forms.PageIconForm(instance=pageimage)
         if request.method == 'POST':
             page_form = forms.PageForm(instance=page, data=request.POST)
-            image_form = forms.PageIconForm(instance=pageimage, data=request.POST, files=request.FILES)
-            if page_form.is_valid() and image_form.is_valid():
+#            image_form = forms.PageIconForm(instance=pageimage, data=request.POST, files=request.FILES)
+            if page_form.is_valid():
                 page = page_form.save()
-                image = image_form.cleaned_data.get('icon',False)
-                image_type = image.content_type.split('/')[0]
-                if image_type in settings.UPLOAD_TYPES:
-                    imageupload = image_form.save(commit=False)
-                    imageupload.page = page
-                    imageupload.save() 
-                    if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
-                        msg = 'The file size limit is %s. Your file size is %s.' % (
-                            settings.MAX_IMAGE_UPLOAD_SIZE,
-                            image._size
-                        )
-                        raise ValidationError(msg)
-                return HttpResponseRedirect(page.get_absolute_url())
+#                image = image_form.cleaned_data.get('icon',False)
+#                image_type = image.content_type.split('/')[0]
+#                if image_type in settings.UPLOAD_TYPES:
+#                    imageupload = image_form.save(commit=False)
+#                    imageupload.page = page
+#                    imageupload.save() 
+#                    if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
+#                        msg = 'The file size limit is %s. Your file size is %s.' % (
+#                            settings.MAX_IMAGE_UPLOAD_SIZE,
+#                            image._size
+#                        )
+#                        raise ValidationError(msg)
+#                return HttpResponseRedirect(page.get_absolute_url())
     else:
         raise Http404
-    return render(request, 'page/page_edit.html', {'page': page, 'page_form': page_form, 'image_form': image_form })
+    return render(request, 'page/page_edit.html', {'page': page, 'page_form': page_form})
 
 @login_required
 def page_delete(request, page_slug):
