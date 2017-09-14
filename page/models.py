@@ -1,5 +1,4 @@
 from django.db import models
-#from django.core.urlresolvers import reverse
 from django.urls import reverse
 from django.utils.text import slugify
 from userprofile.models import UserProfile
@@ -16,6 +15,7 @@ class Page(models.Model):
     subscribers = models.ManyToManyField(UserProfile, related_name='subscribers', blank=True)
     is_sponsored = models.BooleanField(default=False)
     icon = models.ImageField(upload_to='media/pages/', blank=True, null=True)
+    city = models.CharField(max_length=255, blank=True)
     CATEGORY_CHOICES = (
         ('animal', 'Animal'),
         ('environment', 'Environment'),
