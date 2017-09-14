@@ -54,6 +54,7 @@ class PageTest(TestCase):
         self.page = models.Page.objects.create(
             name='Test Page',
             page_slug='testpage',
+            city='Houston',
             description='This is a description for Test Page.',
             donation_count='20',
             donation_money='30',
@@ -116,6 +117,7 @@ class PageTest(TestCase):
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.user.first_name, status_code=200)
         self.assertContains(response, self.user.last_name, status_code=200)
+        self.assertContains(response, self.page.city, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count, status_code=200)
         self.assertContains(response, self.page.donation_money, status_code=200)
@@ -136,6 +138,7 @@ class PageTest(TestCase):
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.user.first_name, status_code=200)
         self.assertContains(response, self.user.last_name, status_code=200)
+        self.assertContains(response, self.page.city, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count, status_code=200)
         self.assertContains(response, self.page.donation_money, status_code=200)
@@ -243,6 +246,7 @@ class PageTest(TestCase):
         form = forms.PageForm({
             'name': 'Ribeye Steak',
             'page_slug': 'ribeyesteak',
+            'city': 'Atlanta',
             'category': 'animal',
             'description': 'I like flank steak.'
         })
@@ -250,6 +254,7 @@ class PageTest(TestCase):
         page = form.save()
         self.assertEqual(page.name, "Ribeye Steak")
         self.assertEqual(page.page_slug, "ribeyesteak")
+        self.assertEqual(page.city, "Atlanta")
         self.assertEqual(page.category, "animal")
         self.assertEqual(page.description, "I like flank steak.")
 
@@ -438,4 +443,3 @@ class PageTest(TestCase):
         self.assertTrue(self.user4.has_perm('manager_edit', self.page))
         self.assertTrue(self.user4.has_perm('manager_delete', self.page))
         self.assertTrue(self.user4.has_perm('manager_invite', self.page))
-
