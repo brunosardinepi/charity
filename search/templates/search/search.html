@@ -31,10 +31,8 @@ function search() {
             $("#results-list").empty();
             for (var key in json) {
                 if (json[key]["sponsored"] == "t") {
-                    console.log("t");
                     $("#sponsored-list").append("<li><a href='/" + key +  "/'>" + json[key]['name'] + "</a></li>");
                 } else {
-                    console.log("f");
                     $("#results-list").append("<li><a href='/" + key +  "/'>" + json[key]['name'] + "</a></li>");
                 }
             }
