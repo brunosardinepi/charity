@@ -17,11 +17,14 @@ function search() {
     }
     q = $('#q').val();
     q = q.split(/[ ]+/).join(',');
+
     var url = "{% url 'search:results' %}";
+    filters = JSON.stringify(filters);
 
     $.ajax({
         url : url,
         type : "POST",
+        traditional: true,
         data : {
             q : q,
             f : filters
@@ -53,7 +56,7 @@ $(document).on('keypress', '#q', function(event) {
 
 $(document).ready(function() {
     $(":checkbox").change(function() {
-        checkboxClick();
+        search();
     });
 });
 
