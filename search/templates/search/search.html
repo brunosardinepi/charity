@@ -33,10 +33,17 @@ function search() {
             $("#sponsored-list").empty();
             $("#results-list").empty();
             for (var key in json) {
-                if (json[key]["sponsored"] == "t") {
-                    $("#sponsored-list").append("<li><a href='/" + key +  "/'>" + json[key]['name'] + "</a></li>");
+                if (json[key]["city"]) {
+                    var location = json[key]["city"] + ", " + json[key]["state"];
+                } else if (json[key]["state"]) {
+                    var location = json[key]["state"];
                 } else {
-                    $("#results-list").append("<li><a href='/" + key +  "/'>" + json[key]['name'] + "</a></li>");
+                    var location = "";
+                }
+                if (json[key]["sponsored"] == "t") {
+                    $("#sponsored-list").append("<li><a href='/" + key +  "/'>" + json[key]['name'] + "</a> " + location + "</li>");
+                } else {
+                    $("#results-list").append("<li><a href='/" + key +  "/'>" + json[key]['name'] + "</a> " + location + "</li>");
                 }
             }
         }
