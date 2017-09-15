@@ -96,6 +96,7 @@ $(document).ready(function() {
     {% endfor %}
 
     <select id="s">
+        <option value=''>Select...</option>
         {% for k, v in states.items %}
             <option value={{ k }}>{{ v }}</option>
         {% endfor %}

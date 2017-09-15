@@ -17,12 +17,15 @@ def search(request):
     states = OrderedDict(Page._meta.get_field('state').choices)
     return render(request, 'search/search.html', {'categories': categories, 'states': states})
 
-def filter_list(f, s=None):
+def filter_list(f, s=''):
     f = f.split(",")
     results = []
     sponsored = []
     for i in f:
-        query_objects = Page.objects.filter(category=i, state=s).order_by('name')
+        if s:
+            query_objects = Page.objects.filter(category=i, state=s).order_by('name')
+        else:
+            query_objects = Page.objects.filter(category=i).order_by('name')
         if query_objects:
             for object in query_objects:
                 if object.is_sponsored == True:
@@ -31,13 +34,17 @@ def filter_list(f, s=None):
                     results.append(object)
     return (results, sponsored)
 
-def query_list(q, s=None):
+def query_list(q, s=''):
     q = q.split(",")
     queries = [SearchQuery(query) for query in q]
     query = reduce(operator.or_, queries)
     vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
-    results = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=False, state=s).order_by('-rank')
-    sponsored = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=True, state=s).order_by('-rank')
+    if s:
+        results = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=False, state=s).order_by('-rank')
+        sponsored = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=True, state=s).order_by('-rank')
+    else:
+        results = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=False).order_by('-rank')
+        sponsored = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=True).order_by('-rank')
     return (results, sponsored)
 
 def state_list(s):
