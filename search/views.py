@@ -17,12 +17,12 @@ def search(request):
     states = OrderedDict(Page._meta.get_field('state').choices)
     return render(request, 'search/search.html', {'categories': categories, 'states': states})
 
-def filter_list(f):
+def filter_list(f, s=None):
     f = f.split(",")
     results = []
     sponsored = []
     for i in f:
-        query_objects = Page.objects.filter(category=i).order_by('name')
+        query_objects = Page.objects.filter(category=i, state=s).order_by('name')
         if query_objects:
             for object in query_objects:
                 if object.is_sponsored == True:
@@ -31,13 +31,18 @@ def filter_list(f):
                     results.append(object)
     return (results, sponsored)
 
-def query_list(q):
+def query_list(q, s=None):
     q = q.split(",")
     queries = [SearchQuery(query) for query in q]
     query = reduce(operator.or_, queries)
     vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
-    results = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=False).order_by('-rank')
-    sponsored = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=True).order_by('-rank')
+    results = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=False, state=s).order_by('-rank')
+    sponsored = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=True, state=s).order_by('-rank')
+    return (results, sponsored)
+
+def state_list(s):
+    results = Page.objects.filter(is_sponsored=False, state=s).order_by('name')
+    sponsored = Page.objects.filter(is_sponsored=True, state=s).order_by('name')
     return (results, sponsored)
 
 def results(request):
@@ -45,7 +50,6 @@ def results(request):
         q = request.POST.get('q')
         f = request.POST.get('f')
         s = request.POST.get('s')
-        print(s)
 
         if f:
             f = f.replace('"', '')
@@ -60,7 +64,7 @@ def results(request):
         if all([q, f]):
             results = []
             sponsored = []
-            pages, sponsored_pages = query_list(q)
+            pages, sponsored_pages = query_list(q, s)
             f = f.split(",")
             for x in f:
                 p = pages.filter(category=x)
@@ -70,9 +74,11 @@ def results(request):
                 for y in s:
                     sponsored.append(y)
         elif q:
-            results, sponsored = query_list(q)
+            results, sponsored = query_list(q, s)
         elif f:
-            results, sponsored = filter_list(f)
+            results, sponsored = filter_list(f, s)
+        elif s:
+            results, sponsored = state_list(s)
         else:
             results = None
             sponsored = None
