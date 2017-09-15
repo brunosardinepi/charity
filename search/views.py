@@ -1,10 +1,12 @@
 from django.contrib.postgres.search import SearchRank, SearchQuery, SearchVector
 from django.db.models.functions import Lower
+from django.http import HttpResponse
 from django.shortcuts import render
 
 from collections import OrderedDict
 from functools import reduce
 
+import json
 import operator
 
 from page import models as PageModels
@@ -38,14 +40,19 @@ def query_list(q):
     return (results, sponsored)
 
 def results(request):
-    if request.is_ajax():
-        q = request.GET.get('q')
-        f = request.GET.get('f')
+    if request.method == "POST":
+#        print("results view accessed")
+        q = request.POST.get('q')
+        f = request.POST.get('f')
+#        print("q = %s" % q)
+#        print("f = %s" % f)
 
         if q == "0":
             q = False
         elif f == "0":
             f = False
+#        print("q = %s" % q)
+#        print("f = %s" % f)
 
         if all([q, f]):
             results = []
@@ -66,4 +73,19 @@ def results(request):
         else:
             results = None
 
-        return render(request, 'search/results.html', {'results': results, 'sponsored': sponsored})
+#        print("results = %s" % results)
+#        print("sponsored = %s" % sponsored)
+#        return render(request, 'search/results.html', {'results': results, 'sponsored': sponsored})
+
+        response_data = OrderedDict()
+        for r in results:
+            response_data[r.page_slug] = {'name': r.name, 'city': r.city, 'state': r.state, 'sponsored': "f"}
+        for s in sponsored:
+            response_data[s.page_slug] = {'name': s.name, 'city': s.city, 'state': s.state, 'sponsored': "t"}
+
+
+#        print(response_data)
+        return HttpResponse(
+            json.dumps(response_data),
+            content_type="application/json"
+        )

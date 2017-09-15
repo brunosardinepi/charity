@@ -5,8 +5,9 @@
 
 {% block head_extra %}
 
+<script src="{% static 'js/comment_csrf.js' %}"></script>
 <script>
-function checkboxClick() {
+function search() {
     var checked = document.getElementsByName('filters[]');
     var filters = [];
     for (c = 0; c < checked.length; c++) {
@@ -16,11 +17,33 @@ function checkboxClick() {
     }
     q = $('#q').val();
     q = q.split(/[ ]+/).join(',');
-    $('#results').html('&nbsp;').load('{% url 'search:results' %}?q=' + q + '&f=' + filters);
+    var url = "{% url 'search:results' %}";
+
+    $.ajax({
+        url : url,
+        type : "POST",
+        data : {
+            q : q,
+            f : filters
+        },
+        success : function(json) {
+            $("#sponsored-list").empty();
+            $("#results-list").empty();
+            for (var key in json) {
+                if (json[key]["sponsored"] == "t") {
+                    console.log("t");
+                    $("#sponsored-list").append("<li><a href='/" + key +  "/'>" + json[key]['name'] + "</a></li>");
+                } else {
+                    console.log("f");
+                    $("#results-list").append("<li><a href='/" + key +  "/'>" + json[key]['name'] + "</a></li>");
+                }
+            }
+        }
+    });
 };
 
 $(document).on('keyup', '#q', function() {
-    checkboxClick();
+    search();
 });
 
 $(document).on('keypress', '#q', function(event) {
@@ -48,6 +71,7 @@ $(document).ready(function() {
 
 {% block body_content %}
     <form>
+    {% csrf_token %}
     <input id="q" type="text" placeholder="Search" />
 
     <a href="" id="checkall">Select all</a>
@@ -57,6 +81,21 @@ $(document).ready(function() {
     {% endfor %}
     </form>
 
-    <p>Results:</p>
-    <div id="results"></div>
+    <div id="sponsored">
+        <p>Sponsored Results:</p>
+        <ul id="sponsored-list"></ul>
+    </div>
+
+    <div id="results">
+        <p>Search Results:</p>
+        <ul id="results-list"></ul>
+    </div>
 {% endblock %}
+
+
+
+
+
+
+<p><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a> {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{{ page.state }}{% endif %}</p>
+<p><a href="{% url 'page' page_slug=result.page_slug %}">{{ result.name }}</a> {% if result.city %}{{ result.city }}{% endif %}{% if result.city and result.state %}, {% endif %}{% if result.state %}{{ result.state }}{% endif %}</p>
