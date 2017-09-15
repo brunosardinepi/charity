@@ -9,6 +9,7 @@ from functools import reduce
 import json
 import operator
 
+from campaign.models import Campaign
 from page.models import Page
 
 
@@ -23,15 +24,21 @@ def filter_list(f, s=''):
     sponsored = []
     for i in f:
         if s:
-            query_objects = Page.objects.filter(category=i, state=s).order_by('name')
+            query_page = Page.objects.filter(category=i, state=s).order_by('name')
         else:
-            query_objects = Page.objects.filter(category=i).order_by('name')
-        if query_objects:
-            for object in query_objects:
+            query_page = Page.objects.filter(category=i).order_by('name')
+        if query_page:
+            for object in query_page:
                 if object.is_sponsored == True:
                     sponsored.append(object)
                 else:
                     results.append(object)
+                campaigns = Campaign.objects.filter(page=object).order_by('name')
+                for c in campaigns:
+                    if c.page.is_sponsored == True:
+                        sponsored.append(c)
+                    else:
+                        results.append(c)
     return (results, sponsored)
 
 def query_list(q, s=''):
@@ -93,10 +100,44 @@ def results(request):
         response_data = OrderedDict()
         if results:
             for r in results:
-                response_data[r.page_slug] = {'name': r.name, 'city': r.city, 'state': r.state, 'sponsored': "f"}
+                if isinstance(r, Page):
+                    response_data[r.page_slug] = {
+                        'name': r.name,
+                        'city': r.city,
+                        'state': r.state,
+                        'sponsored': 'f',
+                        'model': 'page'
+                    }
+                elif isinstance(r, Campaign):
+                    response_data[r.campaign_slug] = {
+                        'name': r.name,
+                        'city': r.city,
+                        'state': r.state,
+                        'sponsored': 'f',
+                        'model': 'campaign',
+                        'page_slug': r.page.page_slug,
+                        'pk': r.pk
+                    }
         if sponsored:
             for s in sponsored:
-                response_data[s.page_slug] = {'name': s.name, 'city': s.city, 'state': s.state, 'sponsored': "t"}
+                if isinstance(s, Page):
+                    response_data[s.page_slug] = {
+                        'name': s.name,
+                        'city': s.city,
+                        'state': s.state,
+                        'sponsored': 't',
+                        'model': 'page'
+                    }
+                elif isinstance(s, Campaign):
+                    response_data[s.campaign_slug] = {
+                        'name': s.name,
+                        'city': s.city,
+                        'state': s.state,
+                        'sponsored': 't',
+                        'model': 'campaign',
+                        'page_slug': s.page.page_slug,
+                        'pk': s.pk
+                    }
 
         return HttpResponse(
             json.dumps(response_data),

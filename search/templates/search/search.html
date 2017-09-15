@@ -44,9 +44,17 @@ function search() {
                     var location = "";
                 }
                 if (json[key]["sponsored"] == "t") {
-                    $("#sponsored-list").append("<li><a href='/" + key +  "/'>" + json[key]['name'] + "</a> " + location + "</li>");
+                    if (json[key]["model"] == "page") {
+                        $("#sponsored-list").append("<li><a href='/" + key +  "/'>" + json[key]['name'] + "</a> " + location + "</li>");
+                    } else if (json[key]["model"] == "campaign") {
+                        $("#sponsored-list").append("<li><a href='/" + json[key]['page_slug'] + "/" + json[key]['pk'] + "/" + key +  "/'>" + json[key]['name'] + "</a> " + location + "</li>");
+                    }
                 } else {
-                    $("#results-list").append("<li><a href='/" + key +  "/'>" + json[key]['name'] + "</a> " + location + "</li>");
+                    if (json[key]["model"] == "page") {
+                        $("#results-list").append("<li><a href='/" + key +  "/'>" + json[key]['name'] + "</a> " + location + "</li>");
+                    } else if (json[key]["model"] == "campaign") {
+                        $("#results-list").append("<li><a href='/" + json[key]['page_slug'] + "/" + json[key]['pk'] + "/" + key +  "/'>" + json[key]['name'] + "</a> " + location + "</li>");
+                    }
                 }
             }
         }
