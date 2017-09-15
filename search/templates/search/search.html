@@ -87,6 +87,12 @@ $(document).ready(function() {
     {% for k, v in categories.items %}
         <input name="filters[]" type="checkbox" value="{{ k }}">{{ v }}</input>
     {% endfor %}
+
+    <select>
+        {% for k, v in states.items %}
+            <option value={{ k }}>{{ v }}</option>
+        {% endfor %}
+    </select>
     </form>
 
     <div id="sponsored">

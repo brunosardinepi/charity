@@ -9,19 +9,20 @@ from functools import reduce
 import json
 import operator
 
-from page import models as PageModels
+from page.models import Page
 
 
 def search(request):
-    categories = OrderedDict(PageModels.Page._meta.get_field('category').choices)
-    return render(request, 'search/search.html', {'categories': categories})
+    categories = OrderedDict(Page._meta.get_field('category').choices)
+    states = OrderedDict(Page._meta.get_field('state').choices)
+    return render(request, 'search/search.html', {'categories': categories, 'states': states})
 
 def filter_list(f):
     f = f.split(",")
     results = []
     sponsored = []
     for i in f:
-        query_objects = PageModels.Page.objects.filter(category=i).order_by('name')
+        query_objects = Page.objects.filter(category=i).order_by('name')
         if query_objects:
             for object in query_objects:
                 if object.is_sponsored == True:
@@ -35,8 +36,8 @@ def query_list(q):
     queries = [SearchQuery(query) for query in q]
     query = reduce(operator.or_, queries)
     vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
-    results = PageModels.Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=False).order_by('-rank')
-    sponsored = PageModels.Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=True).order_by('-rank')
+    results = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=False).order_by('-rank')
+    sponsored = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=True).order_by('-rank')
     return (results, sponsored)
 
 def results(request):
