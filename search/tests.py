@@ -18,66 +18,29 @@ class SearchTest(TestCase):
 
         self.page = Page.objects.create(
             name='Test Page',
+            page_slug='testpage',
             city='San Diego',
             state='CA',
-            description='This is a description for Test Page.',
+            description='This is a description for Test Page. test test test test test test',
             category='Animal',
             is_sponsored=True
         )
 
         self.page2 = Page.objects.create(
             name='Nachos',
+            page_slug='mmmmmmmm',
             city='Seattle',
             state='WA',
-            description='I like nachos.',
+            description='I like nachos. nachos nachos nachos',
             category='Environment',
             is_sponsored=False
         )
 
     def test_search_page_logged_in(self):
-        """Search page is accessible when logged in"""
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.search(request)
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get(reverse('search:search'))
         self.assertEqual(response.status_code, 200)
 
     def test_search_page_logged_out(self):
-        """Search page is accessible when logged out"""
-        request = self.factory.get('home')
-        request.user = AnonymousUser()
-        response = views.search(request)
+        response = self.client.get(reverse('search:search'))
         self.assertEqual(response.status_code, 200)
-
-    def test_search_q_logged_in(self):
-        """Results return correctly"""
-        request = self.client.get(reverse('search:results'), {'q': 'test'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(request.status_code, 200)
-        self.assertContains(request, self.page.name, status_code=200)
-        self.assertContains(request, self.page.city, status_code=200)
-        self.assertContains(request, self.page.state, status_code=200)
-        self.assertNotContains(request, self.page2.name, status_code=200)
-        self.assertNotContains(request, self.page2.city, status_code=200)
-        self.assertNotContains(request, self.page2.state, status_code=200)
-
-    def test_search_f_logged_in(self):
-        """Results return correctly"""
-        request = self.client.get(reverse('search:results'), {'f': 'Environment'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(request.status_code, 200)
-        self.assertContains(request, self.page2.name, status_code=200)
-        self.assertContains(request, self.page2.city, status_code=200)
-        self.assertContains(request, self.page2.state, status_code=200)
-        self.assertNotContains(request, self.page.name, status_code=200)
-        self.assertNotContains(request, self.page.city, status_code=200)
-        self.assertNotContains(request, self.page.state, status_code=200)
-
-    def test_search_qf_logged_in(self):
-        """Results return correctly"""
-        request = self.client.get(reverse('search:results'), {'q': 'test', 'f': 'Animal'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(request.status_code, 200)
-        self.assertContains(request, self.page.name, status_code=200)
-        self.assertContains(request, self.page.city, status_code=200)
-        self.assertContains(request, self.page.state, status_code=200)
-        self.assertNotContains(request, self.page2.name, status_code=200)
-        self.assertNotContains(request, self.page2.city, status_code=200)
-        self.assertNotContains(request, self.page2.state, status_code=200)
-

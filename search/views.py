@@ -44,9 +44,10 @@ def results(request):
         q = request.POST.get('q')
         f = request.POST.get('f')
 
-        f = f.replace('"', '')
-        f = f.replace('[', '')
-        f = f.replace(']', '')
+        if f:
+            f = f.replace('"', '')
+            f = f.replace('[', '')
+            f = f.replace(']', '')
 
         if q == "0":
             q = False
