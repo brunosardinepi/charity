@@ -15,8 +15,10 @@ function search() {
             filters.push(checked[c].value);
         }
     }
-    q = $('#q').val();
+    var q = $('#q').val();
     q = q.split(/[ ]+/).join(',');
+
+    var s = $('#s').find(":selected").val();
 
     var url = "{% url 'search:results' %}";
     filters = JSON.stringify(filters);
@@ -27,7 +29,8 @@ function search() {
         traditional: true,
         data : {
             q : q,
-            f : filters
+            f : filters,
+            s : s
         },
         success : function(json) {
             $("#sponsored-list").empty();
@@ -51,6 +54,10 @@ function search() {
 };
 
 $(document).on('keyup', '#q', function() {
+    search();
+});
+
+$(document).on('change', '#s', function() {
     search();
 });
 
@@ -88,7 +95,7 @@ $(document).ready(function() {
         <input name="filters[]" type="checkbox" value="{{ k }}">{{ v }}</input>
     {% endfor %}
 
-    <select>
+    <select id="s">
         {% for k, v in states.items %}
             <option value={{ k }}>{{ v }}</option>
         {% endfor %}

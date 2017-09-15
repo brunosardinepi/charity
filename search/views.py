@@ -44,6 +44,8 @@ def results(request):
     if request.method == "POST":
         q = request.POST.get('q')
         f = request.POST.get('f')
+        s = request.POST.get('s')
+        print(s)
 
         if f:
             f = f.replace('"', '')
