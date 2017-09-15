@@ -72,11 +72,13 @@ def results(request):
             results, sponsored = filter_list(f)
         else:
             results = None
+            sponsored = None
 
         response_data = OrderedDict()
         if results:
             for r in results:
                 response_data[r.page_slug] = {'name': r.name, 'city': r.city, 'state': r.state, 'sponsored': "f"}
+        if sponsored:
             for s in sponsored:
                 response_data[s.page_slug] = {'name': s.name, 'city': s.city, 'state': s.state, 'sponsored': "t"}
 
