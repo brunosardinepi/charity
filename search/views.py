@@ -5,6 +5,7 @@ from django.shortcuts import render
 
 from collections import OrderedDict
 from functools import reduce
+from itertools import chain
 
 import json
 import operator
@@ -46,12 +47,19 @@ def query_list(q, s=''):
     queries = [SearchQuery(query) for query in q]
     query = reduce(operator.or_, queries)
     vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
+    rank_metric = 0.2
     if s:
-        results = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=False, state=s).order_by('-rank')
-        sponsored = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=True, state=s).order_by('-rank')
+        results_page = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, is_sponsored=False, state=s).order_by('-rank')
+        sponsored_page = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, is_sponsored=True, state=s).order_by('-rank')
+        results_campaign = Campaign.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, page__is_sponsored=False, state=s).order_by('-rank')
+        sponsored_campaign = Campaign.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, page__is_sponsored=True, state=s).order_by('-rank')
     else:
-        results = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=False).order_by('-rank')
-        sponsored = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2, is_sponsored=True).order_by('-rank')
+        results_page = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, is_sponsored=False).order_by('-rank')
+        sponsored_page = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, is_sponsored=True).order_by('-rank')
+        results_campaign = Campaign.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, page__is_sponsored=False).order_by('-rank')
+        sponsored_campaign = Campaign.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, page__is_sponsored=True).order_by('-rank')
+    results = list(chain(results_page, results_campaign))
+    sponsored = list(chain(sponsored_page, sponsored_campaign))
     return (results, sponsored)
 
 def state_list(s):
@@ -81,10 +89,10 @@ def results(request):
             pages, sponsored_pages = query_list(q, s)
             f = f.split(",")
             for x in f:
-                p = pages.filter(category=x)
+                p = [n for n in pages if n.category == x]
                 for y in p:
                     results.append(y)
-                s = sponsored_pages.filter(category=x)
+                s = [t for t in sponsored_pages if t.category == x]
                 for y in s:
                     sponsored.append(y)
         elif q:
