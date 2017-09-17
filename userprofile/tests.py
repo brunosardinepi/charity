@@ -24,7 +24,9 @@ class UserProfileTest(TestCase):
 
         self.page = Page.objects.create(name="Buffalo")
         self.page2 = Page.objects.create(name="Remote")
+        self.page3 = Page.objects.create(name="Foot")
         self.page.subscribers.add(self.user.userprofile)
+        self.page.managers.add(self.user.userprofile)
         self.page2.admins.add(self.user.userprofile)
 
         self.campaign = Campaign.objects.create(
@@ -59,8 +61,10 @@ class UserProfileTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.userprofile.subscribers.get(id=self.page.pk).name, status_code=200)
         self.assertContains(response, self.user.userprofile.state, status_code=200)
+        self.assertContains(response, self.page.name, status_code=200)
+        self.assertContains(response, self.page2.name, status_code=200)
+        self.assertNotContains(response, self.page3.name, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
-        self.assertContains(response, "Remote", status_code=200)
 
     def test_userprofileform(self):
         form = forms.UserProfileForm({
