@@ -93,8 +93,14 @@ class UserProfileTest(TestCase):
 
     def test_image_upload(self):
         self.client.login(username='testuser', password='testpassword')
-        with open('media/media/up.png', 'rb') as image:
+        with open('media/tests/up.png', 'rb') as image:
             response = self.client.post('/profile/', {'state': 'FL', 'avatar': image})
         self.assertRedirects(response, '/profile/', 302, 200)
         response = self.client.get('/profile/')
         self.assertContains(response, 'media/up', status_code=200)
+
+    def test_image_upload_error_size(self):
+        self.client.login(username='testuser', password='testpassword')
+        with open('media/tests/error_image_size.jpg', 'rb') as image:
+            response = self.client.post('/profile/', {'state': 'AL', 'avatar': image})
+        self.assertRedirects(response, '/error/image/size/', 302, 200)
