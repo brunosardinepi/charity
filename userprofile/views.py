@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from . import forms
 from . import models
@@ -31,11 +31,7 @@ def userprofile(request):
                 image_type = image.content_type.split('/')[0]
                 if image_type in settings.UPLOAD_TYPES:
                     if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
-                        msg = 'The file size limit is %s. Your file size is %s.' % (
-                            settings.MAX_IMAGE_UPLOAD_SIZE,
-                            image._size
-                        )
-                        raise ValidationError(msg)
+                        return redirect('error:error_image_size')
                     form.save()
                     return HttpResponseRedirect(userprofile.get_absolute_url())
         return render(request, 'userprofile/profile.html', {
