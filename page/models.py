@@ -84,6 +84,15 @@ class Page(models.Model):
         choices=STATE_CHOICES,
         blank=True,
     )
+    TYPE_CHOICES = (
+        ('organization', 'Organization'),
+        ('personal', 'Personal'),
+    )
+    type = models.CharField(
+        max_length=255,
+        choices=TYPE_CHOICES,
+        default='',
+    )
 
     class Meta:
         permissions = (
