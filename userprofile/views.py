@@ -15,6 +15,7 @@ def userprofile(request):
     userprofile = get_object_or_404(models.UserProfile, user_id=request.user.id)
     if userprofile.user == request.user:
         admin_pages = userprofile.page_admins.all()
+        manager_pages = userprofile.page_managers.all()
         subscriptions = userprofile.subscribers.all()
         campaigns = userprofile.campaign_admins.all()
         invitations = ManagerInvitation.objects.filter(invite_from=request.user, expired=False)
@@ -39,6 +40,7 @@ def userprofile(request):
                     return HttpResponseRedirect(userprofile.get_absolute_url())
         return render(request, 'userprofile/profile.html', {
             'admin_pages': admin_pages,
+            'manager_pages': manager_pages,
             'subscriptions': subscriptions,
             'campaigns': campaigns,
             'invitations': invitations,
