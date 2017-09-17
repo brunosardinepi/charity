@@ -90,3 +90,11 @@ class UserProfileTest(TestCase):
 
         response = self.client.get('/profile/')
         self.assertNotContains(response, "rupert@oi.mate", status_code=200)
+
+    def test_image_upload(self):
+        self.client.login(username='testuser', password='testpassword')
+        with open('media/media/up.png', 'rb') as image:
+            response = self.client.post('/profile/', {'state': 'FL', 'avatar': image})
+        self.assertRedirects(response, '/profile/', 302, 200)
+        response = self.client.get('/profile/')
+        self.assertContains(response, 'media/up', status_code=200)
