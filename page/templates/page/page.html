@@ -99,6 +99,7 @@
     {% if page.icon %}
         <img src="{{ page.icon.url }}" width="300" />
     {% endif %}
+    <p>Type: {{ page.get_type_display }}</p>
     <p>Location: {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{{ page.state }}{% endif %}</p>
     <p>Description: {{ page.description }}</p>
     <p>Category: {{ page.get_category_display }}</p>
