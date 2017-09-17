@@ -53,6 +53,7 @@ class PageTest(TestCase):
 
         self.page = models.Page.objects.create(
             name='Test Page',
+            type='Organization',
             page_slug='testpage',
             city='Houston',
             state='Texas',
@@ -120,6 +121,7 @@ class PageTest(TestCase):
         self.assertContains(response, self.user.last_name, status_code=200)
         self.assertContains(response, self.page.city, status_code=200)
         self.assertContains(response, self.page.state, status_code=200)
+        self.assertContains(response, self.page.type, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count, status_code=200)
         self.assertContains(response, self.page.donation_money, status_code=200)
@@ -142,6 +144,7 @@ class PageTest(TestCase):
         self.assertContains(response, self.user.last_name, status_code=200)
         self.assertContains(response, self.page.city, status_code=200)
         self.assertContains(response, self.page.state, status_code=200)
+        self.assertContains(response, self.page.type, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count, status_code=200)
         self.assertContains(response, self.page.donation_money, status_code=200)
@@ -248,6 +251,7 @@ class PageTest(TestCase):
     def test_pageform(self):
         form = forms.PageForm({
             'name': 'Ribeye Steak',
+            'type': 'personal',
             'page_slug': 'ribeyesteak',
             'city': 'Atlanta',
             'state': 'GA',
@@ -257,6 +261,7 @@ class PageTest(TestCase):
         self.assertTrue(form.is_valid())
         page = form.save()
         self.assertEqual(page.name, "Ribeye Steak")
+        self.assertEqual(page.type, "personal")
         self.assertEqual(page.page_slug, "ribeyesteak")
         self.assertEqual(page.city, "Atlanta")
         self.assertEqual(page.state, "GA")
