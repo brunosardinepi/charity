@@ -7,7 +7,7 @@
 
 <script src="{% static 'js/comment_csrf.js' %}"></script>
 <script>
-function search() {
+function search(a) {
     var checked = document.getElementsByName('filters[]');
     var filters = [];
     for (c = 0; c < checked.length; c++) {
@@ -30,7 +30,8 @@ function search() {
         data : {
             q : q,
             f : filters,
-            s : s
+            s : s,
+            a : a
         },
         success : function(json) {
             $("#sponsored-list").empty();
@@ -62,11 +63,11 @@ function search() {
 };
 
 $(document).on('keyup', '#q', function() {
-    search();
+    search("false");
 });
 
 $(document).on('change', '#s', function() {
-    search();
+    search("false");
 });
 
 $(document).on('keypress', '#q', function(event) {
@@ -78,7 +79,7 @@ $(document).on('keypress', '#q', function(event) {
 
 $(document).ready(function() {
     $(":checkbox").change(function() {
-        search();
+        search("false");
     });
 });
 
@@ -87,6 +88,16 @@ $(document).ready(function() {
         event.preventDefault();
         var checkboxes = $(document.getElementsByName('filters[]'));
         checkboxes.prop('checked', !checkboxes.prop('checked')).change();
+    });
+
+    $("#allPages").click(function(event) {
+        event.preventDefault();
+        search("pages");
+    });
+
+    $("#allCampaigns").click(function(event) {
+        event.preventDefault();
+        search("campaigns");
     });
 });
 </script>
@@ -110,6 +121,8 @@ $(document).ready(function() {
         {% endfor %}
     </select>
     </form>
+
+    <p><a href="" id="allPages">List all Pages</a> <a href="" id="allCampaigns">List all Campaigns</a></p>
 
     <div id="sponsored">
         <p>Sponsored Results:</p>

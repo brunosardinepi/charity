@@ -72,38 +72,46 @@ def results(request):
         q = request.POST.get('q')
         f = request.POST.get('f')
         s = request.POST.get('s')
+        a = request.POST.get('a')
 
-        if f:
-            f = f.replace('"', '')
-            f = f.replace('[', '')
-            f = f.replace(']', '')
+        if a == "false":
+            if f:
+                f = f.replace('"', '')
+                f = f.replace('[', '')
+                f = f.replace(']', '')
 
-        if q == "0":
-            q = False
-        elif f == "0":
-            f = False
+            if q == "0":
+                q = False
+            elif f == "0":
+                f = False
 
-        if all([q, f]):
-            results = []
-            sponsored = []
-            pages, sponsored_pages = query_list(q, s)
-            f = f.split(",")
-            for x in f:
-                p = [n for n in pages if n.category == x]
-                for y in p:
-                    results.append(y)
-                s = [t for t in sponsored_pages if t.category == x]
-                for y in s:
-                    sponsored.append(y)
-        elif q:
-            results, sponsored = query_list(q, s)
-        elif f:
-            results, sponsored = filter_list(f, s)
-        elif s:
-            results, sponsored = state_list(s)
-        else:
-            results = None
-            sponsored = None
+            if all([q, f]):
+                results = []
+                sponsored = []
+                pages, sponsored_pages = query_list(q, s)
+                f = f.split(",")
+                for x in f:
+                    p = [n for n in pages if n.category == x]
+                    for y in p:
+                        results.append(y)
+                    s = [t for t in sponsored_pages if t.category == x]
+                    for y in s:
+                        sponsored.append(y)
+            elif q:
+                results, sponsored = query_list(q, s)
+            elif f:
+                results, sponsored = filter_list(f, s)
+            elif s:
+                results, sponsored = state_list(s)
+            else:
+                results = None
+                sponsored = None
+        elif a == "pages":
+            results = Page.objects.filter(is_sponsored=False).order_by('name')
+            sponsored = Page.objects.filter(is_sponsored=True).order_by('name')
+        elif a == "campaigns":
+            results = Campaign.objects.filter(page__is_sponsored=False).order_by('name')
+            sponsored = Campaign.objects.filter(page__is_sponsored=True).order_by('name')
 
         response_data = OrderedDict()
         if results:
