@@ -22,6 +22,13 @@
         {% endfor %}
     </ul>   
 
+    <h2>Pages I Manage</h2>
+    <ul>
+        {% for p in manager_pages %}
+            <li><a href="{% url 'page' page_slug=p.page_slug %}">{{ p.name }}</a></li>
+        {% endfor %}
+    </ul>   
+
     <h2>Campaigns I Admin</h2>
     <ul>
         {% for c in campaigns %}

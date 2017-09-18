@@ -111,7 +111,7 @@ def page_create(request):
             
             subject = "Page created!"
             body = "You just created a Page for: %s" % page.name
-            email(request.user, subject, body)
+            email(request.user.email, subject, body)
             return HttpResponseRedirect(page.get_absolute_url())
     return render(request, 'page/page_create.html', {'page_form': page_form})
 
@@ -197,11 +197,9 @@ def page_invite(request, page_slug):
         if request.method == 'POST':
             form = forms.ManagerInviteForm(request.POST)
             if form.is_valid():
-                user_email = form.cleaned_data['email']
-
                 # check if the person we are inviting is already a manager
                 try:
-                    user = User.objects.get(email=user_email)
+                    user = User.objects.get(email=form.cleaned_data['email'])
                     if user.userprofile in page.managers.all():
                         return HttpResponseRedirect(page.get_absolute_url())
                 except User.DoesNotExist:
@@ -212,7 +210,7 @@ def page_invite(request, page_slug):
                 # accepted/declined are irrelevant if the invite has expired, so we don't check these
                 try:
                     invitation = ManagerInvitation.objects.get(
-                        invite_to=user_email,
+                        invite_to=form.cleaned_data['email'],
                         invite_from=request.user,
                         page=page,
                         expired=False
@@ -248,7 +246,7 @@ def page_invite(request, page_slug):
                             invitation.pk,
                             invitation.key
                         )
-                    email(user, subject, body)
+                    email(form.cleaned_data['email'], subject, body)
                     # redirect the admin/manager to the Page
                     return HttpResponseRedirect(page.get_absolute_url())
         return render(request, 'page/page_invite.html', {'form': form, 'page': page})

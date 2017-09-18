@@ -93,6 +93,7 @@
         <img src="{{ campaign.campaign_icon.url }}" width="200" />
     {% endif %}
     <p>Type: {{ campaign.get_type_display }}</p>
+    <p>Location: {% if campaign.city %}{{ campaign.city }}{% endif %}{% if campaign.city and campaign.state %}, {% endif %}{% if campaign.state %}{{ campaign.state }}{% endif %}</p>
     <p>Description: {{ campaign.description }}</p>
     <p>Goal: ${{ campaign.goal }}</p>
     <p>${{ campaign.donation_money }} raised by {{ campaign.donation_count }} donors</p>

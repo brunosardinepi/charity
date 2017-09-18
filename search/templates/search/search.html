@@ -5,8 +5,9 @@
 
 {% block head_extra %}
 
+<script src="{% static 'js/comment_csrf.js' %}"></script>
 <script>
-function checkboxClick() {
+function search() {
     var checked = document.getElementsByName('filters[]');
     var filters = [];
     for (c = 0; c < checked.length; c++) {
@@ -14,19 +15,70 @@ function checkboxClick() {
             filters.push(checked[c].value);
         }
     }
-    q = $('#q').val();
+    var q = $('#q').val();
     q = q.split(/[ ]+/).join(',');
-    $('#results').html('&nbsp;').load('{% url 'search:results' %}?q=' + q + '&f=' + filters);
+
+    var s = $('#s').find(":selected").val();
+
+    var url = "{% url 'search:results' %}";
+    filters = JSON.stringify(filters);
+
+    $.ajax({
+        url : url,
+        type : "POST",
+        traditional: true,
+        data : {
+            q : q,
+            f : filters,
+            s : s
+        },
+        success : function(json) {
+            $("#sponsored-list").empty();
+            $("#results-list").empty();
+            for (var key in json) {
+                if (json[key]["city"]) {
+                    var location = json[key]["city"] + ", " + json[key]["state"];
+                } else if (json[key]["state"]) {
+                    var location = json[key]["state"];
+                } else {
+                    var location = "";
+                }
+                if (json[key]["sponsored"] == "t") {
+                    if (json[key]["model"] == "page") {
+                        $("#sponsored-list").append("<li><a href='/" + key +  "/'>" + json[key]['name'] + "</a> " + location + "</li>");
+                    } else if (json[key]["model"] == "campaign") {
+                        $("#sponsored-list").append("<li><a href='/" + json[key]['page_slug'] + "/" + json[key]['pk'] + "/" + key +  "/'>" + json[key]['name'] + "</a> " + location + "</li>");
+                    }
+                } else {
+                    if (json[key]["model"] == "page") {
+                        $("#results-list").append("<li><a href='/" + key +  "/'>" + json[key]['name'] + "</a> " + location + "</li>");
+                    } else if (json[key]["model"] == "campaign") {
+                        $("#results-list").append("<li><a href='/" + json[key]['page_slug'] + "/" + json[key]['pk'] + "/" + key +  "/'>" + json[key]['name'] + "</a> " + location + "</li>");
+                    }
+                }
+            }
+        }
+    });
 };
 
 $(document).on('keyup', '#q', function() {
-    checkboxClick();
+    search();
+});
+
+$(document).on('change', '#s', function() {
+    search();
+});
+
+$(document).on('keypress', '#q', function(event) {
+    if (event.keyCode == 13) {
+        event.preventDefault();
+        return false;
+    }
 });
 
 $(document).ready(function() {
     $(":checkbox").change(function() {
-        console.log("detected checkbox state change");
-        checkboxClick();
+        search();
     });
 });
 
@@ -42,6 +94,7 @@ $(document).ready(function() {
 
 {% block body_content %}
     <form>
+    {% csrf_token %}
     <input id="q" type="text" placeholder="Search" />
 
     <a href="" id="checkall">Select all</a>
@@ -49,8 +102,22 @@ $(document).ready(function() {
     {% for k, v in categories.items %}
         <input name="filters[]" type="checkbox" value="{{ k }}">{{ v }}</input>
     {% endfor %}
+
+    <select id="s">
+        <option value=''>Select...</option>
+        {% for k, v in states.items %}
+            <option value={{ k }}>{{ v }}</option>
+        {% endfor %}
+    </select>
     </form>
 
-    <p>Results:</p>
-    <div id="results"></div>
+    <div id="sponsored">
+        <p>Sponsored Results:</p>
+        <ul id="sponsored-list"></ul>
+    </div>
+
+    <div id="results">
+        <p>Search Results:</p>
+        <ul id="results-list"></ul>
+    </div>
 {% endblock %}

@@ -53,7 +53,10 @@ class PageTest(TestCase):
 
         self.page = models.Page.objects.create(
             name='Test Page',
+            type='Organization',
             page_slug='testpage',
+            city='Houston',
+            state='Texas',
             description='This is a description for Test Page.',
             donation_count='20',
             donation_money='30',
@@ -116,6 +119,9 @@ class PageTest(TestCase):
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.user.first_name, status_code=200)
         self.assertContains(response, self.user.last_name, status_code=200)
+        self.assertContains(response, self.page.city, status_code=200)
+        self.assertContains(response, self.page.state, status_code=200)
+        self.assertContains(response, self.page.type, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count, status_code=200)
         self.assertContains(response, self.page.donation_money, status_code=200)
@@ -136,6 +142,9 @@ class PageTest(TestCase):
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.user.first_name, status_code=200)
         self.assertContains(response, self.user.last_name, status_code=200)
+        self.assertContains(response, self.page.city, status_code=200)
+        self.assertContains(response, self.page.state, status_code=200)
+        self.assertContains(response, self.page.type, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count, status_code=200)
         self.assertContains(response, self.page.donation_money, status_code=200)
@@ -168,6 +177,7 @@ class PageTest(TestCase):
         self.assertContains(response, "Admin", status_code=200)
         self.assertContains(response, "Edit Page", status_code=200)
         self.assertContains(response, "Delete Page", status_code=200)
+        self.assertContains(response, "Invite others to manage Page", status_code=200)
         self.assertContains(response, "/%s/managers/%s/remove/" % (self.page.page_slug, self.user3.pk), status_code=200)
         self.assertContains(response, "/%s/managers/%s/remove/" % (self.page.page_slug, self.user4.pk), status_code=200)
 
@@ -242,14 +252,20 @@ class PageTest(TestCase):
     def test_pageform(self):
         form = forms.PageForm({
             'name': 'Ribeye Steak',
+            'type': 'personal',
             'page_slug': 'ribeyesteak',
+            'city': 'Atlanta',
+            'state': 'GA',
             'category': 'animal',
             'description': 'I like flank steak.'
         })
         self.assertTrue(form.is_valid())
         page = form.save()
         self.assertEqual(page.name, "Ribeye Steak")
+        self.assertEqual(page.type, "personal")
         self.assertEqual(page.page_slug, "ribeyesteak")
+        self.assertEqual(page.city, "Atlanta")
+        self.assertEqual(page.state, "GA")
         self.assertEqual(page.category, "animal")
         self.assertEqual(page.description, "I like flank steak.")
 
@@ -438,4 +454,3 @@ class PageTest(TestCase):
         self.assertTrue(self.user4.has_perm('manager_edit', self.page))
         self.assertTrue(self.user4.has_perm('manager_delete', self.page))
         self.assertTrue(self.user4.has_perm('manager_invite', self.page))
-

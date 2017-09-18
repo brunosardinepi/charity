@@ -6,7 +6,7 @@ from . import config
 import smtplib
 
 
-def email(user, subject, body):
+def email(user_email, subject, body):
     username = config.settings['email_user']
     password = config.settings['email_password']
 
@@ -15,7 +15,7 @@ def email(user, subject, body):
 #    msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % (from_email, user.email, subject)
     msg['Subject'] = subject
     msg['From'] = from_email
-    msg['To'] = user.email
+    msg['To'] = user_email
 
     html = body
     part1 = MIMEText(html, 'html')
@@ -27,5 +27,5 @@ def email(user, subject, body):
     server.starttls()
     server.login(username, password)
 #    server.sendmail(from_email, [user.email], msg)
-    server.sendmail(from_email, [user.email], msg.as_string())
+    server.sendmail(from_email, [user_email], msg.as_string())
     server.quit()

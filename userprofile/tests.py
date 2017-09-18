@@ -20,11 +20,13 @@ class UserProfileTest(TestCase):
         )
         self.user.userprofile.first_name = 'John'
         self.user.userprofile.last_name = 'Doe'
-        self.user.userprofile.zipcode = '88888'
+        self.user.userprofile.state = 'Kansas'
 
         self.page = Page.objects.create(name="Buffalo")
         self.page2 = Page.objects.create(name="Remote")
+        self.page3 = Page.objects.create(name="Foot")
         self.page.subscribers.add(self.user.userprofile)
+        self.page.managers.add(self.user.userprofile)
         self.page2.admins.add(self.user.userprofile)
 
         self.campaign = Campaign.objects.create(
@@ -58,21 +60,24 @@ class UserProfileTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.userprofile.subscribers.get(id=self.page.pk).name, status_code=200)
+        self.assertContains(response, self.user.userprofile.state, status_code=200)
+        self.assertContains(response, self.page.name, status_code=200)
+        self.assertContains(response, self.page2.name, status_code=200)
+        self.assertNotContains(response, self.page3.name, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
-        self.assertContains(response, "Remote", status_code=200)
 
     def test_userprofileform(self):
         form = forms.UserProfileForm({
             'user': self.user,
             'first_name': 'Blanket',
             'last_name': 'Towel',
-            'zipcode': 99999
+            'state': 'KS'
         })
         self.assertTrue(form.is_valid())
 
     def test_userprofileform_blank(self):
         form = forms.UserProfileForm({})
-        self.assertTrue(form.is_valid())
+        self.assertFalse(form.is_valid())
 
     def test_sent_invitations(self):
         self.client.login(username='testuser', password='testpassword')
@@ -85,3 +90,24 @@ class UserProfileTest(TestCase):
 
         response = self.client.get('/profile/')
         self.assertNotContains(response, "rupert@oi.mate", status_code=200)
+
+    def test_image_upload(self):
+        self.client.login(username='testuser', password='testpassword')
+        with open('media/tests/up.png', 'rb') as image:
+            response = self.client.post('/profile/', {'state': 'FL', 'avatar': image})
+        self.assertRedirects(response, '/profile/', 302, 200)
+        response = self.client.get('/profile/')
+        self.assertContains(response, 'media/up', status_code=200)
+
+    def test_image_upload_error_size(self):
+        self.client.login(username='testuser', password='testpassword')
+        with open('media/tests/error_image_size.jpg', 'rb') as image:
+            response = self.client.post('/profile/', {'state': 'AL', 'avatar': image})
+        self.assertRedirects(response, '/error/image/size/', 302, 200)
+
+    def test_image_upload_error_type(self):
+        self.client.login(username='testuser', password='testpassword')
+        with open('media/tests/error_image_type.txt', 'rb') as image:
+            response = self.client.post('/profile/', {'state': 'AL', 'avatar': image})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Upload a valid image. The file you uploaded was either not an image or a corrupted image.", status_code=200)
