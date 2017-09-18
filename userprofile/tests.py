@@ -104,3 +104,10 @@ class UserProfileTest(TestCase):
         with open('media/tests/error_image_size.jpg', 'rb') as image:
             response = self.client.post('/profile/', {'state': 'AL', 'avatar': image})
         self.assertRedirects(response, '/error/image/size/', 302, 200)
+
+    def test_image_upload_error_type(self):
+        self.client.login(username='testuser', password='testpassword')
+        with open('media/tests/error_image_type.txt', 'rb') as image:
+            response = self.client.post('/profile/', {'state': 'AL', 'avatar': image})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Upload a valid image. The file you uploaded was either not an image or a corrupted image.", status_code=200)
