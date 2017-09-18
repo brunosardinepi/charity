@@ -19,7 +19,6 @@ import json
 
 def page(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
-#    pageicon = get_object_or_404(models.PageIcon, page=page)
     pageimages = models.PageImages.objects.filter(page=page)
     pageprofile = models.PageImages.objects.filter(page=page, page_profile=True)
     active_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=True)
