@@ -77,6 +77,8 @@ class HomeTest(TestCase):
                 self.assertContains(response, c.name, status_code=200)
         self.assertContains(response, self.page.name, status_code=200)
         self.assertNotContains(response, self.page2.name, status_code=200)
+        self.assertContains(response, self.user.userprofile.first_name, status_code=200)
+        self.assertContains(response, self.user.userprofile.last_name, status_code=200)
 
 
 class AccountTests(TestCase):
