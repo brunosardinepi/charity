@@ -3,8 +3,8 @@ from django.core.exceptions import ValidationError
 from page import forms
 from page import models
 
-def image_upload(form):
-    image = form.cleaned_data.get('icon',False)
+def image_upload(image_form):
+    image = image_form.cleaned_data.get('icon',False)
     image_type = image.content_type.split('/')[0]
     if image_type in settings.UPLOAD_TYPES:
         if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:

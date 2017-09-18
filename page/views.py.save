@@ -9,8 +9,6 @@ from django.conf import settings
 from . import forms
 from . import models
 from campaign import models as CampaignModels
-from comments.forms import CommentForm
-from comments.models import Comment
 from invitations.models import ManagerInvitation
 from pagefund.email import email
 from userprofile.models import UserProfile
@@ -21,13 +19,12 @@ import json
 
 def page(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
+#    pageicon = get_object_or_404(models.PageIcon, page=page)
     pageimages = models.PageImages.objects.filter(page=page)
     pageprofile = models.PageImages.objects.filter(page=page, page_profile=True)
     active_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=True)
     inactive_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=False)
     managers = page.managers.all()
-    comments = Comment.objects.filter(page=page).order_by('-date')
-    form = CommentForm
     try:
         user_subscription_check = page.subscribers.get(user_id=request.user.pk)
     except UserProfile.DoesNotExist:
@@ -79,8 +76,6 @@ def page(request, page_slug):
         'active_campaigns': active_campaigns,
         'inactive_campaigns': inactive_campaigns,
         'managers': managers,
-        'comments': comments,
-        'form': form,
         'subscribe_attr': subscribe_attr
     })
 
@@ -302,15 +297,17 @@ def page_image_upload(request, page_slug):
                 imageupload.page=page
                 try:
                     profile = models.PageImages.objects.get(page=imageupload.page, page_profile=True)
-                except models.PageImages.DoesNotExist:
-                    profile = None
+                except:
+                    
                 print(page)
-                if profile and imageupload.page_profile:
+                if profile:
                     profile.page_profile=False
                     profile.save()
                 imageupload.page=page
                 imageupload.save()
-            return HttpResponseRedirect(page.get_absolute_url())
+            return HttpResponseRedirect(page.get_absolute_url()
+        else:
+            print("form not valid")
     else:
         raise Http404
     return render(request, 'page/page_image_upload.html', {'page': page, 'form': form })

@@ -15,7 +15,6 @@ class Page(models.Model):
     managers = models.ManyToManyField(UserProfile, related_name='page_managers', blank=True)
     subscribers = models.ManyToManyField(UserProfile, related_name='subscribers', blank=True)
     is_sponsored = models.BooleanField(default=False)
-    icon = models.ImageField(upload_to='media/pages/', blank=True, null=True)
     CATEGORY_CHOICES = (
         ('animal', 'Animal'),
         ('environment', 'Environment'),
@@ -50,4 +49,16 @@ class Page(models.Model):
         elif not self.id:
             self.page_slug = slugify(self.name).replace('-', '')
             super(Page, self).save(*args, **kwargs)
+
+class PageImages(models.Model):
+    page = models.ForeignKey('page.Page', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='media/pages/images/', blank=True, null=True)
+    caption = models.CharField(max_length=255, blank=True)
+    page_profile = models.BooleanField(default=False)
+
+
+class PageIcon(models.Model):
+    page = models.ForeignKey('page.Page', on_delete=models.CASCADE)
+    icon = models.ImageField(upload_to='media/pages/icon/', blank=True, null=True)
+
 
