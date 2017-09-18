@@ -297,15 +297,17 @@ def page_image_upload(request, page_slug):
                 imageupload.page=page
                 try:
                     profile = models.PageImages.objects.get(page=imageupload.page, page_profile=True)
-                except models.PageImages.DoesNotExist:
-                    profile = None
+                except:
+                    
                 print(page)
-                if profile and imageupload.page_profile:
+                if profile:
                     profile.page_profile=False
                     profile.save()
                 imageupload.page=page
                 imageupload.save()
-            return HttpResponseRedirect(page.get_absolute_url())
+            return HttpResponseRedirect(page.get_absolute_url()
+        else:
+            print("form not valid")
     else:
         raise Http404
     return render(request, 'page/page_image_upload.html', {'page': page, 'form': form })

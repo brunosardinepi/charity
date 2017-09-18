@@ -54,7 +54,7 @@ class PageImages(models.Model):
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='media/pages/images/', blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)
-    is_cover = models.BooleanField(default=False)
+    page_profile = models.BooleanField(default=False)
 
 
 class PageIcon(models.Model):

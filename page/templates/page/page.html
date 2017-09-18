@@ -23,8 +23,8 @@
 
 {% block body_content %}
     <h1>{{ page.name }}</h1>
-    {% for cover in pagecover  %}
-        <img src="{{ cover.image.url }}" width="300" />
+    {% for profile in pageprofile  %}
+        <img src="{{ profile.image.url }}" width="300" />
     {% endfor %}
     <p>Description: {{ page.description }}</p>
     <p>Category: {{ page.get_category_display }}</p>

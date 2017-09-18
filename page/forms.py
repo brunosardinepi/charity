@@ -19,7 +19,7 @@ class PageImagesForm(forms.ModelForm):
         fields = [
             'image',
             'caption',
-            'is_cover',
+            'page_profile',
         ]
 
 class PageIconForm(forms.ModelForm):
