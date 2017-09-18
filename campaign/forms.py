@@ -14,7 +14,6 @@ class CampaignForm(forms.ModelForm):
             'city',
             'state',
             'description',
-            'campaign_icon',
         ]
 
 class DeleteCampaignForm(forms.ModelForm):
@@ -27,3 +26,13 @@ class ManagerInviteForm(forms.Form):
     manager_edit = forms.BooleanField(required=False, label='Edit Campaign')
     manager_delete = forms.BooleanField(required=False, label='Delete Campaign')
     manager_invite = forms.BooleanField(required=False, label='Invite users to manage Campaign')
+
+class CampaignImagesForm(forms.ModelForm):
+    class Meta:
+        model = models.CampaignImages
+        fields = [
+            'image',
+            'caption',
+            'campaign_profile',
+        ]
+

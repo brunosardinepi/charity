@@ -87,28 +87,12 @@ def page(request, page_slug):
 @login_required(login_url='signup')
 def page_create(request):
     page_form = forms.PageForm()
-#    image_form = forms.PageIconForm()
     if request.method == 'POST':
         page_form = forms.PageForm(request.POST)
-#        image_form = forms.PageIconForm(request.POST, request.FILES)
         if page_form.is_valid():
             page = page_form.save()
-#            image = image_form.cleaned_data.get('icon',False)
-#            image_type = image.content_type.split('/')[0]
-#            if image_type in settings.UPLOAD_TYPES:
-#                imageupload = image_form.save(commit=False)
-#                imageupload.page = page
-#                imageupload.save()
-#                if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
-#                    msg = 'The file size limit is %s. Your file size is %s.' % (
-#                        settings.MAX_IMAGE_UPLOAD_SIZE,
-#                        image._size
-#                    )
-#                    raise ValidationError(msg)
-
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
-            
             subject = "Page created!"
             body = "You just created a Page for: %s" % page.name
             email(request.user.email, subject, body)
@@ -118,7 +102,6 @@ def page_create(request):
 @login_required
 def page_edit(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
-#    pageimage = get_object_or_404(models.PageIcon, page=page)
     admin = request.user.userprofile in page.admins.all()
     if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_edit', page):
         manager = True
@@ -126,25 +109,10 @@ def page_edit(request, page_slug):
         manager = False
     if admin or manager:
         page_form = forms.PageForm(instance=page)
-#        image_form = forms.PageIconForm(instance=pageimage)
         if request.method == 'POST':
             page_form = forms.PageForm(instance=page, data=request.POST)
-#            image_form = forms.PageIconForm(instance=pageimage, data=request.POST, files=request.FILES)
             if page_form.is_valid():
                 page = page_form.save()
-#                image = image_form.cleaned_data.get('icon',False)
-#                image_type = image.content_type.split('/')[0]
-#                if image_type in settings.UPLOAD_TYPES:
-#                    imageupload = image_form.save(commit=False)
-#                    imageupload.page = page
-#                    imageupload.save() 
-#                    if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
-#                        msg = 'The file size limit is %s. Your file size is %s.' % (
-#                            settings.MAX_IMAGE_UPLOAD_SIZE,
-#                            image._size
-#                        )
-#                        raise ValidationError(msg)
-#                return HttpResponseRedirect(page.get_absolute_url())
     else:
         raise Http404
     return render(request, 'page/page_edit.html', {'page': page, 'page_form': page_form})

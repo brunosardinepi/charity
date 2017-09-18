@@ -19,7 +19,6 @@ class Campaign(models.Model):
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE, related_name='campaigns')
     campaign_admins = models.ManyToManyField(UserProfile, related_name='campaign_admins', blank=True)
     campaign_managers = models.ManyToManyField(UserProfile, related_name='campaign_managers', blank=True)
-    campaign_icon = models.ImageField(upload_to='media/campaigns/', blank=True, null=True)
     city = models.CharField(max_length=255, blank=True)
     TYPE_CHOICES = (
         ('event', 'Event'),
@@ -111,3 +110,10 @@ class Campaign(models.Model):
         elif not self.id:
             self.campaign_slug = slugify(self.name)
             super(Campaign, self).save(*args, **kwargs)
+
+class CampaignImages(models.Model):
+    campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='media/campaigns/images/', blank=True, null=True)
+    caption = models.CharField(max_length=255, blank=True)
+    campaign_profile = models.BooleanField(default=False)
+

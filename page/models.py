@@ -123,8 +123,5 @@ class PageImages(models.Model):
     page_profile = models.BooleanField(default=False)
 
 
-class PageIcon(models.Model):
-    page = models.ForeignKey('page.Page', on_delete=models.CASCADE)
-    icon = models.ImageField(upload_to='media/pages/icon/', blank=True, null=True)
 
 

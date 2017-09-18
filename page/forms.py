@@ -25,13 +25,6 @@ class PageImagesForm(forms.ModelForm):
             'page_profile',
         ]
 
-class PageIconForm(forms.ModelForm):
-    class Meta:
-        model = models.PageIcon
-        fields = [
-            'icon',
-        ]
-
 class DeletePageForm(forms.ModelForm):
     class Meta:
         model = models.Page

@@ -18,6 +18,8 @@ from pagefund.email import email
 def campaign(request, page_slug, campaign_pk, campaign_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
     campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
+    campaignimages = models.CampaignImages.objects.filter(campaign=campaign)
+    campaignprofile = models.CampaignImages.objects.filter(campaign=campaign, campaign_profile=True)
     managers = campaign.campaign_managers.all()
     comments = Comment.objects.filter(campaign=campaign).order_by('-date')
     form = CommentForm
@@ -60,6 +62,8 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
     return render(request, 'campaign/campaign.html', {
         'page': page,
         'campaign': campaign,
+        'campaignimages': campaignimages,
+        'campaignprofile': campaignprofile,
         'managers': managers,
         'comments': comments,
         'form': form
@@ -70,17 +74,8 @@ def campaign_create(request, page_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
     form = forms.CampaignForm()
     if request.method == 'POST':
-        form = forms.CampaignForm(request.POST, request.FILES)
+        form = forms.CampaignForm(request.POST)
         if form.is_valid():
-            image = form.cleaned_data.get('campaign_icon',False)
-            image_type = image.content_type.split('/')[0]
-            if image_type in settings.UPLOAD_TYPES:
-                if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
-                        msg = 'The file size limit is %s. Your file size is %s.' % (
-                            settings.MAX_IMAGE_UPLOAD_SIZE,
-                            image._size
-                        )
-                        raise ValidationError(msg)
             campaign = form.save(commit=False)
             campaign.user = request.user
             campaign.page = page
@@ -121,19 +116,8 @@ def campaign_edit(request, page_slug, campaign_pk, campaign_slug):
     if admin or manager:
         form = forms.CampaignForm(instance=campaign)
         if request.method == 'POST':
-            form = forms.CampaignForm(instance=campaign, data=request.POST, files=request.FILES)
+            form = forms.CampaignForm(instance=campaign, data=request.POST)
             if form.is_valid():
-                image = form.cleaned_data.get('campaign_icon',False)
-                image_type = image.content_type.split('/')[0]
-                print(image.content_type)
-                if image_type in settings.UPLOAD_TYPES:
-                    if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
-                        msg = 'The file size limit is %s. Your file size is %s.' % (
-                            settings.MAX_IMAGE_UPLOAD_SIZE,
-                            image._size
-                        )
-                        raise ValidationError(msg)
-
                 form.save()
                 return HttpResponseRedirect(campaign.get_absolute_url())
     else:
@@ -251,3 +235,45 @@ def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
         return HttpResponseRedirect(campaign.get_absolute_url())
     else:
         raise Http404
+
+@login_required
+def campaign_image_upload(request, page_slug, campaign_pk, campaign_slug):
+    page = get_object_or_404(models.Page, page_slug=page_slug)
+    campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
+    admin = request.user.userprofile in page.admins.all()
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', page):
+        manager = True
+    else:
+        manager = False
+    if admin or manager:
+        form = forms.CampaignImagesForm(instance=campaign)
+        if request.method == 'POST':
+            form = forms.CampaignImagesForm(data=request.POST, files=request.FILES)
+            if form.is_valid():
+                print("form is valid")
+                image = form.cleaned_data.get('image',False)
+                image_type = image.content_type.split('/')[0]
+                print(image.content_type)
+                if image_type in settings.UPLOAD_TYPES:
+                    if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
+                        msg = 'The file size limit is %s. Your file size is %s.' % (
+                            settings.MAX_IMAGE_UPLOAD_SIZE,
+                            image._size
+                        )
+                        raise ValidationError(msg)
+                imageupload = form.save(commit=False)
+                imageupload.campaign=campaign
+                try:
+                    profile = models.CampaignImages.objects.get(campaign=imageupload.campaign, campaign_profile=True)
+                except models.CampaignImages.DoesNotExist:
+                    profile = None
+                print(page)
+                if profile and imageupload.campaign_profile:
+                    profile.campaign_profile=False
+                    profile.save()
+                imageupload.campaign=campaign
+                imageupload.save()
+            return HttpResponseRedirect(campaign.get_absolute_url())
+    else:
+        raise Http404
+    return render(request, 'campaign/campaign_image_upload.html', {'campaign': campaign, 'form': form })

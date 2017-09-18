@@ -89,9 +89,9 @@
 
 {% block body_content %}
     <h1>{{ campaign.name }}</h1>
-    {% if campaign.campaign_icon %}
-        <img src="{{ campaign.campaign_icon.url }}" width="200" />
-    {% endif %}
+    {% for profile in campaignprofile %}
+        <img src="{{ profile.image.url }}" width="200" />
+    {% endfor %}
     <p>Type: {{ campaign.get_type_display }}</p>
     <p>Location: {% if campaign.city %}{{ campaign.city }}{% endif %}{% if campaign.city and campaign.state %}, {% endif %}{% if campaign.state %}{{ campaign.state }}{% endif %}</p>
     <p>Description: {{ campaign.description }}</p>
@@ -132,6 +132,7 @@
         <h4>Admin</h4>
         <p><a href="{% url 'campaign_edit' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
         <p><a href="{% url 'campaign_delete' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
+        <p><a href="{% url 'campaign_image_upload' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload Images</a></p>
         {% if managers %}
             <h5>Managers</h5>
             <form method="POST" action"">
@@ -176,4 +177,12 @@
     {% if "manager_invite" in campaign_perms %}
         <p><a href="{% url 'campaign_invite' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
     {% endif %}
+
+    <h3>Campaign Images</h3>
+    <ul>
+        {% for image in campaignimages %}
+            <li><img src="{{ image.image.url }}" width="200" />{{ image.caption }}</li>
+        {% endfor %}
+    </ul>
+
 {% endblock %}
