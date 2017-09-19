@@ -79,7 +79,7 @@ class CampaignTest(TestCase):
         campaigns = models.Campaign.objects.all()
         self.assertIn(self.campaign, campaigns)
 
-    def test_page_creation_time(self):
+    def test_campaign_creation_time(self):
         campaign = models.Campaign.objects.create(name='time tester', page=self.page)
         now = timezone.now()
         self.assertLess(campaign.created_on, now)
