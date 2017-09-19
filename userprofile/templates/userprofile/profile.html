@@ -5,9 +5,9 @@
 
 {% block body_content %}
 
-    {% if user.userprofile.avatar %}
-        <img src="{{ user.userprofile.avatar.url }}" width="300"/>
-    {% endif %}
+    {% for profile in userprofileimage %}
+        <img src="{{ profile.image.url }}" width="300"/>
+    {% endfor %}
     
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -51,4 +51,7 @@
             <li>Invitation to {{ page.name }} sent to {{ i.invite_to }} on {{ i.date_created }}</li>
         {% endfor %}
     </ul>
+
+    <p><a href="{% url 'userprofile:profile_image_upload' %}">Upload Image</a></p>
+
 {% endblock %}

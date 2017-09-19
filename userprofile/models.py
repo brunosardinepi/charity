@@ -16,7 +16,6 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
-    avatar = models.ImageField(upload_to="media/", blank=True, null=True)
     STATE_CHOICES = (
         ('AL', 'Alabama'),
         ('AK', 'Alaska'),
@@ -98,3 +97,10 @@ def user_signed_up_(request, user, **kwargs):
     subject = "Welcome to PageFund!"
     body = "This is a test email for a user that has just signed up with PageFund."
     email(user.email, subject, body)
+
+class UserImages(models.Model):
+    user = models.ForeignKey('userprofile.UserProfile', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='media/user/images/', blank=True, null=True)
+    caption = models.CharField(max_length=255, blank=True)
+    user_profile = models.BooleanField(default=False)
+

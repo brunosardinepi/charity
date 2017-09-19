@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^accounts/password/reset/', views.PasswordResetView.as_view(), name='password_reset'),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^profile/', include('userprofile.urls', namespace='userprofile')),
+    url(r'^profile/upload/', include('userprofile.urls', namespace='profile_image_upload')),
     url(r'^search/', include('search.urls', namespace='search')),
     url(r'^invite/', include('invitations.urls', namespace='invitations')),
     url(r'^subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),

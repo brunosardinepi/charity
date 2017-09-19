@@ -79,5 +79,13 @@ class UserProfileForm(forms.ModelForm):
             'first_name',
             'last_name',
             'state',
-            'avatar',
+        ]
+
+class UserImagesForm(forms.ModelForm):
+    class Meta:
+        model = models.UserImages
+        fields = [
+            'image',
+            'caption',
+            'user_profile',
         ]
