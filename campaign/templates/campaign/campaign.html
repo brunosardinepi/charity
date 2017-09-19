@@ -132,6 +132,7 @@
         <h4>Admin</h4>
         <p><a href="{% url 'campaign_edit' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
         <p><a href="{% url 'campaign_delete' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
+        <p><a href="{% url 'campaign_invite' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
         <p><a href="{% url 'campaign_image_upload' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload Images</a></p>
         {% if managers %}
             <h5>Managers</h5>
@@ -164,18 +165,20 @@
         <p>you're NOT an admin</p>
     {% endif %}
 
-    {% get_obj_perms request.user for campaign as "campaign_perms" %}
-    {% if campaign_perms %}
-        <h4>Manager</h4>
-    {% endif %}
-    {% if "manager_edit" in campaign_perms %}
-        <p><a href="{% url 'campaign_edit' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
-    {% endif %}
-    {% if "manager_delete" in campaign_perms %}
-        <p><a href="{% url 'campaign_delete' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
-    {% endif %}
-    {% if "manager_invite" in campaign_perms %}
-        <p><a href="{% url 'campaign_invite' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
+    {% if request.user.userprofile not in page.admins.all %}
+        {% get_obj_perms request.user for campaign as "campaign_perms" %}
+        {% if campaign_perms %}
+            <h4>Manager</h4>
+        {% endif %}
+        {% if "manager_edit" in campaign_perms %}
+            <p><a href="{% url 'campaign_edit' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
+        {% endif %}
+        {% if "manager_delete" in campaign_perms %}
+            <p><a href="{% url 'campaign_delete' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
+        {% endif %}
+        {% if "manager_invite" in campaign_perms %}
+            <p><a href="{% url 'campaign_invite' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
+        {% endif %}
     {% endif %}
 
     <h3>Campaign Images</h3>
