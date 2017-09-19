@@ -1,8 +1,7 @@
-import django
-import unittest
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import Client, RequestFactory, TestCase
+from django.utils import timezone
 from guardian.shortcuts import assign_perm
 
 from . import forms
@@ -79,6 +78,11 @@ class CampaignTest(TestCase):
     def test_campaign_exists(self):
         campaigns = models.Campaign.objects.all()
         self.assertIn(self.campaign, campaigns)
+
+    def test_page_creation_time(self):
+        campaign = models.Campaign.objects.create(name='time tester', page=self.page)
+        now = timezone.now()
+        self.assertLess(campaign.created_on, now)
 
     def test_duplicate_campaign_slug(self):
         self.client.login(username='testuser', password='testpassword')
