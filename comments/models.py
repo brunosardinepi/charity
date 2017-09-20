@@ -7,19 +7,20 @@ from page.models import Page
 
 
 class CommentTemplate(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateTimeField(default=timezone.now)
     content = models.TextField(blank=True)
-    upvotes = models.IntegerField(default=1)
-    downvotes = models.IntegerField(default=0)
+    date = models.DateTimeField(default=timezone.now)
     deleted = models.BooleanField(default=False)
+    deleted_on = models.DateTimeField(blank=True, null=True)
+    downvotes = models.IntegerField(default=0)
+    upvotes = models.IntegerField(default=1)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
 
 class Comment(CommentTemplate):
-    page = models.ForeignKey(Page, on_delete=models.CASCADE, blank=True, null=True)
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, blank=True, null=True)
+    page = models.ForeignKey(Page, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         if self.page:
