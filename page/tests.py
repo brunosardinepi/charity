@@ -68,6 +68,19 @@ class PageTest(TestCase):
         assign_perm('manager_delete', self.user3, self.page)
         assign_perm('manager_invite', self.user3, self.page)
 
+        self.page2 = models.Page.objects.create(
+            name='Office',
+            type='Organization',
+            page_slug='officedesk',
+            city='Chicago',
+            state='IL',
+            description='Im in the office.',
+            donation_count='203',
+            donation_money='3055',
+            category='Animal',
+            deleted=True
+        )
+
         self.campaign = CampaignModels.Campaign.objects.create(
             name='Test Campaign',
             page=self.page,
@@ -110,7 +123,7 @@ class PageTest(TestCase):
         }
 
         response = self.client.post('/create/', data)
-        self.assertEqual(models.Page.objects.all().count(), 1)
+        self.assertEqual(models.Page.objects.filter(deleted=False).count(), 1)
 
     def test_page_status_logged_out(self):
         request = self.factory.get('home')
@@ -454,3 +467,7 @@ class PageTest(TestCase):
         self.assertTrue(self.user4.has_perm('manager_edit', self.page))
         self.assertTrue(self.user4.has_perm('manager_delete', self.page))
         self.assertTrue(self.user4.has_perm('manager_invite', self.page))
+
+    def test_delete_page_view(self):
+        response = self.client.get('/%s/' % self.page2.page_slug)
+        self.assertEqual(response.status_code, 404)

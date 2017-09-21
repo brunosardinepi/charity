@@ -69,6 +69,20 @@ class CampaignTest(TestCase):
         assign_perm('manager_invite', self.user2, self.campaign)
         self.campaign.campaign_managers.add(self.user4.userprofile)
 
+        self.campaign2 = models.Campaign.objects.create(
+            name='Captain',
+            campaign_slug='thecaptain',
+            page=self.page,
+            type='Event',
+            city='Austin',
+            state='Texas',
+            description='Im the captain',
+            goal='334',
+            donation_count='52',
+            donation_money='10340',
+            deleted=True
+        )
+
         self.invitation = ManagerInvitation.objects.create(
             invite_to=self.user3.email,
             invite_from=self.user,
@@ -93,7 +107,7 @@ class CampaignTest(TestCase):
         }
 
         response = self.client.post('/%s/campaign/create/' % self.page.page_slug, data)
-        self.assertEqual(models.Campaign.objects.all().count(), 1)
+        self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 1)
 
     def test_campaign_status_logged_out(self):
         request = self.factory.get('home')
@@ -467,3 +481,7 @@ class CampaignTest(TestCase):
         self.assertTrue(self.user4.has_perm('manager_edit', self.campaign))
         self.assertTrue(self.user4.has_perm('manager_delete', self.campaign))
         self.assertTrue(self.user4.has_perm('manager_invite', self.campaign))
+
+    def test_delete_campaign_view(self):
+        response = self.client.get('/%s/%s/%s/' % (self.page.page_slug, self.campaign2.pk, self.campaign2.campaign_slug))
+        self.assertEqual(response.status_code, 404)
