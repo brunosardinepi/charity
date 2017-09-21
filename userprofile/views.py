@@ -16,8 +16,6 @@ def userprofile(request):
     userimages = models.UserImages.objects.filter(user=request.user.id)
     userprofileimage = models.UserImages.objects.filter(user=request.user.id, profile_picture=True)
     if userprofile.user == request.user:
-        print(userprofile.user_id)
-        print(request.user.id)
         admin_pages = userprofile.page_admins.all()
         manager_pages = userprofile.page_managers.all()
         subscriptions = userprofile.subscribers.all()
@@ -59,7 +57,6 @@ def profile_image_upload(request):
                 if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
                     return redirect('error:error_image_size')
                 imageupload = form.save(commit=False)
-#               return HttpResponseRedirect(userprofile.get_absolute_url())
                 imageupload.user_id=request.user.id
                 try:
                     profile = models.UserImages.objects.get(user=userprofile, profile_picture=True)
