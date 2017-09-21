@@ -1,11 +1,13 @@
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.text import slugify
 from userprofile.models import UserProfile
 
 
 class Page(models.Model):
     name = models.CharField(max_length=255, db_index=True)
+    created_on = models.DateTimeField(default=timezone.now)
     page_slug = models.SlugField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     donation_count = models.IntegerField(default=0)

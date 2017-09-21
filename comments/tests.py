@@ -90,14 +90,21 @@ class CommentTest(TestCase):
         self.assertIn(self.comment, comments)
         self.assertIn(self.comment2, comments)
 
+    def test_comment_creation_time(self):
+        comment = models.Comment.objects.create(user=self.user, content="hello mars", page=self.page)
         now = timezone.now()
-        self.assertLess(self.comment.date, now)
+        self.assertLess(comment.date, now)
 
     def test_reply_exists(self):
         replies = models.Reply.objects.all()
 
         self.assertIn(self.reply, replies)
         self.assertIn(self.reply2, replies)
+
+    def test_reply_creation_time(self):
+        reply = models.Reply.objects.create(user=self.user, content="hello mars", comment=self.comment)
+        now = timezone.now()
+        self.assertLess(reply.date, now)
 
     def test_comment_page(self):
         data = {'comment_text': "I am anonymous!"}

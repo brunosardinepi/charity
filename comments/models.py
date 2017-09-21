@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from campaign.models import Campaign
 from page.models import Page
@@ -7,7 +8,7 @@ from page.models import Page
 
 class CommentTemplate(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(default=timezone.now)
     content = models.TextField(blank=True)
     upvotes = models.IntegerField(default=1)
     downvotes = models.IntegerField(default=0)

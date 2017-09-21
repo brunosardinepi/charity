@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.text import slugify
 
 from page.models import Page
@@ -10,6 +11,7 @@ from pagefund import config
 
 class Campaign(models.Model):
     name = models.CharField(max_length=255, db_index=True)
+    created_on = models.DateTimeField(default=timezone.now)
     campaign_slug = models.SlugField(max_length=255)
     description = models.TextField(blank=True)
     goal = models.IntegerField(default=0)

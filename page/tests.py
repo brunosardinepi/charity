@@ -1,13 +1,10 @@
-import django
-
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 from django.http import Http404
 from django.test import Client, RequestFactory, TestCase
 from django.urls import reverse
+from django.utils import timezone
 from guardian.shortcuts import assign_perm
-
-import unittest
 
 from . import forms
 from . import models
@@ -98,6 +95,11 @@ class PageTest(TestCase):
     def test_page_exists(self):
         pages = models.Page.objects.all()
         self.assertIn(self.page, pages)
+
+    def test_page_creation_time(self):
+        page = models.Page.objects.create(name='time tester')
+        now = timezone.now()
+        self.assertLess(page.created_on, now)
 
     def test_duplicate_page_slug(self):
         self.client.login(username='testuser', password='testpassword')
