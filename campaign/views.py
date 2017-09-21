@@ -1,11 +1,12 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 
-from django.conf import settings
-from django.core.exceptions import ValidationError
 from . import forms
 from . import models
 from comments.forms import CommentForm
@@ -134,14 +135,15 @@ def campaign_delete(request, page_slug, campaign_pk, campaign_slug):
     else:
         manager = False
     if admin or manager:
-        form = forms.DeleteCampaignForm(instance=campaign)
-        if request.method == 'POST':
-            form = forms.DeleteCampaignForm(request.POST, instance=campaign)
-            campaign.delete()
-            return HttpResponseRedirect(page.get_absolute_url())
+        campaign.deleted = True
+        campaign.deleted_by = request.user
+        campaign.deleted_on = timezone.now()
+        campaign.name = campaign.name + "_deleted_" + timezone.now().strftime("%Y%m%d")
+        campaign.campaign_slug = campaign.campaign_slug + "deleted" + timezone.now().strftime("%Y%m%d")
+        campaign.save()
+        return HttpResponseRedirect(page.get_absolute_url())
     else:
         raise Http404
-    return render(request, 'campaign/campaign_delete.html', {'form': form, 'campaign': campaign})
 
 @login_required
 def campaign_invite(request, page_slug, campaign_pk, campaign_slug):

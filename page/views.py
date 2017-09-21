@@ -1,11 +1,15 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.utils import timezone
 from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
+from time import strftime
 
-from django.conf import settings
+import json
+
 from . import forms
 from . import models
 from campaign import models as CampaignModels
@@ -16,73 +20,74 @@ from pagefund.email import email
 from userprofile.models import UserProfile
 from pagefund.image import image_upload
 
-import json
-
 
 def page(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
-    pageimages = models.PageImages.objects.filter(page=page)
-    pageprofile = models.PageImages.objects.filter(page=page, page_profile=True)
-    active_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=True)
-    inactive_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=False)
-    managers = page.managers.all()
-    comments = Comment.objects.filter(page=page).order_by('-date')
-    form = CommentForm
-    try:
-        user_subscription_check = page.subscribers.get(user_id=request.user.pk)
-    except UserProfile.DoesNotExist:
-        user_subscription_check = None
-    if user_subscription_check:
-        subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe", "color": "red"}
+    if page.deleted == True:
+        raise Http404
     else:
-        subscribe_attr = {"name": "subscribe", "value": "Subscribe", "color": "green"}
+        managers = page.managers.all()
+        pageimages = models.PageImages.objects.filter(page=page)
+        pageprofile = models.PageImages.objects.filter(page=page, page_profile=True)
+        active_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=True, deleted=False)
+        inactive_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=False, deleted=False)
+        comments = Comment.objects.filter(page=page).order_by('-date')
+        form = CommentForm
+        try:
+            user_subscription_check = page.subscribers.get(user_id=request.user.pk)
+        except UserProfile.DoesNotExist:
+            user_subscription_check = None
+        if user_subscription_check:
+            subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe", "color": "red"}
+        else:
+            subscribe_attr = {"name": "subscribe", "value": "Subscribe", "color": "green"}
 
-    if request.method == "POST":
-        post_data = request.POST.getlist('permissions[]')
-        new_permissions = dict()
-        for p in post_data:
-            m = p.split("_", 1)[0]
-            p = p.split("_", 1)[1]
-            if m not in new_permissions:
-                new_permissions[m] = []
-            new_permissions[m].append(p)
+        if request.method == "POST":
+            post_data = request.POST.getlist('permissions[]')
+            new_permissions = dict()
+            for p in post_data:
+                m = p.split("_", 1)[0]
+                p = p.split("_", 1)[1]
+                if m not in new_permissions:
+                    new_permissions[m] = []
+                new_permissions[m].append(p)
 
-        # get list of user's current perms
-        old_permissions = dict()
-        for k in new_permissions:
-            user = get_object_or_404(User, pk=k)
-            user_permissions = get_user_perms(user, page)
-            if k not in old_permissions:
-                old_permissions[k] = []
-            for p in user_permissions:
-                old_permissions[k].append(p)
+            # get list of user's current perms
+            old_permissions = dict()
+            for k in new_permissions:
+                user = get_object_or_404(User, pk=k)
+                user_permissions = get_user_perms(user, page)
+                if k not in old_permissions:
+                    old_permissions[k] = []
+                for p in user_permissions:
+                    old_permissions[k].append(p)
 
-        # for every item in the user's current perms, compare to the new list of perms from the form
-        for k, v in old_permissions.items():
-            user = get_object_or_404(User, pk=k)
-            for e in v:
-                # if that item is in the list, remove it from the new list and do nothing to the perm
-                if e in new_permissions[k]:
-                    new_permissions[k].remove(e)
-                # if that item is not in the list, remove the perm
-                else:
-                    remove_perm(e, user, page)
-        # for every item in the new list, give the user the perms for that item
-        for k,v in new_permissions.items():
-            user = get_object_or_404(User, pk=k)
-            for e in v:
-                assign_perm(e, user, page)
-    return render(request, 'page/page.html', {
-        'page': page,
-        'pageimages': pageimages,
-        'pageprofile': pageprofile,
-        'active_campaigns': active_campaigns,
-        'inactive_campaigns': inactive_campaigns,
-        'managers': managers,
-        'comments': comments,
-        'form': form,
-        'subscribe_attr': subscribe_attr
-    })
+            # for every item in the user's current perms, compare to the new list of perms from the form
+            for k, v in old_permissions.items():
+                user = get_object_or_404(User, pk=k)
+                for e in v:
+                    # if that item is in the list, remove it from the new list and do nothing to the perm
+                    if e in new_permissions[k]:
+                        new_permissions[k].remove(e)
+                    # if that item is not in the list, remove the perm
+                    else:
+                        remove_perm(e, user, page)
+            # for every item in the new list, give the user the perms for that item
+            for k,v in new_permissions.items():
+                user = get_object_or_404(User, pk=k)
+                for e in v:
+                    assign_perm(e, user, page)
+        return render(request, 'page/page.html', {
+            'page': page,
+            'pageimages': pageimages,
+            'pageprofile': pageprofile,
+            'active_campaigns': active_campaigns,
+            'inactive_campaigns': inactive_campaigns,
+            'managers': managers,
+            'comments': comments,
+            'form': form,
+            'subscribe_attr': subscribe_attr
+        })
 
 @login_required(login_url='signup')
 def page_create(request):
@@ -126,14 +131,15 @@ def page_delete(request, page_slug):
     else:
         manager = False
     if admin or manager:
-        form = forms.DeletePageForm(instance=page)
-        if request.method == 'POST':
-            form = forms.DeletePageForm(request.POST, instance=page)
-            page.delete()
-            return HttpResponseRedirect(reverse('home'))
+        page.deleted = True
+        page.deleted_by = request.user
+        page.deleted_on = timezone.now()
+        page.name = page.name + "_deleted_" + timezone.now().strftime("%Y%m%d")
+        page.page_slug = page.page_slug + "deleted" + timezone.now().strftime("%Y%m%d")
+        page.save()
+        return HttpResponseRedirect(reverse('home'))
     else:
         raise Http404
-    return render(request, 'page/page_delete.html', {'form': form, 'page': page})
 
 @login_required
 def subscribe(request, page_pk, action=None):
