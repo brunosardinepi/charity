@@ -69,6 +69,20 @@ class CampaignTest(TestCase):
         assign_perm('manager_invite', self.user2, self.campaign)
         self.campaign.campaign_managers.add(self.user4.userprofile)
 
+        self.campaign2 = models.Campaign.objects.create(
+            name='Captain',
+            campaign_slug='thecaptain',
+            page=self.page,
+            type='Event',
+            city='Austin',
+            state='Texas',
+            description='Im the captain',
+            goal='334',
+            donation_count='52',
+            donation_money='10340',
+            deleted=True
+        )
+
         self.invitation = ManagerInvitation.objects.create(
             invite_to=self.user3.email,
             invite_from=self.user,
@@ -84,6 +98,15 @@ class CampaignTest(TestCase):
         now = timezone.now()
         self.assertLess(campaign.created_on, now)
 
+    def test_page_delete_cascade(self):
+        campaigns = models.Campaign.objects.filter(deleted=False)
+        self.assertEqual(campaigns.count(), 1)
+
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/%s/delete/' % self.page.page_slug)
+        campaigns = models.Campaign.objects.filter(deleted=False)
+        self.assertEqual(campaigns.count(), 0)
+
     def test_duplicate_campaign_slug(self):
         self.client.login(username='testuser', password='testpassword')
 
@@ -93,7 +116,7 @@ class CampaignTest(TestCase):
         }
 
         response = self.client.post('/%s/campaign/create/' % self.page.page_slug, data)
-        self.assertEqual(models.Campaign.objects.all().count(), 1)
+        self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 1)
 
     def test_campaign_status_logged_out(self):
         request = self.factory.get('home')
@@ -195,12 +218,10 @@ class CampaignTest(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_delete_campaign_admin(self):
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.campaign_delete(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/%s/%s/%s/delete/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
-        self.assertContains(response, self.page.name, status_code=200)
-        self.assertContains(response, self.campaign.name, status_code=200)
+        self.assertRedirects(response, '/%s/' % self.page.page_slug, 302, 200)
 
     def test_delete_campaign_logged_out(self):
         response = self.client.get('/%s/%s/%s/delete/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
@@ -217,12 +238,10 @@ class CampaignTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_delete_campaign_manager_perms(self):
-        request = self.factory.get('home')
-        request.user = self.user2
-        response = views.campaign_delete(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
+        self.client.login(username='pizza', password='mehungry')
+        response = self.client.get('/%s/%s/%s/delete/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
-        self.assertContains(response, self.page.name, status_code=200)
-        self.assertContains(response, self.campaign.name, status_code=200)
+        self.assertRedirects(response, '/%s/' % self.page.page_slug, 302, 200)
 
     def test_delete_campaign_manager_no_perms(self):
         self.client.login(username='goforit', password='yougottawin')
@@ -471,3 +490,7 @@ class CampaignTest(TestCase):
         self.assertTrue(self.user4.has_perm('manager_edit', self.campaign))
         self.assertTrue(self.user4.has_perm('manager_delete', self.campaign))
         self.assertTrue(self.user4.has_perm('manager_invite', self.campaign))
+
+    def test_delete_campaign_view(self):
+        response = self.client.get('/%s/%s/%s/' % (self.page.page_slug, self.campaign2.pk, self.campaign2.campaign_slug))
+        self.assertEqual(response.status_code, 404)

@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -6,17 +7,21 @@ from userprofile.models import UserProfile
 
 
 class Page(models.Model):
-    name = models.CharField(max_length=255, db_index=True)
+    admins = models.ManyToManyField(UserProfile, related_name='page_admins', blank=True)
+    city = models.CharField(max_length=255, blank=True)
     created_on = models.DateTimeField(default=timezone.now)
-    page_slug = models.SlugField(max_length=100, unique=True)
+    deleted = models.BooleanField(default=False)
+    deleted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    deleted_on = models.DateTimeField(blank=True, null=True)
     description = models.TextField(blank=True)
     donation_count = models.IntegerField(default=0)
     donation_money = models.IntegerField(default=0)
-    admins = models.ManyToManyField(UserProfile, related_name='page_admins', blank=True)
-    managers = models.ManyToManyField(UserProfile, related_name='page_managers', blank=True)
-    subscribers = models.ManyToManyField(UserProfile, related_name='subscribers', blank=True)
     is_sponsored = models.BooleanField(default=False)
-    city = models.CharField(max_length=255, blank=True)
+    managers = models.ManyToManyField(UserProfile, related_name='page_managers', blank=True)
+    name = models.CharField(max_length=255, db_index=True)
+    page_slug = models.SlugField(max_length=100, unique=True)
+    subscribers = models.ManyToManyField(UserProfile, related_name='subscribers', blank=True)
+
     CATEGORY_CHOICES = (
         ('animal', 'Animal'),
         ('environment', 'Environment'),
@@ -28,6 +33,7 @@ class Page(models.Model):
         choices=CATEGORY_CHOICES,
         default='',
     )
+
     STATE_CHOICES = (
         ('AL', 'Alabama'),
         ('AK', 'Alaska'),
@@ -85,6 +91,7 @@ class Page(models.Model):
         choices=STATE_CHOICES,
         blank=True,
     )
+
     TYPE_CHOICES = (
         ('organization', 'Organization'),
         ('personal', 'Personal'),

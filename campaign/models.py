@@ -10,18 +10,22 @@ from userprofile.models import UserProfile
 from pagefund import config
 
 class Campaign(models.Model):
-    name = models.CharField(max_length=255, db_index=True)
-    created_on = models.DateTimeField(default=timezone.now)
-    campaign_slug = models.SlugField(max_length=255)
-    description = models.TextField(blank=True)
-    goal = models.IntegerField(default=0)
-    donation_count = models.IntegerField(default=0)
-    donation_money = models.IntegerField(default=0)
-    is_active = models.BooleanField(default=True)
-    page = models.ForeignKey('page.Page', on_delete=models.CASCADE, related_name='campaigns')
     campaign_admins = models.ManyToManyField(UserProfile, related_name='campaign_admins', blank=True)
     campaign_managers = models.ManyToManyField(UserProfile, related_name='campaign_managers', blank=True)
+    campaign_slug = models.SlugField(max_length=255)
     city = models.CharField(max_length=255, blank=True)
+    created_on = models.DateTimeField(default=timezone.now)
+    deleted = models.BooleanField(default=False)
+    deleted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    deleted_on = models.DateTimeField(blank=True, null=True)
+    description = models.TextField(blank=True)
+    donation_count = models.IntegerField(default=0)
+    donation_money = models.IntegerField(default=0)
+    goal = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    name = models.CharField(max_length=255, db_index=True)
+    page = models.ForeignKey('page.Page', on_delete=models.CASCADE, related_name='campaigns')
+
     TYPE_CHOICES = (
         ('event', 'Event'),
     )
@@ -30,6 +34,7 @@ class Campaign(models.Model):
         choices=TYPE_CHOICES,
         default='Event',
     )
+
     STATE_CHOICES = (
         ('AL', 'Alabama'),
         ('AK', 'Alaska'),
