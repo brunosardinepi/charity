@@ -98,6 +98,15 @@ class CampaignTest(TestCase):
         now = timezone.now()
         self.assertLess(campaign.created_on, now)
 
+    def test_page_delete_cascade(self):
+        campaigns = models.Campaign.objects.filter(deleted=False)
+        self.assertEqual(campaigns.count(), 1)
+
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/%s/delete/' % self.page.page_slug)
+        campaigns = models.Campaign.objects.filter(deleted=False)
+        self.assertEqual(campaigns.count(), 0)
+
     def test_duplicate_campaign_slug(self):
         self.client.login(username='testuser', password='testpassword')
 
