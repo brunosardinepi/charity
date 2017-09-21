@@ -14,10 +14,10 @@ from page import models as PageModels
 def userprofile(request):
     userprofile = get_object_or_404(models.UserProfile, user_id=request.user.id)
     if userprofile.user == request.user:
-        admin_pages = userprofile.page_admins.all()
-        manager_pages = userprofile.page_managers.all()
-        subscriptions = userprofile.subscribers.all()
-        campaigns = userprofile.campaign_admins.all()
+        admin_pages = userprofile.page_admins.filter(deleted=False)
+        manager_pages = userprofile.page_managers.filter(deleted=False)
+        subscriptions = userprofile.subscribers.filter(deleted=False)
+        campaigns = userprofile.campaign_admins.filter(deleted=False)
         invitations = ManagerInvitation.objects.filter(invite_from=request.user, expired=False)
         form = forms.UserProfileForm(instance=userprofile)
         if request.method == 'POST':
