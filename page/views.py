@@ -12,7 +12,7 @@ import json
 
 from . import forms
 from . import models
-from campaign import models as CampaignModels
+from campaign.models import Campaign
 from comments.forms import CommentForm
 from comments.models import Comment
 from invitations.models import ManagerInvitation
@@ -29,8 +29,8 @@ def page(request, page_slug):
         managers = page.managers.all()
         pageimages = models.PageImages.objects.filter(page=page)
         pageprofile = models.PageImages.objects.filter(page=page, page_profile=True)
-        active_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=True, deleted=False)
-        inactive_campaigns = CampaignModels.Campaign.objects.filter(page=page, is_active=False, deleted=False)
+        active_campaigns = Campaign.objects.filter(page=page, is_active=True, deleted=False)
+        inactive_campaigns = Campaign.objects.filter(page=page, is_active=False, deleted=False)
         comments = Comment.objects.filter(page=page).order_by('-date')
         form = CommentForm
         try:
@@ -137,6 +137,16 @@ def page_delete(request, page_slug):
         page.name = page.name + "_deleted_" + timezone.now().strftime("%Y%m%d")
         page.page_slug = page.page_slug + "deleted" + timezone.now().strftime("%Y%m%d")
         page.save()
+
+        campaigns = Campaign.objects.filter(page=page)
+        if campaigns:
+            for c in campaigns:
+                c.deleted = True
+                c.deleted_by = request.user
+                c.deleted_on = timezone.now()
+                c.name = c.name + "_deleted_" + timezone.now().strftime("%Y%m%d")
+                c.campaign_slug = c.campaign_slug + "deleted" + timezone.now().strftime("%Y%m%d")
+                c.save()
         return HttpResponseRedirect(reverse('home'))
     else:
         raise Http404
