@@ -195,12 +195,10 @@ class CampaignTest(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_delete_campaign_admin(self):
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.campaign_delete(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/%s/%s/%s/delete/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
-        self.assertContains(response, self.page.name, status_code=200)
-        self.assertContains(response, self.campaign.name, status_code=200)
+        self.assertRedirects(response, '/%s/' % self.page.page_slug, 302, 200)
 
     def test_delete_campaign_logged_out(self):
         response = self.client.get('/%s/%s/%s/delete/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
@@ -217,12 +215,10 @@ class CampaignTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_delete_campaign_manager_perms(self):
-        request = self.factory.get('home')
-        request.user = self.user2
-        response = views.campaign_delete(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
+        self.client.login(username='pizza', password='mehungry')
+        response = self.client.get('/%s/%s/%s/delete/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
-        self.assertContains(response, self.page.name, status_code=200)
-        self.assertContains(response, self.campaign.name, status_code=200)
+        self.assertRedirects(response, '/%s/' % self.page.page_slug, 302, 200)
 
     def test_delete_campaign_manager_no_perms(self):
         self.client.login(username='goforit', password='yougottawin')

@@ -286,11 +286,10 @@ class PageTest(TestCase):
         self.assertRedirects(response, '/accounts/login/?next=/%s/delete/' % self.page.page_slug, 302, 200)
 
     def test_delete_page_admin(self):
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.page_delete(request, self.page.page_slug)
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/%s/delete/' % self.page.page_slug)
 
-        self.assertContains(response, self.page.name, status_code=200)
+        self.assertRedirects(response, '/', 302, 200)
 
     def test_delete_page_not_admin(self):
         self.client.login(username='harrypotter', password='imawizard')
@@ -298,11 +297,10 @@ class PageTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_delete_page_manager_perms(self):
-        request = self.factory.get('home')
-        request.user = self.user3
-        response = views.page_delete(request, self.page.page_slug)
+        self.client.login(username='bobdole', password='dogsarecool')
+        response = self.client.get('/%s/delete/' % self.page.page_slug)
 
-        self.assertContains(response, self.page.name, status_code=200)
+        self.assertRedirects(response, '/', 302, 200)
 
     def test_delete_page_manager_no_perms(self):
         self.client.login(username='batman', password='imbatman')
