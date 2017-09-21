@@ -58,19 +58,20 @@ def profile_image_upload(request):
             if image_type in settings.UPLOAD_TYPES:
                 if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
                     return redirect('error:error_image_size')
-            raise ValidationError('This is not an imagee')
-            imageupload = form.save(commit=False)
-#           return HttpResponseRedirect(userprofile.get_absolute_url())
-            imageupload.user_id=request.user.id
-            try:
-                profile = models.UserImages.objects.get(user=userprofile, profile_picture=True)
-            except models.UserImages.DoesNotExist:
-                profile = None
-            if profile and imageupload.profile_picture:
-                profile.profile_picture=False
-                profile.save()
-            imageupload.user_id=request.user.id
-            imageupload.save()
-        return HttpResponseRedirect(userprofile.get_absolute_url())
+                imageupload = form.save(commit=False)
+#               return HttpResponseRedirect(userprofile.get_absolute_url())
+                imageupload.user_id=request.user.id
+                try:
+                    profile = models.UserImages.objects.get(user=userprofile, profile_picture=True)
+                except models.UserImages.DoesNotExist:
+                    profile = None
+                if profile and imageupload.profile_picture:
+                    profile.profile_picture=False
+                    profile.save()
+                imageupload.user_id=request.user.id
+                imageupload.save()
+                return HttpResponseRedirect(userprofile.get_absolute_url())
+            else:
+                raise ValidationError('This is not an imagee')
     return render(request, 'userprofile/profile_image_upload.html', {'userprofile': userprofile, 'form': form })
 
