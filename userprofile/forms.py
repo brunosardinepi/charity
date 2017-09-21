@@ -87,5 +87,5 @@ class UserImagesForm(forms.ModelForm):
         fields = [
             'image',
             'caption',
-            'user_profile',
+            'profile_picture',
         ]

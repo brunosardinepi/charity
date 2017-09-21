@@ -14,11 +14,10 @@ from page import models as PageModels
 def userprofile(request):
     userprofile = get_object_or_404(models.UserProfile, user_id=request.user.id)
     userimages = models.UserImages.objects.filter(user=request.user.id)
-    userprofileimage = models.UserImages.objects.filter(user=request.user.id, user_profile=True)
+    userprofileimage = models.UserImages.objects.filter(user=request.user.id, profile_picture=True)
     if userprofile.user == request.user:
         print(userprofile.user_id)
-#        print(user_id)
-        print(userprofile.user)
+        print(request.user.id)
         admin_pages = userprofile.page_admins.all()
         manager_pages = userprofile.page_managers.all()
         subscriptions = userprofile.subscribers.all()
@@ -54,25 +53,21 @@ def profile_image_upload(request):
     if request.method == 'POST':
         form = forms.UserImagesForm(data=request.POST, files=request.FILES)
         if form.is_valid():
-            print("form is valid")
             image = form.cleaned_data.get('image',False)
             image_type = image.content_type.split('/')[0]
-            print(image.content_type)
             if image_type in settings.UPLOAD_TYPES:
                 if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
-                    msg = 'The file size limit is %s. Your file size is %s.' % (
-                        settings.MAX_IMAGE_UPLOAD_SIZE,
-                        image._size
-                    )
-                    raise ValidationError(msg)
+                    return redirect('error:error_image_size')
+            raise ValidationError('This is not an imagee')
             imageupload = form.save(commit=False)
+#           return HttpResponseRedirect(userprofile.get_absolute_url())
             imageupload.user_id=request.user.id
             try:
-                profile = models.UserImages.objects.get(user=imageupload.user, user_profile=True)
+                profile = models.UserImages.objects.get(user=userprofile, profile_picture=True)
             except models.UserImages.DoesNotExist:
                 profile = None
-            if profile and imageupload.user_profile:
-                profile.user_profile=False
+            if profile and imageupload.profile_picture:
+                profile.profile_picture=False
                 profile.save()
             imageupload.user_id=request.user.id
             imageupload.save()
