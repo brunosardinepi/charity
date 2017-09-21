@@ -31,7 +31,7 @@ def page(request, page_slug):
         pageprofile = models.PageImages.objects.filter(page=page, page_profile=True)
         active_campaigns = Campaign.objects.filter(page=page, is_active=True, deleted=False)
         inactive_campaigns = Campaign.objects.filter(page=page, is_active=False, deleted=False)
-        comments = Comment.objects.filter(page=page).order_by('-date')
+        comments = Comment.objects.filter(page=page, deleted=False).order_by('-date')
         form = CommentForm
         try:
             user_subscription_check = page.subscribers.get(user_id=request.user.pk)

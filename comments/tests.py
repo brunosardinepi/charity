@@ -84,6 +84,13 @@ class CommentTest(TestCase):
             comment=self.comment2
         )
 
+        self.reply3 = models.Reply.objects.create(
+            user=self.user2,
+            content="U wot",
+            comment=self.comment
+        )
+
+
     def test_comment_exists(self):
         comments = models.Comment.objects.all()
 
@@ -201,3 +208,13 @@ class CommentTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
         response = self.client.get('/comments/delete/reply/%s/' % self.reply.pk)
         self.assertEqual(response.status_code, 404)
+
+    def test_delete_comment_with_multiple_replies(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/comments/delete/comment/%s/' % self.comment.pk)
+        response = self.client.get('/testpage/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.comment.content, status_code=200)
+        self.assertNotContains(response, self.reply.content, status_code=200)
+        self.assertNotContains(response, self.reply3.content, status_code=200)
+

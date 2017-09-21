@@ -25,7 +25,7 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
         campaignimages = models.CampaignImages.objects.filter(campaign=campaign)
         campaignprofile = models.CampaignImages.objects.filter(campaign=campaign, campaign_profile=True)
         managers = campaign.campaign_managers.all()
-        comments = Comment.objects.filter(campaign=campaign).order_by('-date')
+        comments = Comment.objects.filter(campaign=campaign, deleted=False).order_by('-date')
         form = CommentForm
 
         if request.method == "POST":
