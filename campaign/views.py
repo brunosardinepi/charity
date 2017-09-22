@@ -248,7 +248,7 @@ def campaign_image_upload(request, page_slug, campaign_pk, campaign_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
     campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
     admin = request.user.userprofile in page.admins.all()
-    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_upload', page):
+    if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_upload', campaign):
         manager = True
     else:
         manager = False

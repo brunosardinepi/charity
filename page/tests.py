@@ -494,3 +494,27 @@ class PageTest(TestCase):
     def test_delete_page_view(self):
         response = self.client.get('/%s/' % self.page2.page_slug)
         self.assertEqual(response.status_code, 404)
+
+    def test_upload_admin(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/%s/upload/' % self.page.page_slug)
+        self.assertEqual(response.status_code, 200)
+
+    def test_upload_manager_perms(self):
+        self.client.login(username='bobdole', password='dogsarecool')
+        response = self.client.get('/%s/upload/' % self.page.page_slug)
+        self.assertEqual(response.status_code, 200)
+
+    def test_upload_manager_no_perms(self):
+        self.client.login(username='batman', password='imbatman')
+        response = self.client.get('/%s/upload/' % self.page.page_slug)
+        self.assertEqual(response.status_code, 404)
+
+    def test_upload_logged_in_no_perms(self):
+        self.client.login(username='newguy', password='imnewhere')
+        response = self.client.get('/%s/upload/' % self.page.page_slug)
+        self.assertEqual(response.status_code, 404)
+
+    def test_upload_logged_out(self):
+        response = self.client.get('/%s/upload/' % self.page.page_slug)
+        self.assertRedirects(response, '/accounts/login/?next=/testpage/upload/', 302, 200)
