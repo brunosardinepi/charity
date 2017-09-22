@@ -357,7 +357,8 @@ class PageTest(TestCase):
             'email': self.user3.email,
             'manager_edit': "True",
             'manager_delete': "True",
-            'manager_invite': "True"
+            'manager_invite': "True",
+            'manager_upload': "True"
         }
 
         self.client.login(username='testuser', password='testpassword')
@@ -376,6 +377,17 @@ class PageTest(TestCase):
         response = self.client.post('/%s/managers/invite/' % self.page.page_slug, data)
         self.assertTrue(ManagerInvitation.objects.all().count(), 2)
         self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
+        # accept the invite and make sure the page has the right perms
+        self.client.login(username='newguy', password='imnewhere')
+        invitation = ManagerInvitation.objects.get(invite_to=self.user5.email)
+        response = self.client.get('/invite/accept/%s/%s/' % (invitation.pk, invitation.key))
+        self.assertRedirects(response, invitation.page.get_absolute_url(), 302, 200)
+        response = self.client.get('/%s/' % invitation.page.page_slug)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Edit Page", status_code=200)
+        self.assertContains(response, "Delete Page", status_code=200)
+        self.assertContains(response, "Invite others to manage Page", status_code=200)
+        self.assertContains(response, "Upload image", status_code=200)
 
     def test_ManagerInviteForm(self):
         data = {

@@ -201,6 +201,7 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
                         manager_edit=form.cleaned_data['manager_edit'],
                         manager_delete=form.cleaned_data['manager_delete'],
                         manager_invite=form.cleaned_data['manager_invite'],
+                        manager_upload=form.cleaned_data['manager_upload'],
                     )
 
                     # create the email
