@@ -27,7 +27,7 @@ class ManagerInvitation(models.Model):
     manager_invite = models.BooleanField(default=False)
     manager_upload = models.BooleanField(default=False)
 
-class RegularInvitation(models.Model):
+class GeneralInvitation(models.Model):
     expired = models.BooleanField(default=False)
     accepted = models.BooleanField(default=False)
     declined = models.BooleanField(default=False)

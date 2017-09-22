@@ -26,13 +26,20 @@ class HomeTest(TestCase):
         self.client = Client()
 
         self.user = User.objects.create_user(
-                        username='testuser',
-                        email='test@test.test',
-                        password='testpassword',
-                        )
+            username='testuser',
+            email='test@test.test',
+            password='testpassword',
+        )
         self.user.userprofile.first_name = 'John'
         self.user.userprofile.last_name = 'Doe'
         self.user.userprofile.zipcode = '88888'
+        self.user.userprofile.save()
+
+        self.user2 = User.objects.create_user(
+            username='anotherguy',
+            email='another@guy.me',
+            password='imthatguy',
+        )
 
         self.page = Page.objects.create(name="Buffalo", donation_money=600, is_sponsored=True)
         self.page2 = Page.objects.create(name="Antelope", donation_money=100, is_sponsored=False)
@@ -46,11 +53,7 @@ class HomeTest(TestCase):
 
 
     def test_home_logged_out(self):
-        """Home page returns HTTP 200"""
-
-        request = self.factory.get('home')
-        request.user = AnonymousUser()
-        response = views.home(request)
+        response = self.client.get('/')
 
         page_donations = self.page.donation_money + self.page2.donation_money
         campaign_donations = self.campaign.donation_money + self.campaign2.donation_money + self.campaign3.donation_money + self.campaign4.donation_money
@@ -60,13 +63,11 @@ class HomeTest(TestCase):
         self.assertContains(response, donations, status_code=200)
         self.assertContains(response, self.page.name, status_code=200)
         self.assertNotContains(response, self.page2.name, status_code=200)
+        self.assertNotContains(response, '/invite/', status_code=200)
 
     def test_home_logged_in(self):
-        """Home page returns HTTP 200"""
-
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.home(request)
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/')
 
         page = self.user.userprofile.subscribers.get(id=self.page.pk)
         campaigns = page.campaigns.all()
@@ -79,6 +80,24 @@ class HomeTest(TestCase):
         self.assertNotContains(response, self.page2.name, status_code=200)
         self.assertContains(response, self.user.userprofile.first_name, status_code=200)
         self.assertContains(response, self.user.userprofile.last_name, status_code=200)
+        self.assertContains(response, '/invite/', status_code=200)
+
+    def test_invite_logged_out(self):
+        response = self.client.get('/invite/')
+
+        self.assertRedirects(response, '/accounts/login/?next=/invite/', 302, 200)
+
+    def test_invite_logged_in(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/invite/')
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_invite_user_exists(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post('/invite/', {'email': 'another@guy.me'})
+
+        self.assertRedirects(response, '/error/invite/user-exists/', 302, 200)
 
 
 class AccountTests(TestCase):

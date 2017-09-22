@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^profile/', include('userprofile.urls', namespace='userprofile')),
     url(r'^profile/upload/', include('userprofile.urls', namespace='profile_image_upload')),
     url(r'^search/', include('search.urls', namespace='search')),
+    url(r'^invite/$', views.invite, name='invite'),
     url(r'^invite/', include('invitations.urls', namespace='invitations')),
     url(r'^subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),
     url(r'^comments/', include('comments.urls', namespace='comments')),

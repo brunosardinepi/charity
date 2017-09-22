@@ -1,0 +1,16 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} Invite | {{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+    <a href="{% url 'home' %}">Home</a> / Invite
+{% endblock %}
+
+{% block body_content %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Invite" />
+    </form>
+{% endblock %}
