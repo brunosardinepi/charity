@@ -269,10 +269,8 @@ def page_image_upload(request, page_slug):
         if request.method == 'POST':
             form = forms.PageImagesForm(data=request.POST, files=request.FILES)
             if form.is_valid():
-                print("form is valid")
                 image = form.cleaned_data.get('image',False)
                 image_type = image.content_type.split('/')[0]
-                print(image.content_type)
                 if image_type in settings.UPLOAD_TYPES:
                     if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
                         msg = 'The file size limit is %s. Your file size is %s.' % (
@@ -286,7 +284,6 @@ def page_image_upload(request, page_slug):
                     profile = models.PageImages.objects.get(page=imageupload.page, page_profile=True)
                 except models.PageImages.DoesNotExist:
                     profile = None
-                print(page)
                 if profile and imageupload.page_profile:
                     profile.page_profile=False
                     profile.save()
