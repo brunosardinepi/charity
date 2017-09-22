@@ -89,7 +89,7 @@ class Page(models.Model):
     state = models.CharField(
         max_length=100,
         choices=STATE_CHOICES,
-        blank=True,
+        default='',
     )
 
     TYPE_CHOICES = (
