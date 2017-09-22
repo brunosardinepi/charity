@@ -41,7 +41,8 @@ class ManagerInvitationTest(TestCase):
             page=self.page,
             manager_edit=True,
             manager_delete=True,
-            manager_invite=True
+            manager_invite=True,
+            manager_upload=True
         )
 
     def test_invitation_exists(self):
@@ -69,6 +70,7 @@ class ManagerInvitationTest(TestCase):
         self.assertTrue(self.user2.has_perm('manager_edit', self.page))
         self.assertTrue(self.user2.has_perm('manager_delete', self.page))
         self.assertTrue(self.user2.has_perm('manager_invite', self.page))
+        self.assertTrue(self.user2.has_perm('manager_upload', self.page))
 
         invitations = models.ManagerInvitation.objects.filter(expired=False)
         self.assertNotIn(self.invitation, invitations)
@@ -93,6 +95,7 @@ class ManagerInvitationTest(TestCase):
         self.assertFalse(self.user2.has_perm('manager_edit', self.page))
         self.assertFalse(self.user2.has_perm('manager_delete', self.page))
         self.assertFalse(self.user2.has_perm('manager_invite', self.page))
+        self.assertFalse(self.user2.has_perm('manager_upload', self.page))
 
         invitations = models.ManagerInvitation.objects.filter(expired=False)
         self.assertNotIn(self.invitation, invitations)
@@ -109,6 +112,7 @@ class ManagerInvitationTest(TestCase):
         self.assertFalse(self.user2.has_perm('manager_edit', self.page))
         self.assertFalse(self.user2.has_perm('manager_delete', self.page))
         self.assertFalse(self.user2.has_perm('manager_invite', self.page))
+        self.assertFalse(self.user2.has_perm('manager_upload', self.page))
 
         invitations = models.ManagerInvitation.objects.filter(expired=False)
         self.assertNotIn(self.invitation, invitations)

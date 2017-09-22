@@ -32,6 +32,7 @@ def accept_invitation(request, invitation_pk, key):
             'manager_edit': invitation.manager_edit,
             'manager_delete': invitation.manager_delete,
             'manager_invite': invitation.manager_invite,
+            'manager_upload': invitation.manager_upload,
         }
         if invitation.page:
             invitation.page.managers.add(request.user.userprofile)

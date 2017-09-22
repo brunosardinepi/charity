@@ -98,6 +98,7 @@ class Campaign(models.Model):
             ('manager_edit', 'Manager -- edit Campaign'),
             ('manager_delete', 'Manager -- delete Campaign'),
             ('manager_invite', 'Manager -- invite users to manage Campaign'),
+            ('manager_upload', 'Manager -- upload media to Campaign'),
         )
 
     def __str__(self):
@@ -123,4 +124,3 @@ class CampaignImages(models.Model):
     image = models.ImageField(upload_to='media/campaigns/images/', blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)
     campaign_profile = models.BooleanField(default=False)
-

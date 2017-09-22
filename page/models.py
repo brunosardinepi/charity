@@ -107,6 +107,7 @@ class Page(models.Model):
             ('manager_edit', 'Manager -- edit Page'),
             ('manager_delete', 'Manager -- delete Page'),
             ('manager_invite', 'Manager -- invite users to manage Page'),
+            ('manager_upload', 'Manager -- upload media to Page'),
         )
 
     def __str__(self):
@@ -130,7 +131,3 @@ class PageImages(models.Model):
     image = models.ImageField(upload_to='media/pages/images/', blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)
     page_profile = models.BooleanField(default=False)
-
-
-
-

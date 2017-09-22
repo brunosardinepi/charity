@@ -35,3 +35,4 @@ class ManagerInviteForm(forms.Form):
     manager_edit = forms.BooleanField(required=False, label='Edit Page')
     manager_delete = forms.BooleanField(required=False, label='Delete Page')
     manager_invite = forms.BooleanField(required=False, label='Invite users to manage Page')
+    manager_upload = forms.BooleanField(required=False, label='Upload image')

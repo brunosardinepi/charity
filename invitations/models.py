@@ -24,3 +24,4 @@ class ManagerInvitation(models.Model):
     manager_edit = models.BooleanField(default=False)
     manager_delete = models.BooleanField(default=False)
     manager_invite = models.BooleanField(default=False)
+    manager_upload = models.BooleanField(default=False)

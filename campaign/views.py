@@ -236,6 +236,7 @@ def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
         remove_perm('manager_edit', manager, campaign)
         remove_perm('manager_delete', manager, campaign)
         remove_perm('manager_invite', manager, campaign)
+        remove_perm('manager_upload', manager, campaign)
         # redirect to campaign
         return HttpResponseRedirect(campaign.get_absolute_url())
     else:
@@ -246,7 +247,7 @@ def campaign_image_upload(request, page_slug, campaign_pk, campaign_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
     campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
     admin = request.user.userprofile in page.admins.all()
-    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', page):
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_upload', page):
         manager = True
     else:
         manager = False
