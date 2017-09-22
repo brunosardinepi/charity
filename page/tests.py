@@ -221,11 +221,19 @@ class PageTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_page_edit_admin(self):
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.page_edit(request, self.page.page_slug)
-
-        self.assertEqual(response.status_code, 200)
+        data = {
+            'name': self.page.name,
+            'page_slug': self.page.page_slug,
+            'type': 'organization',
+            'category': 'animal',
+            'state': 'DE',
+            'description': 'New description here!'
+        }
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post('/%s/edit/' % self.page.page_slug, data)
+        self.assertRedirects(response, '/%s/' % self.page.page_slug, 302, 200)
+        response = self.client.get('/%s/' % self.page.page_slug)
+        self.assertContains(response, 'CT', status_code=200)
 
     def test_page_edit_manager_perms(self):
         request = self.factory.get('home')
