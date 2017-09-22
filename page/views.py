@@ -113,14 +113,15 @@ def page_edit(request, page_slug):
     else:
         manager = False
     if admin or manager:
-        page_form = forms.PageForm(instance=page)
+        form = forms.PageForm(instance=page)
         if request.method == 'POST':
-            page_form = forms.PageForm(instance=page, data=request.POST)
-            if page_form.is_valid():
-                page = page_form.save()
+            form = forms.PageForm(instance=page, data=request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(page.get_absolute_url())
     else:
         raise Http404
-    return render(request, 'page/page_edit.html', {'page': page, 'page_form': page_form})
+    return render(request, 'page/page_edit.html', {'page': page, 'page_form': form})
 
 @login_required
 def page_delete(request, page_slug):
