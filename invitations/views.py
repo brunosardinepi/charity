@@ -1,14 +1,17 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, reverse
 from django.urls import reverse
 from guardian.shortcuts import assign_perm
 
 from . import models
 
 
-def remove_invitation(invitation_pk, accepted, declined):
-    invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
+def remove_invitation(invitation_pk, type, accepted, declined):
+    if type == 'manager':
+        invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
+    elif type == 'general':
+        invitation = get_object_or_404(models.GeneralInvitation, pk=invitation_pk)
     invitation.expired = "True"
     invitation.accepted = accepted
     invitation.declined = declined
@@ -39,22 +42,35 @@ def accept_invitation(request, invitation_pk, key):
             for k, v in permissions.items():
                 if v == True:
                     assign_perm(k, request.user, invitation.page)
-            remove_invitation(invitation_pk, "True", "False")
+            remove_invitation(invitation_pk, "manager", "True", "False")
             return HttpResponseRedirect(invitation.page.get_absolute_url())
         elif invitation.campaign:
             invitation.campaign.campaign_managers.add(request.user.userprofile)
             for k, v in permissions.items():
                 if v == True:
                     assign_perm(k, request.user, invitation.campaign)
-            remove_invitation(invitation_pk, "True", "False")
+            remove_invitation(invitation_pk, "manager", "True", "False")
             return HttpResponseRedirect(invitation.campaign.get_absolute_url())
+    else:
+        print("bad")
+
+@login_required(login_url='signup')
+def accept_general_invitation(request, invitation_pk, key):
+    invitation = get_object_or_404(models.GeneralInvitation, pk=invitation_pk)
+    print("invitation = %s" % invitation)
+    print("invitation_pk (%s) = invitation.pk (%s)" % (invitation_pk, invitation.pk))
+    print("key (%s) = invitation.key (%s)" % (key, invitation.key))
+    print("request.user.email (%s) = invitation.invite_to (%s)" % (request.user.email, invitation.invite_to))
+    if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key) and (request.user.email == invitation.invite_to):
+        remove_invitation(invitation_pk, "general", "True", "False")
+        return HttpResponseRedirect(reverse('home'))
     else:
         print("bad")
 
 def decline_invitation(request, invitation_pk, key):
     invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
     if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key):
-        remove_invitation(invitation_pk, "False", "True")
+        remove_invitation(invitation_pk, "general", "False", "True")
     else:
         print("bad")
 

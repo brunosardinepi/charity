@@ -2,9 +2,10 @@ from allauth.account import views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Sum
-from django.shortcuts import redirect, render
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, render, reverse
 
-from . import email
+from .email import email
 from . import forms
 from campaign.models import Campaign
 from invitations.models import GeneralInvitation
@@ -71,7 +72,7 @@ def invite(request):
             # need to notify them that the person has already been invited
             if invitation:
                 # this user has already been invited, so do nothing
-                return HttpResponseRedirect('home')
+                return HttpResponseRedirect(reverse('home'))
             # if the user hasn't been invited already, create the invite and send it to them
             else:
                 # create the invitation object and set the permissions
@@ -92,5 +93,5 @@ def invite(request):
                 )
                 email(form.cleaned_data['email'], subject, body)
                 # redirect the inviting person
-                return HttpResponseRedirect('home')
+                return HttpResponseRedirect(reverse('home'))
     return render(request, 'invite.html', {'form': form})

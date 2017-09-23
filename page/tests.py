@@ -388,7 +388,7 @@ class PageTest(TestCase):
         # accept the invite and make sure the page has the right perms
         self.client.login(username='newguy', password='imnewhere')
         invitation = ManagerInvitation.objects.get(invite_to=self.user5.email)
-        response = self.client.get('/invite/accept/%s/%s/' % (invitation.pk, invitation.key))
+        response = self.client.get('/invite/manager/accept/%s/%s/' % (invitation.pk, invitation.key))
         self.assertRedirects(response, invitation.page.get_absolute_url(), 302, 200)
         response = self.client.get('/%s/' % invitation.page.page_slug)
         self.assertEqual(response.status_code, 200)

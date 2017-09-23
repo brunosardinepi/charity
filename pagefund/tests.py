@@ -16,8 +16,9 @@ from allauth.account import app_settings
 from allauth.utils import get_user_model, get_username_max_length
 
 from . import views
-from page.models import Page
 from campaign.models import Campaign
+from invitations.models import GeneralInvitation
+from page.models import Page
 
 
 class HomeTest(TestCase):
@@ -92,6 +93,32 @@ class HomeTest(TestCase):
         response = self.client.get('/invite/')
 
         self.assertEqual(response.status_code, 200)
+        response = self.client.post('/invite/', {'email': 'my@best.friend'})
+        self.assertRedirects(response, '/', 302, 200)
+        self.client.logout()
+        invitation = GeneralInvitation.objects.get(invite_to='my@best.friend')
+        response = self.client.get('/invite/accept/%s/%s/' % (invitation.pk, invitation.key))
+        self.assertRedirects(response, '/accounts/signup/?next=/invite/accept/%s/%s/' % (invitation.pk, invitation.key), 302, 200)
+        data = {
+            'first_name': 'Bob',
+            'last_name': 'Walker',
+            'email': 'my@best.friend',
+            'email2': 'my@best.friend',
+            'state': 'IL',
+            'password1': 'verybadpass',
+            'password2': 'verybadpass'
+        }
+        response = self.client.post('/accounts/signup/?next=/invite/accept/%s/%s/' % (invitation.pk, invitation.key), data)
+        self.assertRedirects(response, '/invite/accept/%s/%s/' % (invitation.pk, invitation.key), 302, 302)
+
+        users = User.objects.all()
+        user = User.objects.get(email='my@best.friend')
+        self.assertIn(user, users)
+
+        invitation = GeneralInvitation.objects.get(invite_to='my@best.friend')
+        self.assertEqual(invitation.expired, True)
+        self.assertEqual(invitation.accepted, True)
+
 
     def test_invite_user_exists(self):
         self.client.login(username='testuser', password='testpassword')
