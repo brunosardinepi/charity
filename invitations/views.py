@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render, reverse
+from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.urls import reverse
 from guardian.shortcuts import assign_perm
 
@@ -105,14 +105,19 @@ def forgot_password_reset(request, invitation_pk, key):
     if request.method == "POST":
         form = forms.ForgotPasswordResetForm(request.POST)
         if form.is_valid():
-            invitation = get_object_or_404(models.ForgotPasswordRequest, pk=invitation_pk, expired=False, completed=False)
-            if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key):
-                invitation.expired = True
-                invitation.completed = True
-                invitation.save()
+            invitation = get_object_or_404(models.ForgotPasswordRequest, pk=invitation_pk)
+            if invitation.expired == True:
+                return redirect('error:error_forgotpasswordreset_expired')
+            elif invitation.completed == True:
+                return redirect('error:error_forgotpasswordreset_completed')
+            else:
+                if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key):
+                    invitation.expired = True
+                    invitation.completed = True
+                    invitation.save()
 
-                user = get_object_or_404(User, email=invitation.email)
-                user.set_password(form.cleaned_data['password1'])
-                user.save()
-                return HttpResponseRedirect(reverse('home'))
+                    user = get_object_or_404(User, email=invitation.email)
+                    user.set_password(form.cleaned_data['password1'])
+                    user.save()
+                    return HttpResponseRedirect(reverse('home'))
     return render(request, 'forgot_password_reset.html', {'form': form})
