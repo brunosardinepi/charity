@@ -13,6 +13,7 @@ from comments.forms import CommentForm
 from comments.models import Comment
 from invitations.models import ManagerInvitation
 from page.models import Page
+from pagefund import config
 from pagefund.email import email
 
 
@@ -206,15 +207,17 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
 
                     # create the email
                     subject = "Campaign invitation!"
-                    body = "%s %s has invited you to become an admin of the '%s' campaign. <a href='http://garrett.page.fund:8000/invite/manager/accept/%s/%s/'>Click here to accept.</a> <a href='http://garrett.page.fund:8000/invite/manager/decline/%s/%s/'>Click here to decline.</a>" % (
-                            request.user.userprofile.first_name,
-                            request.user.userprofile.last_name,
-                            campaign.name,
-                            invitation.pk,
-                            invitation.key,
-                            invitation.pk,
-                            invitation.key
-                        )
+                    body = "%s %s has invited you to become an admin of the '%s' campaign. <a href='%s/invite/manager/accept/%s/%s/'>Click here to accept.</a> <a href='%s/invite/manager/decline/%s/%s/'>Click here to decline.</a>" % (
+                        request.user.userprofile.first_name,
+                        request.user.userprofile.last_name,
+                        campaign.name,
+                        config.settings['site'],
+                        invitation.pk,
+                        invitation.key,
+                        config.settings['site'],
+                        invitation.pk,
+                        invitation.key
+                    )
                     email(form.cleaned_data['email'], subject, body)
                     # redirect the admin/manager to the campaign
                     return HttpResponseRedirect(campaign.get_absolute_url())
