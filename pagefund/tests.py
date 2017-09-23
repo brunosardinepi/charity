@@ -93,6 +93,12 @@ class HomeTest(TestCase):
         response = self.client.get('/invite/')
 
         self.assertEqual(response.status_code, 200)
+
+    def test_invite_accept_no_account(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/invite/')
+
+        self.assertEqual(response.status_code, 200)
         response = self.client.post('/invite/', {'email': 'my@best.friend'})
         self.assertRedirects(response, '/', 302, 200)
         self.client.logout()
@@ -118,7 +124,23 @@ class HomeTest(TestCase):
         invitation = GeneralInvitation.objects.get(invite_to='my@best.friend')
         self.assertEqual(invitation.expired, True)
         self.assertEqual(invitation.accepted, True)
+        self.assertEqual(invitation.declined, False)
 
+    def test_invite_decline_no_account(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/invite/')
+
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post('/invite/', {'email': 'myother@best.friend'})
+        self.assertRedirects(response, '/', 302, 200)
+        self.client.logout()
+        invitation = GeneralInvitation.objects.get(invite_to='myother@best.friend')
+        response = self.client.get('/invite/general/decline/%s/%s/' % (invitation.pk, invitation.key))
+
+        invitation = GeneralInvitation.objects.get(invite_to='myother@best.friend')
+        self.assertEqual(invitation.expired, True)
+        self.assertEqual(invitation.accepted, False)
+        self.assertEqual(invitation.declined, True)
 
     def test_invite_user_exists(self):
         self.client.login(username='testuser', password='testpassword')

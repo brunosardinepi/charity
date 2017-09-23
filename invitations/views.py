@@ -12,7 +12,7 @@ def remove_invitation(invitation_pk, type, accepted, declined):
         invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
     elif type == 'general':
         invitation = get_object_or_404(models.GeneralInvitation, pk=invitation_pk)
-    invitation.expired = "True"
+    invitation.expired = True
     invitation.accepted = accepted
     invitation.declined = declined
     invitation.save()
@@ -57,20 +57,19 @@ def accept_invitation(request, invitation_pk, key):
 @login_required(login_url='signup')
 def accept_general_invitation(request, invitation_pk, key):
     invitation = get_object_or_404(models.GeneralInvitation, pk=invitation_pk)
-    print("invitation = %s" % invitation)
-    print("invitation_pk (%s) = invitation.pk (%s)" % (invitation_pk, invitation.pk))
-    print("key (%s) = invitation.key (%s)" % (key, invitation.key))
-    print("request.user.email (%s) = invitation.invite_to (%s)" % (request.user.email, invitation.invite_to))
     if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key) and (request.user.email == invitation.invite_to):
         remove_invitation(invitation_pk, "general", "True", "False")
         return HttpResponseRedirect(reverse('home'))
     else:
         print("bad")
 
-def decline_invitation(request, invitation_pk, key):
-    invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
+def decline_invitation(request, type, invitation_pk, key):
+    if type == 'manager':
+        invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
+    elif type == 'general':
+        invitation = get_object_or_404(models.GeneralInvitation, pk=invitation_pk)
     if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key):
-        remove_invitation(invitation_pk, "general", "False", "True")
+        remove_invitation(invitation_pk, type, "False", "True")
     else:
         print("bad")
 
