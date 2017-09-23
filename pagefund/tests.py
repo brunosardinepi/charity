@@ -63,6 +63,7 @@ class HomeTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, donations, status_code=200)
         self.assertContains(response, self.page.name, status_code=200)
+        self.assertContains(response, "Forgot password?", status_code=200)
         self.assertNotContains(response, self.page2.name, status_code=200)
         self.assertNotContains(response, '/invite/', status_code=200)
 
@@ -78,10 +79,11 @@ class HomeTest(TestCase):
             if c.is_active == True:
                 self.assertContains(response, c.name, status_code=200)
         self.assertContains(response, self.page.name, status_code=200)
-        self.assertNotContains(response, self.page2.name, status_code=200)
         self.assertContains(response, self.user.userprofile.first_name, status_code=200)
         self.assertContains(response, self.user.userprofile.last_name, status_code=200)
         self.assertContains(response, '/invite/', status_code=200)
+        self.assertNotContains(response, self.page2.name, status_code=200)
+        self.assertNotContains(response, "Forgot password?", status_code=200)
 
     def test_invite_logged_out(self):
         response = self.client.get('/invite/')
@@ -148,6 +150,9 @@ class HomeTest(TestCase):
 
         self.assertRedirects(response, '/error/invite/user-exists/', 302, 200)
 
+    def test_forgot_password_request(self):
+        response = self.client.get('/forgot/')
+        self.assertEqual(response.status_code, 200)
 
 class AccountTests(TestCase):
     def _create_user(self, username='john', password='doe'):
@@ -168,9 +173,9 @@ class AccountTests(TestCase):
         c.force_login(user)
         return user
 
-    def test_password_reset_get(self):
-        resp = self.client.get(reverse('account_reset_password'))
-        self.assertTemplateUsed(resp, 'password_reset.html')
+#    def test_password_reset_get(self):
+#        resp = self.client.get(reverse('account_reset_password'))
+#        self.assertTemplateUsed(resp, 'password_reset.html')
 
     def _password_set_or_change_redirect(self, urlname, usable_password):
         self._create_user_and_login(usable_password)

@@ -11,7 +11,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/login/', views.LoginView.as_view(), name='login'),
     url(r'^accounts/signup/', views.SignupView.as_view(), name='signup'),
-    url(r'^accounts/password/reset/', views.PasswordResetView.as_view(), name='password_reset'),
+#    url(r'^accounts/password/reset/', views.PasswordResetView.as_view(), name='password_reset'),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^profile/', include('userprofile.urls', namespace='userprofile')),
     url(r'^profile/upload/', include('userprofile.urls', namespace='profile_image_upload')),
@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),
     url(r'^comments/', include('comments.urls', namespace='comments')),
     url(r'^error/', include('error.urls', namespace='error')),
+    url(r'^forgot/$', views.forgot_password_request, name='forgot_password_request'),
 
     url(r'^create/$', PageViews.page_create, name='page_create'),
     url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),

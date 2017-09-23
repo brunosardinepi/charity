@@ -40,8 +40,8 @@ class SignupView(views.SignupView):
     template_name = 'signup.html'
 
 
-class PasswordResetView(views.PasswordResetView):
-    template_name = 'password_reset.html'
+#class PasswordResetView(views.PasswordResetView):
+#    template_name = 'password_reset.html'
 
 @login_required
 def invite(request):
@@ -98,3 +98,7 @@ def invite(request):
                 # redirect the inviting person
                 return HttpResponseRedirect(reverse('home'))
     return render(request, 'invite.html', {'form': form})
+
+def forgot_password_request(request):
+    form = forms.ForgotPasswordRequestForm()
+    return render(request, 'forgot_password_request.html', {'form': form})
