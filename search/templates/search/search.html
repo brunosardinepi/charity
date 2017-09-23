@@ -7,6 +7,13 @@
 
 <script src="{% static 'js/comment_csrf.js' %}"></script>
 <script>
+{% if query_from_search %}
+    var sq = "{{ query_from_search }}";
+    $( document ).ready(function() {
+        $("#q").val(sq).trigger("keyup"); ;
+    });
+{% endif %}
+
 function search(a) {
     var checked = document.getElementsByName('filters[]');
     var filters = [];

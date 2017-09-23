@@ -44,3 +44,7 @@ class SearchTest(TestCase):
     def test_search_page_logged_out(self):
         response = self.client.get(reverse('search:search'))
         self.assertEqual(response.status_code, 200)
+
+    def test_search_from_home(self):
+        response = self.client.post('/search/', {'q': 'test'})
+        self.assertEqual(response.status_code, 200)

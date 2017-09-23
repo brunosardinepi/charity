@@ -14,9 +14,13 @@ from page.models import Page
 
 
 def search(request):
+    if request.method == "POST":
+        query_from_search = request.POST.get('q')
+    else:
+        query_from_search = None
     categories = OrderedDict(Page._meta.get_field('category').choices)
     states = OrderedDict(Page._meta.get_field('state').choices)
-    return render(request, 'search/search.html', {'categories': categories, 'states': states})
+    return render(request, 'search/search.html', {'categories': categories, 'states': states, 'query_from_search': query_from_search})
 
 def filter_list(f, s=''):
     f = f.split(",")
