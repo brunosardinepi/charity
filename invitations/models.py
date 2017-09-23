@@ -35,3 +35,10 @@ class GeneralInvitation(models.Model):
     date_created = models.DateTimeField(default=timezone.now)
     invite_to = models.EmailField()
     invite_from = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class ForgotPasswordRequest(models.Model):
+    completed = models.BooleanField(default=False)
+    date_created = models.DateTimeField(default=timezone.now)
+    email = models.EmailField()
+    expired = models.BooleanField(default=False)
+    key = models.CharField(max_length=32, default=random_key)
