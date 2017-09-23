@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, render, reverse
 from django.urls import reverse
 from guardian.shortcuts import assign_perm
 
+from . import forms
 from . import models
 
 
@@ -79,3 +80,9 @@ def decline_invitation(request, type, invitation_pk, key):
     # if the user isn't logged in and declined the invitation, redirect them to the homepage
     else:
         return HttpResponseRedirect(reverse('home'))
+
+def forgot_password_request(request):
+    form = forms.ForgotPasswordRequestForm()
+    return render(request, 'forgot_password_request.html', {'form': form})
+
+

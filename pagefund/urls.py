@@ -3,6 +3,7 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
 from . import views
+from invitations import views as InvitationsViews
 from page import views as PageViews
 from campaign import views as CampaignViews
 
@@ -21,7 +22,7 @@ urlpatterns = [
     url(r'^subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),
     url(r'^comments/', include('comments.urls', namespace='comments')),
     url(r'^error/', include('error.urls', namespace='error')),
-    url(r'^forgot/$', views.forgot_password_request, name='forgot_password_request'),
+    url(r'^forgot/$', InvitationsViews.forgot_password_request, name='forgot_password_request'),
 
     url(r'^create/$', PageViews.page_create, name='page_create'),
     url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),

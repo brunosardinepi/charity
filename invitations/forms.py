@@ -1,5 +1,5 @@
 from django import forms
 
 
-class GeneralInviteForm(forms.Form):
+class ForgotPasswordRequestForm(forms.Form):
     email = forms.EmailField()

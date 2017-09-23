@@ -98,7 +98,3 @@ def invite(request):
                 # redirect the inviting person
                 return HttpResponseRedirect(reverse('home'))
     return render(request, 'invite.html', {'form': form})
-
-def forgot_password_request(request):
-    form = forms.ForgotPasswordRequestForm()
-    return render(request, 'forgot_password_request.html', {'form': form})
