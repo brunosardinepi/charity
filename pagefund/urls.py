@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^comments/', include('comments.urls', namespace='comments')),
     url(r'^error/', include('error.urls', namespace='error')),
     url(r'^forgot/$', InvitationsViews.forgot_password_request, name='forgot_password_request'),
+    url(r'^password/reset/(?P<invitation_pk>\d+)/(?P<key>[\w-]+)/$', InvitationsViews.forgot_password_reset, name='forgot_password_reset'),
 
     url(r'^create/$', PageViews.page_create, name='page_create'),
     url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),

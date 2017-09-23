@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, reverse
 from django.urls import reverse
@@ -6,6 +7,8 @@ from guardian.shortcuts import assign_perm
 
 from . import forms
 from . import models
+from pagefund import config
+from pagefund.email import email
 
 
 def remove_invitation(invitation_pk, type, accepted, declined):
@@ -83,6 +86,33 @@ def decline_invitation(request, type, invitation_pk, key):
 
 def forgot_password_request(request):
     form = forms.ForgotPasswordRequestForm()
+    if request.method == "POST":
+        form = forms.ForgotPasswordRequestForm(request.POST)
+        if form.is_valid():
+            invitation = models.ForgotPasswordRequest.objects.create(email=form.cleaned_data['email'])
+            subject = "Forgot password"
+            body = "You submitted a request to reset your password. <a href='%s/password/reset/%s/%s/'>Click here to reset your password.</a>" % (
+                config.settings['site'],
+                invitation.pk,
+                invitation.key
+            )
+            email(form.cleaned_data['email'], subject, body)
+            return HttpResponseRedirect(reverse('home'))
     return render(request, 'forgot_password_request.html', {'form': form})
 
+def forgot_password_reset(request, invitation_pk, key):
+    form = forms.ForgotPasswordResetForm()
+    if request.method == "POST":
+        form = forms.ForgotPasswordResetForm(request.POST)
+        if form.is_valid():
+            invitation = get_object_or_404(models.ForgotPasswordRequest, pk=invitation_pk, expired=False, completed=False)
+            if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key):
+                invitation.expired = True
+                invitation.completed = True
+                invitation.save()
 
+                user = get_object_or_404(User, email=invitation.email)
+                user.set_password(form.cleaned_data['password1'])
+                user.save()
+                return HttpResponseRedirect(reverse('home'))
+    return render(request, 'forgot_password_reset.html', {'form': form})
