@@ -9,7 +9,7 @@
     {% if invitations %}
         <ul>
             {% for i in invitations %}
-                <li>{{ i.page.name }} (from {{ i.invite_from.first_name }} {{ i.invite_from.last_name }}) - <a href="{% url 'invitations:accept_invitation' invitation_pk=i.pk key=i.key  %}">Accept</a> - <a href="{% url 'invitations:decline_invitation' invitation_pk=i.pk key=i.key %}">Decline</a></li>
+                <li>{{ i.page.name }} (from {{ i.invite_from.first_name }} {{ i.invite_from.last_name }}) - <a href="{% url 'invitations:accept_invitation' invitation_pk=i.pk key=i.key  %}">Accept</a> - <a href="{% url 'invitations:decline_invitation' type='manager' invitation_pk=i.pk key=i.key %}">Decline</a></li>
             {% endfor %}
         </ul>
     {% endif %}

@@ -45,9 +45,17 @@ class ManagerInvitationTest(TestCase):
             manager_upload=True
         )
 
+        self.invitation2 = models.GeneralInvitation.objects.create(
+            invite_to="nerd@tester.yo",
+            invite_from=self.user
+        )
+
     def test_invitation_exists(self):
-        invitations = models.ManagerInvitation.objects.all()
-        self.assertIn(self.invitation, invitations)
+        m_invitations = models.ManagerInvitation.objects.all()
+        self.assertIn(self.invitation, m_invitations)
+
+        g_invitations = models.GeneralInvitation.objects.all()
+        self.assertIn(self.invitation2, g_invitations)
 
     def test_invitation_page(self):
         request = self.factory.get('home')
@@ -88,7 +96,7 @@ class ManagerInvitationTest(TestCase):
     def test_decline_invitation_logged_out(self):
         request = self.factory.get('home')
         request.user = AnonymousUser()
-        response = views.decline_invitation(request, self.invitation.pk, self.invitation.key)
+        response = views.decline_invitation(request, 'manager', self.invitation.pk, self.invitation.key)
         response.client = self.client
 
         self.assertRedirects(response, reverse('home'), 302, 200)
@@ -103,11 +111,11 @@ class ManagerInvitationTest(TestCase):
     def test_decline_invitation_logged_in(self):
         request = self.factory.get('home')
         request.user = self.user2
-        response = views.decline_invitation(request, self.invitation.pk, self.invitation.key)
+        response = views.decline_invitation(request, 'manager', self.invitation.pk, self.invitation.key)
         response.client = self.client
 
         self.client.login(username='harrypotter', password='imawizard')
-        response = self.client.get('/invite/decline/%s/%s/' % (self.invitation.pk, self.invitation.key))
+        response = self.client.get('/invite/manager/decline/%s/%s/' % (self.invitation.pk, self.invitation.key))
         self.assertRedirects(response, '/invite/pending/', 302, 200)
         self.assertFalse(self.user2.has_perm('manager_edit', self.page))
         self.assertFalse(self.user2.has_perm('manager_delete', self.page))
@@ -118,9 +126,15 @@ class ManagerInvitationTest(TestCase):
         self.assertNotIn(self.invitation, invitations)
 
     def test_remove_invitation(self):
-        invitations = models.ManagerInvitation.objects.filter(expired=False)
-        self.assertIn(self.invitation, invitations)
+        m_invitations = models.ManagerInvitation.objects.filter(expired=False)
+        self.assertIn(self.invitation, m_invitations)
+        g_invitations = models.GeneralInvitation.objects.filter(expired=False)
+        self.assertIn(self.invitation2, g_invitations)
 
-        views.remove_invitation(self.invitation.pk, "True", "False")
-        invitations = models.ManagerInvitation.objects.filter(expired=False)
-        self.assertNotIn(self.invitation, invitations)
+        views.remove_invitation(self.invitation.pk, 'manager', 'True', 'False')
+        views.remove_invitation(self.invitation2.pk, 'general', 'True', 'False')
+
+        m_invitations = models.ManagerInvitation.objects.filter(expired=False)
+        self.assertNotIn(self.invitation, m_invitations)
+        g_invitations = models.GeneralInvitation.objects.filter(expired=False)
+        self.assertNotIn(self.invitation2, g_invitations)
