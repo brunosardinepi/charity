@@ -4,6 +4,19 @@
 
 {% block title %} Home | {{ block.super }}{% endblock %}
 
+{% block head_extra %}
+<script type="text/javascript">
+if (window.location.hash == '#_=_' || window.location.hash == '#'){
+    if (history.replaceState) {
+        var cleanHref = window.location.href.split('#')[0];
+        history.replaceState(null, null, cleanHref);
+    } else {
+        window.location.hash = '';
+    }
+}
+</script>
+{% endblock %}
+
 {% block body_content %}
     <h2>Sponsored Pages</h2>
     <ul>
