@@ -85,6 +85,18 @@ class HomeTest(TestCase):
         self.assertNotContains(response, self.page2.name, status_code=200)
         self.assertNotContains(response, "Forgot password?", status_code=200)
 
+    def test_login(self):
+        response = self.client.get('/accounts/login/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Login with Google", status_code=200)
+        self.assertContains(response, "Login with Facebook", status_code=200)
+
+    def test_signup(self):
+        response = self.client.get('/accounts/signup/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Sign up with Google", status_code=200)
+        self.assertContains(response, "Sign up with Facebook", status_code=200)
+
     def test_invite_logged_out(self):
         response = self.client.get('/invite/')
 
