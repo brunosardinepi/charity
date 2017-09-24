@@ -1,5 +1,7 @@
 {% extends '_layout.html' %}
 
+{% load socialaccount %}
+
 {% block title %}Login | {{ block.super }}{% endblock %}
 
 {% block body_content %}
@@ -12,5 +14,15 @@
         <button class="primaryAction btn btn-success btn-block" type="submit">Login</button>
         <p><a href="{% url 'forgot_password_request' %}">Forgot password?</a></p>
     </form>
+    {% get_providers as socialaccount_providers %}
+    {% if socialaccount_providers %}
+        {% for socialaccount_provider in socialaccount_providers %}
+            {% if socialaccount_provider.name|lower == 'facebook' %}
+                <a href="http://page.fund/accounts/facebook/login/?process=login">Sign up with Facebook</a>
+            {% elif socialaccount_provider.name|lower == 'google' %}
+                <a href="{% provider_login_url "google" %}">Login with Google</a>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
     <p>Don't have an account yet? <a href="{{ signup_url }}">Sign up!</a></p>
 {% endblock %}
