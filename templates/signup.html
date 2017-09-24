@@ -17,7 +17,7 @@
     {% if socialaccount_providers %}
         {% for socialaccount_provider in socialaccount_providers %}
             {% if socialaccount_provider.name|lower == 'facebook' %}
-                <a href="http://page.fund/accounts/facebook/login/?process=login">Sign up with Facebook</a>
+                <a href="{% provider_login_url "facebook" method="oauth2" %}">Sign up with Facebook</a>
             {% elif socialaccount_provider.name|lower == 'google' %}
                 <a href="{% provider_login_url "google" %}">Sign up with Google</a>
             {% endif %}
