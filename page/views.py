@@ -93,6 +93,14 @@ def page(request, page_slug):
             'subscribe_attr': subscribe_attr
         })
 
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
 @login_required(login_url='signup')
 def page_create(request):
     form = forms.PageForm()
@@ -107,6 +115,7 @@ def page_create(request):
                 stripe_type = 'company'
             elif page.type == 'personal':
                 stripe_type = 'individual'
+
 
             legal_entity = {
                 "business_name": page.name,
@@ -131,15 +140,23 @@ def page_create(request):
                 "ssn_last_4": form.cleaned_data['ssn']
             }
 
-#            try:
-            acct = stripe.Account.create(
-                business_name=page.name,
-#                business_url=,
-                country="US",
-                email=request.user.email,
-                legal_entity=legal_entity,
-                type="custom"
-            )
+            if form.cleaned_data['tos_acceptance'] == True:
+                user_ip = get_client_ip(request)
+#                try:
+                tos_acceptance = {
+                    "date": timezone.now(),
+                    "ip": user_ip
+                }
+
+                acct = stripe.Account.create(
+                    business_name=page.name,
+#                    business_url=,
+                    country="US",
+                    email=request.user.email,
+                    legal_entity=legal_entity,
+                    type="custom",
+                    tos_acceptance=tos_acceptance
+                )
 #            except:
 #                print("write exception here in future")
 
