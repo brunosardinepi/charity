@@ -7,6 +7,8 @@ from userprofile.models import UserProfile
 
 
 class Page(models.Model):
+    address_line1 = models.CharField(max_length=255)
+    address_line2 = models.CharField(max_length=255, blank=True)
     admins = models.ManyToManyField(UserProfile, related_name='page_admins', blank=True)
     city = models.CharField(max_length=255, blank=True)
     created_on = models.DateTimeField(default=timezone.now)
@@ -16,12 +18,14 @@ class Page(models.Model):
     description = models.TextField(blank=True)
     donation_count = models.IntegerField(default=0)
     donation_money = models.IntegerField(default=0)
+    ein = models.CharField(max_length=255)
     is_sponsored = models.BooleanField(default=False)
     managers = models.ManyToManyField(UserProfile, related_name='page_managers', blank=True)
     name = models.CharField(max_length=255, db_index=True)
     page_slug = models.SlugField(max_length=100, unique=True)
     subscribers = models.ManyToManyField(UserProfile, related_name='subscribers', blank=True)
     stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
+    zipcode = models.CharField(max_length=5)
 
     CATEGORY_CHOICES = (
         ('animal', 'Animal'),

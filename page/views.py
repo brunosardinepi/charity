@@ -117,7 +117,15 @@ def page_create(request):
                     "day": request.user.userprofile.birthday.day,
                     "month": request.user.userprofile.birthday.month,
                     "year": request.user.userprofile.birthday.year
-                }
+                },
+                "address": {
+                    "city": page.city,
+                    "line1": page.address_line1,
+                    "line2": page.address_line2,
+                    "postal_code": page.zipcode,
+                    "state": page.state
+                },
+                "business_tax_id": page.ein
             }
 
 #            try:

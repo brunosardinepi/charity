@@ -8,12 +8,16 @@ class PageForm(forms.ModelForm):
         model = models.Page
         fields = [
             'name',
+            'ein',
+            'address_line1',
+            'address_line2',
+            'city',
+            'state',
+            'zipcode',
             'page_slug',
             'type',
             'category',
-            'city',
-            'state',
-            'description',
+            'description'
         ]
 
 class PageImagesForm(forms.ModelForm):
@@ -22,7 +26,7 @@ class PageImagesForm(forms.ModelForm):
         fields = [
             'image',
             'caption',
-            'page_profile',
+            'page_profile'
         ]
 
 class DeletePageForm(forms.ModelForm):
