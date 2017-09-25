@@ -103,14 +103,36 @@ def page_create(request):
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
 
+            if page.type == 'organization':
+                stripe_type = 'company'
+            elif page.type == 'personal':
+                stripe_type = 'individual'
+
+            legal_entity = {
+                "business_name": page.name,
+                "first_name": request.user.userprofile.first_name,
+                "last_name": request.user.userprofile.last_name,
+                "type": stripe_type
+#                "dob": {
+#                    "day": "null",
+#                    "month": "null",
+#                    "year": "null"
+#                }
+            }
+
+#            try:
             acct = stripe.Account.create(
-                email=request.user.email,
+                business_name=page.name,
+#                business_url=,
                 country="US",
+                email=request.user.email,
+                legal_entity=legal_entity,
                 type="custom"
             )
+#            except:
+#                print("write exception here in future")
 
             page.stripe_account_id = acct.id
-            print(page.stripe_account_id)
             page.save()
 
             subject = "Page created!"
@@ -163,6 +185,10 @@ def page_delete(request, page_slug):
                 c.name = c.name + "_deleted_" + timezone.now().strftime("%Y%m%d")
                 c.campaign_slug = c.campaign_slug + "deleted" + timezone.now().strftime("%Y%m%d")
                 c.save()
+
+        account = stripe.Account.retrieve(page.stripe_account_id)
+        account.delete()
+
         return HttpResponseRedirect(reverse('home'))
     else:
         raise Http404
