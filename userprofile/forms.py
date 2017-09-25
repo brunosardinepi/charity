@@ -6,6 +6,7 @@ from . import models
 class SignupForm(forms.Form):
     first_name = forms.CharField(max_length=100, label='First name')
     last_name = forms.CharField(max_length=100, label='Last name')
+    birthday = forms.DateField()
     STATE_CHOICES = (
         ('AL', 'Alabama'),
         ('AK', 'Alaska'),
@@ -78,6 +79,7 @@ class UserProfileForm(forms.ModelForm):
         fields = [
             'first_name',
             'last_name',
+            'birthday',
             'state',
         ]
 

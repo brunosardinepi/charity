@@ -16,6 +16,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
+    birthday = models.DateField()
     STATE_CHOICES = (
         ('AL', 'Alabama'),
         ('AK', 'Alaska'),
