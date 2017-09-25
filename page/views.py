@@ -112,12 +112,12 @@ def page_create(request):
                 "business_name": page.name,
                 "first_name": request.user.userprofile.first_name,
                 "last_name": request.user.userprofile.last_name,
-                "type": stripe_type
-#                "dob": {
-#                    "day": "null",
-#                    "month": "null",
-#                    "year": "null"
-#                }
+                "type": stripe_type,
+                "dob": {
+                    "day": request.user.userprofile.birthday.day,
+                    "month": request.user.userprofile.birthday.month,
+                    "year": request.user.userprofile.birthday.year
+                }
             }
 
 #            try:
