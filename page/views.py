@@ -126,8 +126,9 @@ def page_create(request):
                     "state": page.state
                 },
                 "business_tax_id": page.ein,
-                "personal_id_number": form.cleaned_data['ssn'],
-                "ssn_last_4": form.cleaned_data['ssn'][-4:]
+#                "personal_id_number": form.cleaned_data['ssn'],
+#                "ssn_last_4": form.cleaned_data['ssn'][-4:]
+                "ssn_last_4": form.cleaned_data['ssn']
             }
 
 #            try:

@@ -4,7 +4,7 @@ from . import models
 
 
 class PageForm(forms.ModelForm):
-    ssn = forms.CharField(max_length=9)
+    ssn = forms.CharField(max_length=4, label="Last 4 of SSN")
 
     class Meta:
         model = models.Page
