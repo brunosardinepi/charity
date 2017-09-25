@@ -9,6 +9,7 @@ from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 from time import strftime
 
 import json
+import stripe
 
 from . import forms
 from . import models
@@ -21,6 +22,8 @@ from pagefund import config
 from pagefund.email import email
 from pagefund.image import image_upload
 
+
+stripe.api_key = config.settings['stripe_api_key']
 
 def page(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
@@ -99,6 +102,17 @@ def page_create(request):
             page = page_form.save()
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
+
+            acct = stripe.Account.create(
+                email=request.user.email,
+                country="US",
+                type="custom"
+            )
+
+            page.stripe_account_id = acct.id
+            print(page.stripe_account_id)
+            page.save()
+
             subject = "Page created!"
             body = "You just created a Page for: %s" % page.name
             email(request.user.email, subject, body)
