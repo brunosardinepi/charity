@@ -95,11 +95,11 @@ def page(request, page_slug):
 
 @login_required(login_url='signup')
 def page_create(request):
-    page_form = forms.PageForm()
+    form = forms.PageForm()
     if request.method == 'POST':
-        page_form = forms.PageForm(request.POST)
-        if page_form.is_valid():
-            page = page_form.save()
+        form = forms.PageForm(request.POST)
+        if form.is_valid():
+            page = form.save()
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
 
@@ -125,7 +125,9 @@ def page_create(request):
                     "postal_code": page.zipcode,
                     "state": page.state
                 },
-                "business_tax_id": page.ein
+                "business_tax_id": page.ein,
+                "personal_id_number": form.cleaned_data['ssn'],
+                "ssn_last_4": form.cleaned_data['ssn'][-4:]
             }
 
 #            try:
@@ -147,7 +149,7 @@ def page_create(request):
             body = "You just created a Page for: %s" % page.name
             email(request.user.email, subject, body)
             return HttpResponseRedirect(page.get_absolute_url())
-    return render(request, 'page/page_create.html', {'page_form': page_form})
+    return render(request, 'page/page_create.html', {'page_form': form})
 
 @login_required
 def page_edit(request, page_slug):

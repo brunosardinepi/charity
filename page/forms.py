@@ -4,6 +4,8 @@ from . import models
 
 
 class PageForm(forms.ModelForm):
+    ssn = forms.CharField(max_length=9)
+
     class Meta:
         model = models.Page
         fields = [
