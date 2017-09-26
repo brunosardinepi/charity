@@ -23,7 +23,7 @@ from pagefund.email import email
 from pagefund.image import image_upload
 
 
-stripe.api_key = config.settings['stripe_api_key']
+stripe.api_key = config.settings['stripe_api_sk']
 
 def page(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
@@ -90,7 +90,8 @@ def page(request, page_slug):
             'managers': managers,
             'comments': comments,
             'form': form,
-            'subscribe_attr': subscribe_attr
+            'subscribe_attr': subscribe_attr,
+            'api_pk': config.settings['stripe_api_pk']
         })
 
 def get_client_ip(request):
@@ -380,3 +381,16 @@ def page_image_upload(request, page_slug):
     else:
         raise Http404
     return render(request, 'page/page_image_upload.html', {'page': page, 'form': form })
+
+def page_donate(request, page_pk):
+    page = get_object_or_404(models.Page, pk=page_pk)
+    if request.method == "POST":
+        charge = stripe.Charge.create(
+            amount=1000,
+            currency="usd",
+            source=request.POST.get('stripeToken'),
+            destination={
+                "account": page.stripe_account_id,
+            }
+        )
+        return HttpResponseRedirect(page.get_absolute_url())
