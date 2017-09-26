@@ -385,12 +385,21 @@ def page_image_upload(request, page_slug):
 def page_donate(request, page_pk):
     page = get_object_or_404(models.Page, pk=page_pk)
     if request.method == "POST":
+        amount = 1000
+        stripe_fee = int(amount * 0.029) + 30
+        pagefund_fee = int(amount * 0.05)
+        final_amount = amount - stripe_fee - pagefund_fee
         charge = stripe.Charge.create(
-            amount=1000,
+            amount=amount,
             currency="usd",
             source=request.POST.get('stripeToken'),
             destination={
+                "amount": final_amount,
                 "account": page.stripe_account_id,
             }
         )
+        print("donation = %s" % float(amount / 100))
+        print("stripe takes = %s" % float(stripe_fee / 100))
+        print("we keep = %s" % float(pagefund_fee / 100))
+        print("charity gets = %s" % float(final_amount / 100))
         return HttpResponseRedirect(page.get_absolute_url())
