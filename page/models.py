@@ -25,6 +25,7 @@ class Page(models.Model):
     page_slug = models.SlugField(max_length=100, unique=True)
     subscribers = models.ManyToManyField(UserProfile, related_name='subscribers', blank=True)
     stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
+    stripe_bank_account_id = models.CharField(max_length=255, blank=True, null=True)
     zipcode = models.CharField(max_length=5)
 
     CATEGORY_CHOICES = (

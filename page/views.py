@@ -103,11 +103,14 @@ def get_client_ip(request):
 
 @login_required(login_url='signup')
 def page_create(request):
-    form = forms.PageForm()
+    page_form = forms.PageForm()
+    bank_form = forms.PageBankForm()
     if request.method == 'POST':
-        form = forms.PageForm(request.POST)
-        if form.is_valid():
-            page = form.save()
+        page_form = forms.PageForm(request.POST)
+        bank_form = forms.PageBankForm(request.POST)
+        if page_form.is_valid() and bank_form.is_valid():
+#            bank = bank_form.save()
+            page = page_form.save()
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
 
@@ -137,10 +140,10 @@ def page_create(request):
                 "business_tax_id": page.ein,
 #                "personal_id_number": form.cleaned_data['ssn'],
 #                "ssn_last_4": form.cleaned_data['ssn'][-4:]
-                "ssn_last_4": form.cleaned_data['ssn']
+                "ssn_last_4": page_form.cleaned_data['ssn']
             }
 
-            if form.cleaned_data['tos_acceptance'] == True:
+            if page_form.cleaned_data['tos_acceptance'] == True:
                 user_ip = get_client_ip(request)
 #                try:
                 tos_acceptance = {
@@ -160,14 +163,24 @@ def page_create(request):
 #            except:
 #                print("write exception here in future")
 
+            external_account = {
+                "object": "bank_account",
+                "country": "US",
+                "account_number": bank_form.cleaned_data['account_number'],
+                "account_holder_name": "%s %s" % (request.user.userprofile.first_name, request.user.userprofile.last_name),
+                "account_holder_type": stripe_type,
+                "routing_number": bank_form.cleaned_data['routing_number']
+            }
+            ext_acct = acct.external_accounts.create(external_account=external_account)
             page.stripe_account_id = acct.id
+            page.stripe_bank_account_id = ext_acct.id
             page.save()
 
             subject = "Page created!"
             body = "You just created a Page for: %s" % page.name
             email(request.user.email, subject, body)
             return HttpResponseRedirect(page.get_absolute_url())
-    return render(request, 'page/page_create.html', {'page_form': form})
+    return render(request, 'page/page_create.html', {'page_form': page_form, 'bank_form': bank_form})
 
 @login_required
 def page_edit(request, page_slug):
