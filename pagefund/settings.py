@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'invitations',
     'comments',
     'error',
+    'donation',
 ]
 
 MIDDLEWARE = [

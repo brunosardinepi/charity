@@ -16,6 +16,7 @@ from . import models
 from campaign.models import Campaign
 from comments.forms import CommentForm
 from comments.models import Comment
+from donation.models import Donation
 from invitations.models import ManagerInvitation
 from userprofile.models import UserProfile
 from pagefund import config
@@ -36,6 +37,7 @@ def page(request, page_slug):
         active_campaigns = Campaign.objects.filter(page=page, is_active=True, deleted=False)
         inactive_campaigns = Campaign.objects.filter(page=page, is_active=False, deleted=False)
         comments = Comment.objects.filter(page=page, deleted=False).order_by('-date')
+        donations = Donation.objects.filter(page=page).order_by('-date')
         form = CommentForm
         donate_form = forms.PageDonateForm()
         try:
@@ -90,6 +92,7 @@ def page(request, page_slug):
             'inactive_campaigns': inactive_campaigns,
             'managers': managers,
             'comments': comments,
+            'donations': donations,
             'form': form,
             'donate_form': donate_form,
             'subscribe_attr': subscribe_attr,
@@ -403,6 +406,14 @@ def page_donate(request, page_pk):
                     "amount": final_amount,
                     "account": page.stripe_account_id,
                 }
+            )
+            Donation.objects.create(
+                amount=amount,
+                anonymous=form.cleaned_data['anonymous'],
+                comment=form.cleaned_data['comment'],
+                page=page,
+                stripe_charge_id=charge.id,
+                user=request.user
             )
             print("donation = %s" % float(amount / 100))
             print("stripe takes = %s" % float(stripe_fee / 100))
