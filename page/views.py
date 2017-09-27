@@ -37,6 +37,7 @@ def page(request, page_slug):
         inactive_campaigns = Campaign.objects.filter(page=page, is_active=False, deleted=False)
         comments = Comment.objects.filter(page=page, deleted=False).order_by('-date')
         form = CommentForm
+        donate_form = forms.PageDonateForm()
         try:
             user_subscription_check = page.subscribers.get(user_id=request.user.pk)
         except UserProfile.DoesNotExist:
@@ -90,6 +91,7 @@ def page(request, page_slug):
             'managers': managers,
             'comments': comments,
             'form': form,
+            'donate_form': donate_form,
             'subscribe_attr': subscribe_attr,
             'api_pk': config.settings['stripe_api_pk']
         })
@@ -385,21 +387,25 @@ def page_image_upload(request, page_slug):
 def page_donate(request, page_pk):
     page = get_object_or_404(models.Page, pk=page_pk)
     if request.method == "POST":
-        amount = 1000
-        stripe_fee = int(amount * 0.029) + 30
-        pagefund_fee = int(amount * 0.05)
-        final_amount = amount - stripe_fee - pagefund_fee
-        charge = stripe.Charge.create(
-            amount=amount,
-            currency="usd",
-            source=request.POST.get('stripeToken'),
-            destination={
-                "amount": final_amount,
-                "account": page.stripe_account_id,
-            }
-        )
-        print("donation = %s" % float(amount / 100))
-        print("stripe takes = %s" % float(stripe_fee / 100))
-        print("we keep = %s" % float(pagefund_fee / 100))
-        print("charity gets = %s" % float(final_amount / 100))
-        return HttpResponseRedirect(page.get_absolute_url())
+        form = forms.PageDonateForm(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data['amount'] * 100
+            stripe_fee = int(amount * 0.029) + 30
+            pagefund_fee = int(amount * 0.05)
+            final_amount = amount - stripe_fee - pagefund_fee
+            charge = stripe.Charge.create(
+                amount=amount,
+                currency="usd",
+                source=request.POST.get('stripeToken'),
+                description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
+                receipt_email=request.user.email,
+                destination={
+                    "amount": final_amount,
+                    "account": page.stripe_account_id,
+                }
+            )
+            print("donation = %s" % float(amount / 100))
+            print("stripe takes = %s" % float(stripe_fee / 100))
+            print("we keep = %s" % float(pagefund_fee / 100))
+            print("charity gets = %s" % float(final_amount / 100))
+            return HttpResponseRedirect(page.get_absolute_url())
