@@ -224,7 +224,7 @@ class PageTest(TestCase):
         data = {
             'name': self.page.name,
             'page_slug': self.page.page_slug,
-            'type': 'organization',
+            'type': 'nonprofit',
             'category': 'animal',
             'state': 'DE',
             'description': 'New description here!',

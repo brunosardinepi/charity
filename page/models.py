@@ -99,8 +99,10 @@ class Page(models.Model):
     )
 
     TYPE_CHOICES = (
-        ('organization', 'Organization'),
+        ('nonprofit', 'Nonprofit'),
         ('personal', 'Personal'),
+        ('religious', 'Religious'),
+        ('other', 'Other'),
     )
     type = models.CharField(
         max_length=255,
