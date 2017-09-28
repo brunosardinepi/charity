@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import sys
+
 from . import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -170,3 +172,5 @@ EMAIL_HOST = config.settings['email_host']
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config.settings['email_user']
 EMAIL_HOST_PASSWORD = config.settings['email_password']
+
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'

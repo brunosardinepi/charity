@@ -233,8 +233,9 @@ def page_delete(request, page_slug):
                 c.campaign_slug = c.campaign_slug + "deleted" + timezone.now().strftime("%Y%m%d")
                 c.save()
 
-        account = stripe.Account.retrieve(page.stripe_account_id)
-        account.delete()
+        if not settings.TESTING:
+            account = stripe.Account.retrieve(page.stripe_account_id)
+            account.delete()
 
         return HttpResponseRedirect(reverse('home'))
     else:

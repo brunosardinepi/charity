@@ -126,7 +126,8 @@ class HomeTest(TestCase):
             'email2': 'my@best.friend',
             'state': 'IL',
             'password1': 'verybadpass',
-            'password2': 'verybadpass'
+            'password2': 'verybadpass',
+            'birthday': '1990-01-02'
         }
         response = self.client.post('/accounts/signup/?next=/invite/accept/%s/%s/' % (invitation.pk, invitation.key), data)
         self.assertRedirects(response, '/invite/accept/%s/%s/' % (invitation.pk, invitation.key), 302, 302)

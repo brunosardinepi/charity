@@ -227,7 +227,14 @@ class PageTest(TestCase):
             'type': 'organization',
             'category': 'animal',
             'state': 'DE',
-            'description': 'New description here!'
+            'description': 'New description here!',
+            'ssn': '0000',
+            'tos_acceptance': True,
+            'ein': '000000001',
+            'address_line1': '123 Main St.',
+            'city': 'Houston',
+            'state': 'TX',
+            'zipcode': '77008'
         }
         self.client.login(username='testuser', password='testpassword')
         response = self.client.post('/%s/edit/' % self.page.page_slug, data)
@@ -284,7 +291,12 @@ class PageTest(TestCase):
             'city': 'Atlanta',
             'state': 'GA',
             'category': 'animal',
-            'description': 'I like flank steak.'
+            'description': 'I like flank steak.',
+            'ssn': '0000',
+            'tos_acceptance': True,
+            'ein': '000000001',
+            'address_line1': '123 Main St.',
+            'zipcode': '12345'
         })
         self.assertTrue(form.is_valid())
         page = form.save()
