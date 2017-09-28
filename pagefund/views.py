@@ -85,8 +85,8 @@ def invite(request):
                 # create the email
                 subject = "PageFund invitation!"
                 body = "%s %s has invited you to join PageFund! <a href='%s/invite/accept/%s/%s/'>Click here to accept.</a> <a href='%s/invite/general/decline/%s/%s/'>Click here to decline.</a>" % (
-                    request.user.userprofile.first_name,
-                    request.user.userprofile.last_name,
+                    request.user.first_name,
+                    request.user.last_name,
                     config.settings['site'],
                     invitation.pk,
                     invitation.key,

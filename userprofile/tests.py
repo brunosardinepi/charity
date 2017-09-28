@@ -68,9 +68,9 @@ class UserProfileTest(TestCase):
 
     def test_userprofileform(self):
         form = forms.UserProfileForm({
-            'user': self.user,
-            'first_name': 'Blanket',
-            'last_name': 'Towel',
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'birthday': '1990-09-23',
             'state': 'KS'
         })
         self.assertTrue(form.is_valid())

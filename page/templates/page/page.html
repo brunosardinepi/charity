@@ -147,12 +147,12 @@
         <ul id="comment_list">
             {% for c in comments %}
                 <li id="comment-{{ c.pk }}" class="comment">
-                    {{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="show-reply" id="{{ c.pk }}" href="">Reply</a>{% if c.user == request.user %} - <a id="delete-comment-{{ c.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</a>
+                    {{ c.content }} - {{ c.user.first_name }} {{ c.user.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="show-reply" id="{{ c.pk }}" href="">Reply</a>{% if c.user == request.user %} - <a id="delete-comment-{{ c.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</a>
                     {% comment_replies c.pk as replies %}
                     {% if replies %}
                         <ul id="comment-{{ c.pk }}-replies" class="reply-list">
                             {% for r in replies %}
-                                <li id="reply-{{ r.pk }}" class="reply">{{ r.content }} - {{ r.user.userprofile.first_name }} {{ r.user.userprofile.last_name }} @ {{ r.date|date:"m/d/y g:i A" }} {% if r.user == request.user %} - <a id="delete-reply-{{ r.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</li>
+                                <li id="reply-{{ r.pk }}" class="reply">{{ r.content }} - {{ r.user.first_name }} {{ r.user.last_name }} @ {{ r.date|date:"m/d/y g:i A" }} {% if r.user == request.user %} - <a id="delete-reply-{{ r.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</li>
                             {% endfor %}
                         </ul>
                     {% endif %}
@@ -186,7 +186,7 @@
                 {% for manager in managers %}
                     {% get_obj_perms manager.user for page as "page_perms" %}
                     <tr>
-                        <td>{{ manager.first_name }} {{ manager.last_name }}</td>
+                        <td>{{ manager.user.first_name }} {{ manager.user.last_name }}</td>
                         <td>{{ manager.user.email }}</td>
                         <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_edit" {% if 'manager_edit' in page_perms %}checked{% endif %} /></td>
                         <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_delete" {% if 'manager_delete' in page_perms %}checked{% endif %} /></td>
@@ -232,7 +232,7 @@
     {% if donations %}
         <ul>
             {% for d in donations %}
-                <li>{{ d.amount|cents_to_dollars }} {% if not d.anonymous %}- {{ d.user.userprofile.first_name }} {{ d.user.userprofile.last_name }} {% endif %}@ {{ d.date }}
+                <li>{{ d.amount|cents_to_dollars }} {% if not d.anonymous %}- {{ d.user.first_name }} {{ d.user.last_name }} {% endif %}@ {{ d.date }}
                     {% if d.comment %}
                         <ul>
                             <li>{{ d.comment }}</li>
@@ -299,7 +299,7 @@
                 var extraDetails = {};
             } else {
                 var extraDetails = {
-                    name: "{{ request.user.userprofile.first_name }} {{ request.user.userprofile.last_name }}",
+                    name: "{{ request.user.first_name }} {{ request.user.last_name }}",
                 };
             };
 

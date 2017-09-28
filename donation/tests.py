@@ -15,10 +15,10 @@ class DonationTest(TestCase):
         self.user = User.objects.create_user(
             username='testuser',
             email='test@test.test',
-            password='testpassword'
+            password='testpassword',
+            first_name = 'John',
+            last_name = 'Doe'
         )
-        self.user.userprofile.first_name = 'John'
-        self.user.userprofile.last_name = 'Doe'
         self.user.userprofile.birthday = '1990-01-07'
         self.user.save()
 
@@ -50,6 +50,6 @@ class DonationTest(TestCase):
     def test_donate_page(self):
         response = self.client.get('/%s/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "%s %s" % (self.user.userprofile.first_name, self.user.userprofile.last_name), status_code=200)
+        self.assertContains(response, "%s %s" % (self.user.first_name, self.user.last_name), status_code=200)
         self.assertContains(response, self.donation.comment, status_code=200)
         self.assertContains(response, "$%s" % int(self.donation.amount / 100), status_code=200)

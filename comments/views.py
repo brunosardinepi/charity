@@ -26,7 +26,7 @@ def comment_page(request, page_pk):
         )
 
         response_data['content'] = comment.content
-        response_data['user'] = "%s %s" % (comment.user.userprofile.first_name, comment.user.userprofile.last_name)
+        response_data['user'] = "%s %s" % (comment.user.first_name, comment.user.last_name)
         response_data['date'] = timezone.localtime(comment.date)
         response_data['date'] = response_data['date'].strftime('%m/%d/%y %-I:%M %p')
         response_data['id'] = comment.pk
@@ -49,7 +49,7 @@ def reply(request, comment_pk):
         )
 
         response_data['content'] = reply.content
-        response_data['user'] = "%s %s" % (reply.user.userprofile.first_name, reply.user.userprofile.last_name)
+        response_data['user'] = "%s %s" % (reply.user.first_name, reply.user.last_name)
         response_data['date'] = timezone.localtime(reply.date)
         response_data['date'] = response_data['date'].strftime('%m/%d/%y %-I:%M %p')
         response_data['id'] = reply.pk
@@ -72,7 +72,7 @@ def comment_campaign(request, campaign_pk):
         )
 
         response_data['content'] = comment.content
-        response_data['user'] = "%s %s" % (comment.user.userprofile.first_name, comment.user.userprofile.last_name)
+        response_data['user'] = "%s %s" % (comment.user.first_name, comment.user.last_name)
         response_data['date'] = timezone.localtime(comment.date)
         response_data['date'] = response_data['date'].strftime('%m/%d/%y %-I:%M %p')
         response_data['id'] = comment.pk

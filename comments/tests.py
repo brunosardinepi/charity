@@ -20,20 +20,18 @@ class CommentTest(TestCase):
         self.user = User.objects.create_user(
             username='testuser',
             email='test@test.test',
-            password='testpassword'
+            password='testpassword',
+            first_name = 'John',
+            last_name = 'Doe'
         )
-        self.user.userprofile.first_name = 'John'
-        self.user.userprofile.last_name = 'Doe'
-        self.user.save()
 
         self.user2 = User.objects.create_user(
             username='harrypotter',
             email='harry@potter.com',
-            password='imawizard'
+            password='imawizard',
+            first_name = 'Lord',
+            last_name = 'Voldemort'
         )
-        self.user2.userprofile.first_name = 'Lord'
-        self.user2.userprofile.last_name = 'Voldemort'
-        self.user2.save()
 
         self.user3 = User.objects.create_user(
             username='bobdole',
@@ -132,7 +130,7 @@ class CommentTest(TestCase):
         response = self.client.get('/testpage/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Hello my name is Testy McTestface.", status_code=200)
-        self.assertContains(response, "%s %s" % (self.user.userprofile.first_name, self.user.userprofile.last_name), status_code=200)
+        self.assertContains(response, "%s %s" % (self.user.first_name, self.user.last_name), status_code=200)
 
         comment = models.Comment.objects.get(content="Hello my name is Testy McTestface.")
         response = self.client.get('/comments/delete/comment/%s/' % comment.pk)
@@ -159,7 +157,7 @@ class CommentTest(TestCase):
         response = self.client.get('/%s/%s/%s/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "First night in town.", status_code=200)
-        self.assertContains(response, "%s %s" % (self.user.userprofile.first_name, self.user.userprofile.last_name), status_code=200)
+        self.assertContains(response, "%s %s" % (self.user.first_name, self.user.last_name), status_code=200)
 
         comment = models.Comment.objects.get(content="First night in town.")
         response = self.client.get('/comments/delete/comment/%s/' % comment.pk)
@@ -174,7 +172,7 @@ class CommentTest(TestCase):
         response = self.client.get('/testpage/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "This is my reply.", status_code=200)
-        self.assertContains(response, "%s %s" % (self.user.userprofile.first_name, self.user.userprofile.last_name), status_code=200)
+        self.assertContains(response, "%s %s" % (self.user.first_name, self.user.last_name), status_code=200)
 
         self.client.login(username='harrypotter', password='imawizard')
         data = {'reply_text': "Yankee Doodle went to town."}
@@ -182,7 +180,7 @@ class CommentTest(TestCase):
         response = self.client.get('/testpage/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Yankee Doodle went to town.", status_code=200)
-        self.assertContains(response, "%s %s" % (self.user2.userprofile.first_name, self.user2.userprofile.last_name), status_code=200)
+        self.assertContains(response, "%s %s" % (self.user2.first_name, self.user2.last_name), status_code=200)
 
         self.assertContains(response, self.reply.content, status_code=200)
         response = self.client.get('/comments/delete/reply/%s/' % self.reply.pk)

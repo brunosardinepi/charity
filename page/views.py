@@ -19,7 +19,7 @@ from comments.models import Comment
 from donation.models import Donation
 from invitations.models import ManagerInvitation
 from userprofile.models import UserProfile
-from pagefund import config
+from pagefund import config, settings
 from pagefund.email import email
 from pagefund.image import image_upload
 
@@ -120,66 +120,66 @@ def page_create(request):
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
 
-            if page.type == 'organization':
-                stripe_type = 'company'
-            elif page.type == 'personal':
-                stripe_type = 'individual'
+            if not settings.TESTING:
+                if page.type == 'organization':
+                    stripe_type = 'company'
+                elif page.type == 'personal':
+                    stripe_type = 'individual'
 
-
-            legal_entity = {
-                "business_name": page.name,
-                "first_name": request.user.userprofile.first_name,
-                "last_name": request.user.userprofile.last_name,
-                "type": stripe_type,
-                "dob": {
-                    "day": request.user.userprofile.birthday.day,
-                    "month": request.user.userprofile.birthday.month,
-                    "year": request.user.userprofile.birthday.year
-                },
-                "address": {
-                    "city": page.city,
-                    "line1": page.address_line1,
-                    "line2": page.address_line2,
-                    "postal_code": page.zipcode,
-                    "state": page.state
-                },
-                "business_tax_id": page.ein,
-#                "personal_id_number": form.cleaned_data['ssn'],
-#                "ssn_last_4": form.cleaned_data['ssn'][-4:]
-                "ssn_last_4": page_form.cleaned_data['ssn']
-            }
-
-            if page_form.cleaned_data['tos_acceptance'] == True:
-                user_ip = get_client_ip(request)
-#                try:
-                tos_acceptance = {
-                    "date": timezone.now(),
-                    "ip": user_ip
+                legal_entity = {
+                    "business_name": page.name,
+                    "first_name": request.user.first_name,
+                    "last_name": request.user.last_name,
+                    "type": stripe_type,
+                    "dob": {
+                        "day": request.user.userprofile.birthday.day,
+                        "month": request.user.userprofile.birthday.month,
+                        "year": request.user.userprofile.birthday.year
+                    },
+                    "address": {
+                        "city": page.city,
+                        "line1": page.address_line1,
+                        "line2": page.address_line2,
+                        "postal_code": page.zipcode,
+                        "state": page.state
+                    },
+                    "business_tax_id": page.ein,
+#                    "personal_id_number": form.cleaned_data['ssn'],
+#                    "ssn_last_4": form.cleaned_data['ssn'][-4:]
+                    "ssn_last_4": page_form.cleaned_data['ssn']
                 }
 
-                acct = stripe.Account.create(
-                    business_name=page.name,
-#                    business_url=,
-                    country="US",
-                    email=request.user.email,
-                    legal_entity=legal_entity,
-                    type="custom",
-                    tos_acceptance=tos_acceptance
-                )
+                if page_form.cleaned_data['tos_acceptance'] == True:
+                    user_ip = get_client_ip(request)
+#                    try:
+                    tos_acceptance = {
+                        "date": timezone.now(),
+                        "ip": user_ip
+                    }
+
+                    acct = stripe.Account.create(
+                        business_name=page.name,
+#                        business_url=,
+                        country="US",
+                        email=request.user.email,
+                        legal_entity=legal_entity,
+                        type="custom",
+                        tos_acceptance=tos_acceptance
+                    )
 #            except:
 #                print("write exception here in future")
 
-            external_account = {
-                "object": "bank_account",
-                "country": "US",
-                "account_number": bank_form.cleaned_data['account_number'],
-                "account_holder_name": "%s %s" % (request.user.userprofile.first_name, request.user.userprofile.last_name),
-                "account_holder_type": stripe_type,
-                "routing_number": bank_form.cleaned_data['routing_number']
-            }
-            ext_acct = acct.external_accounts.create(external_account=external_account)
-            page.stripe_account_id = acct.id
-            page.stripe_bank_account_id = ext_acct.id
+                external_account = {
+                    "object": "bank_account",
+                    "country": "US",
+                    "account_number": bank_form.cleaned_data['account_number'],
+                    "account_holder_name": "%s %s" % (request.user.first_name, request.user.last_name),
+                    "account_holder_type": stripe_type,
+                    "routing_number": bank_form.cleaned_data['routing_number']
+                }
+                ext_acct = acct.external_accounts.create(external_account=external_account)
+                page.stripe_account_id = acct.id
+                page.stripe_bank_account_id = ext_acct.id
             page.save()
 
             subject = "Page created!"
@@ -313,8 +313,8 @@ def page_invite(request, page_slug):
                     # create the email
                     subject = "Page invitation!"
                     body = "%s %s has invited you to become an admin of the '%s' Page. <a href='%s/invite/manager/accept/%s/%s/'>Click here to accept.</a> <a href='%s/invite/manager/decline/%s/%s/'>Click here to decline.</a>" % (
-                        request.user.userprofile.first_name,
-                        request.user.userprofile.last_name,
+                        request.user.first_name,
+                        request.user.last_name,
                         page.name,
                         config.settings['site'],
                         invitation.pk,

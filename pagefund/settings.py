@@ -165,7 +165,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL = 'home'
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE= True
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_SIGNUP_FORM_CLASS = 'userprofile.forms.SignupForm'
+ACCOUNT_SIGNUP_FORM_CLASS = 'userprofile.forms.UserProfileForm'
 
 #email
 EMAIL_HOST = config.settings['email_host']

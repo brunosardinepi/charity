@@ -21,7 +21,9 @@ class ManagerInvitationTest(TestCase):
         self.user2 = User.objects.create_user(
             username='harrypotter',
             email='harry@potter.com',
-            password='imawizard'
+            password='imawizard',
+            first_name='Harry',
+            last_name='Potter'
         )
 
         self.user3 = User.objects.create_user(
@@ -102,7 +104,7 @@ class ManagerInvitationTest(TestCase):
 
         self.client.login(username='testuser', password='testpassword')
         response = self.client.get('/testpage/')
-        self.assertContains(response, "%s %s" % (self.user2.userprofile.first_name, self.user2.userprofile.last_name), status_code=200)
+        self.assertContains(response, "%s %s" % (self.user2.first_name, self.user2.last_name), status_code=200)
         self.assertContains(response, self.user2.email, status_code=200)
 
     # need to write tests for these when the view has been built:

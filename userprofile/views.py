@@ -21,12 +21,15 @@ def userprofile(request):
         subscriptions = userprofile.subscribers.filter(deleted=False)
         campaigns = userprofile.campaign_admins.filter(deleted=False)
         invitations = ManagerInvitation.objects.filter(invite_from=request.user, expired=False)
-        form = forms.UserProfileForm(instance=userprofile)
+        data = {
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name,
+            'state': request.user.userprofile.state,
+            'birthday': request.user.userprofile.birthday
+        }
+        form = forms.UserProfileForm(data)
         if request.method == 'POST':
-            form = forms.UserProfileForm(
-                instance=userprofile,
-                data=request.POST,
-            )
+            form = forms.UserProfileForm(request.POST)
             if form.is_valid():
                 form.save()
             return HttpResponseRedirect(userprofile.get_absolute_url())
