@@ -19,6 +19,7 @@ class PageForm(forms.ModelForm):
             'zipcode',
             'page_slug',
             'type',
+            'nonprofit_number',
             'category',
             'description',
             'contact_email',

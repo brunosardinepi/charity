@@ -50,7 +50,8 @@ class PageTest(TestCase):
 
         self.page = models.Page.objects.create(
             name='Test Page',
-            type='Organization',
+            type='Nonprofit',
+            nonprofit_number='123456789',
             page_slug='testpage',
             city='Houston',
             state='Texas',
@@ -74,7 +75,7 @@ class PageTest(TestCase):
 
         self.page2 = models.Page.objects.create(
             name='Office',
-            type='Organization',
+            type='Personal',
             page_slug='officedesk',
             city='Chicago',
             state='IL',
@@ -234,6 +235,7 @@ class PageTest(TestCase):
             'name': self.page.name,
             'page_slug': self.page.page_slug,
             'type': 'nonprofit',
+            'nonprofit_number': '123456789',
             'category': 'animal',
             'state': 'DE',
             'description': 'New description here!',
