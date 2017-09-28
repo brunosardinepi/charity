@@ -57,7 +57,10 @@ class PageTest(TestCase):
             description='This is a description for Test Page.',
             donation_count='20',
             donation_money='30',
-            category='Animal'
+            category='Animal',
+            contact_email='contact@page.com',
+            contact_phone='111-111-1111',
+            website='testpage.com'
         )
 
         self.page.admins.add(self.user.userprofile)
@@ -148,6 +151,9 @@ class PageTest(TestCase):
         self.assertContains(response, self.campaign2.name, status_code=200)
         self.assertContains(response, self.campaign2.goal, status_code=200)
         self.assertContains(response, self.campaign2.donation_money, status_code=200)
+        self.assertContains(response, self.page.contact_email, status_code=200)
+        self.assertContains(response, self.page.contact_phone, status_code=200)
+        self.assertContains(response, self.page.website, status_code=200)
 
     def test_page_status_logged_in(self):
         request = self.factory.get('home')
@@ -171,6 +177,9 @@ class PageTest(TestCase):
         self.assertContains(response, self.campaign2.name, status_code=200)
         self.assertContains(response, self.campaign2.goal, status_code=200)
         self.assertContains(response, self.campaign2.donation_money, status_code=200)
+        self.assertContains(response, self.page.contact_email, status_code=200)
+        self.assertContains(response, self.page.contact_phone, status_code=200)
+        self.assertContains(response, self.page.website, status_code=200)
 
     def test_page_admin_logged_out(self):
         request = self.factory.get('home')

@@ -109,6 +109,9 @@
     <p>Location: {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{{ page.state }}{% endif %}</p>
     <p>Description: {{ page.description }}</p>
     <p>Category: {{ page.get_category_display }}</p>
+    <p>Contact email: {{ page.contact_email }}</p>
+    <p>Contact phone: {{ page.contact_phone }}</p>
+    <p>Website: {{ page.website }}</p>
     <p>${{ page.donation_money }} raised by {{ page.donation_count }} donors</p>
 
     {% if request.user.is_authenticated %}

@@ -20,7 +20,10 @@ class PageForm(forms.ModelForm):
             'page_slug',
             'type',
             'category',
-            'description'
+            'description',
+            'contact_email',
+            'contact_phone',
+            'website'
         ]
 
 class PageImagesForm(forms.ModelForm):

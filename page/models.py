@@ -11,6 +11,8 @@ class Page(models.Model):
     address_line2 = models.CharField(max_length=255, blank=True)
     admins = models.ManyToManyField(UserProfile, related_name='page_admins', blank=True)
     city = models.CharField(max_length=255, blank=True)
+    contact_email = models.EmailField(max_length=128, blank=True)
+    contact_phone = models.CharField(max_length=20, blank=True)
     created_on = models.DateTimeField(default=timezone.now)
     deleted = models.BooleanField(default=False)
     deleted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
@@ -26,6 +28,7 @@ class Page(models.Model):
     subscribers = models.ManyToManyField(UserProfile, related_name='subscribers', blank=True)
     stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
     stripe_bank_account_id = models.CharField(max_length=255, blank=True, null=True)
+    website = models.CharField(max_length=128, blank=True)
     zipcode = models.CharField(max_length=5)
 
     CATEGORY_CHOICES = (
