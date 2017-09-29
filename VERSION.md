@@ -18,6 +18,8 @@ This is the version history for PageFund development.
 
 ### Fixes
 
+* Managers weren't getting prompted to confirm before deleting a Page
+
 None
 
 

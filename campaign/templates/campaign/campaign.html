@@ -10,7 +10,7 @@
     <script>
         $(document).ready(function() {
 
-            $("#delete").click(function () {
+            $(".delete-campaign").click(function () {
                 return confirm("Are you sure you want to delete this Campaign?");
             });
 
@@ -135,7 +135,7 @@
     {% if request.user.userprofile in campaign.campaign_admins.all %}
         <h4>Admin</h4>
         <p><a href="{% url 'campaign_edit' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
-        <p><a id="delete" href="{% url 'campaign_delete' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
+        <p><a class="delete-campaign" href="{% url 'campaign_delete' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
         <p><a href="{% url 'campaign_invite' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
         <p><a href="{% url 'campaign_image_upload' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload image</a></p>
         {% if managers %}
@@ -180,7 +180,7 @@
             <p><a href="{% url 'campaign_edit' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
         {% endif %}
         {% if "manager_delete" in campaign_perms %}
-            <p><a id="delete" href="{% url 'campaign_delete' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
+            <p><a class="delete-campaign" href="{% url 'campaign_delete' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
         {% endif %}
         {% if "manager_invite" in campaign_perms %}
             <p><a href="{% url 'campaign_invite' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
