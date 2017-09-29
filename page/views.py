@@ -138,10 +138,10 @@ def page_create(request):
             page.subscribers.add(request.user.userprofile)
 
             if not settings.TESTING:
-                if page.type == 'organization':
-                    stripe_type = 'company'
-                elif page.type == 'personal':
+                if page.type == 'personal':
                     stripe_type = 'individual'
+                else:
+                    stripe_type = 'company'
 
                 legal_entity = {
                     "business_name": page.name,
