@@ -43,6 +43,7 @@ def accept_invitation(request, invitation_pk, key):
         }
         if invitation.page:
             invitation.page.managers.add(request.user.userprofile)
+            invitation.page.subscribers.add(request.user.userprofile)
             for k, v in permissions.items():
                 if v == True:
                     assign_perm(k, request.user, invitation.page)
