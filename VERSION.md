@@ -5,6 +5,8 @@ This is the version history for PageFund development.
 
 ## Version 0.7.0
 
+Release date: 09/29/2017
+
 ### Additions
 
 * Donate to Pages
