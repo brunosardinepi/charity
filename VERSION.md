@@ -10,6 +10,7 @@ This is the version history for PageFund development.
 * Donate to Pages
 * New fields for Page: type (nonprofit, religious, other), website URL, contact email and phone, bank account and routing number, SSN, full address, 501c number
 * Cron job to set manager invitations, general invitations, and 
+* User's donations on User Profile
 
 ### Changes
 
