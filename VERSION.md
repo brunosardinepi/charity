@@ -18,6 +18,8 @@ This is the version history for PageFund development.
 
 ### Fixes
 
+None
+
 
 ## Version 0.6.0
 
