@@ -233,6 +233,15 @@
 
     <h3>Donations</h3>
     {% if donations %}
+
+        <h4>Top Donors</h4>
+        <ul>
+            {% for a, b in top_donors %}
+                <li>{{ b.amount|cents_to_dollars }} - {{ b.first_name }} {{ b.last_name }}</li>
+            {% endfor %}
+        </ul>
+
+        <h4>All Donations</h4>
         <ul>
             {% for d in donations %}
                 <li>{{ d.amount|cents_to_dollars }} {% if not d.anonymous %}- {{ d.user.first_name }} {{ d.user.last_name }} {% endif %}@ {{ d.date }}

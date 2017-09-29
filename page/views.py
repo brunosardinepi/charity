@@ -1,6 +1,8 @@
+from collections import OrderedDict
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404, render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -40,6 +42,20 @@ def page(request, page_slug):
         donations = Donation.objects.filter(page=page).order_by('-date')
         form = CommentForm
         donate_form = forms.PageDonateForm()
+
+        donors = Donation.objects.values_list('user', flat=True).distinct()
+        top_donors = {}
+        for d in donors:
+            user = get_object_or_404(User, pk=d)
+            total_amount = Donation.objects.filter(user=user, anonymous=False).aggregate(Sum('amount')).get('amount__sum')
+            top_donors[d] = {
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'amount': total_amount
+            }
+        top_donors = OrderedDict(sorted(top_donors.items(), key=lambda t: t[1]['amount'], reverse=True))
+        top_donors = list(top_donors.items())[:10]
+
         try:
             user_subscription_check = page.subscribers.get(user_id=request.user.pk)
         except UserProfile.DoesNotExist:
@@ -96,7 +112,8 @@ def page(request, page_slug):
             'form': form,
             'donate_form': donate_form,
             'subscribe_attr': subscribe_attr,
-            'api_pk': config.settings['stripe_api_pk']
+            'api_pk': config.settings['stripe_api_pk'],
+            'top_donors': top_donors
         })
 
 def get_client_ip(request):
