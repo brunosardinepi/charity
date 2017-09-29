@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from . import forms
 from . import models
+from donation.models import Donation
 from invitations.models import ManagerInvitation
 from page import models as PageModels
 
@@ -13,14 +14,15 @@ from page import models as PageModels
 @login_required
 def userprofile(request):
     userprofile = get_object_or_404(models.UserProfile, user_id=request.user.id)
-    userimages = models.UserImages.objects.filter(user=request.user.id)
-    userprofileimage = models.UserImages.objects.filter(user=request.user.id, profile_picture=True)
     if userprofile.user == request.user:
+        userimages = models.UserImages.objects.filter(user=request.user.id)
+        userprofileimage = models.UserImages.objects.filter(user=request.user.id, profile_picture=True)
         admin_pages = userprofile.page_admins.filter(deleted=False)
         manager_pages = userprofile.page_managers.filter(deleted=False)
         subscriptions = userprofile.subscribers.filter(deleted=False)
         campaigns = userprofile.campaign_admins.filter(deleted=False)
         invitations = ManagerInvitation.objects.filter(invite_from=request.user, expired=False)
+        donations = Donation.objects.filter(user=request.user)
         data = {
             'first_name': request.user.first_name,
             'last_name': request.user.last_name,
@@ -43,6 +45,7 @@ def userprofile(request):
             'campaigns': campaigns,
             'invitations': invitations,
             'form': form,
+            'donations': donations
         })
     else:
         raise Http404
