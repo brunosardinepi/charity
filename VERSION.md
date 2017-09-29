@@ -22,8 +22,7 @@ This is the version history for PageFund development.
 
 * Managers weren't getting prompted to confirm before deleting a Page
 * Managers are now subscribed to Pages when they accept their Manager invitation
-
-None
+* Creating a custom account on Stripe failed
 
 
 ## Version 0.6.0
