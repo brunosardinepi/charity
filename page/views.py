@@ -334,10 +334,12 @@ def page_profile_update(request, page_slug, image_pk):
             profile.save()
             image.page_profile = True
             image.save()
+        else:
+            image.campaign_profile = True
+            image.save()
         return HttpResponseRedirect(page.get_absolute_url())
     else:
         raise Http404
 
 
-#campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
 

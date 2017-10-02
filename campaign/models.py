@@ -121,6 +121,6 @@ class Campaign(models.Model):
 
 class CampaignImages(models.Model):
     campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='media/campaigns/images/', blank=True, null=True)
+    image = models.FileField(upload_to='media/campaigns/images/', blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)
     campaign_profile = models.BooleanField(default=False)
