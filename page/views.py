@@ -438,3 +438,47 @@ def page_donate(request, page_pk):
             print("we keep = %s" % float(pagefund_fee / 100))
             print("charity gets = %s" % float(final_amount / 100))
             return HttpResponseRedirect(page.get_absolute_url())
+
+@login_required
+def page_image_delete(request, page_slug, image_pk):
+    page = get_object_or_404(models.Page, page_slug=page_slug)
+    admin = request.user.userprofile in page.admins.all()
+    image = get_object_or_404(models.PageImages, pk=image_pk)
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', page):
+        manager = True
+    else:
+        manager = False
+    if admin or manager:
+        image.delete()
+        return HttpResponseRedirect(page.get_absolute_url())
+    else:
+        raise Http404
+
+@login_required
+def page_profile_update(request, page_slug, image_pk):
+    page = get_object_or_404(models.Page, page_slug=page_slug)
+    admin = request.user.userprofile in page.admins.all()
+    image = get_object_or_404(models.PageImages, pk=image_pk)
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', page):
+        manager = True
+    else:
+        manager = False
+    if admin or manager:
+        try:
+            profile = models.PageImages.objects.get(page=image.page, page_profile=True)
+        except models.PageImages.DoesNotExist:
+            profile = None
+        if profile:
+            profile.page_profile = False
+            profile.save()
+            image.page_profile = True
+            image.save()
+        else:
+            image.campaign_profile = True
+            image.save()
+        return HttpResponseRedirect(page.get_absolute_url())
+    else:
+        raise Http404
+
+
+
