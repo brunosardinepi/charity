@@ -299,3 +299,45 @@ def page_image_upload(request, page_slug):
     else:
         raise Http404
     return render(request, 'page/page_image_upload.html', {'page': page, 'form': form })
+
+@login_required
+def page_image_delete(request, page_slug, image_pk):
+    page = get_object_or_404(models.Page, page_slug=page_slug)
+    admin = request.user.userprofile in page.admins.all()
+    image = get_object_or_404(models.PageImages, pk=image_pk)
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', page):
+        manager = True
+    else:
+        manager = False
+    if admin or manager:
+        image.delete()
+        return HttpResponseRedirect(page.get_absolute_url())
+    else:
+        raise Http404
+
+@login_required
+def page_profile_update(request, page_slug, image_pk):
+    page = get_object_or_404(models.Page, page_slug=page_slug)
+    admin = request.user.userprofile in page.admins.all()
+    image = get_object_or_404(models.PageImages, pk=image_pk)
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', page):
+        manager = True
+    else:
+        manager = False
+    if admin or manager:
+        try:
+            profile = models.PageImages.objects.get(page=image.page, page_profile=True)
+        except models.PageImages.DoesNotExist:
+            profile = None
+        if profile:
+            profile.page_profile = False
+            profile.save()
+            image.page_profile = True
+            image.save()
+        return HttpResponseRedirect(page.get_absolute_url())
+    else:
+        raise Http404
+
+
+#campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
+

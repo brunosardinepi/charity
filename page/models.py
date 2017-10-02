@@ -128,6 +128,6 @@ class Page(models.Model):
 
 class PageImages(models.Model):
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='media/pages/images/', blank=True, null=True)
+    image = models.FileField(upload_to='media/pages/images/', blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)
     page_profile = models.BooleanField(default=False)
