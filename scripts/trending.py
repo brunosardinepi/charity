@@ -16,38 +16,38 @@
 #####
 
 from trending_pages import create_pages
-from collections import OrderedDict
 
+import collections
 import statistics
 
 
 def trim(l, p):
     x = list(l)
     p /= 100
-    print("list = %s" % x)
-    print("percentage = %s" % p)
-    print("the mean of the original list is: %s" % statistics.mean(x))
+#    print("list = %s" % x)
+#    print("percentage = %s" % p)
+#    print("the mean of the original list is: %s" % statistics.mean(x))
     # find number of items in x
     c = len(x)
-    print("there are %s items in the list" % c)
+#    print("there are %s items in the list" % c)
     if c > 3:
         r = int(c * p)
         if r > 0:
-            print("we'll remove %s items from the front and back" % r)
+#            print("we'll remove %s items from the front and back" % r)
             # re-order x from big to small
             x.sort()
-            print("sorted list = %s" % x)
+#            print("sorted list = %s" % x)
             # remove 10% of items from the front
             del x[:r]
-            print("removed %s items from the front and got: %s" % (r, x))
+#            print("removed %s items from the front and got: %s" % (r, x))
             # remove 10% of items from the back
             del x[-r:]
-            print("removed %s items from the back and got: %s" % (r, x))
+#            print("removed %s items from the back and got: %s" % (r, x))
     return x
 
 def trimmed_mean(l, p):
     x = trim(l, p)
-    print("the mean of the new list is: %s" % statistics.mean(x))
+#    print("the mean of the new list is: %s" % statistics.mean(x))
     return int(statistics.mean(x))
 
 def trimmed_stdev(l, p):
@@ -96,7 +96,7 @@ def trending(file):
 #        print("subscriptions --- avg: %s --- stdev: %s --- list: %s" % (trimmed_mean(subscriptions, 10), trimmed_stdev(subscriptions, 10), subscriptions))
 #        print("donation_count --- avg: %s --- stdev: %s --- list: %s" % (trimmed_mean(donation_count, 10), trimmed_stdev(donation_count, 10), donation_count))
 #        print("donation_amount --- avg: %s --- stdev: %s --- list: %s" % (trimmed_mean(donation_amount, 10), trimmed_stdev(donation_amount, 10), donation_amount))
-        print("pages = %s" % pages)
+#        print("pages = %s" % pages)
 
         c_avg, c_stdev = trimmed_mean(comments, 10), trimmed_stdev(comments, 10)
 #        print("c_avg = %s" % c_avg)
@@ -114,70 +114,84 @@ def trending(file):
         for k, v in pages.items():
             print(k, v)
             aa, a, ba = 4, 2, 1
+            # Multipliers
+            cm, sm, dcm, dam = 1, 4, 4.5, 1
 #            print("c_avg type = %s; c_stdev type = %s; v['comments'] type = %s" % (type(c_avg), type(c_stdev), type(v['comments'])))
-            print("testing to see if v['comments'] (%s) is within 1 stdev (%s) of the mean (%s)" % (v['comments'], c_stdev, c_avg))
+            print("testing to see if 'comments' (%s) is within 1 stdev (%s) of the mean (%s)" % (v['comments'], c_stdev, c_avg))
             if (c_avg - c_stdev) <= v['comments'] <= (c_avg + c_stdev):
-                print("average")
-                v['points'] += a
-                print("awarded %s points" % a)
+                v['points'] += (a * cm)
+                print("AVERAGE... awarded %s points" % (a * cm))
             elif v['comments'] > (c_avg + c_stdev):
-                print("above average")
-                v['points'] += aa
-                print("awarded %s points" % aa)
+                v['points'] += (aa * cm)
+                print("ABOVE AVERAGE... awarded %s points" % (aa * cm))
             elif v['comments'] < (c_avg - c_stdev):
-                print("below average")
-                v['points'] += ba
-                print("awarded %s point" % ba)
+                v['points'] += (ba * cm)
+                print("BELOW AVERAGE... awarded %s point" % (ba * cm))
 
-            print("testing to see if v['subscriptions'] (%s) is within 1 stdev (%s) of the mean (%s)" % (v['subscriptions'], s_stdev, s_avg))
+            print("testing to see if 'subscriptions' (%s) is within 1 stdev (%s) of the mean (%s)" % (v['subscriptions'], s_stdev, s_avg))
             if (s_avg - s_stdev) <= v['subscriptions'] <= (s_avg + s_stdev):
-                print("average")
-                v['points'] += (a * 2)
-                print("awarded %s points" % (a * 2))
+                v['points'] += (a * sm)
+                print("AVERAGE... awarded %s points" % (a * sm))
             elif v['subscriptions'] > (s_avg + s_stdev):
-                print("above average")
-                v['points'] += (aa * 2)
-                print("awarded %s points" % (aa * 2))
+                v['points'] += (aa * sm)
+                print("ABOVE AVERAGE... awarded %s points" % (aa * sm))
             elif v['subscriptions'] < (s_avg - s_stdev):
-                print("below average")
-                v['points'] += (ba * 2)
-                print("awarded %s point" % (ba * 2))
+                v['points'] += (ba * sm)
+                print("BELOW AVERAGE... awarded %s points" % (ba * sm))
 
-            print("testing to see if v['donation_count'] (%s) is within 1 stdev (%s) of the mean (%s)" % (v['donation_count'], dc_stdev, dc_avg))
+            print("testing to see if 'donation_count' (%s) is within 1 stdev (%s) of the mean (%s)" % (v['donation_count'], dc_stdev, dc_avg))
             if (dc_avg - dc_stdev) <= v['donation_count'] <= (dc_avg + dc_stdev):
-                print("average")
-                v['points'] += (a * 4)
-                print("awarded %s points" % (a * 4))
+                v['points'] += (a * dcm)
+                print("AVERAGE... awarded %s points" % (a * dcm))
             elif v['donation_count'] > (dc_avg + dc_stdev):
-                print("above average")
-                v['points'] += (aa * 4)
-                print("awarded %s points" % (aa * 4))
+                v['points'] += (aa * dcm)
+                print("ABOVE AVERAGE... awarded %s points" % (aa * dcm))
             elif v['donation_count'] < (dc_avg - dc_stdev):
-                print("below average")
-                v['points'] += (ba * 4)
-                print("awarded %s point" % (ba * 4))
+                v['points'] += (ba * dcm)
+                print("BELOW AVERAGE... awarded %s point" % (ba * dcm))
 
-            print("testing to see if v['donation_amount'] (%s) is within 1 stdev (%s) of the mean (%s)" % (v['donation_amount'], da_stdev, da_avg))
+            print("testing to see if 'donation_amount' (%s) is within 1 stdev (%s) of the mean (%s)" % (v['donation_amount'], da_stdev, da_avg))
             if (da_avg - da_stdev) <= v['donation_amount'] <= (da_avg + da_stdev):
-                print("average")
-                v['points'] += a
-                print("awarded %s points" % a)
+                v['points'] += (a * dam)
+                print("AVERAGE... awarded %s points" % (a * dam))
             elif v['donation_amount'] > (da_avg + da_stdev):
-                print("above average")
-                v['points'] += aa
-                print("awarded %s points" % aa)
+                v['points'] += (aa * dam)
+                print("ABOVE AVERAGE... awarded %s points" % (aa * dam))
             elif v['donation_amount'] < (da_avg - da_stdev):
-                print("below average")
-                v['points'] += ba
-                print("awarded %s point" % ba)
+                v['points'] += (ba * dam)
+                print("BELOW AVERAGE... awarded %s point" % (ba * dam))
 
-        print("pages before sort = %s" % pages)
-        pages = OrderedDict(sorted(pages.items(), key=lambda t: t[1]['points'], reverse=True))
-        print("pages after sort = %s" % pages)
-        print("*" * 10)
+            print("*" * 20)
+
+#        print("pages before sort = %s" % pages)
+        pages = collections.OrderedDict(sorted(pages.items(), key=lambda t: t[1]['points'], reverse=True))
+#        print("pages after sort = %s" % pages)
+
+        for l in lines:
+            print(l)
+
+        print("*" * 20)
+
+        all_points = []
         for k, v in pages.items():
-            print(k, v)
+            print("page %s; points: %s; comments: %s; subscriptions: %s; donation count: %s; donation amount: %s" % (k, v["points"], v["comments"], v["subscriptions"], v["donation_count"], v["donation_amount"]))
+            # put all the points in a list
+            all_points.append(v["points"])
+            dup_points = [item for item, count in collections.Counter(all_points).items() if count > 1]
+        print("all_points = %s" % all_points)
+        print("dup_points = %s" % dup_points)
+# find the duplicates
+# go through the pages for each point amount and find the pages that have each point
+# assign decimal points based on who wins each category to break ties
+
 
 if __name__ == "__main__":
-    create_pages(10)
+    c = False
+    while c == False:
+        r = input("create new pages? (Y/n): ")
+        if r.lower() == 'n':
+            c = True
+        elif (r.lower() == 'y') or (r.lower() == ''):
+            create_pages(10)
+            c = True
     trending("/home/gnowak/pagefund/scripts/trending.txt")

@@ -8,10 +8,10 @@ def create_pages(n):
         for i in range(n):
             x = "page:%s;comments:%s;subscriptions:%s;count:%s;amount:%s\n" % (
                 i,
-                random.randint(1, 250),
-                random.randint(1, 250),
-                random.randint(1, 500),
-                random.randint(1, 10000)
+                random.randint(1, 1000),
+                random.randint(1, 1000),
+                random.randint(1, 1000),
+                random.randint(1, 100000)
             )
             f.write(x)
 
