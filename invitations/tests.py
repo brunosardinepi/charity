@@ -50,7 +50,7 @@ class ManagerInvitationTest(TestCase):
             manager_edit=True,
             manager_delete=True,
             manager_invite=True,
-            manager_upload=True
+            manager_image_edit=True
         )
 
         self.invitation2 = models.GeneralInvitation.objects.create(
@@ -95,7 +95,7 @@ class ManagerInvitationTest(TestCase):
         self.assertTrue(self.user2.has_perm('manager_edit', self.page))
         self.assertTrue(self.user2.has_perm('manager_delete', self.page))
         self.assertTrue(self.user2.has_perm('manager_invite', self.page))
-        self.assertTrue(self.user2.has_perm('manager_upload', self.page))
+        self.assertTrue(self.user2.has_perm('manager_image_edit', self.page))
         self.assertIn(self.user2.userprofile, self.page.subscribers.all())
 
         invitations = models.ManagerInvitation.objects.filter(expired=False)
@@ -121,7 +121,7 @@ class ManagerInvitationTest(TestCase):
         self.assertFalse(self.user2.has_perm('manager_edit', self.page))
         self.assertFalse(self.user2.has_perm('manager_delete', self.page))
         self.assertFalse(self.user2.has_perm('manager_invite', self.page))
-        self.assertFalse(self.user2.has_perm('manager_upload', self.page))
+        self.assertFalse(self.user2.has_perm('manager_image_edit', self.page))
 
         invitations = models.ManagerInvitation.objects.filter(expired=False)
         self.assertNotIn(self.invitation, invitations)
@@ -138,7 +138,7 @@ class ManagerInvitationTest(TestCase):
         self.assertFalse(self.user2.has_perm('manager_edit', self.page))
         self.assertFalse(self.user2.has_perm('manager_delete', self.page))
         self.assertFalse(self.user2.has_perm('manager_invite', self.page))
-        self.assertFalse(self.user2.has_perm('manager_upload', self.page))
+        self.assertFalse(self.user2.has_perm('manager_image_edit', self.page))
 
         invitations = models.ManagerInvitation.objects.filter(expired=False)
         self.assertNotIn(self.invitation, invitations)

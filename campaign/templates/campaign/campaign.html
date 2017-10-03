@@ -168,7 +168,7 @@
                         <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_edit" {% if 'manager_edit' in campaign_perms %}checked{% endif %} /></td>
                         <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_delete" {% if 'manager_delete' in campaign_perms %}checked{% endif %} /></td>
                         <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_invite" {% if 'manager_invite' in campaign_perms %}checked{% endif %} /></td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_upload" {% if 'manager_upload' in campaign_perms %}checked{% endif %} /></td>
+                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_image_edit" {% if 'manager_image_edit' in campaign_perms %}checked{% endif %} /></td>
                         <td><a href="{% url 'remove_manager' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug manager_pk=manager.pk %}">Remove<a/></td>
                 {% endfor %}
                 </table>
@@ -193,7 +193,7 @@
         {% if "manager_invite" in campaign_perms %}
             <p><a href="{% url 'campaign_invite' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
         {% endif %}
-        {% if "manager_upload" in campaign_perms %}
+        {% if "manager_image_edit" in campaign_perms %}
             <p><a href="{% url 'campaign_image_upload' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload image</a></p>
         {% endif %}
     {% endif %}
@@ -202,8 +202,10 @@
     <ul>
         {% for image in campaignimages %}
             <li><img src="{{ image.image.url }}" width="200" />{{ image.caption }}<br/>
+            {% if "manager_image_edit" in page_perms or request.user.userprofile in page.admins.all %}    
             <p><a id="delete_image" href="{% url 'campaign_image_delete' page_slug=page.page_slug campaign_slug=campaign.campaign_slug campaign_pk=campaign.pk image_pk=image.pk %}">Delete Image</a></p>
             <p><a id="update_profile" href="{% url 'campaign_profile_update' page_slug=page.page_slug campaign_slug=campaign.campaign_slug campaign_pk=campaign.pk image_pk=image.pk %}">Update Profile Image</a></p></li>
+            {% endif %}
         {% endfor %}
     </ul>
 
