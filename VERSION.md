@@ -3,6 +3,18 @@
 This is the version history for PageFund development.
 
 
+## Version 0.8.0
+
+Release date: TBD
+
+### Additions
+
+* Trending pages added to Home
+
+### Changes
+### Fixes
+
+
 ## Version 0.7.0
 
 Release date: 09/29/2017
