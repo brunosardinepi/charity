@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'comments',
     'error',
     'donation',
+    'stripe',
 ]
 
 MIDDLEWARE = [
