@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import sys
+
 from . import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -53,6 +55,8 @@ INSTALLED_APPS = [
     'invitations',
     'comments',
     'error',
+    'donation',
+    'stripe',
 ]
 
 MIDDLEWARE = [
@@ -129,15 +133,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'America/Chicago'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
+DATE_INPUT_FORMATS = ('%m-%d-%Y')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
@@ -166,10 +166,12 @@ ACCOUNT_LOGOUT_REDIRECT_URL = 'home'
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE= True
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_SIGNUP_FORM_CLASS = 'userprofile.forms.SignupForm'
+ACCOUNT_SIGNUP_FORM_CLASS = 'userprofile.forms.UserProfileForm'
 
 #email
 EMAIL_HOST = config.settings['email_host']
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config.settings['email_user']
 EMAIL_HOST_PASSWORD = config.settings['email_password']
+
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'

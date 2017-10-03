@@ -7,8 +7,12 @@ from userprofile.models import UserProfile
 
 
 class Page(models.Model):
+    address_line1 = models.CharField(max_length=255)
+    address_line2 = models.CharField(max_length=255, blank=True)
     admins = models.ManyToManyField(UserProfile, related_name='page_admins', blank=True)
     city = models.CharField(max_length=255, blank=True)
+    contact_email = models.EmailField(max_length=128, blank=True)
+    contact_phone = models.CharField(max_length=20, blank=True)
     created_on = models.DateTimeField(default=timezone.now)
     deleted = models.BooleanField(default=False)
     deleted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
@@ -16,11 +20,17 @@ class Page(models.Model):
     description = models.TextField(blank=True)
     donation_count = models.IntegerField(default=0)
     donation_money = models.IntegerField(default=0)
+    ein = models.CharField(max_length=255)
     is_sponsored = models.BooleanField(default=False)
     managers = models.ManyToManyField(UserProfile, related_name='page_managers', blank=True)
     name = models.CharField(max_length=255, db_index=True)
+    nonprofit_number = models.CharField(max_length=255, blank=True)
     page_slug = models.SlugField(max_length=100, unique=True)
     subscribers = models.ManyToManyField(UserProfile, related_name='subscribers', blank=True)
+    stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
+    stripe_bank_account_id = models.CharField(max_length=255, blank=True, null=True)
+    website = models.CharField(max_length=128, blank=True)
+    zipcode = models.CharField(max_length=5)
 
     CATEGORY_CHOICES = (
         ('animal', 'Animal'),
@@ -93,8 +103,10 @@ class Page(models.Model):
     )
 
     TYPE_CHOICES = (
-        ('organization', 'Organization'),
+        ('nonprofit', 'Nonprofit'),
         ('personal', 'Personal'),
+        ('religious', 'Religious'),
+        ('other', 'Other'),
     )
     type = models.CharField(
         max_length=255,

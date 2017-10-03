@@ -50,14 +50,18 @@ class PageTest(TestCase):
 
         self.page = models.Page.objects.create(
             name='Test Page',
-            type='Organization',
+            type='Nonprofit',
+            nonprofit_number='123456789',
             page_slug='testpage',
             city='Houston',
             state='Texas',
             description='This is a description for Test Page.',
             donation_count='20',
             donation_money='30',
-            category='Animal'
+            category='Animal',
+            contact_email='contact@page.com',
+            contact_phone='111-111-1111',
+            website='testpage.com'
         )
 
         self.page.admins.add(self.user.userprofile)
@@ -71,7 +75,7 @@ class PageTest(TestCase):
 
         self.page2 = models.Page.objects.create(
             name='Office',
-            type='Organization',
+            type='Personal',
             page_slug='officedesk',
             city='Chicago',
             state='IL',
@@ -148,6 +152,9 @@ class PageTest(TestCase):
         self.assertContains(response, self.campaign2.name, status_code=200)
         self.assertContains(response, self.campaign2.goal, status_code=200)
         self.assertContains(response, self.campaign2.donation_money, status_code=200)
+        self.assertContains(response, self.page.contact_email, status_code=200)
+        self.assertContains(response, self.page.contact_phone, status_code=200)
+        self.assertContains(response, self.page.website, status_code=200)
 
     def test_page_status_logged_in(self):
         request = self.factory.get('home')
@@ -171,6 +178,9 @@ class PageTest(TestCase):
         self.assertContains(response, self.campaign2.name, status_code=200)
         self.assertContains(response, self.campaign2.goal, status_code=200)
         self.assertContains(response, self.campaign2.donation_money, status_code=200)
+        self.assertContains(response, self.page.contact_email, status_code=200)
+        self.assertContains(response, self.page.contact_phone, status_code=200)
+        self.assertContains(response, self.page.website, status_code=200)
 
     def test_page_admin_logged_out(self):
         request = self.factory.get('home')
@@ -224,10 +234,18 @@ class PageTest(TestCase):
         data = {
             'name': self.page.name,
             'page_slug': self.page.page_slug,
-            'type': 'organization',
+            'type': 'nonprofit',
+            'nonprofit_number': '123456789',
             'category': 'animal',
             'state': 'DE',
-            'description': 'New description here!'
+            'description': 'New description here!',
+            'ssn': '0000',
+            'tos_acceptance': True,
+            'ein': '000000001',
+            'address_line1': '123 Main St.',
+            'city': 'Houston',
+            'state': 'TX',
+            'zipcode': '77008'
         }
         self.client.login(username='testuser', password='testpassword')
         response = self.client.post('/%s/edit/' % self.page.page_slug, data)
@@ -284,7 +302,12 @@ class PageTest(TestCase):
             'city': 'Atlanta',
             'state': 'GA',
             'category': 'animal',
-            'description': 'I like flank steak.'
+            'description': 'I like flank steak.',
+            'ssn': '0000',
+            'tos_acceptance': True,
+            'ein': '000000001',
+            'address_line1': '123 Main St.',
+            'zipcode': '12345'
         })
         self.assertTrue(form.is_valid())
         page = form.save()

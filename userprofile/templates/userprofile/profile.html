@@ -1,5 +1,6 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
+{% load donation_extras %}
 
 {% block title %} Profile | {{ block.super }}{% endblock %}
 
@@ -53,6 +54,15 @@
     </ul>
 
     <p><a href="{% url 'userprofile:profile_image_upload' %}">Upload Image</a></p>
+
+    <h3>Donations</h3>
+    {% if donations %}
+        <ul>
+            {% for d in donations %}
+                <li>{{ d.amount|cents_to_dollars }} to {% if d.page %}{{ d.page }}{% else %}{{ d.campaign }}{% endif %} @ {{ d.date }}</li>            
+            {% endfor %}
+        </ul>
+    {% endif %}    
 
     <h3>User Images</h3>
     <ul>

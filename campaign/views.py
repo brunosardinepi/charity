@@ -208,8 +208,8 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
                     # create the email
                     subject = "Campaign invitation!"
                     body = "%s %s has invited you to become an admin of the '%s' campaign. <a href='%s/invite/manager/accept/%s/%s/'>Click here to accept.</a> <a href='%s/invite/manager/decline/%s/%s/'>Click here to decline.</a>" % (
-                        request.user.userprofile.first_name,
-                        request.user.userprofile.last_name,
+                        request.user.first_name,
+                        request.user.last_name,
                         campaign.name,
                         config.settings['site'],
                         invitation.pk,
@@ -287,3 +287,47 @@ def campaign_image_upload(request, page_slug, campaign_pk, campaign_slug):
     else:
         raise Http404
     return render(request, 'campaign/campaign_image_upload.html', {'campaign': campaign, 'form': form })
+
+@login_required
+def campaign_image_delete(request, page_slug, campaign_slug, campaign_pk, image_pk):
+    page = get_object_or_404(models.Page, page_slug=page_slug)
+    campaign = get_object_or_404(models.Campaign, campaign_slug=campaign_slug)
+    admin = request.user.userprofile in page.admins.all()
+    image = get_object_or_404(models.CampaignImages, pk=image_pk)
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', campaign):
+        manager = True
+    else:
+        manager = False
+    if admin or manager:
+        image.delete()
+        return HttpResponseRedirect(campaign.get_absolute_url())
+    else:
+        raise Http404
+
+@login_required
+def campaign_profile_update(request, page_slug, campaign_slug, campaign_pk, image_pk):
+    page = get_object_or_404(models.Page, page_slug=page_slug)
+    campaign = get_object_or_404(models.Campaign, campaign_slug=campaign_slug)
+    admin = request.user.userprofile in page.admins.all()
+    image = get_object_or_404(models.CampaignImages, pk=image_pk)
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', campaign):
+        manager = True
+    else:
+        manager = False
+    if admin or manager:
+        try:
+            profile = models.CampaignImages.objects.get(campaign=image.campaign, campaign_profile=True)
+        except models.CampaignImages.DoesNotExist:
+            profile = None
+        if profile:
+            profile.campaign_profile = False
+            profile.save()
+            image.campaign_profile = True
+            image.save()
+        else:
+            image.campaign_profile = True
+            image.save()
+        return HttpResponseRedirect(campaign.get_absolute_url())
+    else:
+        raise Http404
+

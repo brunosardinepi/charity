@@ -3,9 +3,10 @@ from django import forms
 from . import models
 
 
-class SignupForm(forms.Form):
+class UserProfileForm(forms.Form):
     first_name = forms.CharField(max_length=100, label='First name')
     last_name = forms.CharField(max_length=100, label='Last name')
+    birthday = forms.DateField()
     STATE_CHOICES = (
         ('AL', 'Alabama'),
         ('AK', 'Alaska'),
@@ -66,20 +67,14 @@ class SignupForm(forms.Form):
     def signup(self, request, user):
         user.save()
 
-        user.userprofile.first_name = self.cleaned_data['first_name']
-        user.userprofile.last_name = self.cleaned_data['last_name']
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
         user.userprofile.state = self.cleaned_data['state']
+        user.userprofile.birthday = self.cleaned_data['birthday']
+
+        user.save()
         user.userprofile.save()
 
-
-class UserProfileForm(forms.ModelForm):
-    class Meta:
-        model = models.UserProfile
-        fields = [
-            'first_name',
-            'last_name',
-            'state',
-        ]
 
 class UserImagesForm(forms.ModelForm):
     class Meta:

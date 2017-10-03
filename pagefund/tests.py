@@ -30,11 +30,9 @@ class HomeTest(TestCase):
             username='testuser',
             email='test@test.test',
             password='testpassword',
+            first_name = 'John',
+            last_name = 'Doe'
         )
-        self.user.userprofile.first_name = 'John'
-        self.user.userprofile.last_name = 'Doe'
-        self.user.userprofile.zipcode = '88888'
-        self.user.userprofile.save()
 
         self.user2 = User.objects.create_user(
             username='anotherguy',
@@ -79,8 +77,8 @@ class HomeTest(TestCase):
             if c.is_active == True:
                 self.assertContains(response, c.name, status_code=200)
         self.assertContains(response, self.page.name, status_code=200)
-        self.assertContains(response, self.user.userprofile.first_name, status_code=200)
-        self.assertContains(response, self.user.userprofile.last_name, status_code=200)
+        self.assertContains(response, self.user.first_name, status_code=200)
+        self.assertContains(response, self.user.last_name, status_code=200)
         self.assertContains(response, '/invite/', status_code=200)
         self.assertNotContains(response, self.page2.name, status_code=200)
         self.assertNotContains(response, "Forgot password?", status_code=200)
@@ -126,7 +124,8 @@ class HomeTest(TestCase):
             'email2': 'my@best.friend',
             'state': 'IL',
             'password1': 'verybadpass',
-            'password2': 'verybadpass'
+            'password2': 'verybadpass',
+            'birthday': '1990-01-02'
         }
         response = self.client.post('/accounts/signup/?next=/invite/accept/%s/%s/' % (invitation.pk, invitation.key), data)
         self.assertRedirects(response, '/invite/accept/%s/%s/' % (invitation.pk, invitation.key), 302, 302)

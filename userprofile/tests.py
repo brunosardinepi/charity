@@ -3,6 +3,7 @@ from django.test import Client, RequestFactory, TestCase
 
 from . import forms
 from . import views
+from donation.models import Donation
 from invitations.models import ManagerInvitation
 from page.models import Page
 from campaign.models import Campaign
@@ -50,6 +51,12 @@ class UserProfileTest(TestCase):
             manager_invite=True
         )
 
+        self.donation = Donation.objects.create(
+            amount=2200,
+            page=self.page,
+            user=self.user
+        )
+
     def test_user_exists(self):
         users = User.objects.all()
         self.assertIn(self.user, users)
@@ -65,12 +72,13 @@ class UserProfileTest(TestCase):
         self.assertContains(response, self.page2.name, status_code=200)
         self.assertNotContains(response, self.page3.name, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
+        self.assertContains(response, "$%s to %s @" % (int(self.donation.amount / 100), self.page.name), status_code=200)
 
     def test_userprofileform(self):
         form = forms.UserProfileForm({
-            'user': self.user,
-            'first_name': 'Blanket',
-            'last_name': 'Towel',
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'birthday': '1990-09-23',
             'state': 'KS'
         })
         self.assertTrue(form.is_valid())

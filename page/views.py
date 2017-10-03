@@ -1,6 +1,8 @@
+from collections import OrderedDict
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404, render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -9,18 +11,22 @@ from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 from time import strftime
 
 import json
+import stripe
 
 from . import forms
 from . import models
 from campaign.models import Campaign
 from comments.forms import CommentForm
 from comments.models import Comment
+from donation.models import Donation
 from invitations.models import ManagerInvitation
 from userprofile.models import UserProfile
-from pagefund import config
+from pagefund import config, settings
 from pagefund.email import email
 from pagefund.image import image_upload
 
+
+stripe.api_key = config.settings['stripe_api_sk']
 
 def page(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
@@ -33,7 +39,23 @@ def page(request, page_slug):
         active_campaigns = Campaign.objects.filter(page=page, is_active=True, deleted=False)
         inactive_campaigns = Campaign.objects.filter(page=page, is_active=False, deleted=False)
         comments = Comment.objects.filter(page=page, deleted=False).order_by('-date')
+        donations = Donation.objects.filter(page=page).order_by('-date')
         form = CommentForm
+        donate_form = forms.PageDonateForm()
+
+        donors = Donation.objects.values_list('user', flat=True).distinct()
+        top_donors = {}
+        for d in donors:
+            user = get_object_or_404(User, pk=d)
+            total_amount = Donation.objects.filter(user=user, anonymous=False).aggregate(Sum('amount')).get('amount__sum')
+            top_donors[d] = {
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'amount': total_amount
+            }
+        top_donors = OrderedDict(sorted(top_donors.items(), key=lambda t: t[1]['amount'], reverse=True))
+        top_donors = list(top_donors.items())[:10]
+
         try:
             user_subscription_check = page.subscribers.get(user_id=request.user.pk)
         except UserProfile.DoesNotExist:
@@ -86,24 +108,102 @@ def page(request, page_slug):
             'inactive_campaigns': inactive_campaigns,
             'managers': managers,
             'comments': comments,
+            'donations': donations,
             'form': form,
-            'subscribe_attr': subscribe_attr
+            'donate_form': donate_form,
+            'subscribe_attr': subscribe_attr,
+            'api_pk': config.settings['stripe_api_pk'],
+            'top_donors': top_donors
         })
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
 
 @login_required(login_url='signup')
 def page_create(request):
     page_form = forms.PageForm()
+    bank_form = forms.PageBankForm()
     if request.method == 'POST':
         page_form = forms.PageForm(request.POST)
-        if page_form.is_valid():
+        bank_form = forms.PageBankForm(request.POST)
+        if page_form.is_valid() and bank_form.is_valid():
+#            bank = bank_form.save()
             page = page_form.save()
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
+
+            if not settings.TESTING:
+                if page.type == 'personal':
+                    stripe_type = 'individual'
+                else:
+                    stripe_type = 'company'
+
+                legal_entity = {
+                    "business_name": page.name,
+                    "first_name": request.user.first_name,
+                    "last_name": request.user.last_name,
+                    "type": stripe_type,
+                    "dob": {
+                        "day": request.user.userprofile.birthday.day,
+                        "month": request.user.userprofile.birthday.month,
+                        "year": request.user.userprofile.birthday.year
+                    },
+                    "address": {
+                        "city": page.city,
+                        "line1": page.address_line1,
+                        "line2": page.address_line2,
+                        "postal_code": page.zipcode,
+                        "state": page.state
+                    },
+                    "business_tax_id": page.ein,
+#                    "personal_id_number": form.cleaned_data['ssn'],
+#                    "ssn_last_4": form.cleaned_data['ssn'][-4:]
+                    "ssn_last_4": page_form.cleaned_data['ssn']
+                }
+
+                if page_form.cleaned_data['tos_acceptance'] == True:
+                    user_ip = get_client_ip(request)
+#                    try:
+                    tos_acceptance = {
+                        "date": timezone.now(),
+                        "ip": user_ip
+                    }
+
+                    acct = stripe.Account.create(
+                        business_name=page.name,
+#                        business_url=,
+                        country="US",
+                        email=request.user.email,
+                        legal_entity=legal_entity,
+                        type="custom",
+                        tos_acceptance=tos_acceptance
+                    )
+#            except:
+#                print("write exception here in future")
+
+                external_account = {
+                    "object": "bank_account",
+                    "country": "US",
+                    "account_number": bank_form.cleaned_data['account_number'],
+                    "account_holder_name": "%s %s" % (request.user.first_name, request.user.last_name),
+                    "account_holder_type": stripe_type,
+                    "routing_number": bank_form.cleaned_data['routing_number']
+                }
+                ext_acct = acct.external_accounts.create(external_account=external_account)
+                page.stripe_account_id = acct.id
+                page.stripe_bank_account_id = ext_acct.id
+            page.save()
+
             subject = "Page created!"
             body = "You just created a Page for: %s" % page.name
             email(request.user.email, subject, body)
             return HttpResponseRedirect(page.get_absolute_url())
-    return render(request, 'page/page_create.html', {'page_form': page_form})
+    return render(request, 'page/page_create.html', {'page_form': page_form, 'bank_form': bank_form})
 
 @login_required
 def page_edit(request, page_slug):
@@ -149,6 +249,11 @@ def page_delete(request, page_slug):
                 c.name = c.name + "_deleted_" + timezone.now().strftime("%Y%m%d")
                 c.campaign_slug = c.campaign_slug + "deleted" + timezone.now().strftime("%Y%m%d")
                 c.save()
+
+        if not settings.TESTING:
+            account = stripe.Account.retrieve(page.stripe_account_id)
+            account.delete()
+
         return HttpResponseRedirect(reverse('home'))
     else:
         raise Http404
@@ -225,8 +330,8 @@ def page_invite(request, page_slug):
                     # create the email
                     subject = "Page invitation!"
                     body = "%s %s has invited you to become an admin of the '%s' Page. <a href='%s/invite/manager/accept/%s/%s/'>Click here to accept.</a> <a href='%s/invite/manager/decline/%s/%s/'>Click here to decline.</a>" % (
-                        request.user.userprofile.first_name,
-                        request.user.userprofile.last_name,
+                        request.user.first_name,
+                        request.user.last_name,
                         page.name,
                         config.settings['site'],
                         invitation.pk,
@@ -300,6 +405,40 @@ def page_image_upload(request, page_slug):
         raise Http404
     return render(request, 'page/page_image_upload.html', {'page': page, 'form': form })
 
+def page_donate(request, page_pk):
+    page = get_object_or_404(models.Page, pk=page_pk)
+    if request.method == "POST":
+        form = forms.PageDonateForm(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data['amount'] * 100
+            stripe_fee = int(amount * 0.029) + 30
+            pagefund_fee = int(amount * 0.05)
+            final_amount = amount - stripe_fee - pagefund_fee
+            charge = stripe.Charge.create(
+                amount=amount,
+                currency="usd",
+                source=request.POST.get('stripeToken'),
+                description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
+                receipt_email=request.user.email,
+                destination={
+                    "amount": final_amount,
+                    "account": page.stripe_account_id,
+                }
+            )
+            Donation.objects.create(
+                amount=amount,
+                anonymous=form.cleaned_data['anonymous'],
+                comment=form.cleaned_data['comment'],
+                page=page,
+                stripe_charge_id=charge.id,
+                user=request.user
+            )
+            print("donation = %s" % float(amount / 100))
+            print("stripe takes = %s" % float(stripe_fee / 100))
+            print("we keep = %s" % float(pagefund_fee / 100))
+            print("charity gets = %s" % float(final_amount / 100))
+            return HttpResponseRedirect(page.get_absolute_url())
+
 @login_required
 def page_image_delete(request, page_slug, image_pk):
     page = get_object_or_404(models.Page, page_slug=page_slug)
@@ -342,5 +481,4 @@ def page_profile_update(request, page_slug, image_pk):
         raise Http404
 
 
-#campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
 

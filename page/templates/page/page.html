@@ -2,6 +2,7 @@
 {% load static from staticfiles %}
 {% load guardian_tags %}
 {% load comment_extras %}
+{% load donation_extras %}
 
 {% block title %} {{ page.name }} | {{ block.super }}{% endblock %}
 
@@ -10,7 +11,7 @@
     <script>
         $(document).ready(function() {
 
-            $("#delete").click(function () {
+            $(".delete-page").click(function () {
                 return confirm("Are you sure you want to delete this Page?");
             });
             
@@ -104,6 +105,7 @@
 
         });
     </script>
+
 {% endblock %}
 
 {% block body_content %}
@@ -115,6 +117,9 @@
     <p>Location: {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{{ page.state }}{% endif %}</p>
     <p>Description: {{ page.description }}</p>
     <p>Category: {{ page.get_category_display }}</p>
+    <p>Contact email: {{ page.contact_email }}</p>
+    <p>Contact phone: {{ page.contact_phone }}</p>
+    <p>Website: {{ page.website }}</p>
     <p>${{ page.donation_money }} raised by {{ page.donation_count }} donors</p>
 
     {% if request.user.is_authenticated %}
@@ -153,12 +158,12 @@
         <ul id="comment_list">
             {% for c in comments %}
                 <li id="comment-{{ c.pk }}" class="comment">
-                    {{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="show-reply" id="{{ c.pk }}" href="">Reply</a>{% if c.user == request.user %} - <a id="delete-comment-{{ c.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</a>
+                    {{ c.content }} - {{ c.user.first_name }} {{ c.user.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="show-reply" id="{{ c.pk }}" href="">Reply</a>{% if c.user == request.user %} - <a id="delete-comment-{{ c.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</a>
                     {% comment_replies c.pk as replies %}
                     {% if replies %}
                         <ul id="comment-{{ c.pk }}-replies" class="reply-list">
                             {% for r in replies %}
-                                <li id="reply-{{ r.pk }}" class="reply">{{ r.content }} - {{ r.user.userprofile.first_name }} {{ r.user.userprofile.last_name }} @ {{ r.date|date:"m/d/y g:i A" }} {% if r.user == request.user %} - <a id="delete-reply-{{ r.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</li>
+                                <li id="reply-{{ r.pk }}" class="reply">{{ r.content }} - {{ r.user.first_name }} {{ r.user.last_name }} @ {{ r.date|date:"m/d/y g:i A" }} {% if r.user == request.user %} - <a id="delete-reply-{{ r.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</li>
                             {% endfor %}
                         </ul>
                     {% endif %}
@@ -172,7 +177,7 @@
     {% if request.user.userprofile in page.admins.all %}
         <h4>Admin</h4>
         <p><a href="{% url 'page_edit' page_slug=page.page_slug %}">Edit Page</a></p>
-        <p><a id="delete" href="{% url 'page_delete' page_slug=page.page_slug %}">Delete Page</a></p>
+        <p><a class="delete-page" href="{% url 'page_delete' page_slug=page.page_slug %}">Delete Page</a></p>
         <p><a href="{% url 'page_invite' page_slug=page.page_slug  %}">Invite others to manage Page</a></p>
         <p><a href="{% url 'page_image_upload' page_slug=page.page_slug %}">Upload image</a></p>
         {% if managers %}
@@ -192,7 +197,7 @@
                 {% for manager in managers %}
                     {% get_obj_perms manager.user for page as "page_perms" %}
                     <tr>
-                        <td>{{ manager.first_name }} {{ manager.last_name }}</td>
+                        <td>{{ manager.user.first_name }} {{ manager.user.last_name }}</td>
                         <td>{{ manager.user.email }}</td>
                         <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_edit" {% if 'manager_edit' in page_perms %}checked{% endif %} /></td>
                         <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_delete" {% if 'manager_delete' in page_perms %}checked{% endif %} /></td>
@@ -217,7 +222,7 @@
             <p><a href="{% url 'page_edit' page_slug=page.page_slug %}">Edit Page</a></p>
         {% endif %}
         {% if "manager_delete" in page_perms %}
-            <p><a id="delete" href="{% url 'page_delete' page_slug=page.page_slug %}">Delete Page</a></p>
+            <p><a class="delete-page" href="{% url 'page_delete' page_slug=page.page_slug %}">Delete Page</a></p>
         {% endif %}
         {% if "manager_invite" in page_perms %}
             <p><a href="{% url 'page_invite' page_slug=page.page_slug  %}">Invite others to manage Page</a></p>
@@ -238,7 +243,100 @@
         {% endfor %}
     </ul>
 
+    <h3>Donations</h3>
+    {% if donations %}
 
+        <h4>Top Donors</h4>
+        <ul>
+            {% for a, b in top_donors %}
+                <li>{{ b.amount|cents_to_dollars }} - {{ b.first_name }} {{ b.last_name }}</li>
+            {% endfor %}
+        </ul>
+
+        <h4>All Donations</h4>
+        <ul>
+            {% for d in donations %}
+                <li>{{ d.amount|cents_to_dollars }} {% if not d.anonymous %}- {{ d.user.first_name }} {{ d.user.last_name }} {% endif %}@ {{ d.date }}
+                    {% if d.comment %}
+                        <ul>
+                            <li>{{ d.comment }}</li>
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No donations!</p>
+    {% endif %}
+
+    <h3>Donate</h3>
+    <form action="{% url 'page_donate' page_pk=page.pk %}" method="post" id="payment-form">
+        {% csrf_token %}
+        <div class="form-row">
+            {{ donate_form.as_p  }}
+            <label for="card-element">Credit or debit card</label>
+            <div id="card-element"></div>
+            <div id="card-errors" role="alert"></div>
+        </div>
+        <button>Donate</button>
+    </form>
+
+    <script>
+        function stripeTokenHandler(token) {
+            var form = document.getElementById('payment-form');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'stripeToken');
+            hiddenInput.setAttribute('value', token.id);
+            form.appendChild(hiddenInput);
+
+            form.submit();
+        }
+
+        var stripe = Stripe('{{ api_pk }}');
+        var elements = stripe.elements();
+
+        var style = {
+            base: {
+                fontSize: '16px',
+                lineHeight: '24px'
+            }
+        };
+
+        var card = elements.create('card', {style: style});
+        card.mount('#card-element');
+
+        card.addEventListener('change', function(event) {
+            var displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+
+        var form = document.getElementById('payment-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            if (document.getElementById("id_anonymous").checked) {
+                var extraDetails = {};
+            } else {
+                var extraDetails = {
+                    name: "{{ request.user.first_name }} {{ request.user.last_name }}",
+                };
+            };
+
+            stripe.createToken(card, extraDetails).then(function(result) {
+                if (result.error) {
+                    var errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = result.error.message;
+                } else {
+                    stripeTokenHandler(result.token);
+                }
+            });
+        });
+    </script>
 
 {% endblock %}
 

@@ -14,8 +14,7 @@ import smtplib
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=100, blank=True)
-    last_name = models.CharField(max_length=100, blank=True)
+    birthday = models.DateField(blank=True, null=True)
     STATE_CHOICES = (
         ('AL', 'Alabama'),
         ('AK', 'Alaska'),
@@ -74,11 +73,8 @@ class UserProfile(models.Model):
         default='',
     )
 
-    class Meta:
-        ordering = ('first_name', 'last_name',)
-
     def __str__(self):
-        return ("%s %s" % (self.first_name, self.last_name))
+        return ("%s %s" % (self.user.first_name, self.user.last_name))
 
     def get_absolute_url(self):
         return reverse('userprofile:userprofile')

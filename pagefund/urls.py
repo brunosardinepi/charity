@@ -29,6 +29,8 @@ urlpatterns = [
     url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),
     url(r'^(?P<page_slug>[\w-]+)/delete/$', PageViews.page_delete, name='page_delete'),
     url(r'^(?P<page_slug>[\w-]+)/upload/$', PageViews.page_image_upload, name='page_image_upload'),
+    url(r'^(?P<page_pk>\d+)/donate/$', PageViews.page_donate, name='page_donate'),
+
     url(r'^(?P<page_slug>[\w-]+)/image/(?P<image_pk>\d+)/delete/$', PageViews.page_image_delete, name='page_image_delete'),
     url(r'^(?P<page_slug>[\w-]+)/image/(?P<image_pk>\d+)/profile_update/$', PageViews.page_profile_update, name='page_profile_update'),
     url(r'^(?P<page_slug>[\w-]+)/managers/invite/$', PageViews.page_invite, name='page_invite'),
@@ -42,6 +44,8 @@ urlpatterns = [
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/managers/invite/$', CampaignViews.campaign_invite, name='campaign_invite'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/managers/(?P<manager_pk>\d+)/remove/$', CampaignViews.remove_manager, name='remove_manager'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/$', CampaignViews.campaign, name='campaign'),
+    url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/image/(?P<image_pk>\d+)/delete/$', CampaignViews.campaign_image_delete, name='campaign_image_delete'),
+    url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/image/(?P<image_pk>\d+)/profile_update/$', CampaignViews.campaign_profile_update, name='campaign_profile_update'),
 
     url(r'^$', views.home, name='home'),
 ]

@@ -21,7 +21,9 @@ class ManagerInvitationTest(TestCase):
         self.user2 = User.objects.create_user(
             username='harrypotter',
             email='harry@potter.com',
-            password='imawizard'
+            password='imawizard',
+            first_name='Harry',
+            last_name='Potter'
         )
 
         self.user3 = User.objects.create_user(
@@ -81,28 +83,27 @@ class ManagerInvitationTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
-    def test_accept_invitation_logged_out(self):
-        response = self.client.get('/invite/accept/%s/%s/' % (self.invitation.pk, self.invitation.key))
-        self.assertRedirects(response, '/accounts/signup/?next=/invite/accept/%s/%s/' % (self.invitation.pk, self.invitation.key), 302, 200)
+    def test_accept_manager_invitation_logged_out(self):
+        response = self.client.get('/invite/manager/accept/%s/%s/' % (self.invitation.pk, self.invitation.key))
+        self.assertRedirects(response, '/accounts/signup/?next=/invite/manager/accept/%s/%s/' % (self.invitation.pk, self.invitation.key), 302, 200)
 
-    def test_accept_invitation_logged_in_correct_user(self):
-        request = self.factory.get('home')
-        request.user = self.user2
-        response = views.accept_invitation(request, self.invitation.pk, self.invitation.key)
-        response.client = self.client
+    def test_accept_manager_invitation_logged_in_correct_user(self):
+        self.client.login(username='harrypotter', password='imawizard')
+        response = self.client.get('/invite/manager/accept/%s/%s/' % (self.invitation.pk, self.invitation.key))
 
         self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
         self.assertTrue(self.user2.has_perm('manager_edit', self.page))
         self.assertTrue(self.user2.has_perm('manager_delete', self.page))
         self.assertTrue(self.user2.has_perm('manager_invite', self.page))
         self.assertTrue(self.user2.has_perm('manager_upload', self.page))
+        self.assertIn(self.user2.userprofile, self.page.subscribers.all())
 
         invitations = models.ManagerInvitation.objects.filter(expired=False)
         self.assertNotIn(self.invitation, invitations)
 
         self.client.login(username='testuser', password='testpassword')
         response = self.client.get('/testpage/')
-        self.assertContains(response, "%s %s" % (self.user2.userprofile.first_name, self.user2.userprofile.last_name), status_code=200)
+        self.assertContains(response, "%s %s" % (self.user2.first_name, self.user2.last_name), status_code=200)
         self.assertContains(response, self.user2.email, status_code=200)
 
     # need to write tests for these when the view has been built:
