@@ -71,7 +71,7 @@ class PageTest(TestCase):
         assign_perm('manager_edit', self.user3, self.page)
         assign_perm('manager_delete', self.user3, self.page)
         assign_perm('manager_invite', self.user3, self.page)
-        assign_perm('manager_upload', self.user3, self.page)
+        assign_perm('manager_image_edit', self.user3, self.page)
 
         self.page2 = models.Page.objects.create(
             name='Office',
@@ -389,7 +389,7 @@ class PageTest(TestCase):
             'manager_edit': "True",
             'manager_delete': "True",
             'manager_invite': "True",
-            'manager_upload': "True"
+            'manager_image_edit': "True"
         }
 
         self.client.login(username='testuser', password='testpassword')
@@ -466,7 +466,7 @@ class PageTest(TestCase):
         self.assertFalse(self.user3.has_perm('manager_edit', self.page))
         self.assertFalse(self.user3.has_perm('manager_delete', self.page))
         self.assertFalse(self.user3.has_perm('manager_invite', self.page))
-        self.assertFalse(self.user3.has_perm('manager_upload', self.page))
+        self.assertFalse(self.user3.has_perm('manager_image_edit', self.page))
         self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
 
     def test_page_permissions_add(self):
@@ -474,7 +474,7 @@ class PageTest(TestCase):
         permissions.append(str(self.user4.pk) + "_manager_edit")
         permissions.append(str(self.user4.pk) + "_manager_delete")
         permissions.append(str(self.user4.pk) + "_manager_invite")
-        permissions.append(str(self.user4.pk) + "_manager_upload")
+        permissions.append(str(self.user4.pk) + "_manager_image_edit")
         data = {'permissions[]': permissions}
 
         self.client.login(username='testuser', password='testpassword')
@@ -484,7 +484,7 @@ class PageTest(TestCase):
         self.assertTrue(self.user4.has_perm('manager_edit', self.page))
         self.assertTrue(self.user4.has_perm('manager_delete', self.page))
         self.assertTrue(self.user4.has_perm('manager_invite', self.page))
-        self.assertTrue(self.user4.has_perm('manager_upload', self.page))
+        self.assertTrue(self.user4.has_perm('manager_image_edit', self.page))
 
     def test_page_permissions_remove(self):
         permissions = []
@@ -498,12 +498,12 @@ class PageTest(TestCase):
         self.assertFalse(self.user3.has_perm('manager_edit', self.page))
         self.assertFalse(self.user3.has_perm('manager_delete', self.page))
         self.assertTrue(self.user3.has_perm('manager_invite', self.page))
-        self.assertFalse(self.user3.has_perm('manager_upload', self.page))
+        self.assertFalse(self.user3.has_perm('manager_image_edit', self.page))
 
     def test_page_permissions_multiple(self):
         permissions = []
         permissions.append(str(self.user3.pk) + "_manager_invite")
-        permissions.append(str(self.user3.pk) + "_manager_upload")
+        permissions.append(str(self.user3.pk) + "_manager_image_edit")
         permissions.append(str(self.user4.pk) + "_manager_edit")
         permissions.append(str(self.user4.pk) + "_manager_delete")
         permissions.append(str(self.user4.pk) + "_manager_invite")
@@ -516,11 +516,11 @@ class PageTest(TestCase):
         self.assertFalse(self.user3.has_perm('manager_edit', self.page))
         self.assertFalse(self.user3.has_perm('manager_delete', self.page))
         self.assertTrue(self.user3.has_perm('manager_invite', self.page))
-        self.assertTrue(self.user3.has_perm('manager_upload', self.page))
+        self.assertTrue(self.user3.has_perm('manager_image_edit', self.page))
         self.assertTrue(self.user4.has_perm('manager_edit', self.page))
         self.assertTrue(self.user4.has_perm('manager_delete', self.page))
         self.assertTrue(self.user4.has_perm('manager_invite', self.page))
-        self.assertFalse(self.user4.has_perm('manager_upload', self.page))
+        self.assertFalse(self.user4.has_perm('manager_image_edit', self.page))
 
     def test_delete_page_view(self):
         response = self.client.get('/%s/' % self.page2.page_slug)

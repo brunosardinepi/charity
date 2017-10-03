@@ -25,7 +25,7 @@ class ManagerInvitation(models.Model):
     manager_edit = models.BooleanField(default=False)
     manager_delete = models.BooleanField(default=False)
     manager_invite = models.BooleanField(default=False)
-    manager_upload = models.BooleanField(default=False)
+    manager_image_edit = models.BooleanField(default=False)
 
 class GeneralInvitation(models.Model):
     expired = models.BooleanField(default=False)

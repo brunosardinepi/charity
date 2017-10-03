@@ -98,7 +98,7 @@ class Campaign(models.Model):
             ('manager_edit', 'Manager -- edit Campaign'),
             ('manager_delete', 'Manager -- delete Campaign'),
             ('manager_invite', 'Manager -- invite users to manage Campaign'),
-            ('manager_upload', 'Manager -- upload media to Campaign'),
+            ('manager_image_edit', 'Manager -- upload media to Campaign'),
         )
 
     def __str__(self):

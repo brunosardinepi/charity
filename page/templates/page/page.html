@@ -236,8 +236,10 @@
     <ul>
         {% for image in pageimages %}
             <li><img src="{{ image.image.url }}" width="200" />{{ image.caption }} <br>
+            {% if "manager_image_edit" in page_perms or request.user.userprofile in page.admins.all %}
             <p><a id="delete_image" href="{% url 'page_image_delete' page_slug=page.page_slug image_pk=image.pk %}">Delete Image</a></p>
             <p><a id="update_profile" href="{% url 'page_profile_update' page_slug=page.page_slug image_pk=image.pk %}">Update Profile Image</a></p></li></li>
+            {% endif %}
         {% endfor %}
     </ul>
 

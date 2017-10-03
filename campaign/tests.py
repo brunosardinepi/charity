@@ -67,7 +67,7 @@ class CampaignTest(TestCase):
         assign_perm('manager_edit', self.user2, self.campaign)
         assign_perm('manager_delete', self.user2, self.campaign)
         assign_perm('manager_invite', self.user2, self.campaign)
-        assign_perm('manager_upload', self.user2, self.campaign)
+        assign_perm('manager_image_edit', self.user2, self.campaign)
         self.campaign.campaign_managers.add(self.user4.userprofile)
 
         self.campaign2 = models.Campaign.objects.create(
@@ -350,7 +350,7 @@ class CampaignTest(TestCase):
             'manager_edit': "True",
             'manager_delete': "True",
             'manager_invite': "True",
-            'manager_upload': "True"
+            'manager_image_edit': "True"
         }
 
         self.client.login(username='testuser', password='testpassword')
@@ -464,7 +464,7 @@ class CampaignTest(TestCase):
         self.assertFalse(self.user2.has_perm('manager_edit', self.campaign))
         self.assertFalse(self.user2.has_perm('manager_delete', self.campaign))
         self.assertFalse(self.user2.has_perm('manager_invite', self.campaign))
-        self.assertFalse(self.user2.has_perm('manager_upload', self.campaign))
+        self.assertFalse(self.user2.has_perm('manager_image_edit', self.campaign))
         self.assertRedirects(response, self.campaign.get_absolute_url(), 302, 200)
 
     def test_campaign_permissions_add(self):
@@ -472,7 +472,7 @@ class CampaignTest(TestCase):
         permissions.append(str(self.user4.pk) + "_manager_edit")
         permissions.append(str(self.user4.pk) + "_manager_delete")
         permissions.append(str(self.user4.pk) + "_manager_invite")
-        permissions.append(str(self.user4.pk) + "_manager_upload")
+        permissions.append(str(self.user4.pk) + "_manager_image_edit")
         data = {'permissions[]': permissions}
 
         self.client.login(username='testuser', password='testpassword')
@@ -482,7 +482,7 @@ class CampaignTest(TestCase):
         self.assertTrue(self.user4.has_perm('manager_edit', self.campaign))
         self.assertTrue(self.user4.has_perm('manager_delete', self.campaign))
         self.assertTrue(self.user4.has_perm('manager_invite', self.campaign))
-        self.assertTrue(self.user4.has_perm('manager_upload', self.campaign))
+        self.assertTrue(self.user4.has_perm('manager_image_edit', self.campaign))
 
     def test_campaign_permissions_remove(self):
         permissions = []
@@ -496,12 +496,12 @@ class CampaignTest(TestCase):
         self.assertFalse(self.user2.has_perm('manager_edit', self.campaign))
         self.assertFalse(self.user2.has_perm('manager_delete', self.campaign))
         self.assertTrue(self.user2.has_perm('manager_invite', self.campaign))
-        self.assertFalse(self.user2.has_perm('manager_upload', self.campaign))
+        self.assertFalse(self.user2.has_perm('manager_image_edit', self.campaign))
 
     def test_campaign_permissions_multiple(self):
         permissions = []
         permissions.append(str(self.user2.pk) + "_manager_invite")
-        permissions.append(str(self.user2.pk) + "_manager_upload")
+        permissions.append(str(self.user2.pk) + "_manager_image_edit")
         permissions.append(str(self.user4.pk) + "_manager_edit")
         permissions.append(str(self.user4.pk) + "_manager_delete")
         permissions.append(str(self.user4.pk) + "_manager_invite")
@@ -514,11 +514,11 @@ class CampaignTest(TestCase):
         self.assertFalse(self.user2.has_perm('manager_edit', self.campaign))
         self.assertFalse(self.user2.has_perm('manager_delete', self.campaign))
         self.assertTrue(self.user2.has_perm('manager_invite', self.campaign))
-        self.assertTrue(self.user2.has_perm('manager_upload', self.campaign))
+        self.assertTrue(self.user2.has_perm('manager_image_edit', self.campaign))
         self.assertTrue(self.user4.has_perm('manager_edit', self.campaign))
         self.assertTrue(self.user4.has_perm('manager_delete', self.campaign))
         self.assertTrue(self.user4.has_perm('manager_invite', self.campaign))
-        self.assertFalse(self.user4.has_perm('manager_upload', self.campaign))
+        self.assertFalse(self.user4.has_perm('manager_image_edit', self.campaign))
 
     def test_delete_campaign_view(self):
         response = self.client.get('/%s/%s/%s/' % (self.page.page_slug, self.campaign2.pk, self.campaign2.campaign_slug))

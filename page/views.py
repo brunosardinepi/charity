@@ -324,8 +324,8 @@ def page_invite(request, page_slug):
                         manager_edit=form.cleaned_data['manager_edit'],
                         manager_delete=form.cleaned_data['manager_delete'],
                         manager_invite=form.cleaned_data['manager_invite'],
-                        manager_upload=form.cleaned_data['manager_upload'],
-                    )
+                        manager_image_edit=form.cleaned_data['manager_image_edit'],
+                   )
 
                     # create the email
                     subject = "Page invitation!"
@@ -361,7 +361,7 @@ def remove_manager(request, page_slug, manager_pk):
         remove_perm('manager_edit', manager, page)
         remove_perm('manager_delete', manager, page)
         remove_perm('manager_invite', manager, page)
-        remove_perm('manager_upload', manager, page)
+        remove_perm('manager_image_edit', manager, page)
         # redirect to page
         return HttpResponseRedirect(page.get_absolute_url())
     else:
@@ -371,7 +371,7 @@ def remove_manager(request, page_slug, manager_pk):
 def page_image_upload(request, page_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
     admin = request.user.userprofile in page.admins.all()
-    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_upload', page):
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_image_edit', page):
         manager = True
     else:
         manager = False
@@ -474,7 +474,7 @@ def page_profile_update(request, page_slug, image_pk):
             image.page_profile = True
             image.save()
         else:
-            image.campaign_profile = True
+            image.page_profile = True
             image.save()
         return HttpResponseRedirect(page.get_absolute_url())
     else:
