@@ -1,3 +1,5 @@
+#!/home/gnowak/pagefund/pagefundenv/bin/python3
+
 import collections
 import config
 import psycopg2
@@ -43,7 +45,7 @@ def trending(cur, page_ids):
     comments, subscriptions, donation_count, donation_amount = [], [], [], []
     pages = {}
     for p in page_ids:
-        query = "select count(*) from comments_comment where page_id = '%s';" % p
+        query = "select count(*) from comments_comment where page_id = '%s' and deleted = 'f';" % p
         cur.execute(query)
         c = cur.fetchall()
         c = c[0][0]

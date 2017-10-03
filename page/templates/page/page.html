@@ -113,6 +113,7 @@
     {% for profile in pageprofile  %}
         <img src="{{ profile.image.url }}" width="300" />
     {% endfor %}
+    <p>Trending score: {{ page.trending_score }}</p>
     <p>Type: {{ page.get_type_display }}</p>
     <p>Location: {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{{ page.state }}{% endif %}</p>
     <p>Description: {{ page.description }}</p>
