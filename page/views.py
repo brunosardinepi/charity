@@ -444,7 +444,7 @@ def page_image_delete(request, page_slug, image_pk):
     page = get_object_or_404(models.Page, page_slug=page_slug)
     admin = request.user.userprofile in page.admins.all()
     image = get_object_or_404(models.PageImages, pk=image_pk)
-    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', page):
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_image_edit', page):
         manager = True
     else:
         manager = False
@@ -459,7 +459,7 @@ def page_profile_update(request, page_slug, image_pk):
     page = get_object_or_404(models.Page, page_slug=page_slug)
     admin = request.user.userprofile in page.admins.all()
     image = get_object_or_404(models.PageImages, pk=image_pk)
-    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', page):
+    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_image_edit', page):
         manager = True
     else:
         manager = False
