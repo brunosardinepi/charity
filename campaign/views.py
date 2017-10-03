@@ -202,7 +202,7 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
                         manager_edit=form.cleaned_data['manager_edit'],
                         manager_delete=form.cleaned_data['manager_delete'],
                         manager_invite=form.cleaned_data['manager_invite'],
-                        manager_upload=form.cleaned_data['manager_upload'],
+                        manager_image_edit=form.cleaned_data['manager_image_edit'],
                     )
 
                     # create the email
@@ -240,7 +240,7 @@ def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
         remove_perm('manager_edit', manager, campaign)
         remove_perm('manager_delete', manager, campaign)
         remove_perm('manager_invite', manager, campaign)
-        remove_perm('manager_upload', manager, campaign)
+        remove_perm('manager_image_edit', manager, campaign)
         # redirect to campaign
         return HttpResponseRedirect(campaign.get_absolute_url())
     else:
@@ -251,7 +251,7 @@ def campaign_image_upload(request, page_slug, campaign_pk, campaign_slug):
     page = get_object_or_404(models.Page, page_slug=page_slug)
     campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
     admin = request.user.userprofile in page.admins.all()
-    if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_upload', campaign):
+    if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', campaign):
         manager = True
     else:
         manager = False
@@ -292,9 +292,9 @@ def campaign_image_upload(request, page_slug, campaign_pk, campaign_slug):
 def campaign_image_delete(request, page_slug, campaign_slug, campaign_pk, image_pk):
     page = get_object_or_404(models.Page, page_slug=page_slug)
     campaign = get_object_or_404(models.Campaign, campaign_slug=campaign_slug)
-    admin = request.user.userprofile in page.admins.all()
+    admin = request.user.userprofile in campaing.campaign_admins.all()
     image = get_object_or_404(models.CampaignImages, pk=image_pk)
-    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', campaign):
+    if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', campaign):
         manager = True
     else:
         manager = False
@@ -308,9 +308,9 @@ def campaign_image_delete(request, page_slug, campaign_slug, campaign_pk, image_
 def campaign_profile_update(request, page_slug, campaign_slug, campaign_pk, image_pk):
     page = get_object_or_404(models.Page, page_slug=page_slug)
     campaign = get_object_or_404(models.Campaign, campaign_slug=campaign_slug)
-    admin = request.user.userprofile in page.admins.all()
+    admin = request.user.userprofile in campaign.campaign_admins.all()
     image = get_object_or_404(models.CampaignImages, pk=image_pk)
-    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', campaign):
+    if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', campaign):
         manager = True
     else:
         manager = False
