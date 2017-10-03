@@ -197,7 +197,7 @@
                         <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_edit" {% if 'manager_edit' in page_perms %}checked{% endif %} /></td>
                         <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_delete" {% if 'manager_delete' in page_perms %}checked{% endif %} /></td>
                         <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_invite" {% if 'manager_invite' in page_perms %}checked{% endif %} /></td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_upload" {% if 'manager_upload' in page_perms %}checked{% endif %} /></td>
+                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_image_edit" {% if 'manager_image_edit' in page_perms %}checked{% endif %} /></td>
                         <td><a href="{% url 'remove_manager' page_slug=page.page_slug manager_pk=manager.pk %}">Remove<a/></td>
                 {% endfor %}
                 </table>
@@ -222,7 +222,7 @@
         {% if "manager_invite" in page_perms %}
             <p><a href="{% url 'page_invite' page_slug=page.page_slug  %}">Invite others to manage Page</a></p>
         {% endif %}
-        {% if "manager_upload" in page_perms %}
+        {% if "manager_image_edit" in page_perms %}
             <p><a href="{% url 'page_image_upload' page_slug=page.page_slug %}">Upload image</a></p>
         {% endif %}
     {% endif %}
@@ -231,8 +231,10 @@
     <ul>
         {% for image in pageimages %}
             <li><img src="{{ image.image.url }}" width="200" />{{ image.caption }} <br>
+            {% if "manager_image_edit" in page_perms %}
             <p><a id="delete_image" href="{% url 'page_image_delete' page_slug=page.page_slug image_pk=image.pk %}">Delete Image</a></p>
             <p><a id="update_profile" href="{% url 'page_profile_update' page_slug=page.page_slug image_pk=image.pk %}">Update Profile Image</a></p></li></li>
+            {% endif %}
         {% endfor %}
     </ul>
 
