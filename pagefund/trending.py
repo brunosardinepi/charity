@@ -7,35 +7,35 @@ import statistics
 def trim(l, p):
     x = list(l)
     p /= 100
-    print("list = %s" % x)
-    print("percentage = %s" % p)
-    print("the mean of the original list is: %s" % statistics.mean(x))
+#    print("list = %s" % x)
+#    print("percentage = %s" % p)
+#    print("the mean of the original list is: %s" % statistics.mean(x))
     # find number of items in x
     c = len(x)
-    print("there are %s items in the list" % c)
+#    print("there are %s items in the list" % c)
     if c > 3:
         r = int(c * p)
         if r > 0:
-            print("we'll remove %s items from the front and back" % r)
+#            print("we'll remove %s items from the front and back" % r)
             # re-order x from big to small
             x.sort()
-            print("sorted list = %s" % x)
+#            print("sorted list = %s" % x)
             # remove 10% of items from the front
             del x[:r]
-            print("removed %s items from the front and got: %s" % (r, x))
+#            print("removed %s items from the front and got: %s" % (r, x))
             # remove 10% of items from the back
             del x[-r:]
-            print("removed %s items from the back and got: %s" % (r, x))
+#            print("removed %s items from the back and got: %s" % (r, x))
     return x
 
 def trimmed_mean(l, p):
     x = trim(l, p)
-    print("the mean of the new list is: %s" % statistics.mean(x))
+#    print("the mean of the new list is: %s" % statistics.mean(x))
     return int(statistics.mean(x))
 
 def trimmed_stdev(l, p):
     x = trim(l, p)
-    print("the stdev of the new list is: %s" % statistics.pstdev(x))
+#    print("the stdev of the new list is: %s" % statistics.pstdev(x))
     return int(statistics.pstdev(x))
 
 def trending(cur, page_ids):
@@ -155,13 +155,16 @@ def trending(cur, page_ids):
         elif v['donation_amount'] < (da_avg - da_stdev):
             v['points'] += (ba * dam)
             print("BELOW AVERAGE... awarded %s point" % (ba * dam))
+
+        query = "update page_page set trending_score = '%s' where id = '%s';" % (v['points'], k)
+        print(query)
+        cur.execute(query)
+
         print("*" * 20)
 
 #        print("pages before sort = %s" % pages)
         pages = collections.OrderedDict(sorted(pages.items(), key=lambda t: t[1]['points'], reverse=True))
 #        print("pages after sort = %s" % pages)
-
-        print("*" * 20)
 
         all_points = []
         for k, v in pages.items():
@@ -191,4 +194,5 @@ if __name__ == "__main__":
     page_ids = [p[0] for p in rows]
     print(page_ids)
     trending(cur, page_ids)
+    conn.commit()
     conn.close()

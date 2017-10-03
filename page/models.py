@@ -29,6 +29,7 @@ class Page(models.Model):
     subscribers = models.ManyToManyField(UserProfile, related_name='subscribers', blank=True)
     stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
     stripe_bank_account_id = models.CharField(max_length=255, blank=True, null=True)
+    trending_score = models.DecimalField(default=0, max_digits=10, decimal_places=1)
     website = models.CharField(max_length=128, blank=True)
     zipcode = models.CharField(max_length=5)
 
