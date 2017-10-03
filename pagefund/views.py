@@ -15,6 +15,7 @@ from page.models import Page
 
 def home(request):
     sponsored = Page.objects.filter(is_sponsored=True, deleted=False)
+    trending = Page.objects.all().order_by('-trending_score')[:10]
     page_donations = Page.objects.filter(deleted=False).aggregate(Sum('donation_money'))
     if page_donations["donation_money__sum"] == None:
         page_donations = 0
@@ -26,10 +27,11 @@ def home(request):
     else:
         campaign_donations = int(campaign_donations["donation_money__sum"])
     donations = page_donations + campaign_donations
+    attr = {'donations': donations, 'sponsored': sponsored, 'trending': trending}
     if request.user.is_authenticated:
         subscriptions = request.user.userprofile.subscribers.filter(deleted=False)
-        return render(request, 'home.html', {'subscriptions': subscriptions, 'donations': donations, 'sponsored': sponsored})
-    return render(request, 'home.html', {'donations': donations, 'sponsored': sponsored})
+        attr['subscriptions'] = subscriptions
+    return render(request, 'home.html', attr)
 
 
 class LoginView(views.LoginView):

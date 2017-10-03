@@ -40,8 +40,17 @@ class HomeTest(TestCase):
             password='imthatguy',
         )
 
-        self.page = Page.objects.create(name="Buffalo", donation_money=600, is_sponsored=True)
-        self.page2 = Page.objects.create(name="Antelope", donation_money=100, is_sponsored=False)
+        self.page = Page.objects.create(name="Buffalo", donation_money=600, is_sponsored=True, trending_score=30.0)
+        self.page2 = Page.objects.create(name="Antelope", donation_money=100, is_sponsored=False, trending_score=29.0)
+        self.page3 = Page.objects.create(name="page3", is_sponsored=False, trending_score=28.0)
+        self.page4 = Page.objects.create(name="page4", is_sponsored=False, trending_score=27.0)
+        self.page5 = Page.objects.create(name="page5", is_sponsored=False, trending_score=26.0)
+        self.page6 = Page.objects.create(name="page6", is_sponsored=False, trending_score=25.0)
+        self.page7 = Page.objects.create(name="page7", is_sponsored=False, trending_score=24.0)
+        self.page8 = Page.objects.create(name="page8", is_sponsored=False, trending_score=23.0)
+        self.page9 = Page.objects.create(name="page9", is_sponsored=False, trending_score=22.0)
+        self.page10 = Page.objects.create(name="page10", is_sponsored=False, trending_score=21.0)
+        self.page11 = Page.objects.create(name="page11", is_sponsored=False, trending_score=5.0)
 
         self.page.subscribers.add(self.user.userprofile)
 
@@ -62,7 +71,7 @@ class HomeTest(TestCase):
         self.assertContains(response, donations, status_code=200)
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, "Forgot password?", status_code=200)
-        self.assertNotContains(response, self.page2.name, status_code=200)
+        self.assertNotContains(response, self.page11.name, status_code=200)
         self.assertNotContains(response, '/invite/', status_code=200)
 
     def test_home_logged_in(self):
@@ -80,7 +89,7 @@ class HomeTest(TestCase):
         self.assertContains(response, self.user.first_name, status_code=200)
         self.assertContains(response, self.user.last_name, status_code=200)
         self.assertContains(response, '/invite/', status_code=200)
-        self.assertNotContains(response, self.page2.name, status_code=200)
+        self.assertNotContains(response, self.page11.name, status_code=200)
         self.assertNotContains(response, "Forgot password?", status_code=200)
 
     def test_login(self):

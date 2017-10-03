@@ -18,12 +18,24 @@ if (window.location.hash == '#_=_' || window.location.hash == '#'){
 {% endblock %}
 
 {% block body_content %}
-    <h2>Sponsored Pages</h2>
-    <ul>
-        {% for page in sponsored %}
-            <li><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a></li>
-        {% endfor %}
-    </ul>
+    {% if sponsored %}
+        <h2>Sponsored Pages</h2>
+        <ul>
+            {% for page in sponsored %}
+                <li><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if trending %}
+        <h2>Trending Pages</h2>
+        <ul>
+            {% for page in trending %}
+                <li><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
     {% if user.is_authenticated %}
         {% if subscriptions %}
             <h2>My Pages</h2>
