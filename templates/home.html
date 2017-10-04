@@ -27,11 +27,20 @@ if (window.location.hash == '#_=_' || window.location.hash == '#'){
         </ul>
     {% endif %}
 
-    {% if trending %}
+    {% if trending_pages %}
         <h2>Trending Pages</h2>
         <ul>
-            {% for page in trending %}
+            {% for page in trending_pages %}
                 <li><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if trending_campaigns %}
+        <h2>Trending Campaigns</h2>
+        <ul>
+            {% for campaign in trending_campaigns %}
+                <li><a href="{% url 'campaign' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}

@@ -25,6 +25,7 @@ class Campaign(models.Model):
     is_active = models.BooleanField(default=True)
     name = models.CharField(max_length=255, db_index=True)
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE, related_name='campaigns')
+    trending_score = models.DecimalField(default=0, max_digits=10, decimal_places=1)
 
     TYPE_CHOICES = (
         ('event', 'Event'),
