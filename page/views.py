@@ -43,11 +43,11 @@ def page(request, page_slug):
         form = CommentForm
         donate_form = forms.PageDonateForm()
 
-        donors = Donation.objects.values_list('user', flat=True).distinct()
+        donors = Donation.objects.filter(page=page).values_list('user', flat=True).distinct()
         top_donors = {}
         for d in donors:
             user = get_object_or_404(User, pk=d)
-            total_amount = Donation.objects.filter(user=user, anonymous=False).aggregate(Sum('amount')).get('amount__sum')
+            total_amount = Donation.objects.filter(user=user, page=page, anonymous=False).aggregate(Sum('amount')).get('amount__sum')
             top_donors[d] = {
                 'first_name': user.first_name,
                 'last_name': user.last_name,
@@ -412,7 +412,7 @@ def page_donate(request, page_pk):
         if form.is_valid():
             amount = form.cleaned_data['amount'] * 100
             stripe_fee = int(amount * 0.029) + 30
-            pagefund_fee = int(amount * 0.05)
+            pagefund_fee = int(amount * config.settings['pagefund_fee'])
             final_amount = amount - stripe_fee - pagefund_fee
             charge = stripe.Charge.create(
                 amount=amount,

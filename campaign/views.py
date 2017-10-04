@@ -1,17 +1,23 @@
+from collections import OrderedDict
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.db.models import Sum
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 
+import stripe
+
 from . import forms
 from . import models
 from comments.forms import CommentForm
 from comments.models import Comment
+from donation.models import Donation
 from invitations.models import ManagerInvitation
+from page.forms import PageDonateForm
 from page.models import Page
 from pagefund import config
 from pagefund.email import email
@@ -25,9 +31,24 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
     else:
         campaignimages = models.CampaignImages.objects.filter(campaign=campaign)
         campaignprofile = models.CampaignImages.objects.filter(campaign=campaign, campaign_profile=True)
+        donations = Donation.objects.filter(campaign=campaign).order_by('-date')
         managers = campaign.campaign_managers.all()
         comments = Comment.objects.filter(campaign=campaign, deleted=False).order_by('-date')
         form = CommentForm
+        donate_form = PageDonateForm()
+
+        donors = Donation.objects.filter(campaign=campaign).values_list('user', flat=True).distinct()
+        top_donors = {}
+        for d in donors:
+            user = get_object_or_404(User, pk=d)
+            total_amount = Donation.objects.filter(user=user, campaign=campaign, anonymous=False).aggregate(Sum('amount')).get('amount__sum')
+            top_donors[d] = {
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'amount': total_amount
+            }
+        top_donors = OrderedDict(sorted(top_donors.items(), key=lambda t: t[1]['amount'], reverse=True))
+        top_donors = list(top_donors.items())[:10]
 
         if request.method == "POST":
             post_data = request.POST.getlist('permissions[]')
@@ -69,9 +90,13 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
             'campaign': campaign,
             'campaignimages': campaignimages,
             'campaignprofile': campaignprofile,
+            'donations': donations,
             'managers': managers,
             'comments': comments,
-            'form': form
+            'form': form,
+            'donate_form': donate_form,
+            'api_pk': config.settings['stripe_api_pk'],
+            'top_donors': top_donors
         })
 
 @login_required
@@ -331,3 +356,37 @@ def campaign_profile_update(request, page_slug, campaign_slug, campaign_pk, imag
     else:
         raise Http404
 
+def campaign_donate(request, campaign_pk):
+    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
+    if request.method == "POST":
+        form = PageDonateForm(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data['amount'] * 100
+            stripe_fee = int(amount * 0.029) + 30
+            pagefund_fee = int(amount * config.settings['pagefund_fee'])
+            final_amount = amount - stripe_fee - pagefund_fee
+            charge = stripe.Charge.create(
+                amount=amount,
+                currency="usd",
+                source=request.POST.get('stripeToken'),
+                description="$%s donation to %s via the %s campaign." % (form.cleaned_data['amount'], campaign.page.name, campaign.name),
+                receipt_email=request.user.email,
+                destination={
+                    "amount": final_amount,
+                    "account": campaign.page.stripe_account_id,
+                }
+            )
+            Donation.objects.create(
+                amount=amount,
+                anonymous=form.cleaned_data['anonymous'],
+                comment=form.cleaned_data['comment'],
+                page=campaign.page,
+                campaign=campaign,
+                stripe_charge_id=charge.id,
+                user=request.user
+            )
+            print("donation = %s" % float(amount / 100))
+            print("stripe takes = %s" % float(stripe_fee / 100))
+            print("we keep = %s" % float(pagefund_fee / 100))
+            print("charity gets = %s" % float(final_amount / 100))
+            return HttpResponseRedirect(campaign.get_absolute_url())
