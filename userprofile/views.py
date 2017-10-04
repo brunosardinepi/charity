@@ -78,3 +78,31 @@ def profile_image_upload(request):
                 raise ValidationError('This is not an imagee')
     return render(request, 'userprofile/profile_image_upload.html', {'userprofile': userprofile, 'form': form })
 
+@login_required
+def user_image_delete(request):
+    image = get_object_or_404(models.UserImages, pk=image_pk)
+    image.delete()
+    return HttpResponseRedirect(userprofile.get_absolute_url())
+#else:
+#    raise Http404
+
+@login_required
+def user_profile_update(request):
+    image = get_object_or_404(models.UserImages, pk=image_pk)
+    try:
+        profile = models.UserImages.objects.get(user=userprofile, profile_picture=True)
+    except models.UserImages.DoesNotExist:
+        profile = None
+    if profile:
+        profile.profile_picture = False
+        profile.save()
+        image.profile_picture = True
+        image.save()
+    else:
+        image.profile_picture = True
+        image.save()
+    return HttpResponseRedirect(userprofile.get_absolute_url())
+#else:
+#    raise Http404
+
+

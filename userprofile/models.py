@@ -96,7 +96,7 @@ def user_signed_up_(request, user, **kwargs):
 
 class UserImages(models.Model):
     user = models.ForeignKey('userprofile.UserProfile', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='media/user/images/', blank=True, null=True)
+    image = models.FileField(upload_to='media/user/images/', blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)
     profile_picture = models.BooleanField(default=False)
 
