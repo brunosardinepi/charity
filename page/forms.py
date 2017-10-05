@@ -58,3 +58,4 @@ class PageDonateForm(forms.Form):
     anonymous = forms.BooleanField(required=False)
     comment = forms.CharField(widget=forms.Textarea, required=False)
     amount = forms.IntegerField()
+    save_card = forms.BooleanField(required=False)

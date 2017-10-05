@@ -414,17 +414,35 @@ def page_donate(request, page_pk):
             stripe_fee = int(amount * 0.029) + 30
             pagefund_fee = int(amount * config.settings['pagefund_fee'])
             final_amount = amount - stripe_fee - pagefund_fee
-            charge = stripe.Charge.create(
-                amount=amount,
-                currency="usd",
-                source=request.POST.get('stripeToken'),
-                description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
-                receipt_email=request.user.email,
-                destination={
-                    "amount": final_amount,
-                    "account": page.stripe_account_id,
-                }
-            )
+
+            if form.cleaned_data['save_card'] == True:
+                if request.user.is_authenticated:
+                    customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
+                    customer.sources.create(source=request.POST.get('stripeToken'))
+
+                    charge = stripe.Charge.create(
+                        amount=amount,
+                        currency="usd",
+                        customer=customer.id,
+                        description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
+                        receipt_email=request.user.email,
+                        destination={
+                            "amount": final_amount,
+                            "account": page.stripe_account_id,
+                        }
+                    )
+            else:
+                charge = stripe.Charge.create(
+                    amount=amount,
+                    currency="usd",
+                    source=request.POST.get('stripeToken'),
+                    description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
+                    receipt_email=request.user.email,
+                    destination={
+                        "amount": final_amount,
+                        "account": page.stripe_account_id,
+                    }
+                )
             Donation.objects.create(
                 amount=amount,
                 anonymous=form.cleaned_data['anonymous'],
