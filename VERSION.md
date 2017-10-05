@@ -9,7 +9,9 @@ Release date: TBD
 
 ### Additions
 
-* Trending pages added to Home
+* Donate to Campaigns
+* Trending Pages added to Home
+* Trending Campaigns added to Home
 
 ### Changes
 ### Fixes

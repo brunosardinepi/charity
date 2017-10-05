@@ -54,10 +54,17 @@ class HomeTest(TestCase):
 
         self.page.subscribers.add(self.user.userprofile)
 
-        self.campaign = Campaign.objects.create(name="Blue", page=self.page, donation_money=50)
-        self.campaign2 = Campaign.objects.create(name="Green", page=self.page, donation_money=900)
-        self.campaign3 = Campaign.objects.create(name="Yellow", page=self.page, donation_money=500)
-        self.campaign4 = Campaign.objects.create(name="Red", page=self.page2, donation_money=20)
+        self.campaign = Campaign.objects.create(name="Blue", page=self.page, donation_money=50, trending_score=30.0)
+        self.campaign2 = Campaign.objects.create(name="Green", page=self.page, donation_money=900, trending_score=29.0)
+        self.campaign3 = Campaign.objects.create(name="Yellow", page=self.page, donation_money=500, trending_score=28.0)
+        self.campaign4 = Campaign.objects.create(name="campaign4", page=self.page2, donation_money=24, trending_score=27.0)
+        self.campaign5 = Campaign.objects.create(name="campaign5", page=self.page2, trending_score=26.0)
+        self.campaign6 = Campaign.objects.create(name="campaign6", page=self.page2, trending_score=25.0)
+        self.campaign7 = Campaign.objects.create(name="campaign7", page=self.page2, trending_score=24.0)
+        self.campaign8 = Campaign.objects.create(name="campaign8", page=self.page2, trending_score=23.0)
+        self.campaign9 = Campaign.objects.create(name="campaign9", page=self.page2, trending_score=22.0)
+        self.campaign10 = Campaign.objects.create(name="campaign10", page=self.page2, trending_score=21.0)
+        self.campaign11 = Campaign.objects.create(name="campaign11", page=self.page2, trending_score=20.0)
 
 
     def test_home_logged_out(self):
@@ -72,6 +79,7 @@ class HomeTest(TestCase):
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, "Forgot password?", status_code=200)
         self.assertNotContains(response, self.page11.name, status_code=200)
+        self.assertNotContains(response, self.campaign11.name, status_code=200)
         self.assertNotContains(response, '/invite/', status_code=200)
 
     def test_home_logged_in(self):
@@ -90,6 +98,7 @@ class HomeTest(TestCase):
         self.assertContains(response, self.user.last_name, status_code=200)
         self.assertContains(response, '/invite/', status_code=200)
         self.assertNotContains(response, self.page11.name, status_code=200)
+        self.assertNotContains(response, self.campaign11.name, status_code=200)
         self.assertNotContains(response, "Forgot password?", status_code=200)
 
     def test_login(self):

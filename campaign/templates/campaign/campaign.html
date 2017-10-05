@@ -2,6 +2,7 @@
 {% load static from staticfiles %}
 {% load guardian_tags %}
 {% load comment_extras %}
+{% load donation_extras %}
 
 {% block title %} {{ campaign.name }} | {{ block.super }}{% endblock %}
 
@@ -104,6 +105,7 @@
     {% for profile in campaignprofile %}
         <img src="{{ profile.image.url }}" width="200" />
     {% endfor %}
+    <p>Trending score: {{ campaign.trending_score }}</p>
     <p>Type: {{ campaign.get_type_display }}</p>
     <p>Location: {% if campaign.city %}{{ campaign.city }}{% endif %}{% if campaign.city and campaign.state %}, {% endif %}{% if campaign.state %}{{ campaign.state }}{% endif %}</p>
     <p>Description: {{ campaign.description }}</p>
@@ -208,5 +210,100 @@
             {% endif %}
         {% endfor %}
     </ul>
+
+    <h3>Donations</h3>
+    {% if donations %}
+
+        <h4>Top Donors</h4>
+        <ul>
+            {% for a, b in top_donors %}
+                <li>{{ b.amount|cents_to_dollars }} - {{ b.first_name }} {{ b.last_name }}</li>
+            {% endfor %}
+        </ul>
+
+        <h4>All Donations</h4>
+        <ul>
+            {% for d in donations %}
+                <li>{{ d.amount|cents_to_dollars }} {% if not d.anonymous %}- {{ d.user.first_name }} {{ d.user.last_name }} {% endif %}@ {{ d.date }}
+                    {% if d.comment %}
+                        <ul>
+                            <li>{{ d.comment }}</li>
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No donations!</p>
+    {% endif %}
+
+    <h3>Donate</h3>
+    <form action="{% url 'campaign_donate' campaign_pk=campaign.pk %}" method="post" id="payment-form">
+        {% csrf_token %}
+        <div class="form-row">
+            {{ donate_form.as_p  }}
+            <label for="card-element">Credit or debit card</label>
+            <div id="card-element"></div>
+            <div id="card-errors" role="alert"></div>
+        </div>
+        <button>Donate</button>
+    </form>
+
+    <script>
+        function stripeTokenHandler(token) {
+            var form = document.getElementById('payment-form');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'stripeToken');
+            hiddenInput.setAttribute('value', token.id);
+            form.appendChild(hiddenInput);
+
+            form.submit();
+        }
+
+        var stripe = Stripe('{{ api_pk }}');
+        var elements = stripe.elements();
+
+        var style = {
+            base: {
+                fontSize: '16px',
+                lineHeight: '24px'
+            }
+        };
+
+        var card = elements.create('card', {style: style});
+        card.mount('#card-element');
+
+        card.addEventListener('change', function(event) {
+            var displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+
+        var form = document.getElementById('payment-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            if (document.getElementById("id_anonymous").checked) {
+                var extraDetails = {};
+            } else {
+                var extraDetails = {
+                    name: "{{ request.user.first_name }} {{ request.user.last_name }}",
+                };
+            };
+
+            stripe.createToken(card, extraDetails).then(function(result) {
+                if (result.error) {
+                    var errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = result.error.message;
+                } else {
+                    stripeTokenHandler(result.token);
+                }
+            });
+        });
+    </script>
 
 {% endblock %}
