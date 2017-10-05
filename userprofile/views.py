@@ -75,7 +75,7 @@ def profile_image_upload(request):
                 imageupload.save()
                 return HttpResponseRedirect(userprofile.get_absolute_url())
             else:
-                raise ValidationError('This is not an image')
+                return redirect('error:error_image_type')
     return render(request, 'userprofile/profile_image_upload.html', {'userprofile': userprofile, 'form': form })
 
 @login_required

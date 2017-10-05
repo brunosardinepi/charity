@@ -12,3 +12,7 @@ def error_image_size(request):
 
 def error_invite_user_exists(request):
     return render(request, 'error/error_invite_user_exists.html')
+
+def error_image_type(request):
+    return render(request, 'error/error_image_type.html')
+
