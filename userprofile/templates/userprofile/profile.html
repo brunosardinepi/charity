@@ -68,8 +68,8 @@
     <ul>
         {% for image in userimages %}
             <li><img src="{{ image.image.url }}" width="200" />{{ image.caption }}<br>
-            <p><a href="{% url 'userprofile:user_image_delete' %}">Delete Image</a></p>
-            <p><a href="{% url 'userprofile:user_profile_update' %}">Update Profile Image</a></p></li>
+            <p><a href="{% url 'userprofile:user_image_delete' image_pk=image.pk %}">Delete Image</a></p>
+            <p><a href="{% url 'userprofile:user_profile_update' image_pk=image.pk %}">Update Profile Image</a></p></li>
         {% endfor %}
     </ul>
 
