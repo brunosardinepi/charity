@@ -61,7 +61,14 @@
     {% if cards %}
         <ul>
             {% for x, c in cards.items %}
-                <li>{% if c.name %}{{ c.name }} - {% endif %}{{ c.exp_month }}/{{ c.exp_year }}</li>
+                <form action="{% url 'userprofile:update_card' %}" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="name" value="{{ c.name }}" placeholder="Card name" maxlength="100" id="id_name" />
+                    <input type="text" name="exp_month" value="{{ c.exp_month }}" placeholder="Exp Month" maxlength="2" id="id_exp_month" />
+                    <input type="text" name="exp_year" value="{{ c.exp_year }}" placeholder="Exp Year" maxlength="4" id="id_exp_year" />
+                    <input type="hidden" name="id" value="{{ c.id }}" />
+                    <input type="submit" value="Save" />
+                </form>
             {% endfor %}
         </ul>
     {% endif %}

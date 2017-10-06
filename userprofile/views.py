@@ -25,21 +25,18 @@ def userprofile(request):
         campaigns = userprofile.campaign_admins.filter(deleted=False)
         invitations = ManagerInvitation.objects.filter(invite_from=request.user, expired=False)
         donations = Donation.objects.filter(user=request.user)
+
         sc = stripe.Customer.retrieve(userprofile.stripe_customer_id).sources.all(object='card')
         cards = {}
         for c in sc:
-            print(c.exp_month)
-            print(c.exp_year)
             card = get_object_or_404(models.StripeCard, stripe_card_id=c.id)
-            print(card.name)
-
             cards[card.id] = {
                 'exp_month': c.exp_month,
                 'exp_year': c.exp_year,
-                'name': card.name
+                'name': card.name,
+                'id': card.id
             }
 
-            print("*" * 10)
         data = {
             'first_name': request.user.first_name,
             'last_name': request.user.last_name,
@@ -96,3 +93,18 @@ def profile_image_upload(request):
                 raise ValidationError('This is not an imagee')
     return render(request, 'userprofile/profile_image_upload.html', {'userprofile': userprofile, 'form': form })
 
+@login_required
+def update_card(request):
+    if request.method == "POST":
+#        form = forms.UpdateCardForm(data=request.POST)
+#        if form.is_valid():
+        card = get_object_or_404(models.StripeCard, pk=request.POST.get('id'))
+        if request.user.userprofile == card.user:
+            card.name = request.POST.get('name')
+            card.save()
+            customer = stripe.Customer.retrieve(request.user.userprofile.stripe_customer_id)
+            stripe_card = customer.sources.retrieve(card.stripe_card_id)
+            stripe_card.exp_month = request.POST.get('exp_month')
+            stripe_card.exp_year = request.POST.get('exp_year')
+            stripe_card.save()
+            return HttpResponseRedirect(card.user.get_absolute_url())
