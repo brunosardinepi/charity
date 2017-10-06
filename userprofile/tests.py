@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.test import Client, RequestFactory, TestCase
 
 from . import forms
+from . import models
 from . import views
 from donation.models import Donation
 from invitations.models import ManagerInvitation
@@ -57,9 +58,20 @@ class UserProfileTest(TestCase):
             user=self.user
         )
 
+        self.card = models.StripeCard.objects.create(
+            user=self.user.userprofile,
+            name="my card",
+            stripe_card_id="cus_jhasdflkuh32ofhqwefslhkj",
+            stripe_card_fingerprint="ho87OHDS82d3"
+        )
+
     def test_user_exists(self):
         users = User.objects.all()
         self.assertIn(self.user, users)
+
+    def test_card_exists(self):
+        cards = models.StripeCard.objects.all()
+        self.assertIn(self.card, cards)
 
     def test_userprofile_page(self):
         self.client.login(username='testuser', password='testpassword')
@@ -119,3 +131,11 @@ class UserProfileTest(TestCase):
             response = self.client.post('/profile/upload/', {'image': image})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Upload a valid image. The file you uploaded was either not an image or a corrupted image.", status_code=200)
+
+    def test_update_card(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post('/profile/card/update/', {'name': "new!", 'id': self.card.id})
+
+        self.assertRedirects(response, '/profile/', 302, 200)
+        card = models.StripeCard.objects.get(id=self.card.id)
+        self.assertEqual(card.name, "new!")

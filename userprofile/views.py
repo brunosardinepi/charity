@@ -11,6 +11,7 @@ from . import models
 from donation.models import Donation
 from invitations.models import ManagerInvitation
 from page import models as PageModels
+from pagefund import settings
 
 
 @login_required
@@ -26,16 +27,17 @@ def userprofile(request):
         invitations = ManagerInvitation.objects.filter(invite_from=request.user, expired=False)
         donations = Donation.objects.filter(user=request.user)
 
-        sc = stripe.Customer.retrieve(userprofile.stripe_customer_id).sources.all(object='card')
         cards = {}
-        for c in sc:
-            card = get_object_or_404(models.StripeCard, stripe_card_id=c.id)
-            cards[card.id] = {
-                'exp_month': c.exp_month,
-                'exp_year': c.exp_year,
-                'name': card.name,
-                'id': card.id
-            }
+        if not settings.TESTING:
+            sc = stripe.Customer.retrieve(userprofile.stripe_customer_id).sources.all(object='card')
+            for c in sc:
+                card = get_object_or_404(models.StripeCard, stripe_card_id=c.id)
+                cards[card.id] = {
+                    'exp_month': c.exp_month,
+                    'exp_year': c.exp_year,
+                    'name': card.name,
+                    'id': card.id
+                }
 
         data = {
             'first_name': request.user.first_name,
@@ -96,15 +98,14 @@ def profile_image_upload(request):
 @login_required
 def update_card(request):
     if request.method == "POST":
-#        form = forms.UpdateCardForm(data=request.POST)
-#        if form.is_valid():
         card = get_object_or_404(models.StripeCard, pk=request.POST.get('id'))
         if request.user.userprofile == card.user:
             card.name = request.POST.get('name')
             card.save()
-            customer = stripe.Customer.retrieve(request.user.userprofile.stripe_customer_id)
-            stripe_card = customer.sources.retrieve(card.stripe_card_id)
-            stripe_card.exp_month = request.POST.get('exp_month')
-            stripe_card.exp_year = request.POST.get('exp_year')
-            stripe_card.save()
+            if not settings.TESTING:
+                customer = stripe.Customer.retrieve(request.user.userprofile.stripe_customer_id)
+                stripe_card = customer.sources.retrieve(card.stripe_card_id)
+                stripe_card.exp_month = request.POST.get('exp_month')
+                stripe_card.exp_year = request.POST.get('exp_year')
+                stripe_card.save()
             return HttpResponseRedirect(card.user.get_absolute_url())
