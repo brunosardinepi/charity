@@ -14,8 +14,8 @@ class UserAdmin(BaseUserAdmin):
     inlines = (UserProfileInline, )
 
 class StripeCardAdmin(admin.ModelAdmin):
-    list_display = ('user', 'stripe_card_id',)
-    ordering = ('user',)
+    list_display = ('user', 'name', 'stripe_card_id',)
+    ordering = ('user', 'name',)
     list_filter = ('user',)
 
 admin.site.unregister(User)

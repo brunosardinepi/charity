@@ -57,6 +57,15 @@
 
     <p><a href="{% url 'userprofile:profile_image_upload' %}">Upload Image</a></p>
 
+    <h3>Saved Credit Cards</h3>
+    {% if cards %}
+        <ul>
+            {% for x, c in cards.items %}
+                <li>{% if c.name %}{{ c.name }} - {% endif %}{{ c.exp_month }}/{{ c.exp_year }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
     <h3>Donations</h3>
     {% if donations %}
         <ul>

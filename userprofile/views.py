@@ -4,6 +4,8 @@ from django.core.exceptions import ValidationError
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 
+import stripe
+
 from . import forms
 from . import models
 from donation.models import Donation
@@ -23,6 +25,21 @@ def userprofile(request):
         campaigns = userprofile.campaign_admins.filter(deleted=False)
         invitations = ManagerInvitation.objects.filter(invite_from=request.user, expired=False)
         donations = Donation.objects.filter(user=request.user)
+        sc = stripe.Customer.retrieve(userprofile.stripe_customer_id).sources.all(object='card')
+        cards = {}
+        for c in sc:
+            print(c.exp_month)
+            print(c.exp_year)
+            card = get_object_or_404(models.StripeCard, stripe_card_id=c.id)
+            print(card.name)
+
+            cards[card.id] = {
+                'exp_month': c.exp_month,
+                'exp_year': c.exp_year,
+                'name': card.name
+            }
+
+            print("*" * 10)
         data = {
             'first_name': request.user.first_name,
             'last_name': request.user.last_name,
@@ -45,6 +62,7 @@ def userprofile(request):
             'campaigns': campaigns,
             'invitations': invitations,
             'form': form,
+            'cards': cards,
             'donations': donations
         })
     else:
