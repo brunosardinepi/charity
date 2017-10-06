@@ -430,7 +430,6 @@ def page_donate(request, page_pk):
 
                     if card_check['card']['fingerprint'] in customer_cards_cleaned:
                         print("tell the user this card already exists")
-#                        card_source = card_check['card']['id']
                         card_source = customer_cards_cleaned[card_check['card']['fingerprint']]
                         print("existing card_source = %s" % card_source)
                     else:
