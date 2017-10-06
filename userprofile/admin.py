@@ -13,5 +13,11 @@ class UserProfileInline(admin.StackedInline):
 class UserAdmin(BaseUserAdmin):
     inlines = (UserProfileInline, )
 
+class StripeCardAdmin(admin.ModelAdmin):
+    list_display = ('user', 'stripe_card_id',)
+    ordering = ('user',)
+    list_filter = ('user',)
+
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+admin.site.register(models.StripeCard, StripeCardAdmin)
