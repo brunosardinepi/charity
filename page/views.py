@@ -20,7 +20,7 @@ from comments.forms import CommentForm
 from comments.models import Comment
 from donation.models import Donation
 from invitations.models import ManagerInvitation
-from userprofile.models import UserProfile
+from userprofile import models as UserProfileModels
 from pagefund import config, settings
 from pagefund.email import email
 from pagefund.image import image_upload
@@ -58,7 +58,7 @@ def page(request, page_slug):
 
         try:
             user_subscription_check = page.subscribers.get(user_id=request.user.pk)
-        except UserProfile.DoesNotExist:
+        except UserProfileModels.UserProfile.DoesNotExist:
             user_subscription_check = None
         if user_subscription_check:
             subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe", "color": "red"}
@@ -417,22 +417,38 @@ def page_donate(request, page_pk):
 
             if form.cleaned_data['save_card'] == True:
                 if request.user.is_authenticated:
-                    customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
+#                    customer_cards_dict = stripe.Customer.retrieve(customer.id).sources.all(object='card')
+#                    print("customer_cards_dict = %s" % customer_cards_dict)
+#                    customer_cards_cleaned = {}
+#                    for c in customer_cards_dict['data']:
+#                        customer_cards_cleaned["%s" % c['fingerprint']] = c['id']
+#                    print("customer_cards_cleaned = %s" % customer_cards_cleaned)
 
-                    customer_cards_dict = stripe.Customer.retrieve(customer.id).sources.all(object='card')
-                    print("customer_cards_dict = %s" % customer_cards_dict)
-                    customer_cards_cleaned = {}
-                    for c in customer_cards_dict['data']:
-                        customer_cards_cleaned["%s" % c['fingerprint']] = c['id']
-                    print("customer_cards_cleaned = %s" % customer_cards_cleaned)
+                    customer_cards = request.user.userprofile.stripecard_set.all()
+                    print("customer_cards = %s" % customer_cards)
                     card_check = stripe.Token.retrieve(request.POST.get('stripeToken'))
                     print("card_check fingerprint = %s" % card_check['card']['fingerprint'])
-
-                    if card_check['card']['fingerprint'] in customer_cards_cleaned:
-                        print("tell the user this card already exists")
-                        card_source = customer_cards_cleaned[card_check['card']['fingerprint']]
-                        print("existing card_source = %s" % card_source)
+                    customer_card_dict = {}
+                    if customer_cards:
+                        print("there are customer_cards")
+                        for c in customer_cards:
+                            if c.fingerprint == card_check['card']['fingerprint']:
+                                card_source = customer_cards_cleaned[card_check['card']['fingerprint']]
+                                print("existing card_source = %s" % card_source)
+                                break
+                            else:
+                                card_source = None
                     else:
+                        card_source = None
+
+#                    if card_check['card']['fingerprint'] in customer_cards_cleaned:
+#                        print("tell the user this card already exists")
+#                        card_source = customer_cards_cleaned[card_check['card']['fingerprint']]
+#                        print("existing card_source = %s" % card_source)
+                    if card_source is None:
+#                    else:
+                        customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
+#                        print(customer)
                         card_source = customer.sources.create(source=request.POST.get('stripeToken'))
                         card_source = card_source.id
                         print("card_source = %s" % card_source)
