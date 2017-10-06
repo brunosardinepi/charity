@@ -20,7 +20,7 @@ from comments.forms import CommentForm
 from comments.models import Comment
 from donation.models import Donation
 from invitations.models import ManagerInvitation
-from userprofile.models import UserProfile
+from userprofile import models as UserProfileModels
 from pagefund import config, settings
 from pagefund.email import email
 from pagefund.image import image_upload
@@ -58,7 +58,7 @@ def page(request, page_slug):
 
         try:
             user_subscription_check = page.subscribers.get(user_id=request.user.pk)
-        except UserProfile.DoesNotExist:
+        except UserProfileModels.UserProfile.DoesNotExist:
             user_subscription_check = None
         if user_subscription_check:
             subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe", "color": "red"}
@@ -414,17 +414,77 @@ def page_donate(request, page_pk):
             stripe_fee = int(amount * 0.029) + 30
             pagefund_fee = int(amount * config.settings['pagefund_fee'])
             final_amount = amount - stripe_fee - pagefund_fee
-            charge = stripe.Charge.create(
-                amount=amount,
-                currency="usd",
-                source=request.POST.get('stripeToken'),
-                description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
-                receipt_email=request.user.email,
-                destination={
-                    "amount": final_amount,
-                    "account": page.stripe_account_id,
-                }
-            )
+
+            if form.cleaned_data['save_card'] == True:
+                if request.user.is_authenticated:
+                    customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
+#                    print(customer)
+#                    customer_cards_dict = stripe.Customer.retrieve(customer.id).sources.all(object='card')
+#                    print("customer_cards_dict = %s" % customer_cards_dict)
+#                    customer_cards_cleaned = {}
+#                    for c in customer_cards_dict['data']:
+#                        customer_cards_cleaned["%s" % c['fingerprint']] = c['id']
+#                    print("customer_cards_cleaned = %s" % customer_cards_cleaned)
+
+                    customer_cards = request.user.userprofile.stripecard_set.all()
+                    print("customer_cards = %s" % customer_cards)
+                    card_check = stripe.Token.retrieve(request.POST.get('stripeToken'))
+                    print("card_check fingerprint = %s" % card_check['card']['fingerprint'])
+                    customer_card_dict = {}
+                    if customer_cards:
+                        print("there are customer_cards")
+                        for c in customer_cards:
+                            if c.stripe_card_fingerprint == card_check['card']['fingerprint']:
+#                                card_source = customer_cards_cleaned[card_check['card']['fingerprint']]
+                                card_source = c.stripe_card_id
+                                print("existing card_source = %s" % card_source)
+                                break
+                            else:
+                                card_source = None
+                    else:
+                        card_source = None
+
+#                    if card_check['card']['fingerprint'] in customer_cards_cleaned:
+#                        print("tell the user this card already exists")
+#                        card_source = customer_cards_cleaned[card_check['card']['fingerprint']]
+#                        print("existing card_source = %s" % card_source)
+                    if card_source is None:
+                        print("card_source is None")
+#                    else:
+                        card_source = customer.sources.create(source=request.POST.get('stripeToken'))
+#                        card_source = card_source.id
+                        print("card_source = %s" % card_source.id)
+                        print("card_source_fingerprint = %s" % card_source.fingerprint)
+                        UserProfileModels.StripeCard.objects.create(
+                            user=request.user.userprofile,
+                            stripe_card_id=card_source.id,
+                            stripe_card_fingerprint=card_source.fingerprint
+                        )
+
+                    charge = stripe.Charge.create(
+                        amount=amount,
+                        currency="usd",
+                        customer=customer.id,
+                        source=card_source,
+                        description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
+                        receipt_email=request.user.email,
+                        destination={
+                            "amount": final_amount,
+                            "account": page.stripe_account_id,
+                        }
+                    )
+            else:
+                charge = stripe.Charge.create(
+                    amount=amount,
+                    currency="usd",
+                    source=request.POST.get('stripeToken'),
+                    description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
+                    receipt_email=request.user.email,
+                    destination={
+                        "amount": final_amount,
+                        "account": page.stripe_account_id,
+                    }
+                )
             Donation.objects.create(
                 amount=amount,
                 anonymous=form.cleaned_data['anonymous'],

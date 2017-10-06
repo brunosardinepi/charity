@@ -10,11 +10,15 @@ from pagefund import config
 from pagefund.email import email
 
 import smtplib
+import stripe
 
+
+stripe.api_key = config.settings['stripe_api_sk']
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     birthday = models.DateField(blank=True, null=True)
+    stripe_customer_id = models.CharField(max_length=255, blank=True, null=True)
     STATE_CHOICES = (
         ('AL', 'Alabama'),
         ('AK', 'Alaska'),
@@ -90,6 +94,15 @@ def save_user_profile(sender, instance, **kwargs):
 
 @receiver(user_signed_up, dispatch_uid="user_signed_up")
 def user_signed_up_(request, user, **kwargs):
+    metadata = {'user_pk': user.pk}
+    customer = stripe.Customer.create(
+        email=user.email,
+        metadata=metadata
+    )
+
+    user.userprofile.stripe_customer_id = customer.id
+    user.save()
+
     subject = "Welcome to PageFund!"
     body = "This is a test email for a user that has just signed up with PageFund."
     email(user.email, subject, body)
@@ -100,3 +113,9 @@ class UserImages(models.Model):
     caption = models.CharField(max_length=255, blank=True)
     profile_picture = models.BooleanField(default=False)
 
+
+class StripeCard(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    stripe_card_id = models.CharField(max_length=255)
+    stripe_card_fingerprint = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, blank=True)
