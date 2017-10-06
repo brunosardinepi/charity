@@ -4,6 +4,10 @@
 
 {% block title %} Profile | {{ block.super }}{% endblock %}
 
+{% block head_extra %}
+    <script src="{% static 'js/comment_csrf.js' %}"></script>
+{% endblock %}
+
 {% block body_content %}
 
     {% for profile in userprofileimage %}
@@ -74,6 +78,17 @@
         </ul>
     {% endif %}
 
+    <h3>Add Credit Card</h3>
+    <form action="{% url 'userprofile:add_card' %}" method="post" id="add-card-form">
+        {% csrf_token %}
+        <div class="form-row">
+            <label for="card-element">Credit or debit card</label>
+            <div id="card-element"></div>
+            <div id="card-errors" role="alert"></div>
+        </div>
+        <button>Add card</button>
+    </form>
+
     <h3>Donations</h3>
     {% if donations %}
         <ul>
@@ -92,5 +107,57 @@
         {% endfor %}
     </ul>
 
+    <script>
+        function stripeTokenHandler(token) {
+            var form = document.getElementById('add-card-form');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'stripeToken');
+            hiddenInput.setAttribute('value', token.id);
+            form.appendChild(hiddenInput);
+
+            form.submit();
+        }
+
+        var stripe = Stripe('{{ api_pk }}');
+        var elements = stripe.elements();
+
+        var style = {
+            base: {
+                fontSize: '16px',
+                lineHeight: '24px'
+            }
+        };
+
+        var card = elements.create('card', {style: style});
+        card.mount('#card-element');
+
+        card.addEventListener('change', function(event) {
+            var displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+
+        var form = document.getElementById('add-card-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var extraDetails = {
+                name: "{{ request.user.first_name }} {{ request.user.last_name }}",
+            };
+
+            stripe.createToken(card, extraDetails).then(function(result) {
+                if (result.error) {
+                    var errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = result.error.message;
+                } else {
+                    stripeTokenHandler(result.token);
+                }
+            });
+        });
+    </script>
 
 {% endblock %}

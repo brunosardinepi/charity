@@ -11,7 +11,7 @@ from . import models
 from donation.models import Donation
 from invitations.models import ManagerInvitation
 from page import models as PageModels
-from pagefund import settings
+from pagefund import config, settings
 
 
 @login_required
@@ -72,6 +72,7 @@ def userprofile(request):
             'invitations': invitations,
             'form': form,
             'cards': cards,
+            'api_pk': config.settings['stripe_api_pk'],
             'donations': donations
         })
     else:
@@ -133,6 +134,40 @@ def user_profile_update(request, image_pk):
     return HttpResponseRedirect(userprofile.get_absolute_url())
 #else:
 #    raise Http404
+
+@login_required
+def add_card(request):
+    if request.method == "POST":
+        if request.user.is_authenticated:
+            customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
+
+            customer_cards = request.user.userprofile.stripecard_set.all()
+            print("customer_cards = %s" % customer_cards)
+            card_check = stripe.Token.retrieve(request.POST.get('stripeToken'))
+            print("card_check fingerprint = %s" % card_check['card']['fingerprint'])
+            customer_card_dict = {}
+            if customer_cards:
+                print("there are customer_cards")
+                for c in customer_cards:
+                    if c.stripe_card_fingerprint == card_check['card']['fingerprint']:
+                        card_source = c.stripe_card_id
+                        print("existing card_source = %s" % card_source)
+                        break
+                    else:
+                        card_source = None
+            else:
+                card_source = None
+            if card_source is None:
+                print("card_source is None")
+                card_source = customer.sources.create(source=request.POST.get('stripeToken'))
+                print("card_source = %s" % card_source.id)
+                print("card_source_fingerprint = %s" % card_source.fingerprint)
+                models.StripeCard.objects.create(
+                    user=request.user.userprofile,
+                    stripe_card_id=card_source.id,
+                    stripe_card_fingerprint=card_source.fingerprint
+                )
+            return HttpResponseRedirect(request.user.userprofile.get_absolute_url())
 
 @login_required
 def update_card(request):
