@@ -21,7 +21,7 @@ from page.forms import PageDonateForm
 from page.models import Page
 from pagefund import config
 from pagefund.email import email
-
+from userprofile import models as UserProfileModels
 
 def campaign(request, page_slug, campaign_pk, campaign_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
@@ -365,17 +365,64 @@ def campaign_donate(request, campaign_pk):
             stripe_fee = int(amount * 0.029) + 30
             pagefund_fee = int(amount * config.settings['pagefund_fee'])
             final_amount = amount - stripe_fee - pagefund_fee
-            charge = stripe.Charge.create(
-                amount=amount,
-                currency="usd",
-                source=request.POST.get('stripeToken'),
-                description="$%s donation to %s via the %s campaign." % (form.cleaned_data['amount'], campaign.page.name, campaign.name),
-                receipt_email=request.user.email,
-                destination={
-                    "amount": final_amount,
-                    "account": campaign.page.stripe_account_id,
-                }
-            )
+
+            if form.cleaned_data['save_card'] == True:
+                if request.user.is_authenticated:
+                    customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
+
+                    customer_cards = request.user.userprofile.stripecard_set.all()
+                    print("customer_cards = %s" % customer_cards)
+                    card_check = stripe.Token.retrieve(request.POST.get('stripeToken'))
+                    print("card_check fingerprint = %s" % card_check['card']['fingerprint'])
+                    customer_card_dict = {}
+                    if customer_cards:
+                        print("there are customer_cards")
+                        for c in customer_cards:
+                            if c.stripe_card_fingerprint == card_check['card']['fingerprint']:
+                                card_source = c.stripe_card_id
+                                print("existing card_source = %s" % card_source)
+                                break
+                            else:
+                                card_source = None
+                    else:
+                        card_source = None
+
+                    if card_source is None:
+                        print("card_source is None")
+                        card_source = customer.sources.create(source=request.POST.get('stripeToken'))
+                        print("card_source = %s" % card_source.id)
+                        print("card_source_fingerprint = %s" % card_source.fingerprint)
+                        UserProfileModels.StripeCard.objects.create(
+                            user=request.user.userprofile,
+                            stripe_card_id=card_source.id,
+                            stripe_card_fingerprint=card_source.fingerprint
+                        )
+
+                    charge = stripe.Charge.create(
+                        amount=amount,
+                        currency="usd",
+                        customer=customer.id,
+                        source=card_source,
+                        description="$%s donation to %s via the %s campaign." % (form.cleaned_data['amount'], campaign.page.name, campaign.name),
+                        receipt_email=request.user.email,
+                        destination={
+                            "amount": final_amount,
+                            "account": campaign.page.stripe_account_id,
+                        }
+                    )
+            else:
+                charge = stripe.Charge.create(
+                    amount=amount,
+                    currency="usd",
+                    source=request.POST.get('stripeToken'),
+                    description="$%s donation to %s via the %s campaign." % (form.cleaned_data['amount'], campaign.page.name, campaign.name),
+                    receipt_email=request.user.email,
+                    destination={
+                        "amount": final_amount,
+                        "account": campaign.page.stripe_account_id,
+                    }
+                )
+
             Donation.objects.create(
                 amount=amount,
                 anonymous=form.cleaned_data['anonymous'],
