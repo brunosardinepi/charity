@@ -77,7 +77,7 @@
     {% if donations %}
         <ul>
             {% for d in donations %}
-                <li>{{ d.amount|cents_to_dollars }} to {% if d.page %}{{ d.page }}{% else %}{{ d.campaign }}{% endif %} @ {{ d.date }}</li>            
+                <li>{{ d.amount|cents_to_dollars }} to <a href="{% url 'page' page_slug=d.page.page_slug %}">{{ d.page }}</a>{% if d.campaign %} via <a href="{% url 'campaign' page_slug=d.page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign }}</a>{% endif %} @ {{ d.date }}</li>            
             {% endfor %}
         </ul>
     {% endif %}    

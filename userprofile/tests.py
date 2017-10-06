@@ -58,6 +58,13 @@ class UserProfileTest(TestCase):
             user=self.user
         )
 
+        self.donation2 = Donation.objects.create(
+            amount=900,
+            page=self.page,
+            campaign=self.campaign,
+            user=self.user
+        )
+
         self.card = models.StripeCard.objects.create(
             user=self.user.userprofile,
             name="my card",
@@ -84,7 +91,22 @@ class UserProfileTest(TestCase):
         self.assertContains(response, self.page2.name, status_code=200)
         self.assertNotContains(response, self.page3.name, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
-        self.assertContains(response, "$%s to %s @" % (int(self.donation.amount / 100), self.page.name), status_code=200)
+        self.assertContains(response, '$%s to <a href="/%s/">%s</a> @' % (
+            int(self.donation.amount / 100),
+            self.page.page_slug,
+            self.page.name),
+            status_code=200
+        )
+        self.assertContains(response, '$%s to <a href="/%s/">%s</a> via <a href="/%s/%s/%s/">%s</a> @' % (
+            int(self.donation2.amount / 100),
+            self.page.page_slug,
+            self.page.name,
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug,
+            self.campaign.name),
+            status_code=200
+        )
 
     def test_userprofileform(self):
         form = forms.UserProfileForm({
