@@ -12,6 +12,9 @@ Release date: TBD
 * Donate to Campaigns
 * Trending Pages added to Home
 * Trending Campaigns added to Home
+* With the right permissions, users can edit and delete existing pictures in Pages, Campaigns, and their profile
+* Users can save credit cards during a donation
+* Users can update their credit card information on their profile
 
 ### Changes
 ### Fixes
