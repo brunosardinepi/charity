@@ -19,7 +19,12 @@ Release date: 10/06/2017
 * Users can update their credit card information on their profile
 
 ### Changes
+
+None
+
 ### Fixes
+
+None
 
 
 ## Version 0.7.0
