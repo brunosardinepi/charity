@@ -29,15 +29,25 @@ def userprofile(request):
 
         cards = {}
         if not settings.TESTING:
-            sc = stripe.Customer.retrieve(userprofile.stripe_customer_id).sources.all(object='card')
-            for c in sc:
-                card = get_object_or_404(models.StripeCard, stripe_card_id=c.id)
-                cards[card.id] = {
-                    'exp_month': c.exp_month,
-                    'exp_year': c.exp_year,
-                    'name': card.name,
-                    'id': card.id
-                }
+            try:
+                sc = stripe.Customer.retrieve(userprofile.stripe_customer_id).sources.all(object='card')
+                for c in sc:
+                    card = get_object_or_404(models.StripeCard, stripe_card_id=c.id)
+                    cards[card.id] = {
+                        'exp_month': c.exp_month,
+                        'exp_year': c.exp_year,
+                        'name': card.name,
+                        'id': card.id
+                    }
+            except stripe.error.InvalidRequestError:
+                metadata = {'user_pk': request.user.pk}
+                customer = stripe.Customer.create(
+                    email=request.user.email,
+                    metadata=metadata
+                )
+
+                request.user.userprofile.stripe_customer_id = customer.id
+                request.user.save()
 
         data = {
             'first_name': request.user.first_name,

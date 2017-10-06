@@ -6,7 +6,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 
-from pagefund import config
+from pagefund import config, settings
 from pagefund.email import email
 
 import smtplib
@@ -94,14 +94,15 @@ def save_user_profile(sender, instance, **kwargs):
 
 @receiver(user_signed_up, dispatch_uid="user_signed_up")
 def user_signed_up_(request, user, **kwargs):
-    metadata = {'user_pk': user.pk}
-    customer = stripe.Customer.create(
-        email=user.email,
-        metadata=metadata
-    )
+    if not settings.TESTING:
+        metadata = {'user_pk': user.pk}
+        customer = stripe.Customer.create(
+            email=user.email,
+            metadata=metadata
+        )
 
-    user.userprofile.stripe_customer_id = customer.id
-    user.save()
+        user.userprofile.stripe_customer_id = customer.id
+        user.save()
 
     subject = "Welcome to PageFund!"
     body = "This is a test email for a user that has just signed up with PageFund."
