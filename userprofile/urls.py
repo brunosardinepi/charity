@@ -5,6 +5,7 @@ from . import views
 
 app_name = 'userprofile'
 urlpatterns = [
+#    url(r'^card/delete/', views.delete_card, name='delete_card'),
     url(r'^card/update/', views.update_card, name='update_card'),
     url(r'^upload/', views.profile_image_upload, name='profile_image_upload'),
     url(r'^image/(?P<image_pk>\d+)/delete/', views.user_image_delete, name='user_image_delete'),

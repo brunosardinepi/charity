@@ -157,8 +157,16 @@ class UserProfileTest(TestCase):
 
     def test_update_card(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.post('/profile/card/update/', {'name': "new!", 'id': self.card.id})
+        response = self.client.post('/profile/card/update/', {'name': "new!", 'id': self.card.id, 'save': "save"})
 
         self.assertRedirects(response, '/profile/', 302, 200)
         card = models.StripeCard.objects.get(id=self.card.id)
         self.assertEqual(card.name, "new!")
+
+    def test_delete_card(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post('/profile/card/update/', {'id': self.card.id, 'delete': "delete"})
+
+        self.assertRedirects(response, '/profile/', 302, 200)
+        cards = models.StripeCard.objects.all()
+        self.assertNotIn(self.card, cards)

@@ -134,16 +134,23 @@ def user_profile_update(request, image_pk):
 #else:
 #    raise Http404
 
+@login_required
 def update_card(request):
     if request.method == "POST":
         card = get_object_or_404(models.StripeCard, pk=request.POST.get('id'))
         if request.user.userprofile == card.user:
-            card.name = request.POST.get('name')
-            card.save()
-            if not settings.TESTING:
-                customer = stripe.Customer.retrieve(request.user.userprofile.stripe_customer_id)
-                stripe_card = customer.sources.retrieve(card.stripe_card_id)
-                stripe_card.exp_month = request.POST.get('exp_month')
-                stripe_card.exp_year = request.POST.get('exp_year')
-                stripe_card.save()
+            if "save" in request.POST:
+                card.name = request.POST.get('name')
+                card.save()
+                if not settings.TESTING:
+                    customer = stripe.Customer.retrieve(request.user.userprofile.stripe_customer_id)
+                    stripe_card = customer.sources.retrieve(card.stripe_card_id)
+                    stripe_card.exp_month = request.POST.get('exp_month')
+                    stripe_card.exp_year = request.POST.get('exp_year')
+                    stripe_card.save()
+            elif "delete" in request.POST:
+                card.delete()
+                if not settings.TESTING:
+                    customer = stripe.Customer.retrieve(request.user.userprofile.stripe_customer_id)
+                    customer.sources.retrieve(card.stripe_card_id).delete()
             return HttpResponseRedirect(card.user.get_absolute_url())

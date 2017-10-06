@@ -67,7 +67,8 @@
                     <input type="text" name="exp_month" value="{{ c.exp_month }}" placeholder="Exp Month" maxlength="2" id="id_exp_month" />
                     <input type="text" name="exp_year" value="{{ c.exp_year }}" placeholder="Exp Year" maxlength="4" id="id_exp_year" />
                     <input type="hidden" name="id" value="{{ c.id }}" />
-                    <input type="submit" value="Save" />
+                    <input type="submit" name="save" value="Save" />
+                    <input type="submit" name="delete" value="Delete" />
                 </form>
             {% endfor %}
         </ul>
