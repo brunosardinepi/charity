@@ -1,8 +1,16 @@
+from collections import OrderedDict
+
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Sum
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
+
+from campaign.models import Campaign
+from comments.models import Comment
+from donation.models import Donation
 
 
 class Page(models.Model):
@@ -137,6 +145,47 @@ class Page(models.Model):
         elif not self.id:
             self.page_slug = slugify(self.name).replace('-', '')
             super(Page, self).save(*args, **kwargs)
+
+    def top_donors(self):
+        donors = Donation.objects.filter(page=self).values_list('user', flat=True).distinct()
+        top_donors = {}
+        for d in donors:
+            user = get_object_or_404(User, pk=d)
+            total_amount = Donation.objects.filter(user=user, page=self, anonymous=False).aggregate(Sum('amount')).get('amount__sum')
+            top_donors[d] = {
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'amount': total_amount
+            }
+        top_donors = OrderedDict(sorted(top_donors.items(), key=lambda t: t[1]['amount'], reverse=True))
+        top_donors = list(top_donors.items())[:10]
+        return top_donors
+
+    def managers_list(self):
+        return self.managers.all()
+
+    def images(self):
+        return PageImages.objects.filter(page=self)
+
+    def profile_image(self):
+        try:
+            return PageImages.objects.filter(page=self, page_profile=True)
+        except PageImages.MultipleObjectsReturned:
+            # create an exception for future use
+            print("multiple profile images returned")
+
+    def active_campaigns(self):
+        return Campaign.objects.filter(page=self, is_active=True, deleted=False)
+
+    def inactive_campaigns(self):
+        return Campaign.objects.filter(page=self, is_active=False, deleted=False)
+
+    def comments(self):
+        return Comment.objects.filter(page=self, deleted=False).order_by('-date')
+
+    def donations(self):
+        return Donation.objects.filter(page=self).order_by('-date')
+
 
 class PageImages(models.Model):
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE)

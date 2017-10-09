@@ -146,7 +146,7 @@
         <p><a class="delete-campaign" href="{% url 'campaign_delete' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
         <p><a href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
         <p><a href="{% url 'campaign_image_upload' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload image</a></p>
-        {% if campaign.managers %}
+        {% if campaign.managers_list %}
             <h5>Managers</h5>
             <form method="POST" action"">
                 {% csrf_token %}
@@ -160,7 +160,7 @@
                         <th>Upload</th>
                         <th></th>
                     </tr>
-                {% for manager in campaign.managers %}
+                {% for manager in campaign.managers_list %}
                     {% get_obj_perms manager.user for campaign as "campaign_perms" %}
                     <tr>
                         <td>{{ manager.first_name }} {{ manager.last_name }}</td>

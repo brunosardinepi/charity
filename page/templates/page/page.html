@@ -110,9 +110,7 @@
 
 {% block body_content %}
     <h1>{{ page.name }}</h1>
-    {% for profile in pageprofile  %}
-        <img src="{{ profile.image.url }}" width="300" />
-    {% endfor %}
+    <img src="{{ page.profile_image.image.url }}" width="300" />
     <p>Trending score: {{ page.trending_score }}</p>
     <p>Type: {{ page.get_type_display }}</p>
     <p>Location: {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{{ page.state }}{% endif %}</p>
@@ -131,14 +129,14 @@
 
     <h3>Active Campaigns</h3>
     <ul>
-        {% for campaign in active_campaigns %}
+        {% for campaign in page.active_campaigns %}
             <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> (${{ campaign.donation_money }} of ${{ campaign.goal }} goal)</li>
         {% endfor %}
     </ul>
 
     <h3>Past Campaigns</h3>
     <ul>
-        {% for campaign in inactive_campaigns %}
+        {% for campaign in page.inactive_campaigns %}
             <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> (${{ campaign.donation_money }} of ${{ campaign.goal }} goal)</li>
         {% endfor %}
     </ul>
@@ -155,9 +153,9 @@
     {% else %}
         <p>You must be logged in to comment!</p>
     {% endif %}
-    {% if comments %}
+    {% if page.comments %}
         <ul id="comment_list">
-            {% for c in comments %}
+            {% for c in page.comments %}
                 <li id="comment-{{ c.pk }}" class="comment">
                     {{ c.content }} - {{ c.user.first_name }} {{ c.user.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="show-reply" id="{{ c.pk }}" href="">Reply</a>{% if c.user == request.user %} - <a id="delete-comment-{{ c.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</a>
                     {% comment_replies c.pk as replies %}
@@ -181,7 +179,7 @@
         <p><a class="delete-page" href="{% url 'page_delete' page_slug=page.page_slug %}">Delete Page</a></p>
         <p><a href="{% url 'page_invite' page_slug=page.page_slug  %}">Invite others to manage Page</a></p>
         <p><a href="{% url 'page_image_upload' page_slug=page.page_slug %}">Upload image</a></p>
-        {% if managers %}
+        {% if page.managers_list %}
             <h5>Managers</h5>
             <form method="POST" action"">
                 {% csrf_token %}
@@ -195,7 +193,7 @@
                         <th>Upload</th>
                         <th></th>
                     </tr>
-                {% for manager in managers %}
+                {% for manager in page.managers_list %}
                     {% get_obj_perms manager.user for page as "page_perms" %}
                     <tr>
                         <td>{{ manager.user.first_name }} {{ manager.user.last_name }}</td>
@@ -235,7 +233,7 @@
 
     <h3>Page Images</h3>
     <ul>
-        {% for image in pageimages %}
+        {% for image in page.images %}
             <li><img src="{{ image.image.url }}" width="200" />{{ image.caption }} <br>
             {% if "manager_image_edit" in page_perms or request.user.userprofile in page.admins.all %}
             <p><a id="delete_image" href="{% url 'page_image_delete' page_slug=page.page_slug image_pk=image.pk %}">Delete Image</a></p>
@@ -245,18 +243,18 @@
     </ul>
 
     <h3>Donations</h3>
-    {% if donations %}
+    {% if page.donations %}
 
         <h4>Top Donors</h4>
         <ul>
-            {% for a, b in top_donors %}
+            {% for a, b in page.top_donors %}
                 <li>{{ b.amount|cents_to_dollars }} - {{ b.first_name }} {{ b.last_name }}</li>
             {% endfor %}
         </ul>
 
         <h4>All Donations</h4>
         <ul>
-            {% for d in donations %}
+            {% for d in page.donations %}
                 <li>{{ d.amount|cents_to_dollars }} {% if not d.anonymous %}- {{ d.user.first_name }} {{ d.user.last_name }} {% endif %}@ {{ d.date }}{% if d.campaign %} via <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign.name }}</a>{% endif %}
                     {% if d.comment %}
                         <ul>

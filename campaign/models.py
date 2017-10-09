@@ -152,7 +152,7 @@ class Campaign(models.Model):
     def donations(self):
         return Donation.objects.filter(campaign=self).order_by('-date')
 
-    def managers(self):
+    def managers_list(self):
         return self.campaign_managers.all()
 
     def comments(self):

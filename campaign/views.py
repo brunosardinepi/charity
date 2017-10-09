@@ -15,9 +15,9 @@ import stripe
 from . import forms
 from . import models
 from comments.forms import CommentForm
-from comments.models import Comment
 from donation.models import Donation
 from invitations.models import ManagerInvitation
+from invitations.utils import invite
 from page.forms import PageDonateForm
 from page.models import Page
 from pagefund import config, utils
@@ -141,60 +141,16 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
         if request.method == 'POST':
             form = forms.ManagerInviteForm(request.POST)
             if form.is_valid():
-                # check if the person we are inviting is already a manager
-                try:
-                    user = User.objects.get(email=form.cleaned_data['email'])
-                    if user.userprofile in campaign.campaign_managers.all():
-                        return HttpResponseRedirect(campaign.get_absolute_url())
-                except User.DoesNotExist:
-                    print("no user found")
+                data = {
+                    "request": request,
+                    "form": form,
+                    "page": None,
+                    "campaign": campaign
+                }
 
-                # check if the user has already been invited by this admin/manager for this campaign
-                # expired should be False, otherwise the previous invitation has expired and we are OK with them getting a new one
-                # accepted/declined are irrelevant if the invite has expired, so we don't check these
-                try:
-                    invitation = ManagerInvitation.objects.get(
-                        invite_to=form.cleaned_data['email'],
-                        invite_from=request.user,
-                        campaign=campaign,
-                        expired=False
-                    )
-                except ManagerInvitation.DoesNotExist:
-                    invitation = None
-
-                # if this user has already been invited, redirect the admin/manager
-                # need to notify the admin/manager that the person has already been invited
-                if invitation:
-                    # this user has already been invited, so do nothing
-                    return HttpResponseRedirect(campaign.get_absolute_url())
-                # if the user hasn't been invited already, create the invite and send it to them
-                else:
-                    # create the invitation object and set the permissions
-                    invitation = ManagerInvitation.objects.create(
-                        invite_to=form.cleaned_data['email'],
-                        invite_from=request.user,
-                        campaign=campaign,
-                        manager_edit=form.cleaned_data['manager_edit'],
-                        manager_delete=form.cleaned_data['manager_delete'],
-                        manager_invite=form.cleaned_data['manager_invite'],
-                        manager_image_edit=form.cleaned_data['manager_image_edit'],
-                    )
-
-                    # create the email
-                    subject = "Campaign invitation!"
-                    body = "%s %s has invited you to become an admin of the '%s' campaign. <a href='%s/invite/manager/accept/%s/%s/'>Click here to accept.</a> <a href='%s/invite/manager/decline/%s/%s/'>Click here to decline.</a>" % (
-                        request.user.first_name,
-                        request.user.last_name,
-                        campaign.name,
-                        config.settings['site'],
-                        invitation.pk,
-                        invitation.key,
-                        config.settings['site'],
-                        invitation.pk,
-                        invitation.key
-                    )
-                    email(form.cleaned_data['email'], subject, body)
-                    # redirect the admin/manager to the campaign
+                status = invite(data)
+                if status == True:
+                    # redirect the admin/manager to the Campaign
                     return HttpResponseRedirect(campaign.get_absolute_url())
         return render(request, 'campaign/campaign_invite.html', {'form': form, 'campaign': campaign})
     # the user isn't an admin or a manager, so they can't invite someone
@@ -388,8 +344,4 @@ def campaign_donate(request, campaign_pk):
                 stripe_charge_id=charge.id,
                 user=request.user
             )
- #           print("donation = %s" % float(amount / 100))
- #           print("stripe takes = %s" % float(stripe_fee / 100))
- #           print("we keep = %s" % float(pagefund_fee / 100))
- #           print("charity gets = %s" % float(final_amount / 100))
             return HttpResponseRedirect(campaign.get_absolute_url())

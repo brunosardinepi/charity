@@ -20,8 +20,9 @@ from comments.forms import CommentForm
 from comments.models import Comment
 from donation.models import Donation
 from invitations.models import ManagerInvitation
+from invitations.utils import invite
 from userprofile import models as UserProfileModels
-from pagefund import config, settings
+from pagefund import config, settings, utils
 from pagefund.email import email
 from pagefund.image import image_upload
 
@@ -33,87 +34,27 @@ def page(request, page_slug):
     if page.deleted == True:
         raise Http404
     else:
-        managers = page.managers.all()
-        pageimages = models.PageImages.objects.filter(page=page)
-        pageprofile = models.PageImages.objects.filter(page=page, page_profile=True)
-        active_campaigns = Campaign.objects.filter(page=page, is_active=True, deleted=False)
-        inactive_campaigns = Campaign.objects.filter(page=page, is_active=False, deleted=False)
-        comments = Comment.objects.filter(page=page, deleted=False).order_by('-date')
-        donations = Donation.objects.filter(page=page).order_by('-date')
         form = CommentForm
         donate_form = forms.PageDonateForm()
-
-        donors = Donation.objects.filter(page=page).values_list('user', flat=True).distinct()
-        top_donors = {}
-        for d in donors:
-            user = get_object_or_404(User, pk=d)
-            total_amount = Donation.objects.filter(user=user, page=page, anonymous=False).aggregate(Sum('amount')).get('amount__sum')
-            top_donors[d] = {
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'amount': total_amount
-            }
-        top_donors = OrderedDict(sorted(top_donors.items(), key=lambda t: t[1]['amount'], reverse=True))
-        top_donors = list(top_donors.items())[:10]
 
         try:
             user_subscription_check = page.subscribers.get(user_id=request.user.pk)
         except UserProfileModels.UserProfile.DoesNotExist:
             user_subscription_check = None
+
         if user_subscription_check:
             subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe", "color": "red"}
         else:
             subscribe_attr = {"name": "subscribe", "value": "Subscribe", "color": "green"}
 
         if request.method == "POST":
-            post_data = request.POST.getlist('permissions[]')
-            new_permissions = dict()
-            for p in post_data:
-                m = p.split("_", 1)[0]
-                p = p.split("_", 1)[1]
-                if m not in new_permissions:
-                    new_permissions[m] = []
-                new_permissions[m].append(p)
-
-            # get list of user's current perms
-            old_permissions = dict()
-            for k in new_permissions:
-                user = get_object_or_404(User, pk=k)
-                user_permissions = get_user_perms(user, page)
-                if k not in old_permissions:
-                    old_permissions[k] = []
-                for p in user_permissions:
-                    old_permissions[k].append(p)
-
-            # for every item in the user's current perms, compare to the new list of perms from the form
-            for k, v in old_permissions.items():
-                user = get_object_or_404(User, pk=k)
-                for e in v:
-                    # if that item is in the list, remove it from the new list and do nothing to the perm
-                    if e in new_permissions[k]:
-                        new_permissions[k].remove(e)
-                    # if that item is not in the list, remove the perm
-                    else:
-                        remove_perm(e, user, page)
-            # for every item in the new list, give the user the perms for that item
-            for k,v in new_permissions.items():
-                user = get_object_or_404(User, pk=k)
-                for e in v:
-                    assign_perm(e, user, page)
+             utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
         return render(request, 'page/page.html', {
             'page': page,
-            'pageimages': pageimages,
-            'pageprofile': pageprofile,
-            'active_campaigns': active_campaigns,
-            'inactive_campaigns': inactive_campaigns,
-            'managers': managers,
-            'comments': comments,
-            'donations': donations,
             'form': form,
             'donate_form': donate_form,
             'subscribe_attr': subscribe_attr,
-            'api_pk': config.settings['stripe_api_pk'],
-            'top_donors': top_donors
+            'api_pk': config.settings['stripe_api_pk']
         })
 
 def get_client_ip(request):
@@ -132,7 +73,6 @@ def page_create(request):
         page_form = forms.PageForm(request.POST)
         bank_form = forms.PageBankForm(request.POST)
         if page_form.is_valid() and bank_form.is_valid():
-#            bank = bank_form.save()
             page = page_form.save()
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
@@ -161,14 +101,11 @@ def page_create(request):
                         "state": page.state
                     },
                     "business_tax_id": page.ein,
-#                    "personal_id_number": form.cleaned_data['ssn'],
-#                    "ssn_last_4": form.cleaned_data['ssn'][-4:]
                     "ssn_last_4": page_form.cleaned_data['ssn']
                 }
 
                 if page_form.cleaned_data['tos_acceptance'] == True:
                     user_ip = get_client_ip(request)
-#                    try:
                     tos_acceptance = {
                         "date": timezone.now(),
                         "ip": user_ip
@@ -176,15 +113,12 @@ def page_create(request):
 
                     acct = stripe.Account.create(
                         business_name=page.name,
-#                        business_url=,
                         country="US",
                         email=request.user.email,
                         legal_entity=legal_entity,
                         type="custom",
                         tos_acceptance=tos_acceptance
                     )
-#            except:
-#                print("write exception here in future")
 
                 external_account = {
                     "object": "bank_account",
@@ -240,7 +174,7 @@ def page_delete(request, page_slug):
         page.page_slug = page.page_slug + "deleted" + timezone.now().strftime("%Y%m%d")
         page.save()
 
-        campaigns = Campaign.objects.filter(page=page)
+        campaigns = Campaign.objects.filter(page=page, deleted=False)
         if campaigns:
             for c in campaigns:
                 c.deleted = True
@@ -288,59 +222,15 @@ def page_invite(request, page_slug):
         if request.method == 'POST':
             form = forms.ManagerInviteForm(request.POST)
             if form.is_valid():
-                # check if the person we are inviting is already a manager
-                try:
-                    user = User.objects.get(email=form.cleaned_data['email'])
-                    if user.userprofile in page.managers.all():
-                        return HttpResponseRedirect(page.get_absolute_url())
-                except User.DoesNotExist:
-                    print("no user found")
+                data = {
+                    "request": request,
+                    "form": form,
+                    "page": page,
+                    "campaign": None
+                }
 
-                # check if the user has already been invited by this admin/manager for this page
-                # expired should be False, otherwise the previous invitation has expired and we are OK with them getting a new one
-                # accepted/declined are irrelevant if the invite has expired, so we don't check these
-                try:
-                    invitation = ManagerInvitation.objects.get(
-                        invite_to=form.cleaned_data['email'],
-                        invite_from=request.user,
-                        page=page,
-                        expired=False
-                    )
-                except ManagerInvitation.DoesNotExist:
-                    invitation = None
-
-                # if this user has already been invited, redirect the admin/manager
-                # need to notify the admin/manager that the person has already been invited
-                if invitation:
-                    # this user has already been invited, so do nothing
-                    return HttpResponseRedirect(page.get_absolute_url())
-                # if the user hasn't been invited already, create the invite and send it to them
-                else:
-                    # create the invitation object and set the permissions
-                    invitation = ManagerInvitation.objects.create(
-                        invite_to=form.cleaned_data['email'],
-                        invite_from=request.user,
-                        page=page,
-                        manager_edit=form.cleaned_data['manager_edit'],
-                        manager_delete=form.cleaned_data['manager_delete'],
-                        manager_invite=form.cleaned_data['manager_invite'],
-                        manager_image_edit=form.cleaned_data['manager_image_edit'],
-                   )
-
-                    # create the email
-                    subject = "Page invitation!"
-                    body = "%s %s has invited you to become an admin of the '%s' Page. <a href='%s/invite/manager/accept/%s/%s/'>Click here to accept.</a> <a href='%s/invite/manager/decline/%s/%s/'>Click here to decline.</a>" % (
-                        request.user.first_name,
-                        request.user.last_name,
-                        page.name,
-                        config.settings['site'],
-                        invitation.pk,
-                        invitation.key,
-                        config.settings['site'],
-                        invitation.pk,
-                        invitation.key
-                    )
-                    email(form.cleaned_data['email'], subject, body)
+                status = invite(data)
+                if status == True:
                     # redirect the admin/manager to the Page
                     return HttpResponseRedirect(page.get_absolute_url())
         return render(request, 'page/page_invite.html', {'form': form, 'page': page})
@@ -539,6 +429,3 @@ def page_profile_update(request, page_slug, image_pk):
         return HttpResponseRedirect(page.get_absolute_url())
     else:
         raise Http404
-
-
-
