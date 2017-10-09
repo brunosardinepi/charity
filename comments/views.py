@@ -13,23 +13,34 @@ import json
 
 
 @login_required
-def comment_page(request, page_pk):
-    page = get_object_or_404(Page, pk=page_pk)
+def comment_attributes(comment):
+    response_data = {}
+    response_data['content'] = comment.content
+    response_data['user'] = "%s %s" % (comment.user.first_name, comment.user.last_name)
+    response_data['date'] = timezone.localtime(comment.date)
+    response_data['date'] = response_data['date'].strftime('%m/%d/%y %-I:%M %p')
+    response_data['id'] = comment.pk
+    return response_data
+
+@login_required
+def comment(request, model, pk):
     if request.method == 'POST':
         comment_text = request.POST.get('comment_text')
-        response_data = {}
-
-        comment = models.Comment.objects.create(
-            user=request.user,
-            content=comment_text,
-            page=page
-        )
-
-        response_data['content'] = comment.content
-        response_data['user'] = "%s %s" % (comment.user.first_name, comment.user.last_name)
-        response_data['date'] = timezone.localtime(comment.date)
-        response_data['date'] = response_data['date'].strftime('%m/%d/%y %-I:%M %p')
-        response_data['id'] = comment.pk
+        if model == "page":
+            page = get_object_or_404(Page, pk=pk)
+            comment = models.Comment.objects.create(
+                user=request.user,
+                content=comment_text,
+                page=page
+            )
+        elif model == "campaign":
+            campaign = get_object_or_404(Campaign, pk=pk)
+            comment = models.Comment.objects.create(
+                user=request.user,
+                content=comment_text,
+                campaign=campaign
+            )
+        response_data = comment_attributes(comment)
         return HttpResponse(
             json.dumps(response_data),
             content_type="application/json"
@@ -40,7 +51,6 @@ def reply(request, comment_pk):
     comment = get_object_or_404(models.Comment, pk=comment_pk)
     if request.method == 'POST':
         reply_text = request.POST.get('reply_text')
-        response_data = {}
 
         reply = models.Reply.objects.create(
             user=request.user,
@@ -48,34 +58,7 @@ def reply(request, comment_pk):
             comment=comment
         )
 
-        response_data['content'] = reply.content
-        response_data['user'] = "%s %s" % (reply.user.first_name, reply.user.last_name)
-        response_data['date'] = timezone.localtime(reply.date)
-        response_data['date'] = response_data['date'].strftime('%m/%d/%y %-I:%M %p')
-        response_data['id'] = reply.pk
-        return HttpResponse(
-            json.dumps(response_data),
-            content_type="application/json"
-        )
-
-@login_required
-def comment_campaign(request, campaign_pk):
-    campaign = get_object_or_404(Campaign, pk=campaign_pk)
-    if request.method == 'POST':
-        comment_text = request.POST.get('comment_text')
-        response_data = {}
-
-        comment = models.Comment.objects.create(
-            user=request.user,
-            content=comment_text,
-            campaign=campaign
-        )
-
-        response_data['content'] = comment.content
-        response_data['user'] = "%s %s" % (comment.user.first_name, comment.user.last_name)
-        response_data['date'] = timezone.localtime(comment.date)
-        response_data['date'] = response_data['date'].strftime('%m/%d/%y %-I:%M %p')
-        response_data['id'] = comment.pk
+        response_data = comment_attributes(reply)
         return HttpResponse(
             json.dumps(response_data),
             content_type="application/json"

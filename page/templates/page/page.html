@@ -36,7 +36,7 @@
 
             function comment() {
                 $.ajax({
-                    url : "{% url 'comments:comment_page' page_pk=page.pk %}",
+                    url : "{% url 'comments:comment' model='page' pk=page.pk %}",
                     type : "POST",
                     data : { comment_text : $("#comment-text").val() },
                     success : function(json) {
@@ -147,7 +147,7 @@
 
     <h3>Comments</h3>
     {% if request.user.is_authenticated %}
-        <form id="comment" action="{% url 'comments:comment_page' page_pk=page.pk %}" method="POST">
+        <form id="comment" action="{% url 'comments:comment' model='page' pk=page.pk %}" method="POST">
             {% csrf_token %}
             {{ form.as_p }}
             <input type="submit" value="Comment" />
