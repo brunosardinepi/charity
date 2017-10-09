@@ -32,7 +32,7 @@ class ManagerInvitationTest(TestCase):
             password='iwillforgetthis'
         )
 
-        self.page = models.Page.objects.create(
+        self.page = Page.objects.create(
             name='Test Page',
             page_slug='testpage',
             description='This is a description for Test Page.',

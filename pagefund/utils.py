@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
 from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
+from pagefund import config
 
 
 def update_manager_permissions(post_data, type):
@@ -39,3 +40,9 @@ def update_manager_permissions(post_data, type):
         user = get_object_or_404(User, pk=k)
         for e in v:
             assign_perm(e, user, type)
+
+def donation_amount(initial_amount):
+    stripe_fee = int(initial_amount * 0.029) + 30
+    pagefund_fee = int(initial_amount * config.settings['pagefund_fee'])
+    return initial_amount - stripe_fee - pagefund_fee
+

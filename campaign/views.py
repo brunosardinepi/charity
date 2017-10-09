@@ -80,8 +80,10 @@ def campaign_create(request, page_slug):
 
 @login_required
 def campaign_edit(request, page_slug, campaign_pk, campaign_slug):
-    page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
+#    page = get_object_or_404(Page, page_slug=page_slug)
+    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
+
+    # write custom decorator for admin/manager check
     admin = request.user.userprofile in campaign.campaign_admins.all()
     if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_edit', campaign):
         manager = True
@@ -100,8 +102,10 @@ def campaign_edit(request, page_slug, campaign_pk, campaign_slug):
 
 @login_required
 def campaign_delete(request, page_slug, campaign_pk, campaign_slug):
-    page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
+#    page = get_object_or_404(Page, page_slug=page_slug)
+    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
+
+    # write custom decorator for admin/manager check
     admin = request.user.userprofile in campaign.campaign_admins.all()
     if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_delete', campaign):
         manager = True
@@ -114,14 +118,16 @@ def campaign_delete(request, page_slug, campaign_pk, campaign_slug):
         campaign.name = campaign.name + "_deleted_" + timezone.now().strftime("%Y%m%d")
         campaign.campaign_slug = campaign.campaign_slug + "deleted" + timezone.now().strftime("%Y%m%d")
         campaign.save()
-        return HttpResponseRedirect(page.get_absolute_url())
+        return HttpResponseRedirect(campaign.page.get_absolute_url())
     else:
         raise Http404
 
 @login_required
 def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
-    page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
+#    page = get_object_or_404(Page, page_slug=page_slug)
+    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
+
+    # write custom decorator for admin/manager check
     # True if the user is an admin
     admin = request.user.userprofile in campaign.campaign_admins.all()
     # True if the user is a manager and has the 'invite' permission
@@ -198,8 +204,8 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
 
 @login_required
 def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
-    page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
+#    page = get_object_or_404(Page, page_slug=page_slug)
+    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
     manager = get_object_or_404(User, pk=manager_pk)
     # only campaign admins can remove managers
     if request.user.userprofile in campaign.campaign_admins.all():
@@ -217,10 +223,12 @@ def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
 
 @login_required
 def campaign_image_upload(request, page_slug, campaign_pk, campaign_slug):
-    page = get_object_or_404(Page, page_slug=page_slug)
+#    page = get_object_or_404(Page, page_slug=page_slug)
 #    campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
     campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
-    admin = request.user.userprofile in page.admins.all()
+
+    # write custom decorator for admin/manager check
+    admin = request.user.userprofile in campaign.page.admins.all()
     if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', campaign):
         manager = True
     else:
@@ -247,7 +255,6 @@ def campaign_image_upload(request, page_slug, campaign_pk, campaign_slug):
                     profile = models.CampaignImages.objects.get(campaign=imageupload.campaign, campaign_profile=True)
                 except models.CampaignImages.DoesNotExist:
                     profile = None
-                print(page)
                 if profile and imageupload.campaign_profile:
                     profile.campaign_profile=False
                     profile.save()
@@ -260,10 +267,12 @@ def campaign_image_upload(request, page_slug, campaign_pk, campaign_slug):
 
 @login_required
 def campaign_image_delete(request, page_slug, campaign_slug, campaign_pk, image_pk):
-    page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(models.Campaign, campaign_slug=campaign_slug)
-    admin = request.user.userprofile in campaing.campaign_admins.all()
+#    page = get_object_or_404(Page, page_slug=page_slug)
+    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
     image = get_object_or_404(models.CampaignImages, pk=image_pk)
+
+    # write custom decorator for admin/manager check
+    admin = request.user.userprofile in campaing.campaign_admins.all()
     if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', campaign):
         manager = True
     else:
@@ -276,10 +285,12 @@ def campaign_image_delete(request, page_slug, campaign_slug, campaign_pk, image_
 
 @login_required
 def campaign_profile_update(request, page_slug, campaign_slug, campaign_pk, image_pk):
-    page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(models.Campaign, campaign_slug=campaign_slug)
-    admin = request.user.userprofile in campaign.campaign_admins.all()
+#    page = get_object_or_404(Page, page_slug=page_slug)
+    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
     image = get_object_or_404(models.CampaignImages, pk=image_pk)
+
+    # write custom decorator for admin/manager check
+    admin = request.user.userprofile in campaign.campaign_admins.all()
     if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', campaign):
         manager = True
     else:
@@ -307,25 +318,25 @@ def campaign_donate(request, campaign_pk):
         form = PageDonateForm(request.POST)
         if form.is_valid():
             amount = form.cleaned_data['amount'] * 100
-            stripe_fee = int(amount * 0.029) + 30
-            pagefund_fee = int(amount * config.settings['pagefund_fee'])
-            final_amount = amount - stripe_fee - pagefund_fee
-
+#            stripe_fee = int(amount * 0.029) + 30
+#            pagefund_fee = int(amount * config.settings['pagefund_fee'])
+#            final_amount = amount - stripe_fee - pagefund_fee
+            final_amount = utils.donation_amount(amount)
             if form.cleaned_data['save_card'] == True:
                 if request.user.is_authenticated:
                     customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
 
                     customer_cards = request.user.userprofile.stripecard_set.all()
-                    print("customer_cards = %s" % customer_cards)
+#                    print("customer_cards = %s" % customer_cards)
                     card_check = stripe.Token.retrieve(request.POST.get('stripeToken'))
-                    print("card_check fingerprint = %s" % card_check['card']['fingerprint'])
+#                    print("card_check fingerprint = %s" % card_check['card']['fingerprint'])
                     customer_card_dict = {}
                     if customer_cards:
-                        print("there are customer_cards")
+#                        print("there are customer_cards")
                         for c in customer_cards:
                             if c.stripe_card_fingerprint == card_check['card']['fingerprint']:
                                 card_source = c.stripe_card_id
-                                print("existing card_source = %s" % card_source)
+#                                print("existing card_source = %s" % card_source)
                                 break
                             else:
                                 card_source = None
@@ -333,10 +344,10 @@ def campaign_donate(request, campaign_pk):
                         card_source = None
 
                     if card_source is None:
-                        print("card_source is None")
+#                        print("card_source is None")
                         card_source = customer.sources.create(source=request.POST.get('stripeToken'))
-                        print("card_source = %s" % card_source.id)
-                        print("card_source_fingerprint = %s" % card_source.fingerprint)
+#                        print("card_source = %s" % card_source.id)
+#                        print("card_source_fingerprint = %s" % card_source.fingerprint)
                         UserProfileModels.StripeCard.objects.create(
                             user=request.user.userprofile,
                             stripe_card_id=card_source.id,
@@ -377,8 +388,8 @@ def campaign_donate(request, campaign_pk):
                 stripe_charge_id=charge.id,
                 user=request.user
             )
-            print("donation = %s" % float(amount / 100))
-            print("stripe takes = %s" % float(stripe_fee / 100))
-            print("we keep = %s" % float(pagefund_fee / 100))
-            print("charity gets = %s" % float(final_amount / 100))
+ #           print("donation = %s" % float(amount / 100))
+ #           print("stripe takes = %s" % float(stripe_fee / 100))
+ #           print("we keep = %s" % float(pagefund_fee / 100))
+ #           print("charity gets = %s" % float(final_amount / 100))
             return HttpResponseRedirect(campaign.get_absolute_url())
