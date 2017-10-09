@@ -1,4 +1,5 @@
 from collections import OrderedDict
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -7,8 +8,8 @@ from django.db.models import Sum
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
-from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 
+from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 import stripe
 
 from . import forms
@@ -19,84 +20,27 @@ from donation.models import Donation
 from invitations.models import ManagerInvitation
 from page.forms import PageDonateForm
 from page.models import Page
-from pagefund import config
+from pagefund import config, utils
 from pagefund.email import email
 from userprofile import models as UserProfileModels
 
+
 def campaign(request, page_slug, campaign_pk, campaign_slug):
-    page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
+    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
     if campaign.deleted == True:
         raise Http404
     else:
-        campaignimages = models.CampaignImages.objects.filter(campaign=campaign)
-        campaignprofile = models.CampaignImages.objects.filter(campaign=campaign, campaign_profile=True)
-        donations = Donation.objects.filter(campaign=campaign).order_by('-date')
-        managers = campaign.campaign_managers.all()
-        comments = Comment.objects.filter(campaign=campaign, deleted=False).order_by('-date')
         form = CommentForm
         donate_form = PageDonateForm()
 
-        donors = Donation.objects.filter(campaign=campaign).values_list('user', flat=True).distinct()
-        top_donors = {}
-        for d in donors:
-            user = get_object_or_404(User, pk=d)
-            total_amount = Donation.objects.filter(user=user, campaign=campaign, anonymous=False).aggregate(Sum('amount')).get('amount__sum')
-            top_donors[d] = {
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'amount': total_amount
-            }
-        top_donors = OrderedDict(sorted(top_donors.items(), key=lambda t: t[1]['amount'], reverse=True))
-        top_donors = list(top_donors.items())[:10]
-
         if request.method == "POST":
-            post_data = request.POST.getlist('permissions[]')
-            new_permissions = dict()
-            for p in post_data:
-                m = p.split("_", 1)[0]
-                p = p.split("_", 1)[1]
-                if m not in new_permissions:
-                    new_permissions[m] = []
-                new_permissions[m].append(p)
+            utils.update_manager_permissions(request.POST.getlist('permissions[]'), campaign)
 
-            # get list of user's current perms
-            old_permissions = dict()
-            for k in new_permissions:
-                user = get_object_or_404(User, pk=k)
-                user_permissions = get_user_perms(user, campaign)
-                if k not in old_permissions:
-                    old_permissions[k] = []
-                for p in user_permissions:
-                    old_permissions[k].append(p)
-
-            # for every item in the user's current perms, compare to the new list of perms from the form
-            for k, v in old_permissions.items():
-                user = get_object_or_404(User, pk=k)
-                for e in v:
-                    # if that item is in the list, remove it from the new list and do nothing to the perm
-                    if e in new_permissions[k]:
-                        new_permissions[k].remove(e)
-                    # if that item is not in the list, remove the perm
-                    else:
-                        remove_perm(e, user, campaign)
-            # for every item in the new list, give the user the perms for that item
-            for k,v in new_permissions.items():
-                user = get_object_or_404(User, pk=k)
-                for e in v:
-                    assign_perm(e, user, campaign)
         return render(request, 'campaign/campaign.html', {
-            'page': page,
             'campaign': campaign,
-            'campaignimages': campaignimages,
-            'campaignprofile': campaignprofile,
-            'donations': donations,
-            'managers': managers,
-            'comments': comments,
             'form': form,
             'donate_form': donate_form,
             'api_pk': config.settings['stripe_api_pk'],
-            'top_donors': top_donors
         })
 
 @login_required
@@ -273,8 +217,9 @@ def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
 
 @login_required
 def campaign_image_upload(request, page_slug, campaign_pk, campaign_slug):
-    page = get_object_or_404(models.Page, page_slug=page_slug)
-    campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
+    page = get_object_or_404(Page, page_slug=page_slug)
+#    campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
+    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
     admin = request.user.userprofile in page.admins.all()
     if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', campaign):
         manager = True
@@ -315,7 +260,7 @@ def campaign_image_upload(request, page_slug, campaign_pk, campaign_slug):
 
 @login_required
 def campaign_image_delete(request, page_slug, campaign_slug, campaign_pk, image_pk):
-    page = get_object_or_404(models.Page, page_slug=page_slug)
+    page = get_object_or_404(Page, page_slug=page_slug)
     campaign = get_object_or_404(models.Campaign, campaign_slug=campaign_slug)
     admin = request.user.userprofile in campaing.campaign_admins.all()
     image = get_object_or_404(models.CampaignImages, pk=image_pk)
@@ -331,7 +276,7 @@ def campaign_image_delete(request, page_slug, campaign_slug, campaign_pk, image_
 
 @login_required
 def campaign_profile_update(request, page_slug, campaign_slug, campaign_pk, image_pk):
-    page = get_object_or_404(models.Page, page_slug=page_slug)
+    page = get_object_or_404(Page, page_slug=page_slug)
     campaign = get_object_or_404(models.Campaign, campaign_slug=campaign_slug)
     admin = request.user.userprofile in campaign.campaign_admins.all()
     image = get_object_or_404(models.CampaignImages, pk=image_pk)

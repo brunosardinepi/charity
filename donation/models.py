@@ -2,17 +2,14 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from campaign.models import Campaign
-from page.models import Page
-
 
 class Donation(models.Model):
     amount = models.IntegerField()
     anonymous = models.BooleanField(default=False)
-    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, blank=True, null=True)
+    campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE, blank=True, null=True)
     comment = models.TextField(blank=True)
     date = models.DateTimeField(default=timezone.now)
-    page = models.ForeignKey(Page, on_delete=models.CASCADE, blank=True, null=True)
+    page = models.ForeignKey('page.Page', on_delete=models.CASCADE, blank=True, null=True)
     stripe_charge_id = models.CharField(max_length=255, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 

@@ -2,9 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from campaign.models import Campaign
-from page.models import Page
-
 
 class CommentTemplate(models.Model):
     content = models.TextField(blank=True)
@@ -19,8 +16,8 @@ class CommentTemplate(models.Model):
         abstract = True
 
 class Comment(CommentTemplate):
-    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, blank=True, null=True)
-    page = models.ForeignKey(Page, on_delete=models.CASCADE, blank=True, null=True)
+    campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE, blank=True, null=True)
+    page = models.ForeignKey('page.Page', on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         if self.page:

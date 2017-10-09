@@ -102,9 +102,7 @@
 
 {% block body_content %}
     <h1>{{ campaign.name }}</h1>
-    {% for profile in campaignprofile %}
-        <img src="{{ profile.image.url }}" width="200" />
-    {% endfor %}
+    <img src="{{ campaign.profile_image.image.url }}" width="200" />
     <p>Trending score: {{ campaign.trending_score }}</p>
     <p>Type: {{ campaign.get_type_display }}</p>
     <p>Location: {% if campaign.city %}{{ campaign.city }}{% endif %}{% if campaign.city and campaign.state %}, {% endif %}{% if campaign.state %}{{ campaign.state }}{% endif %}</p>
@@ -122,16 +120,16 @@
     {% else %}
         <p>You must be logged in to comment!</p>
     {% endif %}
-    {% if comments %}
+    {% if campaign.comments %}
         <ul id="comment_list">
-            {% for c in comments %}
+            {% for c in campaign.comments %}
                 <li id="comment-{{ c.pk }}" class="comment">
-                    {{ c.content }} - {{ c.user.userprofile.first_name }} {{ c.user.userprofile.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="show-reply" id="{{ c.pk }}" href="">Reply</a>{% if c.user == request.user %} - <a id="delete-comment-{{ c.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</a>
+                    {{ c.content }} - {{ c.user.first_name }} {{ c.user.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="show-reply" id="{{ c.pk }}" href="">Reply</a>{% if c.user == request.user %} - <a id="delete-comment-{{ c.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</a>
                     {% comment_replies c.pk as replies %}
                     {% if replies %}
                         <ul id="comment-{{ c.pk }}-replies" class="reply-list">
                             {% for r in replies %}
-                                <li id="reply-{{ r.pk }}" class="reply">{{ r.content }} - {{ r.user.userprofile.first_name }} {{ r.user.userprofile.last_name }} @ {{ r.date|date:"m/d/y g:i A" }} {% if r.user == request.user %} - <a id="delete-reply-{{ r.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</li>
+                                <li id="reply-{{ r.pk }}" class="reply">{{ r.content }} - {{ r.user.first_name }} {{ r.user.last_name }} @ {{ r.date|date:"m/d/y g:i A" }} {% if r.user == request.user %} - <a id="delete-reply-{{ r.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</li>
                             {% endfor %}
                         </ul>
                     {% endif %}
@@ -144,11 +142,11 @@
 
     {% if request.user.userprofile in campaign.campaign_admins.all %}
         <h4>Admin</h4>
-        <p><a href="{% url 'campaign_edit' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
-        <p><a class="delete-campaign" href="{% url 'campaign_delete' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
-        <p><a href="{% url 'campaign_invite' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
-        <p><a href="{% url 'campaign_image_upload' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload image</a></p>
-        {% if managers %}
+        <p><a href="{% url 'campaign_edit' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
+        <p><a class="delete-campaign" href="{% url 'campaign_delete' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
+        <p><a href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
+        <p><a href="{% url 'campaign_image_upload' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload image</a></p>
+        {% if campaign.managers %}
             <h5>Managers</h5>
             <form method="POST" action"">
                 {% csrf_token %}
@@ -162,7 +160,7 @@
                         <th>Upload</th>
                         <th></th>
                     </tr>
-                {% for manager in managers %}
+                {% for manager in campaign.managers %}
                     {% get_obj_perms manager.user for campaign as "campaign_perms" %}
                     <tr>
                         <td>{{ manager.first_name }} {{ manager.last_name }}</td>
@@ -171,7 +169,7 @@
                         <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_delete" {% if 'manager_delete' in campaign_perms %}checked{% endif %} /></td>
                         <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_invite" {% if 'manager_invite' in campaign_perms %}checked{% endif %} /></td>
                         <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_image_edit" {% if 'manager_image_edit' in campaign_perms %}checked{% endif %} /></td>
-                        <td><a href="{% url 'remove_manager' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug manager_pk=manager.pk %}">Remove<a/></td>
+                        <td><a href="{% url 'remove_manager' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug manager_pk=manager.pk %}">Remove<a/></td>
                 {% endfor %}
                 </table>
                 <input type="submit" value="Save" />
@@ -181,49 +179,49 @@
         <p>you're NOT an admin</p>
     {% endif %}
 
-    {% if request.user.userprofile not in page.admins.all %}
+    {% if request.user.userprofile not in campaign.page.admins.all %}
         {% get_obj_perms request.user for campaign as "campaign_perms" %}
         {% if campaign_perms %}
             <h4>Manager</h4>
         {% endif %}
         {% if "manager_edit" in campaign_perms %}
-            <p><a href="{% url 'campaign_edit' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
+            <p><a href="{% url 'campaign_edit' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
         {% endif %}
         {% if "manager_delete" in campaign_perms %}
-            <p><a class="delete-campaign" href="{% url 'campaign_delete' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
+            <p><a class="delete-campaign" href="{% url 'campaign_delete' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
         {% endif %}
         {% if "manager_invite" in campaign_perms %}
-            <p><a href="{% url 'campaign_invite' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
+            <p><a href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
         {% endif %}
         {% if "manager_image_edit" in campaign_perms %}
-            <p><a href="{% url 'campaign_image_upload' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload image</a></p>
+            <p><a href="{% url 'campaign_image_upload' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload image</a></p>
         {% endif %}
     {% endif %}
 
     <h3>Campaign Images</h3>
     <ul>
-        {% for image in campaignimages %}
+        {% for image in campaign.images %}
             <li><img src="{{ image.image.url }}" width="200" />{{ image.caption }}<br/>
-            {% if "manager_image_edit" in page_perms or request.user.userprofile in page.admins.all %}    
-            <p><a id="delete_image" href="{% url 'campaign_image_delete' page_slug=page.page_slug campaign_slug=campaign.campaign_slug campaign_pk=campaign.pk image_pk=image.pk %}">Delete Image</a></p>
-            <p><a id="update_profile" href="{% url 'campaign_profile_update' page_slug=page.page_slug campaign_slug=campaign.campaign_slug campaign_pk=campaign.pk image_pk=image.pk %}">Update Profile Image</a></p></li>
+            {% if "manager_image_edit" in page_perms or request.user.userprofile in campaign.page.admins.all %}    
+            <p><a id="delete_image" href="{% url 'campaign_image_delete' page_slug=campaign.page.page_slug campaign_slug=campaign.campaign_slug campaign_pk=campaign.pk image_pk=image.pk %}">Delete Image</a></p>
+            <p><a id="update_profile" href="{% url 'campaign_profile_update' page_slug=campaign.page.page_slug campaign_slug=campaign.campaign_slug campaign_pk=campaign.pk image_pk=image.pk %}">Update Profile Image</a></p></li>
             {% endif %}
         {% endfor %}
     </ul>
 
     <h3>Donations</h3>
-    {% if donations %}
+    {% if campaign.donations %}
 
         <h4>Top Donors</h4>
         <ul>
-            {% for a, b in top_donors %}
+            {% for a, b in campaign.top_donors %}
                 <li>{{ b.amount|cents_to_dollars }} - {{ b.first_name }} {{ b.last_name }}</li>
             {% endfor %}
         </ul>
 
         <h4>All Donations</h4>
         <ul>
-            {% for d in donations %}
+            {% for d in campaign.donations %}
                 <li>{{ d.amount|cents_to_dollars }} {% if not d.anonymous %}- {{ d.user.first_name }} {{ d.user.last_name }} {% endif %}@ {{ d.date }}
                     {% if d.comment %}
                         <ul>

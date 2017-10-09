@@ -1,17 +1,21 @@
+from collections import OrderedDict
+
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Sum
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 
-from page.models import Page
-from userprofile.models import UserProfile
-
+from comments.models import Comment
+from donation.models import Donation
 from pagefund import config
 
+
 class Campaign(models.Model):
-    campaign_admins = models.ManyToManyField(UserProfile, related_name='campaign_admins', blank=True)
-    campaign_managers = models.ManyToManyField(UserProfile, related_name='campaign_managers', blank=True)
+    campaign_admins = models.ManyToManyField('userprofile.UserProfile', related_name='campaign_admins', blank=True)
+    campaign_managers = models.ManyToManyField('userprofile.UserProfile', related_name='campaign_managers', blank=True)
     campaign_slug = models.SlugField(max_length=255)
     city = models.CharField(max_length=255, blank=True)
     created_on = models.DateTimeField(default=timezone.now)
@@ -119,6 +123,41 @@ class Campaign(models.Model):
         elif not self.id:
             self.campaign_slug = slugify(self.name)
             super(Campaign, self).save(*args, **kwargs)
+
+    def top_donors(self):
+        donors = Donation.objects.filter(campaign=self).values_list('user', flat=True).distinct()
+        top_donors = {}
+        for d in donors:
+            user = get_object_or_404(User, pk=d)
+            total_amount = Donation.objects.filter(user=user, campaign=self, anonymous=False).aggregate(Sum('amount')).get('amount__sum')
+            top_donors[d] = {
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'amount': total_amount
+            }
+        top_donors = OrderedDict(sorted(top_donors.items(), key=lambda t: t[1]['amount'], reverse=True))
+        top_donors = list(top_donors.items())[:10]
+        return top_donors
+
+    def images(self):
+        return CampaignImages.objects.filter(campaign=self)
+
+    def profile_image(self):
+        try:
+            return CampaignImages.objects.get(campaign=self, campaign_profile=True)
+        except CampaignImages.MultipleObjectsReturned:
+            # create an exception for future use
+            print("multiple profile images returned")
+
+    def donations(self):
+        return Donation.objects.filter(campaign=self).order_by('-date')
+
+    def managers(self):
+        return self.campaign_managers.all()
+
+    def comments(self):
+        return Comment.objects.filter(campaign=self, deleted=False).order_by('-date')
+
 
 class CampaignImages(models.Model):
     campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE)
