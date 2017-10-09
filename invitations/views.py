@@ -31,10 +31,16 @@ def pending_invitations(request):
     )
     return render(request, 'invitations/pending_invitations.html', {'invitations': invitations})
 
+def invitation_is_good(request, invitation, key):
+    if (key == invitation.key) and (request.user.email == invitation.invite_to):
+        return True
+    else:
+        return False
+
 @login_required(login_url='signup')
 def accept_invitation(request, invitation_pk, key):
     invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
-    if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key) and (request.user.email == invitation.invite_to):
+    if invitation_is_good(request, invitation, key) == True:
         permissions = {
             'manager_edit': invitation.manager_edit,
             'manager_delete': invitation.manager_delete,
@@ -62,7 +68,7 @@ def accept_invitation(request, invitation_pk, key):
 @login_required(login_url='signup')
 def accept_general_invitation(request, invitation_pk, key):
     invitation = get_object_or_404(models.GeneralInvitation, pk=invitation_pk)
-    if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key) and (request.user.email == invitation.invite_to):
+    if invitation_is_good(request, invitation, key) == True:
         remove_invitation(invitation_pk, "general", "True", "False")
         return HttpResponseRedirect(reverse('home'))
     else:
