@@ -53,7 +53,7 @@
     <h2>Invitations I've Sent</h2>
     <ul>
         {% for i in userprofile.invitations %}
-            <li>Invitation to {{ i.page.name }} sent to {{ i.invite_to }} on {{ i.date_created }}</li>
+            <li>Invitation to {% if i.page %}{{ i.page.name }}{% elif i.campaign %}{{ i.campaign.name }}{% endif %} sent to {{ i.invite_to }} on {{ i.date_created }}</li>
         {% endfor %}
     </ul>
 

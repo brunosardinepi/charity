@@ -19,6 +19,7 @@ from . import views
 from campaign.models import Campaign
 from invitations.models import GeneralInvitation
 from page.models import Page
+from pagefund import config
 
 
 class HomeTest(TestCase):
@@ -382,7 +383,7 @@ class AuthenticationBackendTests(TestCase):
 
 class MailServerTest(TestCase):
     def test_mail_server_ping(self):
-        host = "10.132.5.139"
+        host = config.settings["email_host"]
         response = os.system("ping -c 1 " + host)
 
         self.assertEqual(response, 0)
