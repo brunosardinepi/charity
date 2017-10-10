@@ -86,11 +86,11 @@ class UserProfile(models.Model):
     def get_absolute_url(self):
         return reverse('userprofile:userprofile')
 
+    def admin_campaigns(self):
+        return self.campaign_admins.filter(deleted=False)
+
     def admin_pages(self):
         return self.page_admins.filter(deleted=False)
-
-    def campaigns(self):
-        return self.campaign_admins.filter(deleted=False)
 
     def donations(self):
         return Donation.objects.filter(user=self.user)
@@ -100,6 +100,9 @@ class UserProfile(models.Model):
 
     def invitations(self):
         return ManagerInvitation.objects.filter(invite_from=self.user, expired=False)
+
+    def manager_campaigns(self):
+        return self.campaign_managers.filter(deleted=False)
 
     def manager_pages(self):
         return self.page_managers.filter(deleted=False)

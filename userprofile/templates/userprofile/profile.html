@@ -36,10 +36,17 @@
 
     <h2>Campaigns I Admin</h2>
     <ul>
-        {% for c in userprofile.campaigns %}
+        {% for c in userprofile.admin_campaigns %}
             <li><a href="{% url 'campaign' page_slug=c.page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a></li>
         {% endfor %}
     </ul>
+
+    <h2>Campaigns I Manage</h2>
+    <ul>
+        {% for c in userprofile.manager_campaigns %}
+            <li><a href="{% url 'campaign' page_slug=c.page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a></li>
+        {% endfor %}
+    </ul>   
 
     <h2>Page Subscriptions</h2>
     <ul>
