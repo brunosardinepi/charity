@@ -9,6 +9,8 @@ Release date: TBD
 
 ### Additions
 
+* Managed campaigns added to user profile
+
 ### Changes
 
 * Moved to fat models
