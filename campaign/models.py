@@ -129,7 +129,7 @@ class Campaign(models.Model):
         top_donors = {}
         for d in donors:
             user = get_object_or_404(User, pk=d)
-            total_amount = Donation.objects.filter(user=user, campaign=self, anonymous=False).aggregate(Sum('amount')).get('amount__sum')
+            total_amount = Donation.objects.filter(user=user, campaign=self, anonymous_donor=False).aggregate(Sum('amount')).get('amount__sum')
             if total_amount is not None:
                 top_donors[d] = {
                     'first_name': user.first_name,

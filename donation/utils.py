@@ -97,7 +97,7 @@ def donate(request, form, page=None, campaign=None):
         page = campaign.page
     Donation.objects.create(
         amount=amount,
-        anonymous=form.cleaned_data['anonymous'],
+        anonymous_donor=form.cleaned_data['anonymous_donor'],
         comment=form.cleaned_data['comment'],
         page=page,
         campaign=campaign,

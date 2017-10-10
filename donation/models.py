@@ -5,7 +5,8 @@ from django.utils import timezone
 
 class Donation(models.Model):
     amount = models.IntegerField()
-    anonymous = models.BooleanField(default=False)
+    anonymous_amount = models.BooleanField(default=False)
+    anonymous_donor = models.BooleanField(default=False)
     campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE, blank=True, null=True)
     comment = models.TextField(blank=True)
     date = models.DateTimeField(default=timezone.now)

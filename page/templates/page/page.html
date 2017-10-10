@@ -255,7 +255,7 @@
         <h4>All Donations</h4>
         <ul>
             {% for d in page.donations %}
-                <li>{{ d.amount|cents_to_dollars }} {% if not d.anonymous %}- {{ d.user.first_name }} {{ d.user.last_name }} {% endif %}@ {{ d.date }}{% if d.campaign %} via <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign.name }}</a>{% endif %}
+                <li>{{ d.amount|cents_to_dollars }} {% if not d.anonymous_donor %}- {{ d.user.first_name }} {{ d.user.last_name }} {% endif %}@ {{ d.date }}{% if d.campaign %} via <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign.name }}</a>{% endif %}
                     {% if d.comment %}
                         <ul>
                             <li>{{ d.comment }}</li>
@@ -318,7 +318,7 @@
         form.addEventListener('submit', function(event) {
             event.preventDefault();
 
-            if (document.getElementById("id_anonymous").checked) {
+            if (document.getElementById("id_anonymous_donor").checked) {
                 var extraDetails = {};
             } else {
                 var extraDetails = {
