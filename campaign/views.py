@@ -16,6 +16,7 @@ from . import forms
 from . import models
 from comments.forms import CommentForm
 from donation.models import Donation
+from donation.utils import get_card_source
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
 from page.forms import PageDonateForm
@@ -274,36 +275,13 @@ def campaign_donate(request, campaign_pk):
         form = PageDonateForm(request.POST)
         if form.is_valid():
             amount = form.cleaned_data['amount'] * 100
-#            stripe_fee = int(amount * 0.029) + 30
-#            pagefund_fee = int(amount * config.settings['pagefund_fee'])
-#            final_amount = amount - stripe_fee - pagefund_fee
             final_amount = utils.donation_amount(amount)
             if form.cleaned_data['save_card'] == True:
                 if request.user.is_authenticated:
-                    customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
-
-                    customer_cards = request.user.userprofile.stripecard_set.all()
-#                    print("customer_cards = %s" % customer_cards)
-                    card_check = stripe.Token.retrieve(request.POST.get('stripeToken'))
-#                    print("card_check fingerprint = %s" % card_check['card']['fingerprint'])
-                    customer_card_dict = {}
-                    if customer_cards:
-#                        print("there are customer_cards")
-                        for c in customer_cards:
-                            if c.stripe_card_fingerprint == card_check['card']['fingerprint']:
-                                card_source = c.stripe_card_id
-#                                print("existing card_source = %s" % card_source)
-                                break
-                            else:
-                                card_source = None
-                    else:
-                        card_source = None
+                    customer, card_source = get_card_source(request)
 
                     if card_source is None:
-#                        print("card_source is None")
                         card_source = customer.sources.create(source=request.POST.get('stripeToken'))
-#                        print("card_source = %s" % card_source.id)
-#                        print("card_source_fingerprint = %s" % card_source.fingerprint)
                         UserProfileModels.StripeCard.objects.create(
                             user=request.user.userprofile,
                             stripe_card_id=card_source.id,

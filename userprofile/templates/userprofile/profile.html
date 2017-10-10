@@ -67,9 +67,9 @@
     <p><a href="{% url 'userprofile:profile_image_upload' %}">Upload Image</a></p>
 
     <h3>Saved Credit Cards</h3>
-    {% if userprofile.cards %}
+    {% if cards %}
         <ul>
-            {% for x, c in userprofile.cards.items %}
+            {% for x, c in cards.items %}
                 <form action="{% url 'userprofile:update_card' %}" method="post">
                     {% csrf_token %}
                     <input type="text" name="name" value="{{ c.name }}" placeholder="Card name" maxlength="100" id="id_name" />

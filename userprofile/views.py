@@ -8,36 +8,12 @@ import stripe
 
 from . import forms
 from . import models
+from .utils import get_user_credit_cards
 from donation.models import Donation
 from invitations.models import ManagerInvitation
 from page import models as PageModels
 from pagefund import config, settings
 
-
-@login_required
-def get_user_credit_cards(userprofile):
-    cards = {}
-    if not settings.TESTING:
-        try:
-            sc = stripe.Customer.retrieve(userprofile.stripe_customer_id).sources.all(object='card')
-            for c in sc:
-                card = get_object_or_404(models.StripeCard, stripe_card_id=c.id)
-                cards[card.id] = {
-                    'exp_month': c.exp_month,
-                    'exp_year': c.exp_year,
-                    'name': card.name,
-                    'id': card.id
-                }
-        except stripe.error.InvalidRequestError:
-            metadata = {'user_pk': userprofile.user.pk}
-            customer = stripe.Customer.create(
-                email=userprofile.user.email,
-                metadata=metadata
-            )
-
-            userprofile.stripe_customer_id = customer.id
-            userprofile.save()
-    return cards
 
 @login_required
 def userprofile(request):

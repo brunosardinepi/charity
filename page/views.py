@@ -19,6 +19,7 @@ from campaign.models import Campaign
 from comments.forms import CommentForm
 from comments.models import Comment
 from donation.models import Donation
+from donation.utils import get_card_source
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
 from userprofile import models as UserProfileModels
@@ -307,20 +308,7 @@ def page_donate(request, page_pk):
 
             if form.cleaned_data['save_card'] == True:
                 if request.user.is_authenticated:
-                    customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
-
-                    customer_cards = request.user.userprofile.stripecard_set.all()
-                    card_check = stripe.Token.retrieve(request.POST.get('stripeToken'))
-                    customer_card_dict = {}
-                    if customer_cards:
-                        for c in customer_cards:
-                            if c.stripe_card_fingerprint == card_check['card']['fingerprint']:
-                                card_source = c.stripe_card_id
-                                break
-                            else:
-                                card_source = None
-                    else:
-                        card_source = None
+                    customer, card_source = get_card_source(request)
 
                     if card_source is None:
                         card_source = customer.sources.create(source=request.POST.get('stripeToken'))
