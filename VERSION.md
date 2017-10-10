@@ -3,6 +3,21 @@
 This is the version history for PageFund development.
 
 
+## Version 0.9.0
+
+Release date: TBD
+
+### Additions
+
+### Changes
+
+* Moved to fat models
+
+### Fixes
+
+* Campaign invitations showed up blank on the user profile
+
+
 ## Version 0.8.0
 
 Release date: 10/06/2017
