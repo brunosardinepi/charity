@@ -1,4 +1,5 @@
-from allauth.account.signals import user_signed_up
+import smtplib
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -6,11 +7,13 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 
+from allauth.account.signals import user_signed_up
+import stripe
+
+from donation.models import Donation
+from invitations.models import ManagerInvitation
 from pagefund import config, settings
 from pagefund.email import email
-
-import smtplib
-import stripe
 
 
 stripe.api_key = config.settings['stripe_api_sk']
@@ -82,6 +85,30 @@ class UserProfile(models.Model):
 
     def get_absolute_url(self):
         return reverse('userprofile:userprofile')
+
+    def admin_pages(self):
+        return self.page_admins.filter(deleted=False)
+
+    def campaigns(self):
+        return self.campaign_admins.filter(deleted=False)
+
+    def donations(self):
+        return Donation.objects.filter(user=self.user)
+
+    def images(self):
+        return UserImages.objects.filter(user=self)
+
+    def invitations(self):
+        return ManagerInvitation.objects.filter(invite_from=self.user, expired=False)
+
+    def manager_pages(self):
+        return self.page_managers.filter(deleted=False)
+
+    def profile_image(self):
+        return UserImages.objects.filter(user=self, profile_picture=True)
+
+    def subscriptions(self):
+        return self.subscribers.filter(deleted=False)
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):

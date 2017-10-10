@@ -15,39 +15,35 @@ from pagefund import config, settings
 
 
 @login_required
+def get_user_credit_cards(userprofile):
+    cards = {}
+    if not settings.TESTING:
+        try:
+            sc = stripe.Customer.retrieve(userprofile.stripe_customer_id).sources.all(object='card')
+            for c in sc:
+                card = get_object_or_404(models.StripeCard, stripe_card_id=c.id)
+                cards[card.id] = {
+                    'exp_month': c.exp_month,
+                    'exp_year': c.exp_year,
+                    'name': card.name,
+                    'id': card.id
+                }
+        except stripe.error.InvalidRequestError:
+            metadata = {'user_pk': userprofile.user.pk}
+            customer = stripe.Customer.create(
+                email=userprofile.user.email,
+                metadata=metadata
+            )
+
+            userprofile.stripe_customer_id = customer.id
+            userprofile.save()
+    return cards
+
+@login_required
 def userprofile(request):
     userprofile = get_object_or_404(models.UserProfile, user_id=request.user.id)
     if userprofile.user == request.user:
-        userimages = models.UserImages.objects.filter(user=request.user.id)
-        userprofileimage = models.UserImages.objects.filter(user=request.user.id, profile_picture=True)
-        admin_pages = userprofile.page_admins.filter(deleted=False)
-        manager_pages = userprofile.page_managers.filter(deleted=False)
-        subscriptions = userprofile.subscribers.filter(deleted=False)
-        campaigns = userprofile.campaign_admins.filter(deleted=False)
-        invitations = ManagerInvitation.objects.filter(invite_from=request.user, expired=False)
-        donations = Donation.objects.filter(user=request.user)
-
-        cards = {}
-        if not settings.TESTING:
-            try:
-                sc = stripe.Customer.retrieve(userprofile.stripe_customer_id).sources.all(object='card')
-                for c in sc:
-                    card = get_object_or_404(models.StripeCard, stripe_card_id=c.id)
-                    cards[card.id] = {
-                        'exp_month': c.exp_month,
-                        'exp_year': c.exp_year,
-                        'name': card.name,
-                        'id': card.id
-                    }
-            except stripe.error.InvalidRequestError:
-                metadata = {'user_pk': request.user.pk}
-                customer = stripe.Customer.create(
-                    email=request.user.email,
-                    metadata=metadata
-                )
-
-                request.user.userprofile.stripe_customer_id = customer.id
-                request.user.save()
+        cards = get_user_credit_cards(userprofile)
 
         data = {
             'first_name': request.user.first_name,
@@ -63,17 +59,9 @@ def userprofile(request):
             return HttpResponseRedirect(userprofile.get_absolute_url())
         return render(request, 'userprofile/profile.html', {
             'userprofile': userprofile,
-            'userimages': userimages,
-            'userprofileimage': userprofileimage,
-            'admin_pages': admin_pages,
-            'manager_pages': manager_pages,
-            'subscriptions': subscriptions,
-            'campaigns': campaigns,
-            'invitations': invitations,
             'form': form,
             'cards': cards,
-            'api_pk': config.settings['stripe_api_pk'],
-            'donations': donations
+            'api_pk': config.settings['stripe_api_pk']
         })
     else:
         raise Http404
@@ -108,12 +96,11 @@ def profile_image_upload(request):
 
 @login_required
 def user_image_delete(request, image_pk):
-    userprofile = get_object_or_404(models.UserProfile, user_id=request.user.id)
+    # needs test
     image = get_object_or_404(models.UserImages, pk=image_pk)
-    image.delete()
-    return HttpResponseRedirect(userprofile.get_absolute_url())
-#else:
-#    raise Http404
+    if request.user.userprofile == image.userprofile:
+        image.delete()
+        return HttpResponseRedirect(userprofile.get_absolute_url())
 
 @login_required
 def user_profile_update(request, image_pk):
@@ -132,8 +119,6 @@ def user_profile_update(request, image_pk):
         image.profile_picture = True
         image.save()
     return HttpResponseRedirect(userprofile.get_absolute_url())
-#else:
-#    raise Http404
 
 @login_required
 def add_card(request):
@@ -142,26 +127,19 @@ def add_card(request):
             customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
 
             customer_cards = request.user.userprofile.stripecard_set.all()
-            print("customer_cards = %s" % customer_cards)
             card_check = stripe.Token.retrieve(request.POST.get('stripeToken'))
-            print("card_check fingerprint = %s" % card_check['card']['fingerprint'])
             customer_card_dict = {}
             if customer_cards:
-                print("there are customer_cards")
                 for c in customer_cards:
                     if c.stripe_card_fingerprint == card_check['card']['fingerprint']:
                         card_source = c.stripe_card_id
-                        print("existing card_source = %s" % card_source)
                         break
                     else:
                         card_source = None
             else:
                 card_source = None
             if card_source is None:
-                print("card_source is None")
                 card_source = customer.sources.create(source=request.POST.get('stripeToken'))
-                print("card_source = %s" % card_source.id)
-                print("card_source_fingerprint = %s" % card_source.fingerprint)
                 models.StripeCard.objects.create(
                     user=request.user.userprofile,
                     stripe_card_id=card_source.id,

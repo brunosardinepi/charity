@@ -10,9 +10,7 @@
 
 {% block body_content %}
 
-    {% for profile in userprofileimage %}
-        <img src="{{ profile.image.url }}" width="300"/>
-    {% endfor %}
+    <img src="{{ userprofile.profile_image.image.url }}" width="300"/>
     
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -24,28 +22,28 @@
 
     <h2>Pages I Admin</h2>
     <ul>
-        {% for p in admin_pages %}
+        {% for p in userprofile.admin_pages %}
             <li><a href="{% url 'page' page_slug=p.page_slug %}">{{ p.name }}</a></li>
         {% endfor %}
     </ul>   
 
     <h2>Pages I Manage</h2>
     <ul>
-        {% for p in manager_pages %}
+        {% for p in userprofile.manager_pages %}
             <li><a href="{% url 'page' page_slug=p.page_slug %}">{{ p.name }}</a></li>
         {% endfor %}
     </ul>   
 
     <h2>Campaigns I Admin</h2>
     <ul>
-        {% for c in campaigns %}
+        {% for c in userprofile.campaigns %}
             <li><a href="{% url 'campaign' page_slug=c.page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a></li>
         {% endfor %}
     </ul>
 
     <h2>Page Subscriptions</h2>
     <ul>
-        {% for s in subscriptions %}
+        {% for s in userprofile.subscriptions %}
             <li><a href="{% url 'page' page_slug=s.page_slug %}">{{ s.name }}</a></li>
         {% endfor %}
     </ul>
@@ -54,17 +52,17 @@
 
     <h2>Invitations I've Sent</h2>
     <ul>
-        {% for i in invitations %}
-            <li>Invitation to {{ page.name }} sent to {{ i.invite_to }} on {{ i.date_created }}</li>
+        {% for i in userprofile.invitations %}
+            <li>Invitation to {{ i.page.name }} sent to {{ i.invite_to }} on {{ i.date_created }}</li>
         {% endfor %}
     </ul>
 
     <p><a href="{% url 'userprofile:profile_image_upload' %}">Upload Image</a></p>
 
     <h3>Saved Credit Cards</h3>
-    {% if cards %}
+    {% if userprofile.cards %}
         <ul>
-            {% for x, c in cards.items %}
+            {% for x, c in userprofile.cards.items %}
                 <form action="{% url 'userprofile:update_card' %}" method="post">
                     {% csrf_token %}
                     <input type="text" name="name" value="{{ c.name }}" placeholder="Card name" maxlength="100" id="id_name" />
@@ -90,9 +88,9 @@
     </form>
 
     <h3>Donations</h3>
-    {% if donations %}
+    {% if userprofile.donations %}
         <ul>
-            {% for d in donations %}
+            {% for d in userprofile.donations %}
                 <li>{{ d.amount|cents_to_dollars }} to <a href="{% url 'page' page_slug=d.page.page_slug %}">{{ d.page }}</a>{% if d.campaign %} via <a href="{% url 'campaign' page_slug=d.page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign }}</a>{% endif %} @ {{ d.date }}</li>            
             {% endfor %}
         </ul>
@@ -100,7 +98,7 @@
 
     <h3>User Images</h3>
     <ul>
-        {% for image in userimages %}
+        {% for image in userprofile.images %}
             <li><img src="{{ image.image.url }}" width="200" />{{ image.caption }}<br>
             <p><a href="{% url 'userprofile:user_image_delete' image_pk=image.pk %}">Delete Image</a></p>
             <p><a href="{% url 'userprofile:user_profile_update' image_pk=image.pk %}">Update Profile Image</a></p></li>
