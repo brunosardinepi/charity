@@ -19,7 +19,7 @@ from campaign.models import Campaign
 from comments.forms import CommentForm
 from comments.models import Comment
 from donation.models import Donation
-from donation.utils import get_card_source
+from donation.utils import donate
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
 from userprofile import models as UserProfileModels
@@ -301,55 +301,7 @@ def page_donate(request, page_pk):
     if request.method == "POST":
         form = forms.PageDonateForm(request.POST)
         if form.is_valid():
-            amount = form.cleaned_data['amount'] * 100
-            stripe_fee = int(amount * 0.029) + 30
-            pagefund_fee = int(amount * config.settings['pagefund_fee'])
-            final_amount = amount - stripe_fee - pagefund_fee
-
-            if form.cleaned_data['save_card'] == True:
-                if request.user.is_authenticated:
-                    customer, card_source = get_card_source(request)
-
-                    if card_source is None:
-                        card_source = customer.sources.create(source=request.POST.get('stripeToken'))
-                        UserProfileModels.StripeCard.objects.create(
-                            user=request.user.userprofile,
-                            stripe_card_id=card_source.id,
-                            stripe_card_fingerprint=card_source.fingerprint
-                        )
-
-                    charge = stripe.Charge.create(
-                        amount=amount,
-                        currency="usd",
-                        customer=customer.id,
-                        source=card_source,
-                        description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
-                        receipt_email=request.user.email,
-                        destination={
-                            "amount": final_amount,
-                            "account": page.stripe_account_id,
-                        }
-                    )
-            else:
-                charge = stripe.Charge.create(
-                    amount=amount,
-                    currency="usd",
-                    source=request.POST.get('stripeToken'),
-                    description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
-                    receipt_email=request.user.email,
-                    destination={
-                        "amount": final_amount,
-                        "account": page.stripe_account_id,
-                    }
-                )
-            Donation.objects.create(
-                amount=amount,
-                anonymous=form.cleaned_data['anonymous'],
-                comment=form.cleaned_data['comment'],
-                page=page,
-                stripe_charge_id=charge.id,
-                user=request.user
-            )
+            donate(request=request, form=form, page=page, campaign=None)
             return HttpResponseRedirect(page.get_absolute_url())
 
 @login_required
