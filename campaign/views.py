@@ -15,11 +15,11 @@ import stripe
 from . import forms
 from . import models
 from comments.forms import CommentForm
+from donation.forms import DonateForm
 from donation.models import Donation
 from donation.utils import donate
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
-from page.forms import PageDonateForm
 from page.models import Page
 from pagefund import config, utils
 from pagefund.email import email
@@ -32,7 +32,7 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
         raise Http404
     else:
         form = CommentForm
-        donate_form = PageDonateForm()
+        donate_form = DonateForm()
 
         if request.method == "POST":
             utils.update_manager_permissions(request.POST.getlist('permissions[]'), campaign)
@@ -272,7 +272,7 @@ def campaign_profile_update(request, page_slug, campaign_slug, campaign_pk, imag
 def campaign_donate(request, campaign_pk):
     campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
     if request.method == "POST":
-        form = PageDonateForm(request.POST)
+        form = DonateForm(request.POST)
         if form.is_valid():
             donate(request=request, form=form, page=None, campaign=campaign)
             return HttpResponseRedirect(campaign.get_absolute_url())

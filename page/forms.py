@@ -53,9 +53,3 @@ class PageBankForm(forms.Form):
     account_holder_last_name = forms.CharField(max_length=255)
     account_number = forms.CharField(max_length=12)
     routing_number = forms.CharField(max_length=9)
-
-class PageDonateForm(forms.Form):
-    anonymous = forms.BooleanField(required=False)
-    comment = forms.CharField(widget=forms.Textarea, required=False)
-    amount = forms.IntegerField()
-    save_card = forms.BooleanField(required=False)

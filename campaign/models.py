@@ -130,11 +130,12 @@ class Campaign(models.Model):
         for d in donors:
             user = get_object_or_404(User, pk=d)
             total_amount = Donation.objects.filter(user=user, campaign=self, anonymous=False).aggregate(Sum('amount')).get('amount__sum')
-            top_donors[d] = {
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'amount': total_amount
-            }
+            if total_amount is not None:
+                top_donors[d] = {
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                    'amount': total_amount
+                }
         top_donors = OrderedDict(sorted(top_donors.items(), key=lambda t: t[1]['amount'], reverse=True))
         top_donors = list(top_donors.items())[:10]
         return top_donors

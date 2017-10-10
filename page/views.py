@@ -18,6 +18,7 @@ from . import models
 from campaign.models import Campaign
 from comments.forms import CommentForm
 from comments.models import Comment
+from donation.forms import DonateForm
 from donation.models import Donation
 from donation.utils import donate
 from invitations.models import ManagerInvitation
@@ -36,7 +37,7 @@ def page(request, page_slug):
         raise Http404
     else:
         form = CommentForm
-        donate_form = forms.PageDonateForm()
+        donate_form = DonateForm()
 
         try:
             user_subscription_check = page.subscribers.get(user_id=request.user.pk)
@@ -299,7 +300,7 @@ def page_image_upload(request, page_slug):
 def page_donate(request, page_pk):
     page = get_object_or_404(models.Page, pk=page_pk)
     if request.method == "POST":
-        form = forms.PageDonateForm(request.POST)
+        form = DonateForm(request.POST)
         if form.is_valid():
             donate(request=request, form=form, page=page, campaign=None)
             return HttpResponseRedirect(page.get_absolute_url())
