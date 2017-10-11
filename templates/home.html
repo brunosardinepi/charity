@@ -1,5 +1,6 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
+{% load donation_extras %}
 {% load page_extras %}
 
 {% block title %} Home | {{ block.super }}{% endblock %}
@@ -64,7 +65,7 @@ if (window.location.hash == '#_=_' || window.location.hash == '#'){
             <p><a href="{% url 'invite' %}">Invite</a></p>
         {% endif %}
     {% endif %}
-    <h2>Total raised: ${{ donations }}</h2>
+    <h2>Total raised: {{ donations|cents_to_dollars }}</h2>
     <p><a href="{% url 'page_create' %}">Raise money</a></p>
     <p><a href="{% url 'search:search' %}">Donate money</a></p>
 

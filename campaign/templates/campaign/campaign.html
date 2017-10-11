@@ -108,7 +108,7 @@
     <p>Location: {% if campaign.city %}{{ campaign.city }}{% endif %}{% if campaign.city and campaign.state %}, {% endif %}{% if campaign.state %}{{ campaign.state }}{% endif %}</p>
     <p>Description: {{ campaign.description }}</p>
     <p>Goal: ${{ campaign.goal }}</p>
-    <p>${{ campaign.donation_money }} raised by {{ campaign.donation_count }} donors</p>
+    <p>{{ campaign.donation_money|cents_to_dollars }} raised by {{ campaign.donation_count }} donors</p>
 
     <h3>Comments</h3>
     {% if request.user.is_authenticated %}

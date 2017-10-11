@@ -119,7 +119,7 @@
     <p>Contact email: {{ page.contact_email }}</p>
     <p>Contact phone: {{ page.contact_phone }}</p>
     <p>Website: {{ page.website }}</p>
-    <p>${{ page.donation_money }} raised by {{ page.donation_count }} donors</p>
+    <p>{{ page.donation_money|cents_to_dollars }} raised by {{ page.donation_count }} donors</p>
 
     {% if request.user.is_authenticated %}
         <button id="subscribe" name="{{ subscribe_attr.name }}" style="background-color:{{ subscribe_attr.color }}">{{ subscribe_attr.value  }}</button>
@@ -130,7 +130,7 @@
     <h3>Active Campaigns</h3>
     <ul>
         {% for campaign in page.active_campaigns %}
-            <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> (${{ campaign.donation_money }} of ${{ campaign.goal }} goal)</li>
+            <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> ({{ campaign.donation_money|cents_to_dollars }} of ${{ campaign.goal }} goal)</li>
         {% endfor %}
     </ul>
 

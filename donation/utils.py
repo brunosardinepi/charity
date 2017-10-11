@@ -29,6 +29,26 @@ def get_card_source(request):
         card_source = None
     return customer, card_source
 
+def unique_donor_check(request, page=None, campaign=None):
+    page_donations = Donation.objects.filter(page=page, user=request.user)
+    if campaign is None:
+        if page_donations:
+            return False
+        else:
+            return "page"
+    else:
+        campaign_donations = Donation.objects.filter(campaign=campaign, user=request.user)
+        if page_donations:
+            if campaign_donations:
+                return False
+            else:
+                return "campaign"
+        else:
+            if campaign_donations:
+                return False
+            else:
+                return "both"
+
 def donate(request, form, page=None, campaign=None):
     amount = form.cleaned_data['amount'] * 100
     stripe_fee = int(amount * 0.029) + 30
@@ -95,6 +115,19 @@ def donate(request, form, page=None, campaign=None):
             )
     if page is None:
         page = campaign.page
+        campaign.donation_money += amount
+    page.donation_money += amount
+    unique_donor = unique_donor_check(request=request, page=page, campaign=campaign)
+    if unique_donor == "page":
+        page.donation_count += 1
+    elif unique_donor == "campaign":
+        campaign.donation_count += 1
+    elif unique_donor == "both":
+        page.donation_count += 1
+        campaign.donation_count += 1
+    if campaign is not None:
+        campaign.save()
+    page.save()
     Donation.objects.create(
         amount=amount,
         anonymous_amount=form.cleaned_data['anonymous_amount'],
