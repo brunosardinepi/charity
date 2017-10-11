@@ -10,6 +10,8 @@ Release date: TBD
 ### Additions
 
 * Managed campaigns added to user profile
+* Option to cover Stripe fees when donating
+* Option to hide donation amount
 
 ### Changes
 
