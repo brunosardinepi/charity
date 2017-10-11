@@ -222,7 +222,7 @@
         <h4>All Donations</h4>
         <ul>
             {% for d in campaign.donations %}
-                <li>{{ d.amount|cents_to_dollars }} {% if not d.anonymous_donor %}- {{ d.user.first_name }} {{ d.user.last_name }} {% endif %}@ {{ d.date }}
+                <li>{% if d.anonymous_amount and d.anonymous_donor %}Anonymous donation{% endif %}{% if not d.anonymous_amount %}{{ d.amount|cents_to_dollars }}{% endif %}{% if not d.anonymous_amount and not d.anonymous_donor %} - {% endif %}{% if not d.anonymous_donor %}{{ d.user.first_name }} {{ d.user.last_name }}{% endif %} @ {{ d.date }}
                     {% if d.comment %}
                         <ul>
                             <li>{{ d.comment }}</li>
