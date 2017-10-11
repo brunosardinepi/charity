@@ -56,8 +56,8 @@ class PageTest(TestCase):
             city='Houston',
             state='Texas',
             description='This is a description for Test Page.',
-            donation_count='20',
-            donation_money='30',
+            donation_count=20,
+            donation_money=30,
             category='Animal',
             contact_email='contact@page.com',
             contact_phone='111-111-1111',
@@ -80,8 +80,8 @@ class PageTest(TestCase):
             city='Chicago',
             state='IL',
             description='Im in the office.',
-            donation_count='203',
-            donation_money='3055',
+            donation_count=203,
+            donation_money=3055,
             category='Animal',
             deleted=True
         )
@@ -91,8 +91,8 @@ class PageTest(TestCase):
             page=self.page,
             description='This is a description for Test Campaign.',
             goal='11',
-            donation_count='21',
-            donation_money='31'
+            donation_count=21,
+            donation_money=31
         )
 
         self.campaign2 = CampaignModels.Campaign.objects.create(
@@ -100,8 +100,8 @@ class PageTest(TestCase):
             page=self.page,
             description='My cat died yesterday',
             goal='12',
-            donation_count='22',
-            donation_money='33'
+            donation_count=22,
+            donation_money=33
         )
 
         self.invitation = ManagerInvitation.objects.create(
@@ -144,14 +144,14 @@ class PageTest(TestCase):
         self.assertContains(response, self.page.type, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count, status_code=200)
-        self.assertContains(response, self.page.donation_money, status_code=200)
+        self.assertContains(response, int(self.page.donation_money / 100), status_code=200)
         self.assertContains(response, self.page.category, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
         self.assertContains(response, self.campaign.goal, status_code=200)
-        self.assertContains(response, self.campaign.donation_money, status_code=200)
+        self.assertContains(response, int(self.campaign.donation_money / 100), status_code=200)
         self.assertContains(response, self.campaign2.name, status_code=200)
         self.assertContains(response, self.campaign2.goal, status_code=200)
-        self.assertContains(response, self.campaign2.donation_money, status_code=200)
+        self.assertContains(response, int(self.campaign2.donation_money / 100), status_code=200)
         self.assertContains(response, self.page.contact_email, status_code=200)
         self.assertContains(response, self.page.contact_phone, status_code=200)
         self.assertContains(response, self.page.website, status_code=200)
@@ -170,14 +170,14 @@ class PageTest(TestCase):
         self.assertContains(response, self.page.type, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count, status_code=200)
-        self.assertContains(response, self.page.donation_money, status_code=200)
+        self.assertContains(response, int(self.page.donation_money / 100), status_code=200)
         self.assertContains(response, self.page.category, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
         self.assertContains(response, self.campaign.goal, status_code=200)
-        self.assertContains(response, self.campaign.donation_money, status_code=200)
+        self.assertContains(response, int(self.campaign.donation_money / 100), status_code=200)
         self.assertContains(response, self.campaign2.name, status_code=200)
         self.assertContains(response, self.campaign2.goal, status_code=200)
-        self.assertContains(response, self.campaign2.donation_money, status_code=200)
+        self.assertContains(response, int(self.campaign2.donation_money / 100), status_code=200)
         self.assertContains(response, self.page.contact_email, status_code=200)
         self.assertContains(response, self.page.contact_phone, status_code=200)
         self.assertContains(response, self.page.website, status_code=200)

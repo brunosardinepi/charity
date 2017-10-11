@@ -4,7 +4,7 @@ import os
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 from django.core import mail
-from django.db import models
+from django.db.models import Sum
 from django.test import Client, RequestFactory, TestCase
 from django.test.utils import override_settings
 from django.urls import reverse
@@ -71,9 +71,9 @@ class HomeTest(TestCase):
     def test_home_logged_out(self):
         response = self.client.get('/')
 
-        page_donations = self.page.donation_money + self.page2.donation_money
-        campaign_donations = self.campaign.donation_money + self.campaign2.donation_money + self.campaign3.donation_money + self.campaign4.donation_money
-        donations = page_donations + campaign_donations
+        page_donations = Page.objects.filter(deleted=False).aggregate(Sum('donation_money'))
+        campaign_donations = Campaign.objects.filter(deleted=False).aggregate(Sum('donation_money'))
+        donations = int((int(page_donations["donation_money__sum"]) + int(campaign_donations["donation_money__sum"])) / 100)
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, donations, status_code=200)

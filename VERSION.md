@@ -12,6 +12,7 @@ Release date: TBD
 * Managed campaigns added to user profile
 * Option to cover Stripe fees when donating
 * Option to hide donation amount
+* Hooked into Stripe donations to populate total donation amount and count on Pages and Campaigns
 
 ### Changes
 
