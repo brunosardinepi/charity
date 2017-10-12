@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render, reverse
 
 from . import config
 from . import forms
-from .email import email
+from .utils import email
 from campaign.models import Campaign
 from invitations.models import GeneralInvitation
 from page.models import Page

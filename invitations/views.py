@@ -8,7 +8,7 @@ from guardian.shortcuts import assign_perm
 from . import forms
 from . import models
 from pagefund import config
-from pagefund.email import email
+from pagefund.utils import email
 
 
 def remove_invitation(invitation_pk, type, accepted, declined):

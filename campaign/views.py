@@ -23,7 +23,6 @@ from invitations.models import ManagerInvitation
 from invitations.utils import invite
 from page.models import Page
 from pagefund import config, utils
-from pagefund.email import email
 from userprofile import models as UserProfileModels
 
 
@@ -58,19 +57,11 @@ def campaign_create(request, page_slug):
             campaign.save()
             campaign.campaign_admins.add(request.user.userprofile)
 
-#            subject = "Campaign created!"
-#            body = "A Campaign called '%s' has just been created by %s for the '%s' Page." % (
-#                campaign.name,
-#                request.user.email,
-#                page.name
-#            )
             admins = page.admins.all()
             for admin in admins:
-#                email(admin.user.email, subject, body)
                 email_new_campaign(admin.user.email, campaign)
             managers = page.managers.all()
             for manager in managers:
-#                email(manager.user.email, subject, body)
                 email_new_campaign(manager.user.email, campaign)
 
             return HttpResponseRedirect(campaign.get_absolute_url())

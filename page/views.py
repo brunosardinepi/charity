@@ -25,7 +25,6 @@ from invitations.models import ManagerInvitation
 from invitations.utils import invite
 from userprofile import models as UserProfileModels
 from pagefund import config, settings, utils
-from pagefund.email import email
 from pagefund.image import image_upload
 
 
@@ -137,7 +136,7 @@ def page_create(request):
 
             subject = "Page created!"
             body = "You just created a Page for: %s" % page.name
-            email(request.user.email, subject, body)
+            utils.email(request.user.email, subject, body)
             return HttpResponseRedirect(page.get_absolute_url())
     return render(request, 'page/page_create.html', {'page_form': page_form, 'bank_form': bank_form})
 

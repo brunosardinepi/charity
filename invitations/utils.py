@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 
 from invitations.models import ManagerInvitation
 from pagefund import config
-from pagefund.email import email
+from pagefund.utils import email
 
 
 def invite(data):

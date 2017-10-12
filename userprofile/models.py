@@ -13,10 +13,10 @@ import stripe
 from donation.models import Donation
 from invitations.models import ManagerInvitation
 from pagefund import config, settings
-from pagefund.email import email
-
+from pagefund.utils import email
 
 stripe.api_key = config.settings['stripe_api_sk']
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

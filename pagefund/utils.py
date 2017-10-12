@@ -1,8 +1,22 @@
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
+import sendgrid
+from sendgrid.helpers.mail import *
+
+from . import config
 from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 from pagefund import config
+
+
+def email(user_email, subject, body):
+    sg = sendgrid.SendGridAPIClient(apikey=config.settings["sendgrid_api_key"])
+    from_email = Email("no-reply@page.fund")
+    to_email = Email(user_email)
+    subject = subject
+    content = Content("text/plain", body)
+    mail = Mail(from_email, subject, to_email, content)
+    response = sg.client.mail.send.post(request_body=mail.get())
 
 
 def update_manager_permissions(post_data, type):
