@@ -67,11 +67,11 @@ def campaign_create(request, page_slug):
             admins = page.admins.all()
             for admin in admins:
 #                email(admin.user.email, subject, body)
-                email_new_campaign(admin.user.email)
+                email_new_campaign(admin.user.email, campaign)
             managers = page.managers.all()
             for manager in managers:
 #                email(manager.user.email, subject, body)
-                email_new_campaign(manager.user.email)
+                email_new_campaign(manager.user.email, campaign)
 
             return HttpResponseRedirect(campaign.get_absolute_url())
     return render(request, 'campaign/campaign_create.html', {'form': form, 'page': page})
