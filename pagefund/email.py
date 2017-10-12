@@ -1,31 +1,14 @@
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+import sendgrid
+from sendgrid.helpers.mail import *
 
 from . import config
 
-import smtplib
-
 
 def email(user_email, subject, body):
-    username = config.settings['email_user']
-    password = config.settings['email_password']
-
-    from_email = "noreply@page.fund"
-    msg = MIMEMultipart('alternative')
-#    msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % (from_email, user.email, subject)
-    msg['Subject'] = subject
-    msg['From'] = from_email
-    msg['To'] = user_email
-
-    html = body
-    part1 = MIMEText(html, 'html')
-
-    msg.attach(part1)
-
-    server = smtplib.SMTP(config.settings['email_host'], 587)
-    server.ehlo()
-    server.starttls()
-    server.login(username, password)
-#    server.sendmail(from_email, [user.email], msg)
-    server.sendmail(from_email, [user_email], msg.as_string())
-    server.quit()
+    sg = sendgrid.SendGridAPIClient(apikey=config.settings["sendgrid_api_key"])
+    from_email = Email("no-reply@page.fund")
+    to_email = Email(user_email)
+    subject = subject
+    content = Content("text/plain", body)
+    mail = Mail(from_email, subject, to_email, content)
+    response = sg.client.mail.send.post(request_body=mail.get())
