@@ -379,11 +379,3 @@ class AuthenticationBackendTests(TestCase):
                 username=user.username,
                 password=user.username).pk,
             user.pk)
-
-
-class MailServerTest(TestCase):
-    def test_mail_server_ping(self):
-        host = config.settings["email_host"]
-        response = os.system("ping -c 1 " + host)
-
-        self.assertEqual(response, 0)

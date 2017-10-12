@@ -17,6 +17,7 @@ Release date: TBD
 ### Changes
 
 * Moved to fat models
+* Deleted the old mail server (RIP) and moved to G Suite and Sendgrid
 
 ### Fixes
 
