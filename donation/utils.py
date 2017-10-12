@@ -57,7 +57,9 @@ def donate(request, form, page=None, campaign=None):
         pagefund_fee += stripe_fee
     final_amount = amount - stripe_fee - pagefund_fee
 
-    if form.cleaned_data['save_card'] == True:
+    if form.cleaned_data['saved_card'] == True:
+        print(form.cleaned_data['saved_card'])
+    elif form.cleaned_data['save_card'] == True:
         if request.user.is_authenticated:
             customer, card_source = get_card_source(request)
             if card_source is None:

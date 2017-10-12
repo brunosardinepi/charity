@@ -4,11 +4,9 @@
     <div class="form-row">
         {{ donate_form.as_p  }}
         {% if cards %}
-            <select id="saved_card">
-                {% for x, c in cards.items %}
-                    <option value={{ c.id }}>{{ c.name }} ({{ c.last4 }})</option>
-                {% endfor %}
-            </select>
+            {% for x, c in cards.items %}
+                <input type="radio" name="saved-card" value={{ c.id }} />{{ c.name }} ({{ c.last4 }})<br />
+            {% endfor %}
         {% endif %}
         <br />
         <label for="card-element">Credit or debit card</label>
