@@ -110,6 +110,9 @@ class UserProfile(models.Model):
     def profile_image(self):
         return UserImages.objects.filter(user=self, profile_picture=True)
 
+    def saved_cards(self):
+        return StripeCard.objects.filter(user=self.user.userprofile)
+
     def subscriptions(self):
         return self.subscribers.filter(deleted=False)
 
