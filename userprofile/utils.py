@@ -17,7 +17,8 @@ def get_user_credit_cards(userprofile):
                     'exp_month': c.exp_month,
                     'exp_year': c.exp_year,
                     'name': card.name,
-                    'id': card.id
+                    'id': card.id,
+                    'last4': c.last4
                 }
         except stripe.error.InvalidRequestError:
             metadata = {'user_pk': userprofile.user.pk}

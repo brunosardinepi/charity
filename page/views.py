@@ -23,6 +23,7 @@ from donation.models import Donation
 from donation.utils import donate
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
+from userprofile.utils import get_user_credit_cards
 from userprofile import models as UserProfileModels
 from pagefund import config, settings, utils
 from pagefund.image import image_upload
@@ -37,6 +38,11 @@ def page(request, page_slug):
     else:
         form = CommentForm
         donate_form = DonateForm()
+        template_params = {}
+
+        if request.user.is_authenticated:
+            cards = get_user_credit_cards(request.user.userprofile)
+            template_params["cards"] = cards
 
         try:
             user_subscription_check = page.subscribers.get(user_id=request.user.pk)
@@ -50,13 +56,13 @@ def page(request, page_slug):
 
         if request.method == "POST":
              utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
-        return render(request, 'page/page.html', {
-            'page': page,
-            'form': form,
-            'donate_form': donate_form,
-            'subscribe_attr': subscribe_attr,
-            'api_pk': config.settings['stripe_api_pk']
-        })
+
+        template_params["page"] = page
+        template_params["form"] = form
+        template_params["donate_form"] = donate_form
+        template_params["subscribe_attr"] = subscribe_attr
+        template_params["api_pk"] = config.settings['stripe_api_pk']
+        return render(request, 'page/page.html', template_params)
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
