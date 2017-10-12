@@ -14,6 +14,7 @@ import stripe
 
 from . import forms
 from . import models
+from .utils import email_new_campaign
 from comments.forms import CommentForm
 from donation.forms import DonateForm
 from donation.models import Donation
@@ -57,24 +58,20 @@ def campaign_create(request, page_slug):
             campaign.save()
             campaign.campaign_admins.add(request.user.userprofile)
 
-            subject = "Campaign created!"
-#            body = "You just created a Campaign called '%s' for the '%s' Page." % (
+#            subject = "Campaign created!"
+#            body = "A Campaign called '%s' has just been created by %s for the '%s' Page." % (
 #                campaign.name,
+#                request.user.email,
 #                page.name
 #            )
-#            email(request.user.email, subject, body)
-
-            body = "A Campaign called '%s' has just been created by %s for the '%s' Page." % (
-                campaign.name,
-                request.user.email,
-                page.name
-            )
             admins = page.admins.all()
             for admin in admins:
-                email(admin.user.email, subject, body)
+#                email(admin.user.email, subject, body)
+                email_new_campaign(admin.user.email)
             managers = page.managers.all()
             for manager in managers:
-                email(manager.user.email, subject, body)
+#                email(manager.user.email, subject, body)
+                email_new_campaign(manager.user.email)
 
             return HttpResponseRedirect(campaign.get_absolute_url())
     return render(request, 'campaign/campaign_create.html', {'form': form, 'page': page})

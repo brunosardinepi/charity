@@ -169,9 +169,9 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_SIGNUP_FORM_CLASS = 'userprofile.forms.UserProfileForm'
 
 #email
-EMAIL_HOST = config.settings['email_host']
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = config.settings['email_user']
-EMAIL_HOST_PASSWORD = config.settings['email_password']
+#EMAIL_HOST = config.settings['email_host']
+#EMAIL_USE_TLS = True
+#EMAIL_HOST_USER = config.settings['email_user']
+#EMAIL_HOST_PASSWORD = config.settings['email_password']
 
 TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
