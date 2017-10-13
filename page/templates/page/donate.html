@@ -8,28 +8,13 @@
                 <input type="radio" name="saved_card" value="{{ c.id }}" />{{ c.name }} ({{ c.last4 }})<br />
             {% endfor %}
         {% endif %}
-        <p><a id="new-card" href="">New card</a></p>
-        <div id="new-card-info"></div>
+        <div id="card-element"></div>
+        <div id="card-errors" role="alert"></div>
     </div>
     <button>Donate</button>
 </form>
 
 <script>
-
-$(document).on('click', "#cancel-new-card", function(event) {
-    event.preventDefault();
-    $("#new-card-info").empty();
-    $("#cancel-new-card").text("New card");
-    $("#cancel-new-card").attr("id", "new-card");    
-});
-
-
-$(document).on('click', "#new-card", function(event) {
-    event.preventDefault();
-    $("#new-card-info").append("<div id='card-element'></div><div id='card-errors' role='alert'></div>");
-    $("#new-card").text("Cancel new card");
-    $("#new-card").attr("id", "cancel-new-card");
-
     function stripeTokenHandler(token) {
         var form = document.getElementById('payment-form');
         var hiddenInput = document.createElement('input');
@@ -55,14 +40,10 @@ $(document).on('click', "#new-card", function(event) {
     card.mount('#card-element');
 
     card.addEventListener('change', function(event) {
-        console.log("change occurred");
         var displayError = document.getElementById('card-errors');
         if (event.error) {
-            console.log("error");
-            console.log(event.error.message);
             displayError.textContent = event.error.message;
         } else {
-            console.log("blank error?");
             displayError.textContent = '';
         }
     });
@@ -71,8 +52,14 @@ $(document).on('click', "#new-card", function(event) {
     form.addEventListener('submit', function(event) {
         event.preventDefault();
 
-        if (document.getElementsByName("cardnumber").value == null) {
-            form.submit();
+        var saved_cards = document.getElementsByName("saved_card");
+        for (var i = 0; i < saved_cards.length; i++) {
+            if (saved_cards[i].type == 'radio' && saved_cards[i].checked) {
+                if (document.getElementsByName("cardnumber").value == null) {
+                    console.log("cardnumber is null and radio is checked, good");
+                    form.submit();
+                }
+            }
         };
 
         if (document.getElementById("id_anonymous_donor").checked) {
@@ -92,5 +79,4 @@ $(document).on('click', "#new-card", function(event) {
             }
         });
     });
-});    
 </script>
