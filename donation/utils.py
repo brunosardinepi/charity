@@ -49,6 +49,44 @@ def unique_donor_check(request, page=None, campaign=None):
             else:
                 return "both"
 
+def card_check(request, id):
+    try:
+        card = StripeCard.objects.get(user=request.user.userprofile, id=id)
+        return card
+    except StripeCard.DoesNotExist:
+        print("not your card")
+        return False
+
+def charge_source(c, page=None, campaign=None):
+    if page is not None:
+        print("page %s, id %s" % (page.name, page.stripe_account_id))
+        charge = stripe.Charge.create(
+            amount=c["amount"],
+            currency="usd",
+            customer=c["customer_id"],
+            source=c["card_source"],
+            description="$%s donation to %s." % (c["form_amount"], page.name),
+            receipt_email=c["user_email"],
+            destination={
+                "amount": c["final_amount"],
+                "account": page.stripe_account_id,
+            }
+        )
+    elif campaign is not None:
+        charge = stripe.Charge.create(
+            amount=amount,
+            currency="usd",
+            customer=c["customer_id"],
+            source=c["card_source"],
+            description="$%s donation to %s via the %s campaign." % (c["form_amount"], campaign.page.name, campaign.name),
+            receipt_email=c["user_email"],
+            destination={
+                "amount": c["final_amount"],
+                "account": campaign.page.stripe_account_id,
+            }
+        )
+    return charge
+
 def donate(request, form, page=None, campaign=None):
     amount = form.cleaned_data['amount'] * 100
     stripe_fee = int(amount * 0.029) + 30
@@ -57,19 +95,47 @@ def donate(request, form, page=None, campaign=None):
         pagefund_fee += stripe_fee
     final_amount = amount - stripe_fee - pagefund_fee
 
-    if form.cleaned_data['saved_card'] == True:
-        print(form.cleaned_data['saved_card'])
-    elif form.cleaned_data['save_card'] == True:
-        if request.user.is_authenticated:
+    if request.user.is_authenticated:
+        saved_card = request.POST.get('saved_card')
+        if saved_card:
+            try:
+                saved_card = int(saved_card)
+            except ValueError:
+                print("not an int, possible tampering")
+            print("saved_card id = %s" % saved_card)
+            card_source = card_check(request, saved_card)
+            customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
+            if card_source is not False:
+                print("card check succeeded")
+                c = {
+                    "amount": amount,
+                    "customer_id": customer.id,
+                    "card_source": card_source.stripe_card_id,
+                    "form_amount": form.cleaned_data["amount"],
+                    "user_email": request.user.email,
+                    "final_amount": final_amount
+                }
+#            if page is not None:
+#                charge = charge_source(c, page, None)
+#            elif campaign is not None:
+#                charge = charge_source(c, None, campaign)
+            charge = charge_source(c, page, campaign)
+        elif form.cleaned_data['save_card'] == True:
             customer, card_source = get_card_source(request)
             if card_source is None:
                 create_card(request, customer)
             if page is not None:
+                charge = charge_source(c, page, None)
+            elif campaign is not None:
+                charge = charge_source(c, None, campaign)
+        else:
+            print("no options selected, basic charge")
+            if page is not None:
+                print("page donation")
                 charge = stripe.Charge.create(
                     amount=amount,
                     currency="usd",
-                    customer=customer.id,
-                    source=card_source,
+                    source=request.POST.get('stripeToken'),
                     description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
                     receipt_email=request.user.email,
                     destination={
@@ -78,11 +144,11 @@ def donate(request, form, page=None, campaign=None):
                     }
                 )
             elif campaign is not None:
+                print("campaign donation")
                 charge = stripe.Charge.create(
                     amount=amount,
                     currency="usd",
-                    customer=customer.id,
-                    source=card_source,
+                    source=request.POST.get('stripeToken'),
                     description="$%s donation to %s via the %s campaign." % (form.cleaned_data['amount'], campaign.page.name, campaign.name),
                     receipt_email=request.user.email,
                     destination={
@@ -90,31 +156,6 @@ def donate(request, form, page=None, campaign=None):
                         "account": campaign.page.stripe_account_id,
                     }
                 )
-    else:
-        if page is not None:
-            charge = stripe.Charge.create(
-                amount=amount,
-                currency="usd",
-                source=request.POST.get('stripeToken'),
-                description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
-                receipt_email=request.user.email,
-                destination={
-                    "amount": final_amount,
-                    "account": page.stripe_account_id,
-                }
-            )
-        elif campaign is not None:
-            charge = stripe.Charge.create(
-                amount=amount,
-                currency="usd",
-                source=request.POST.get('stripeToken'),
-                description="$%s donation to %s via the %s campaign." % (form.cleaned_data['amount'], campaign.page.name, campaign.name),
-                receipt_email=request.user.email,
-                destination={
-                    "amount": final_amount,
-                    "account": campaign.page.stripe_account_id,
-                }
-            )
     if page is None:
         page = campaign.page
         campaign.donation_money += amount
