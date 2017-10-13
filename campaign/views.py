@@ -24,6 +24,7 @@ from invitations.utils import invite
 from page.models import Page
 from pagefund import config, utils
 from userprofile import models as UserProfileModels
+from userprofile.utils import get_user_credit_cards
 
 
 def campaign(request, page_slug, campaign_pk, campaign_slug):
@@ -33,16 +34,20 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
     else:
         form = CommentForm
         donate_form = DonateForm()
+        template_params = {}
+
+        if request.user.is_authenticated:
+            cards = get_user_credit_cards(request.user.userprofile)
+            template_params["cards"] = cards
 
         if request.method == "POST":
             utils.update_manager_permissions(request.POST.getlist('permissions[]'), campaign)
 
-        return render(request, 'campaign/campaign.html', {
-            'campaign': campaign,
-            'form': form,
-            'donate_form': donate_form,
-            'api_pk': config.settings['stripe_api_pk'],
-        })
+        template_params["campaign"] = campaign
+        template_params["form"] = form
+        template_params["donate_form"] = donate_form
+        template_params["api_pk"] = config.settings['stripe_api_pk']
+        return render(request, 'campaign/campaign.html', template_params)
 
 @login_required
 def campaign_create(request, page_slug):

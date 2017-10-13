@@ -59,7 +59,6 @@ def card_check(request, id):
 
 def charge_source(c, page=None, campaign=None):
     if page is not None:
-        print("page %s, id %s" % (page.name, page.stripe_account_id))
         charge = stripe.Charge.create(
             amount=c["amount"],
             currency="usd",
@@ -74,7 +73,7 @@ def charge_source(c, page=None, campaign=None):
         )
     elif campaign is not None:
         charge = stripe.Charge.create(
-            amount=amount,
+            amount=c["amount"],
             currency="usd",
             customer=c["customer_id"],
             source=c["card_source"],

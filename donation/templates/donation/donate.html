@@ -1,5 +1,9 @@
 <h3>Donate</h3>
-<form action="{% url 'page_donate' page_pk=page.pk %}" method="post" id="payment-form">
+{% if page %}
+    <form action="{% url 'page_donate' page_pk=page.pk %}" method="post" id="payment-form">
+{% elif campaign %}
+    <form action="{% url 'campaign_donate' campaign_pk=campaign.pk %}" method="post" id="payment-form">
+{% endif %}
     {% csrf_token %}
     <div class="form-row">
         {{ donate_form.as_p  }}
