@@ -36,6 +36,7 @@
         $("#new-card").text("Cancel new card");
         $("#new-card").attr("id", "hide-new-card");
         $("#payment-form").attr("id", "new-payment-form");
+        $("#card-element").before("<p><label for='id_save_card'>Save card:</label> <input type='checkbox' name='save_card' id='id_save_card' /></p>");
 
         card.mount('#card-element');
 

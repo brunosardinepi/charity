@@ -7,11 +7,13 @@ from userprofile.models import StripeCard
 
 def create_card(request, customer):
     card_source = customer.sources.create(source=request.POST.get('stripeToken'))
-    StripeCard.objects.create(
+    card = StripeCard.objects.create(
         user=request.user.userprofile,
         stripe_card_id=card_source.id,
         stripe_card_fingerprint=card_source.fingerprint
     )
+
+    return card
 
 def get_card_source(request):
     customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
@@ -96,6 +98,15 @@ def donate(request, form, page=None, campaign=None):
 
     if request.user.is_authenticated:
         saved_card = request.POST.get('saved_card')
+        customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
+        c = {
+            "amount": amount,
+            "customer_id": customer.id,
+#            "card_source": card_source.stripe_card_id,
+            "form_amount": form.cleaned_data["amount"],
+            "user_email": request.user.email,
+            "final_amount": final_amount
+        }
         if saved_card:
             try:
                 saved_card = int(saved_card)
@@ -103,26 +114,24 @@ def donate(request, form, page=None, campaign=None):
                 print("not an int, possible tampering")
             print("saved_card id = %s" % saved_card)
             card_source = card_check(request, saved_card)
-            customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
             if card_source is not False:
                 print("card check succeeded")
-                c = {
-                    "amount": amount,
-                    "customer_id": customer.id,
-                    "card_source": card_source.stripe_card_id,
-                    "form_amount": form.cleaned_data["amount"],
-                    "user_email": request.user.email,
-                    "final_amount": final_amount
-                }
-#            if page is not None:
-#                charge = charge_source(c, page, None)
-#            elif campaign is not None:
-#                charge = charge_source(c, None, campaign)
+                c["card_source"] = card_source.stripe_card_id
+#                c = {
+#                    "amount": amount,
+#                    "customer_id": customer.id,
+#                    "card_source": card_source.stripe_card_id,
+#                    "form_amount": form.cleaned_data["amount"],
+#                    "user_email": request.user.email,
+#                    "final_amount": final_amount
+#                }
             charge = charge_source(c, page, campaign)
-        elif form.cleaned_data['save_card'] == True:
+#        elif form.cleaned_data['save_card'] == True:
+        elif request.POST.get('save_card'):
             customer, card_source = get_card_source(request)
             if card_source is None:
-                create_card(request, customer)
+                card = create_card(request, customer)
+                c["card_source"] = card.stripe_card_id
             if page is not None:
                 charge = charge_source(c, page, None)
             elif campaign is not None:
