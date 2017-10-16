@@ -102,7 +102,6 @@ def donate(request, form, page=None, campaign=None):
         c = {
             "amount": amount,
             "customer_id": customer.id,
-#            "card_source": card_source.stripe_card_id,
             "form_amount": form.cleaned_data["amount"],
             "user_email": request.user.email,
             "final_amount": final_amount
@@ -112,21 +111,10 @@ def donate(request, form, page=None, campaign=None):
                 saved_card = int(saved_card)
             except ValueError:
                 print("not an int, possible tampering")
-            print("saved_card id = %s" % saved_card)
             card_source = card_check(request, saved_card)
             if card_source is not False:
-                print("card check succeeded")
                 c["card_source"] = card_source.stripe_card_id
-#                c = {
-#                    "amount": amount,
-#                    "customer_id": customer.id,
-#                    "card_source": card_source.stripe_card_id,
-#                    "form_amount": form.cleaned_data["amount"],
-#                    "user_email": request.user.email,
-#                    "final_amount": final_amount
-#                }
             charge = charge_source(c, page, campaign)
-#        elif form.cleaned_data['save_card'] == True:
         elif request.POST.get('save_card'):
             customer, card_source = get_card_source(request)
             if card_source is None:
@@ -137,9 +125,7 @@ def donate(request, form, page=None, campaign=None):
             elif campaign is not None:
                 charge = charge_source(c, None, campaign)
         else:
-            print("no options selected, basic charge")
             if page is not None:
-                print("page donation")
                 charge = stripe.Charge.create(
                     amount=amount,
                     currency="usd",
@@ -152,7 +138,6 @@ def donate(request, form, page=None, campaign=None):
                     }
                 )
             elif campaign is not None:
-                print("campaign donation")
                 charge = stripe.Charge.create(
                     amount=amount,
                     currency="usd",

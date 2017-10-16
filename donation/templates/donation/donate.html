@@ -9,7 +9,7 @@
         {{ donate_form.as_p  }}
         {% if cards %}
             {% for x, c in cards.items %}
-                <input type="radio" name="saved_card" value="{{ c.id }}" />{{ c.name }} ({{ c.last4 }})<br />
+                <input type="radio" name="saved_card" value="{{ c.id }}" {% if c.default == True %}checked="checked" {% endif %}/>{{ c.name }} ({{ c.last4 }})<br />
             {% endfor %}
         {% endif %}
         <p><a id="new-card" href="">New card</a></p>
