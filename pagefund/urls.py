@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^invite/', include('invitations.urls', namespace='invitations')),
     url(r'^subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),
     url(r'^comments/', include('comments.urls', namespace='comments')),
+    url(r'^donation/', include('donation.urls', namespace='donation')),
     url(r'^error/', include('error.urls', namespace='error')),
     url(r'^forgot/$', InvitationsViews.forgot_password_request, name='forgot_password_request'),
     url(r'^password/reset/(?P<invitation_pk>\d+)/(?P<key>[\w-]+)/$', InvitationsViews.forgot_password_reset, name='forgot_password_reset'),

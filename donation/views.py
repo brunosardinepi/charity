@@ -1,3 +1,7 @@
 from django.shortcuts import render
 
-# Create your views here.
+
+def default_card(request):
+    if request.method == "POST":
+        id = request.POST.get('id')
+        print(id)
