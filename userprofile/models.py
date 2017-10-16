@@ -153,3 +153,4 @@ class StripeCard(models.Model):
     stripe_card_id = models.CharField(max_length=255)
     stripe_card_fingerprint = models.CharField(max_length=255)
     name = models.CharField(max_length=255, blank=True)
+    default = models.BooleanField(default=False)

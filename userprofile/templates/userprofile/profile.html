@@ -8,12 +8,10 @@
     <script src="{% static 'js/comment_csrf.js' %}"></script>
 
     <script>
-        $(document).on("click", ".default", function(event) {
+        $(document).on("click", ".set-default", function(event) {
             event.preventDefault();
             var url = "{% url 'donation:default_card' %}";
-            console.log($(this).text());
-            var id = $(this).prev().val();
-            console.log(id);
+            var id = $(this).closest("span").attr("id");
             $.ajax({
                 url : url,
                 type : "POST",
@@ -22,7 +20,8 @@
                     id : id
                 },
                 success : function(json) {
-                    console.log("success");
+                    $(".default").html("<a class='set-default' href=''>Set default</a>");
+                    $("#default-" + json.id).text("Default");
                 }
             });
         });
@@ -98,7 +97,7 @@
                     <input type="text" name="exp_month" value="{{ c.exp_month }}" placeholder="Exp Month" maxlength="2" id="id_exp_month" />
                     <input type="text" name="exp_year" value="{{ c.exp_year }}" placeholder="Exp Year" maxlength="4" id="id_exp_year" />
                     <input type="hidden" name="id" value="{{ c.id }}" />
-                    <a class="default" href="">Set default</a>
+                    <span class="default" id="default-{{ c.id }}">{% if c.default == True %}Default{% else %}<a class="set-default" href="">Set default</a>{% endif %}</span>
                     <input type="submit" name="save" value="Save" />
                     <input type="submit" name="delete" value="Delete" />
                 </form>
