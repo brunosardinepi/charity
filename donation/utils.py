@@ -178,3 +178,7 @@ def donate(request, form, page=None, campaign=None):
         stripe_charge_id=charge.id,
         user=request.user
      )
+
+#def create_plan(request, amount):
+    # create a plan in app
+    # create a plan in stripe

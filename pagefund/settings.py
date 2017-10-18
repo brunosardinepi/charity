@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'error',
     'donation',
     'stripe',
+    'plans',
 ]
 
 MIDDLEWARE = [
