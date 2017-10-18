@@ -1,3 +1,5 @@
+from decimal import Decimal, ROUND_HALF_UP
+
 import stripe
 
 from .models import Donation
@@ -90,11 +92,13 @@ def charge_source(c, page=None, campaign=None):
 
 def donate(request, form, page=None, campaign=None):
     amount = form.cleaned_data['amount'] * 100
-    stripe_fee = int(amount * 0.029) + 30
-    pagefund_fee = int(amount * config.settings['pagefund_fee'])
+    stripe_fee = Decimal(amount * 0.029) + 30
+    pagefund_fee = Decimal(amount * config.settings['pagefund_fee'])
     if form.cleaned_data['cover_fees'] == True:
         pagefund_fee += stripe_fee
     final_amount = amount - stripe_fee - pagefund_fee
+    cents = Decimal('0')
+    final_amount = final_amount.quantize(cents, ROUND_HALF_UP)
 
     if request.user.is_authenticated:
         saved_card = request.POST.get('saved_card')
