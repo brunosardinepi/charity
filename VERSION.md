@@ -13,11 +13,13 @@ Release date: TBD
 * Option to cover Stripe fees when donating
 * Option to hide donation amount
 * Hooked into Stripe donations to populate total donation amount and count on Pages and Campaigns
+* Donate with default saved card
 
 ### Changes
 
 * Moved to fat models
 * Deleted the old mail server (RIP) and moved to G Suite and Sendgrid
+* Changed donation amounts from Integer to Decimal
 
 ### Fixes
 
