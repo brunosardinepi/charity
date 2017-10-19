@@ -1,11 +1,33 @@
 from decimal import Decimal, ROUND_HALF_UP
 
+from django.shortcuts import get_object_or_404
+
 import stripe
 
 from .models import Donation
 from pagefund import config
+from plans.models import StripePlan
+from plans.utils import create_plan
 from userprofile.models import StripeCard
 
+
+def set_default_card(request, id):
+    # find the current default
+    try:
+        default = StripeCard.objects.get(user=request.user.userprofile, default=True)
+    except StripeCard.DoesNotExist:
+        default = None
+    except StripeCard.MultipleObjectsReturned:
+        print("multiple default cards found, bad")
+    # if there is a current default, remove the default tag
+    if default:
+        default.default = False
+        default.save()
+    # set the new card as the default
+    new_default = get_object_or_404(StripeCard, id=id)
+    new_default.default = True
+    new_default.save()
+    return new_default
 
 def create_card(request, customer):
     card_source = customer.sources.create(source=request.POST.get('stripeToken'))
@@ -118,16 +140,32 @@ def donate(request, form, page=None, campaign=None):
             card_source = card_check(request, saved_card)
             if card_source is not False:
                 c["card_source"] = card_source.stripe_card_id
-            charge = charge_source(c, page, campaign)
+            # check if the user wants this to be a monthly payment
+            if request.POST.get('monthly'):
+                print("monthly is checked for saved card")
+                # set this saved card as the default card
+                set_default_card(request, card_source.id)
+                # create the plan and charge them
+                create_plan(request, form.cleaned_data["amount"], page, campaign)
+            else:
+                # this is a one-time donation, charge the card
+                charge = charge_source(c, page, campaign)
         elif request.POST.get('save_card'):
             customer, card_source = get_card_source(request)
             if card_source is None:
                 card = create_card(request, customer)
                 c["card_source"] = card.stripe_card_id
-            if page is not None:
-                charge = charge_source(c, page, None)
-            elif campaign is not None:
-                charge = charge_source(c, None, campaign)
+            # check if the user wants this to be a monthly payment
+            if request.POST.get('monthly'):
+                print("monthly is checked for newly created card")
+                # set this saved card as the default card
+                set_default_card(request, card.id)
+                # create the plan and charge them
+                create_plan(request, form.cleaned_data["amount"], page, campaign)
+            else:
+                # this is a one-time donation, charge the card
+                charge = charge_source(c, page, campaign)
+
         else:
             if page is not None:
                 charge = stripe.Charge.create(
@@ -135,7 +173,6 @@ def donate(request, form, page=None, campaign=None):
                     currency="usd",
                     source=request.POST.get('stripeToken'),
                     description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
-                    receipt_email=request.user.email,
                     destination={
                         "amount": final_amount,
                         "account": page.stripe_account_id,
@@ -147,12 +184,12 @@ def donate(request, form, page=None, campaign=None):
                     currency="usd",
                     source=request.POST.get('stripeToken'),
                     description="$%s donation to %s via the %s campaign." % (form.cleaned_data['amount'], campaign.page.name, campaign.name),
-                    receipt_email=request.user.email,
                     destination={
                         "amount": final_amount,
                         "account": campaign.page.stripe_account_id,
                     }
                 )
+            # if creating a plan, set this card as default
     if page is None:
         page = campaign.page
         campaign.donation_money += amount
@@ -178,7 +215,3 @@ def donate(request, form, page=None, campaign=None):
         stripe_charge_id=charge.id,
         user=request.user
      )
-
-#def create_plan(request, amount):
-    # create a plan in app
-    # create a plan in stripe

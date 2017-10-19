@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 class StripePlan(models.Model):
     amount = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE, blank=True, null=True)
+    page = models.ForeignKey('page.Page', on_delete=models.CASCADE, blank=True, null=True)
     INTERVAL_CHOICES = (
         ('monthly', 'Monthly'),
     )
