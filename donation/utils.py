@@ -95,6 +95,12 @@ def charge_source(c, page=None, campaign=None):
             destination={
                 "amount": c["final_amount"],
                 "account": page.stripe_account_id,
+            },
+            metadata={
+                "anonymous_amount": c['anonymous_amount'],
+                "anonymous_donor": c['anonymous_donor'],
+                "comment": c['comment'],
+                "page": page.id
             }
         )
     elif campaign is not None:
@@ -108,6 +114,12 @@ def charge_source(c, page=None, campaign=None):
             destination={
                 "amount": c["final_amount"],
                 "account": campaign.page.stripe_account_id,
+            },
+            metadata={
+                "anonymous_amount": c['anonymous_amount'],
+                "anonymous_donor": c['anonymous_donor'],
+                "comment": c['comment'],
+                "campaign": campaign.id
             }
         )
     return charge
@@ -130,7 +142,10 @@ def donate(request, form, page=None, campaign=None):
             "customer_id": customer.id,
             "form_amount": form.cleaned_data["amount"],
             "user_email": request.user.email,
-            "final_amount": final_amount
+            "final_amount": final_amount,
+            "anonymous_amount": form.cleaned_data['anonymous_amount'],
+            "anonymous_donor": form.cleaned_data['anonymous_donor'],
+            "comment": form.cleaned_data['comment']
         }
         if saved_card:
             try:
@@ -205,13 +220,3 @@ def donate(request, form, page=None, campaign=None):
     if campaign is not None:
         campaign.save()
     page.save()
-    Donation.objects.create(
-        amount=amount,
-        anonymous_amount=form.cleaned_data['anonymous_amount'],
-        anonymous_donor=form.cleaned_data['anonymous_donor'],
-        comment=form.cleaned_data['comment'],
-        page=page,
-        campaign=campaign,
-        stripe_charge_id=charge.id,
-        user=request.user
-     )
