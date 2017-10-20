@@ -78,21 +78,24 @@ def charge_succeeded(request):
 
 @require_POST
 @csrf_exempt
-def plan_created(request):
+def customer_subscription_created(request):
     event_json = json.loads(request.body.decode('utf-8'))
+    print("raw customer.subscription.created")
     print(json.dumps(event_json, indent=4, sort_keys=True))
 
-    amount = event_json['data']['object']['amount']
-    page_pk = event_json['data']['object']['metadata']['page']
+    amount = event_json['data']['object']['plan']['amount']
+    page_pk = event_json['data']['object']['plan']['metadata']['page']
     page = get_object_or_404(Page, pk=page_pk)
     try:
-        campaign_pk = event_json['data']['object']['metadata']['campaign']
+        campaign_pk = event_json['data']['object']['plan']['metadata']['campaign']
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
     except KeyError:
         campaign = None
-    interval = event_json['data']['object']['interval']
-    pf_user_pk = event_json['data']['object']['metadata']['pf_user_pk']
+    interval = event_json['data']['object']['plan']['interval']
+    pf_user_pk = event_json['data']['object']['plan']['metadata']['pf_user_pk']
     user = get_object_or_404(User, pk=pf_user_pk)
+    plan = event_json['data']['object']['plan']['id']
+    subscription = event_json['data']['object']['id']
 
     StripePlan.objects.create(
         user=user,
@@ -100,6 +103,8 @@ def plan_created(request):
         page=page,
         campaign=campaign,
         interval=interval,
+        stripe_plan_id=plan,
+        stripe_subscription_id=subscription,
     )
 
     return HttpResponse(status=200)

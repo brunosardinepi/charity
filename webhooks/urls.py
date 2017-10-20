@@ -6,6 +6,6 @@ from . import views
 app_name = 'webhooks'
 urlpatterns = [
     url(r'^charge-succeeded/', views.charge_succeeded, name='charge_succeeded'),
-    url(r'^plan-created/', views.plan_created, name='plan_created'),
+    url(r'^customer-subscription-created/', views.customer_subscription_created, name='customer_subscription_created'),
 ]
 
