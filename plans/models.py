@@ -8,12 +8,12 @@ class StripePlan(models.Model):
     campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE, blank=True, null=True)
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE, blank=True, null=True)
     INTERVAL_CHOICES = (
-        ('monthly', 'Monthly'),
+        ('month', 'Monthly'),
     )
     interval = models.CharField(
         max_length=20,
         choices=INTERVAL_CHOICES,
-        default='monthly',
+        default='month',
     )
 
     def __str__(self):

@@ -20,10 +20,6 @@ def charge_succeeded(request):
     event_json = json.loads(request.body.decode('utf-8'))
     print(json.dumps(event_json, indent=4, sort_keys=True))
 
-    amount = event_json['data']['object']['amount']
-#    anonymous_amount = event_json['data']['object']['metadata']['anonymous_amount']
-#    anonymous_donor = event_json['data']['object']['metadata']['anonymous_donor']
-
     if not event_json['data']['object']['metadata']:
         print("metadata is empty")
         invoice = stripe.Invoice.retrieve(event_json['data']['object']['invoice'])
@@ -59,6 +55,7 @@ def charge_succeeded(request):
 #    except:
 #        campaign = None
 
+    amount = event_json['data']['object']['amount']
     page = get_object_or_404(Page, pk=page_pk)
     stripe_charge_id = event_json['data']['object']['id']
     user = get_object_or_404(User, pk=pf_user_pk)
@@ -83,21 +80,21 @@ def plan_created(request):
     event_json = json.loads(request.body.decode('utf-8'))
     print(json.dumps(event_json, indent=4, sort_keys=True))
 
-#    amount = event_json['data']['amount']
-#    print(amount)
+    amount = event_json['data']['object']['amount']
+    page_pk = event_json['data']['object']['metadata']['page']
+    page = get_object_or_404(Page, pk=page_pk)
+    campaign_pk = event_json['data']['object']['metadata']['campaign']
+    campaign = get_object_or_404(Campaign, pk=campaign_pk)
+    interval = event_json['data']['object']['interval']
+    pf_user_pk = event_json['data']['object']['metadata']['pf_user_pk']
+    user = get_object_or_404(User, pk=pf_user_pk)
 
-
-
-#    pf_user_pk = event_json['data']['object']['metadata']['pf_user_pk']
-#    user = get_object_or_404(User, pk=pf_user_pk)
-
-#    StripePlan.objects.create(
-#        user=request.user,
-#        amount=amount * 100,
-#        page=page,
-#        campaign=campaign,
-#        interval="monthly",
-#    )
+    StripePlan.objects.create(
+        user=user,
+        amount=amount,
+        page=page,
+        campaign=campaign,
+        interval=interval,
+    )
 
     return HttpResponse(status=200)
-
