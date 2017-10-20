@@ -30,7 +30,11 @@ def charge_succeeded(request):
         print(subscription)
         anonymous_amount = subscription['plan']['metadata']['anonymous_amount']
         anonymous_donor = subscription['plan']['metadata']['anonymous_donor']
-        campaign_pk = subscription['plan']['metadata']['campaign']
+        try:
+            campaign_pk = subscription['plan']['metadata']['campaign']
+            campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        except KeyError:
+            campaign = None
         page_pk = subscription['plan']['metadata']['page']
         try:
             comment = subscription['plan']['metadata']['comment']
@@ -41,19 +45,17 @@ def charge_succeeded(request):
     else:
         anonymous_amount = event_json['data']['object']['metadata']['anonymous_amount']
         anonymous_donor = event_json['data']['object']['metadata']['anonymous_donor']
-        campaign_pk = event_json['data']['object']['metadata']['campaign']
+        try:
+            campaign_pk = event_json['plan']['metadata']['campaign']
+            campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        except KeyError:
+            campaign = None
         page_pk = event_json['data']['object']['metadata']['page']
         try:
             comment = event_json['data']['object']['metadata']['comment']
         except KeyError:
             comment = ''
         pf_user_pk = event_json['data']['object']['metadata']['pf_user_pk']
-
-#    try:
-    campaign = get_object_or_404(Campaign, pk=campaign_pk)
-# need to find this exception
-#    except:
-#        campaign = None
 
     amount = event_json['data']['object']['amount']
     page = get_object_or_404(Page, pk=page_pk)
@@ -83,8 +85,11 @@ def plan_created(request):
     amount = event_json['data']['object']['amount']
     page_pk = event_json['data']['object']['metadata']['page']
     page = get_object_or_404(Page, pk=page_pk)
-    campaign_pk = event_json['data']['object']['metadata']['campaign']
-    campaign = get_object_or_404(Campaign, pk=campaign_pk)
+    try:
+        campaign_pk = event_json['data']['object']['metadata']['campaign']
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+    except KeyError:
+        campaign = None
     interval = event_json['data']['object']['interval']
     pf_user_pk = event_json['data']['object']['metadata']['pf_user_pk']
     user = get_object_or_404(User, pk=pf_user_pk)
