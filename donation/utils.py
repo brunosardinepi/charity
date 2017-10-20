@@ -169,7 +169,7 @@ def donate(request, form, page=None, campaign=None):
                 # set this saved card as the default card
                 set_default_card(request, card_source.id)
                 # create the plan and charge them
-                create_plan(request, form.cleaned_data["amount"], page, campaign)
+                create_plan(request, form, page, campaign)
             else:
                 # this is a one-time donation, charge the card
                 charge = charge_source(c, page, campaign)
@@ -184,7 +184,7 @@ def donate(request, form, page=None, campaign=None):
                 # set this saved card as the default card
                 set_default_card(request, card.id)
                 # create the plan and charge them
-                create_plan(request, form.cleaned_data["amount"], page, campaign)
+                create_plan(request, form, page, campaign)
             else:
                 # this is a one-time donation, charge the card
                 charge = charge_source(c, page, campaign)

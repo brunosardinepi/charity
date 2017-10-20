@@ -6,9 +6,13 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
+import stripe
+
 from campaign.models import Campaign
 from donation.models import Donation
 from page.models import Page
+from plans.models import StripePlan
+
 
 @require_POST
 @csrf_exempt
@@ -17,22 +21,47 @@ def charge_succeeded(request):
     print(json.dumps(event_json, indent=4, sort_keys=True))
 
     amount = event_json['data']['object']['amount']
-    anonymous_amount = event_json['data']['object']['metadata']['anonymous_amount']
-    anonymous_donor = event_json['data']['object']['metadata']['anonymous_donor']
+#    anonymous_amount = event_json['data']['object']['metadata']['anonymous_amount']
+#    anonymous_donor = event_json['data']['object']['metadata']['anonymous_donor']
 
-    try:
-        campaign = get_object_or_404(Campaign, pk=event_json['data']['object']['metadata']['campaign'])
-    except:
-        campaign = None
-    page = get_object_or_404(Page, pk=event_json['data']['object']['metadata']['page'])
-    try:
-        comment = event_json['data']['object']['metadata']['comment']
-    except:
-        comment = ''
+    if not event_json['data']['object']['metadata']:
+        print("metadata is empty")
+        invoice = stripe.Invoice.retrieve(event_json['data']['object']['invoice'])
+        print("invoice")
+        print(invoice)
+        subscription = stripe.Subscription.retrieve(invoice['subscription'])
+        print("subscription")
+        print(subscription)
+        anonymous_amount = subscription['plan']['metadata']['anonymous_amount']
+        anonymous_donor = subscription['plan']['metadata']['anonymous_donor']
+        campaign_pk = subscription['plan']['metadata']['campaign']
+        page_pk = subscription['plan']['metadata']['page']
+        try:
+            comment = subscription['plan']['metadata']['comment']
+        except KeyError:
+            comment = ''
+        pf_user_pk = subscription['plan']['metadata']['pf_user_pk']
+
+    else:
+        anonymous_amount = event_json['data']['object']['metadata']['anonymous_amount']
+        anonymous_donor = event_json['data']['object']['metadata']['anonymous_donor']
+        campaign_pk = event_json['data']['object']['metadata']['campaign']
+        page_pk = event_json['data']['object']['metadata']['page']
+        try:
+            comment = event_json['data']['object']['metadata']['comment']
+        except KeyError:
+            comment = ''
+        pf_user_pk = event_json['data']['object']['metadata']['pf_user_pk']
+
+#    try:
+    campaign = get_object_or_404(Campaign, pk=campaign_pk)
+# need to find this exception
+#    except:
+#        campaign = None
+
+    page = get_object_or_404(Page, pk=page_pk)
     stripe_charge_id = event_json['data']['object']['id']
-    pf_user_pk = event_json['data']['object']['metadata']['pf_user_pk']
     user = get_object_or_404(User, pk=pf_user_pk)
-
 
     Donation.objects.create(
         amount=amount,
@@ -47,3 +76,28 @@ def charge_succeeded(request):
 
     print("donation created")
     return HttpResponse(status=200)
+
+@require_POST
+@csrf_exempt
+def plan_created(request):
+    event_json = json.loads(request.body.decode('utf-8'))
+    print(json.dumps(event_json, indent=4, sort_keys=True))
+
+#    amount = event_json['data']['amount']
+#    print(amount)
+
+
+
+#    pf_user_pk = event_json['data']['object']['metadata']['pf_user_pk']
+#    user = get_object_or_404(User, pk=pf_user_pk)
+
+#    StripePlan.objects.create(
+#        user=request.user,
+#        amount=amount * 100,
+#        page=page,
+#        campaign=campaign,
+#        interval="monthly",
+#    )
+
+    return HttpResponse(status=200)
+
