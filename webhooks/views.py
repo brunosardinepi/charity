@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
@@ -8,13 +9,12 @@ from django.views.decorators.http import require_POST
 from campaign.models import Campaign
 from donation.models import Donation
 from page.models import Page
-from userprofile.models import UserProfile
 
 @require_POST
 @csrf_exempt
 def charge_succeeded(request):
     event_json = json.loads(request.body.decode('utf-8'))
-#    print(json.dumps(event_json, indent=4, sort_keys=True))
+    print(json.dumps(event_json, indent=4, sort_keys=True))
 
     amount = event_json['data']['object']['amount']
     anonymous_amount = event_json['data']['object']['metadata']['anonymous_amount']
@@ -30,8 +30,8 @@ def charge_succeeded(request):
     except:
         comment = ''
     stripe_charge_id = event_json['data']['object']['id']
-    customer = event_json['data']['object']['customer']
-    user = get_object_or_404(UserProfile, stripe_customer_id=customer)
+    pf_user_pk = event_json['data']['object']['metadata']['pf_user_pk']
+    user = get_object_or_404(User, pk=pf_user_pk)
 
 
     Donation.objects.create(
@@ -42,7 +42,7 @@ def charge_succeeded(request):
         page=page,
         campaign=campaign,
         stripe_charge_id=stripe_charge_id,
-        user=user.user
+        user=user
      )
 
     print("donation created")

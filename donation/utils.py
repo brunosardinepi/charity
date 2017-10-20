@@ -100,7 +100,8 @@ def charge_source(c, page=None, campaign=None):
                 "anonymous_amount": c['anonymous_amount'],
                 "anonymous_donor": c['anonymous_donor'],
                 "comment": c['comment'],
-                "page": page.id
+                "page": page.id,
+                "pf_user_pk": c["pf_user_pk"]
             }
         )
     elif campaign is not None:
@@ -119,7 +120,8 @@ def charge_source(c, page=None, campaign=None):
                 "anonymous_amount": c['anonymous_amount'],
                 "anonymous_donor": c['anonymous_donor'],
                 "comment": c['comment'],
-                "campaign": campaign.id
+                "campaign": campaign.id,
+                "pf_user_pk": c["pf_user_pk"]
             }
         )
     return charge
@@ -145,7 +147,8 @@ def donate(request, form, page=None, campaign=None):
             "final_amount": final_amount,
             "anonymous_amount": form.cleaned_data['anonymous_amount'],
             "anonymous_donor": form.cleaned_data['anonymous_donor'],
-            "comment": form.cleaned_data['comment']
+            "comment": form.cleaned_data['comment'],
+            "pf_user_pk": request.user.pk
         }
         if saved_card:
             try:
@@ -191,6 +194,13 @@ def donate(request, form, page=None, campaign=None):
                     destination={
                         "amount": final_amount,
                         "account": page.stripe_account_id,
+                    },
+                    metadata={
+                        "anonymous_amount": form.cleaned_data['anonymous_amount'],
+                        "anonymous_donor": form.cleaned_data['anonymous_donor'],
+                        "comment": form.cleaned_data['comment'],
+                        "page": page.id,
+                        "pf_user_pk": request.user.pk
                     }
                 )
             elif campaign is not None:
@@ -202,6 +212,13 @@ def donate(request, form, page=None, campaign=None):
                     destination={
                         "amount": final_amount,
                         "account": campaign.page.stripe_account_id,
+                    },
+                    metadata={
+                        "anonymous_amount": form.cleaned_data['anonymous_amount'],
+                        "anonymous_donor": form.cleaned_data['anonymous_donor'],
+                        "comment": form.cleaned_data['comment'],
+                        "campaign": campaign.id,
+                        "pf_user_pk": request.user.pk
                     }
                 )
             # if creating a plan, set this card as default
