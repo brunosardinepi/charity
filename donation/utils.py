@@ -27,6 +27,10 @@ def set_default_card(request, id):
     new_default = get_object_or_404(StripeCard, id=id)
     new_default.default = True
     new_default.save()
+    # update stripe
+    customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
+    customer.default_source = new_default.stripe_card_id
+    customer.save()
     return new_default
 
 def create_card(request, customer):
@@ -121,6 +125,7 @@ def charge_source(c, page=None, campaign=None):
                 "anonymous_donor": c['anonymous_donor'],
                 "comment": c['comment'],
                 "campaign": campaign.id,
+                "page": campaign.page.id,
                 "pf_user_pk": c["pf_user_pk"]
             }
         )
@@ -218,6 +223,7 @@ def donate(request, form, page=None, campaign=None):
                         "anonymous_donor": form.cleaned_data['anonymous_donor'],
                         "comment": form.cleaned_data['comment'],
                         "campaign": campaign.id,
+                        "page": campaign.page.id,
                         "pf_user_pk": request.user.pk
                     }
                 )

@@ -19,12 +19,12 @@ def charge_succeeded(request):
     amount = event_json['data']['object']['amount']
     anonymous_amount = event_json['data']['object']['metadata']['anonymous_amount']
     anonymous_donor = event_json['data']['object']['metadata']['anonymous_donor']
+
     try:
-        page = get_object_or_404(Page, pk=event_json['data']['object']['metadata']['page'])
-        campaign = None
-    except:
         campaign = get_object_or_404(Campaign, pk=event_json['data']['object']['metadata']['campaign'])
-        page = None
+    except:
+        campaign = None
+    page = get_object_or_404(Page, pk=event_json['data']['object']['metadata']['page'])
     try:
         comment = event_json['data']['object']['metadata']['comment']
     except:
