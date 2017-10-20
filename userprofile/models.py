@@ -14,9 +14,10 @@ from donation.models import Donation
 from invitations.models import ManagerInvitation
 from pagefund import config, settings
 from pagefund.utils import email
+from plans.models import StripePlan
+
 
 stripe.api_key = config.settings['stripe_api_sk']
-
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -106,6 +107,9 @@ class UserProfile(models.Model):
 
     def manager_pages(self):
         return self.page_managers.filter(deleted=False)
+
+    def plans(self):
+        return StripePlan.objects.filter(user=self.user)
 
     def profile_image(self):
         return UserImages.objects.filter(user=self, profile_picture=True)
