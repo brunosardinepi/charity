@@ -45,3 +45,11 @@ def create_plan(request, form, page=None, campaign=None):
             },
         ],
     )
+
+def delete_stripe_plan(stripe_plan_id):
+    plan = stripe.Plan.retrieve(stripe_plan_id)
+    plan.delete()
+
+def delete_stripe_subscription(stripe_subscription_id):
+    subscription = stripe.Subscription.retrieve(stripe_subscription_id)
+    subscription.delete()

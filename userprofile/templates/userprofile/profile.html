@@ -25,6 +25,23 @@
                 }
             });
         });
+
+        $(document).on("click", ".delete-plan", function(event) {
+            event.preventDefault();
+            var url = "{% url 'plans:delete_plan' %}";
+            var id = $(this).attr("id");
+            $.ajax({
+                url : url,
+                type : "POST",
+                traditional: true,
+                data : {
+                    id : id
+                },
+                success : function(json) {
+                    $(this).closest("li").remove();
+                }
+            });
+        });
     </script>
 
 {% endblock %}
@@ -120,7 +137,7 @@
     {% if userprofile.plans %}
         <ul>
             {% for p in userprofile.plans %}
-                <li>{{ p.amount|cents_to_dollars }} every {{ p.interval }} to <a href="{% url 'page' page_slug=p.page.page_slug %}">{{ p.page }}</a>{% if p.campaign %} via <a href="{% url 'campaign' page_slug=p.page.page_slug campaign_pk=p.campaign.pk campaign_slug=p.campaign.campaign_slug %}">{{ p.campaign }}</a>{% endif %}</li>            
+                <li>{{ p.amount|cents_to_dollars }} every {{ p.interval }} to <a href="{% url 'page' page_slug=p.page.page_slug %}">{{ p.page }}</a>{% if p.campaign %} via <a href="{% url 'campaign' page_slug=p.page.page_slug campaign_pk=p.campaign.pk campaign_slug=p.campaign.campaign_slug %}">{{ p.campaign }}</a>{% endif %} - <a class="delete-plan" id="plan-{{ p.id }}" href="">Delete</a></li>
             {% endfor %}
         </ul>
     {% endif %}

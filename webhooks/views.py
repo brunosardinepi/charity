@@ -108,3 +108,16 @@ def customer_subscription_created(request):
     )
 
     return HttpResponse(status=200)
+
+@require_POST
+@csrf_exempt
+def customer_subscription_deleted(request):
+    event_json = json.loads(request.body.decode('utf-8'))
+    print("raw customer.subscription.deleted")
+    print(json.dumps(event_json, indent=4, sort_keys=True))
+
+    subscription_id = event_json['data']['object']['id']
+    plan = get_object_or_404(StripePlan, stripe_subscription_id=subscription_id)
+    plan.delete()
+
+    return HttpResponse(status=200)
