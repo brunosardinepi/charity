@@ -289,11 +289,11 @@ def page_image_upload(request, page_slug):
                 imageupload = form.save(commit=False)
                 imageupload.page=page
                 try:
-                    profile = models.PageImages.objects.get(page=imageupload.page, page_profile=True)
+                    profile = models.PageImages.objects.get(page=imageupload.page, profile_picture=True)
                 except models.PageImages.DoesNotExist:
                     profile = None
-                if profile and imageupload.page_profile:
-                    profile.page_profile=False
+                if profile and imageupload.profile_picture:
+                    profile.profile_picture=False
                     profile.save()
                 imageupload.page=page
                 imageupload.save()
@@ -336,16 +336,16 @@ def page_profile_update(request, page_slug, image_pk):
         manager = False
     if admin or manager:
         try:
-            profile = models.PageImages.objects.get(page=image.page, page_profile=True)
+            profile = models.PageImages.objects.get(page=image.page, profile_picture=True)
         except models.PageImages.DoesNotExist:
             profile = None
         if profile:
-            profile.page_profile = False
+            profile.profile_picture = False
             profile.save()
-            image.page_profile = True
+            image.profile_picture = True
             image.save()
         else:
-            image.page_profile = True
+            image.profile_picture = True
             image.save()
         return HttpResponseRedirect(page.get_absolute_url())
     else:

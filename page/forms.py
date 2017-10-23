@@ -33,7 +33,7 @@ class PageImagesForm(forms.ModelForm):
         fields = [
             'image',
             'caption',
-            'page_profile'
+            'profile_picture'
         ]
 
 class DeletePageForm(forms.ModelForm):

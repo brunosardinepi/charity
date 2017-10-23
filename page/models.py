@@ -1,3 +1,6 @@
+import random
+import string
+
 from collections import OrderedDict
 
 from django.contrib.auth.models import User
@@ -168,9 +171,9 @@ class Page(models.Model):
     def images(self):
         return PageImages.objects.filter(page=self)
 
-    def profile_image(self):
+    def profile_picture(self):
         try:
-            return PageImages.objects.filter(page=self, page_profile=True)
+            return PageImages.objects.filter(page=self, profile_picture=True)
         except PageImages.MultipleObjectsReturned:
             # create an exception for future use
             print("multiple profile images returned")
@@ -188,8 +191,20 @@ class Page(models.Model):
         return Donation.objects.filter(page=self).order_by('-date')
 
 
+def create_random_string(length=30):
+    if length <= 0:
+        length = 30
+
+    symbols = string.ascii_lowercase + string.ascii_uppercase + string.digits
+    return ''.join([random.choice(symbols) for x in range(length)])
+
+def upload_to(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "media/pages/images/%s.%s" % (create_random_string(), ext)
+    return filename
+
 class PageImages(models.Model):
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE)
-    image = models.FileField(upload_to='media/pages/images/', blank=True, null=True)
+    image = models.FileField(upload_to=upload_to, blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)
-    page_profile = models.BooleanField(default=False)
+    profile_picture = models.BooleanField(default=False)
