@@ -7,19 +7,10 @@ from guardian.shortcuts import assign_perm
 
 from . import forms
 from . import models
+from .utils import invitation_is_good, remove_invitation
 from pagefund import config
 from pagefund.utils import email
 
-
-def remove_invitation(invitation_pk, type, accepted, declined):
-    if type == 'manager':
-        invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
-    elif type == 'general':
-        invitation = get_object_or_404(models.GeneralInvitation, pk=invitation_pk)
-    invitation.expired = True
-    invitation.accepted = accepted
-    invitation.declined = declined
-    invitation.save()
 
 @login_required
 def pending_invitations(request):
@@ -30,12 +21,6 @@ def pending_invitations(request):
         declined=False
     )
     return render(request, 'invitations/pending_invitations.html', {'invitations': invitations})
-
-def invitation_is_good(request, invitation, key):
-    if (key == invitation.key) and (request.user.email == invitation.invite_to):
-        return True
-    else:
-        return False
 
 @login_required(login_url='signup')
 def accept_invitation(request, invitation_pk, key):

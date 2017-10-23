@@ -21,6 +21,7 @@ Release date: TBD
 * Moved to fat models
 * Deleted the old mail server (RIP) and moved to G Suite and Sendgrid
 * Changed donation amounts from Integer to Decimal
+* Moved helper functions from views to utils
 
 ### Fixes
 

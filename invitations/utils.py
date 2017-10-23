@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 
-from invitations.models import ManagerInvitation
+from invitations.models import GeneralInvitation, ManagerInvitation
 from pagefund import config
 from pagefund.utils import email
 
@@ -109,3 +110,19 @@ def invite(data):
         # redirect the admin/manager to the Page
         status = True
     return status
+
+def remove_invitation(invitation_pk, type, accepted, declined):
+    if type == 'manager':
+        invitation = get_object_or_404(ManagerInvitation, pk=invitation_pk)
+    elif type == 'general':
+        invitation = get_object_or_404(GeneralInvitation, pk=invitation_pk)
+    invitation.expired = True
+    invitation.accepted = accepted
+    invitation.declined = declined
+    invitation.save()
+
+def invitation_is_good(request, invitation, key):
+    if (key == invitation.key) and (request.user.email == invitation.invite_to):
+        return True
+    else:
+        return False

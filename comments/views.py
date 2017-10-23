@@ -6,21 +6,12 @@ from django.utils import timezone
 
 from . import forms
 from . import models
+from .utils import comment_attributes
 from campaign.models import Campaign
 from page.models import Page
 
 import json
 
-
-@login_required
-def comment_attributes(comment):
-    response_data = {}
-    response_data['content'] = comment.content
-    response_data['user'] = "%s %s" % (comment.user.first_name, comment.user.last_name)
-    response_data['date'] = timezone.localtime(comment.date)
-    response_data['date'] = response_data['date'].strftime('%m/%d/%y %-I:%M %p')
-    response_data['id'] = comment.pk
-    return response_data
 
 @login_required
 def comment(request, model, pk):
