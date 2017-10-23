@@ -14,6 +14,7 @@ Release date: TBD
 * Option to hide donation amount
 * Hooked into Stripe donations to populate total donation amount and count on Pages and Campaigns
 * Donate with default saved card
+* Recurring donations
 
 ### Changes
 
