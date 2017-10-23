@@ -1,9 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class StripePlan(models.Model):
     amount = models.IntegerField()
+    date = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE, blank=True, null=True)
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE, blank=True, null=True)
