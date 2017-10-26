@@ -2,6 +2,8 @@ from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth.decorators import login_required
+
 from . import views
 from invitations import views as InvitationsViews
 from page import views as PageViews
@@ -34,7 +36,7 @@ urlpatterns = [
     url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),
     url(r'^(?P<page_slug>[\w-]+)/delete/$', PageViews.page_delete, name='page_delete'),
     url(r'^page/(?P<page_pk>\d+)/donate/$', PageViews.page_donate, name='page_donate'),
-    url(r'^(?P<page_slug>[\w-]+)/image/upload/$', PageViews.PageImageUpload.as_view(), name='page_image_upload'),
+    url(r'^(?P<page_slug>[\w-]+)/image/upload/$', login_required(PageViews.PageImageUpload.as_view()), name='page_image_upload'),
     url(r'^(?P<page_slug>[\w-]+)/image/(?P<image_pk>\d+)/delete/$', PageViews.page_image_delete, name='page_image_delete'),
     url(r'^(?P<page_slug>[\w-]+)/image/(?P<image_pk>\d+)/profile_update/$', PageViews.page_profile_update, name='page_profile_update'),
     url(r'^(?P<page_slug>[\w-]+)/managers/invite/$', PageViews.page_invite, name='page_invite'),

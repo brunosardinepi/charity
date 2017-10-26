@@ -271,20 +271,36 @@ def remove_manager(request, page_slug, manager_pk):
 class PageImageUpload(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        images = PageImage.objects.filter(page=page)
-        return render(self.request, 'page/page_image_upload.html', {'page': page, 'images': images})
+        admin = request.user.userprofile in page.admins.all()
+        if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_image_edit', page):
+            manager = True
+        else:
+            manager = False
+        if admin or manager:
+            images = PageImage.objects.filter(page=page)
+            return render(self.request, 'page/page_image_upload.html', {'page': page, 'images': images})
+        else:
+            raise Http404
 
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        form = forms.PageImageForm(self.request.POST, self.request.FILES)
-        if form.is_valid():
-            image = form.save(commit=False)
-            image.page = page
-            image.save()
-            data = {'is_valid': True, 'name': image.image.name, 'url': image.image.url}
+        admin = request.user.userprofile in page.admins.all()
+        if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_image_edit', page):
+            manager = True
         else:
-            data = {'is_valid': False}
-        return JsonResponse(data)
+            manager = False
+        if admin or manager:
+            form = forms.PageImageForm(self.request.POST, self.request.FILES)
+            if form.is_valid():
+                image = form.save(commit=False)
+                image.page = page
+                image.save()
+                data = {'is_valid': True, 'name': image.image.name, 'url': image.image.url}
+            else:
+                data = {'is_valid': False}
+            return JsonResponse(data)
+        else:
+            raise Http404
 
 
 #@login_required
