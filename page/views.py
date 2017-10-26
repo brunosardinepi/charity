@@ -280,7 +280,6 @@ class PageImageUpload(View):
         if form.is_valid():
             image = form.save(commit=False)
             image.page = page
-            print(image.page.name)
             image.save()
             data = {'is_valid': True, 'name': image.image.name, 'url': image.image.url}
         else:

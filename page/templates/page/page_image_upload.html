@@ -7,25 +7,7 @@
     <script src="{% static '/jquery-file-upload/vendor/jquery.ui.widget.js' %}"></script>
     <script src="{% static '/jquery-file-upload/jquery.iframe-transport.js' %}"></script>
     <script src="{% static '/jquery-file-upload/jquery.fileupload.js' %}"></script>
-
-    <script>
-        $(function () {
-            $("#upload-button").click(function () {
-                $("#upload-input").click();
-            });
-
-            $("#upload-input").fileupload({
-                dataType: 'json',
-                done: function (event, data) {
-                    if (data.result.is_valid) {
-                        $("#image-list").prepend(
-                            "<li><a href='" + data.result.url + "'>" + data.result.name + "</a></li>"
-                        )
-                    }
-                }
-            });
-        });
-    </script>
+    <script src="{% static '/js/image_upload.js' %}"></script>
 {% endblock %}
 
 {% block breadcrumbs %}
