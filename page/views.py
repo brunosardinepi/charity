@@ -292,54 +292,26 @@ class PageImageUpload(View):
         if admin or manager:
             form = forms.PageImageForm(self.request.POST, self.request.FILES)
             if form.is_valid():
-                image = form.save(commit=False)
-                image.page = page
-                image.save()
-                data = {'is_valid': True, 'name': image.image.name, 'url': image.image.url}
+                image_raw = form.cleaned_data.get('image',False)
+                image_type = image_raw.content_type.split('/')[0]
+                if image_type in settings.UPLOAD_TYPES:
+                    if image_raw._size > settings.MAX_IMAGE_UPLOAD_SIZE:
+                        msg = 'The file size limit is %s. Your file size is %s.' % (
+                            settings.MAX_IMAGE_UPLOAD_SIZE,
+                            image_raw._size
+                        )
+                        raise ValidationError(msg)
+                    image = form.save(commit=False)
+                    image.page = page
+                    image.save()
+                    data = {'is_valid': True, 'name': image.image.name, 'url': image.image.url}
+                else:
+                    data = {'is_valid': False}
             else:
                 data = {'is_valid': False}
             return JsonResponse(data)
         else:
             raise Http404
-
-
-#@login_required
-#def page_image_upload(request, page_slug):
-#    page = get_object_or_404(Page, page_slug=page_slug)
-#    admin = request.user.userprofile in page.admins.all()
-#    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_image_edit', page):
-#        manager = True
-#    else:
-#        manager = False
-#    if admin or manager:
-#        form = forms.PageImagesForm(instance=page)
-#        if request.method == 'POST':
-#            form = forms.PageImagesForm(data=request.POST, files=request.FILES)
-#            if form.is_valid():
-#                image = form.cleaned_data.get('image',False)
-#                image_type = image.content_type.split('/')[0]
-#                if image_type in settings.UPLOAD_TYPES:
-#                    if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
-#                        msg = 'The file size limit is %s. Your file size is %s.' % (
-#                            settings.MAX_IMAGE_UPLOAD_SIZE,
-#                            image._size
-#                        )
-#                        raise ValidationError(msg)
-#                imageupload = form.save(commit=False)
-#                imageupload.page=page
-#                try:
-#                    profile = PageImage.objects.get(page=imageupload.page, profile_picture=True)
-#                except PageImage.DoesNotExist:
-#                    profile = None
-#                if profile and imageupload.profile_picture:
-#                    profile.profile_picture=False
-#                    profile.save()
-#                imageupload.page=page
-#                imageupload.save()
-#            return HttpResponseRedirect(page.get_absolute_url())
-#    else:
-#        raise Http404
-#    return render(request, 'page/page_image_upload.html', {'page': page, 'form': form })
 
 def page_donate(request, page_pk):
     page = get_object_or_404(Page, pk=page_pk)

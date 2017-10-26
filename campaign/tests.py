@@ -526,27 +526,27 @@ class CampaignTest(TestCase):
 
     def test_upload_admin(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/%s/%s/%s/upload/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/%s/%s/%s/image/upload/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
 
     def test_upload_manager_perms(self):
         self.client.login(username='pizza', password='mehungry')
-        response = self.client.get('/%s/%s/%s/upload/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/%s/%s/%s/image/upload/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
 
     def test_upload_manager_no_perms(self):
         self.client.login(username='goforit', password='yougottawin')
-        response = self.client.get('/%s/%s/%s/upload/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/%s/%s/%s/image/upload/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 404)
 
     def test_upload_logged_in_no_perms(self):
         self.client.login(username='ijustate', password='foodcoma')
-        response = self.client.get('/%s/%s/%s/upload/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/%s/%s/%s/image/upload/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 404)
 
     def test_upload_logged_out(self):
-        response = self.client.get('/%s/%s/%s/upload/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
-        self.assertRedirects(response, '/accounts/login/?next=/%s/%s/%s/upload/' % (
+        response = self.client.get('/%s/%s/%s/image/upload/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        self.assertRedirects(response, '/accounts/login/?next=/%s/%s/%s/image/upload/' % (
             self.page.page_slug,
             self.campaign.pk,
             self.campaign.campaign_slug

@@ -28,9 +28,9 @@ class ManagerInviteForm(forms.Form):
     manager_invite = forms.BooleanField(required=False, label='Invite users to manage Campaign')
     manager_image_edit = forms.BooleanField(required=False, label='Upload image')
 
-class CampaignImagesForm(forms.ModelForm):
+class CampaignImageForm(forms.ModelForm):
     class Meta:
-        model = models.CampaignImages
+        model = models.CampaignImage
         fields = [
             'image',
             'caption',

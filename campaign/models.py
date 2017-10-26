@@ -141,12 +141,12 @@ class Campaign(models.Model):
         return top_donors
 
     def images(self):
-        return CampaignImages.objects.filter(campaign=self)
+        return CampaignImage.objects.filter(campaign=self)
 
     def profile_image(self):
         try:
-            return CampaignImages.objects.get(campaign=self, campaign_profile=True)
-        except CampaignImages.MultipleObjectsReturned:
+            return CampaignImage.objects.get(campaign=self, campaign_profile=True)
+        except CampaignImage.MultipleObjectsReturned:
             # create an exception for future use
             print("multiple profile images returned")
 
@@ -160,7 +160,7 @@ class Campaign(models.Model):
         return Comment.objects.filter(campaign=self, deleted=False).order_by('-date')
 
 
-class CampaignImages(models.Model):
+class CampaignImage(models.Model):
     campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE)
     image = models.FileField(upload_to='media/campaigns/images/', blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)

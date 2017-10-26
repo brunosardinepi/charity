@@ -5,15 +5,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
+from django.views import View
 
 from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 import stripe
 
 from . import forms
-from . import models
+from .models import Campaign, CampaignImage
 from .utils import email_new_campaign
 from comments.forms import CommentForm
 from donation.forms import DonateForm
@@ -28,7 +29,7 @@ from userprofile.utils import get_user_credit_cards
 
 
 def campaign(request, page_slug, campaign_pk, campaign_slug):
-    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
+    campaign = get_object_or_404(Campaign, pk=campaign_pk)
     if campaign.deleted == True:
         raise Http404
     else:
@@ -75,7 +76,7 @@ def campaign_create(request, page_slug):
 @login_required
 def campaign_edit(request, page_slug, campaign_pk, campaign_slug):
 #    page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
+    campaign = get_object_or_404(Campaign, pk=campaign_pk)
 
     # write custom decorator for admin/manager check
     admin = request.user.userprofile in campaign.campaign_admins.all()
@@ -97,7 +98,7 @@ def campaign_edit(request, page_slug, campaign_pk, campaign_slug):
 @login_required
 def campaign_delete(request, page_slug, campaign_pk, campaign_slug):
 #    page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
+    campaign = get_object_or_404(Campaign, pk=campaign_pk)
 
     # write custom decorator for admin/manager check
     admin = request.user.userprofile in campaign.campaign_admins.all()
@@ -119,7 +120,7 @@ def campaign_delete(request, page_slug, campaign_pk, campaign_slug):
 @login_required
 def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
 #    page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
+    campaign = get_object_or_404(Campaign, pk=campaign_pk)
 
     # write custom decorator for admin/manager check
     # True if the user is an admin
@@ -155,7 +156,7 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
 @login_required
 def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
 #    page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
+    campaign = get_object_or_404(Campaign, pk=campaign_pk)
     manager = get_object_or_404(User, pk=manager_pk)
     # only campaign admins can remove managers
     if request.user.userprofile in campaign.campaign_admins.all():
@@ -171,55 +172,58 @@ def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
     else:
         raise Http404
 
-@login_required
-def campaign_image_upload(request, page_slug, campaign_pk, campaign_slug):
-#    page = get_object_or_404(Page, page_slug=page_slug)
-#    campaign = get_object_or_404(models.Campaign, pk=campaign_pk, campaign_slug=campaign_slug, page=page)
-    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
+class CampaignImageUpload(View):
+    def get(self, request, page_slug, campaign_pk, campaign_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        admin = request.user.userprofile in campaign.page.admins.all()
+        if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', campaign):
+            manager = True
+        else:
+            manager = False
+        if admin or manager:
+            images = CampaignImage.objects.filter(campaign=campaign)
+            return render(self.request, 'campaign/campaign_image_upload.html', {'campaign': campaign, 'images': images })
+        else:
+            raise Http404
 
-    # write custom decorator for admin/manager check
-    admin = request.user.userprofile in campaign.page.admins.all()
-    if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', campaign):
-        manager = True
-    else:
-        manager = False
-    if admin or manager:
-        form = forms.CampaignImagesForm(instance=campaign)
-        if request.method == 'POST':
-            form = forms.CampaignImagesForm(data=request.POST, files=request.FILES)
+    def post(self, request, page_slug, campaign_pk, campaign_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        admin = request.user.userprofile in campaign.page.admins.all()
+        if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', campaign):
+            manager = True
+        else:
+            manager = False
+        if admin or manager:
+            form = forms.CampaignImageForm(self.request.POST, self.request.FILES)
             if form.is_valid():
-                print("form is valid")
-                image = form.cleaned_data.get('image',False)
-                image_type = image.content_type.split('/')[0]
-                print(image.content_type)
+                image_raw = form.cleaned_data.get('image',False)
+                image_type = image_raw.content_type.split('/')[0]
                 if image_type in settings.UPLOAD_TYPES:
-                    if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
+                    if image_raw._size > settings.MAX_IMAGE_UPLOAD_SIZE:
                         msg = 'The file size limit is %s. Your file size is %s.' % (
                             settings.MAX_IMAGE_UPLOAD_SIZE,
-                            image._size
+                            image_raw._size
                         )
                         raise ValidationError(msg)
-                imageupload = form.save(commit=False)
-                imageupload.campaign=campaign
-                try:
-                    profile = models.CampaignImages.objects.get(campaign=imageupload.campaign, campaign_profile=True)
-                except models.CampaignImages.DoesNotExist:
-                    profile = None
-                if profile and imageupload.campaign_profile:
-                    profile.campaign_profile=False
-                    profile.save()
-                imageupload.campaign=campaign
-                imageupload.save()
-            return HttpResponseRedirect(campaign.get_absolute_url())
-    else:
-        raise Http404
-    return render(request, 'campaign/campaign_image_upload.html', {'campaign': campaign, 'form': form })
+                    image = form.save(commit=False)
+                    image.campaign = campaign
+                    image.save()
+                    data = {'is_valid': True, 'name': image.image.name, 'url': image.image.url}
+                else:
+                    data = {'is_valid': False}
+            else:
+                data = {'is_valid': False}
+            return JsonResponse(data)
+        else:
+            raise Http404
 
 @login_required
 def campaign_image_delete(request, page_slug, campaign_slug, campaign_pk, image_pk):
 #    page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
-    image = get_object_or_404(models.CampaignImages, pk=image_pk)
+    campaign = get_object_or_404(Campaign, pk=campaign_pk)
+    image = get_object_or_404(CampaignImage, pk=image_pk)
 
     # write custom decorator for admin/manager check
     admin = request.user.userprofile in campaing.campaign_admins.all()
@@ -236,8 +240,8 @@ def campaign_image_delete(request, page_slug, campaign_slug, campaign_pk, image_
 @login_required
 def campaign_profile_update(request, page_slug, campaign_slug, campaign_pk, image_pk):
 #    page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
-    image = get_object_or_404(models.CampaignImages, pk=image_pk)
+    campaign = get_object_or_404(Campaign, pk=campaign_pk)
+    image = get_object_or_404(CampaignImage, pk=image_pk)
 
     # write custom decorator for admin/manager check
     admin = request.user.userprofile in campaign.campaign_admins.all()
@@ -247,8 +251,8 @@ def campaign_profile_update(request, page_slug, campaign_slug, campaign_pk, imag
         manager = False
     if admin or manager:
         try:
-            profile = models.CampaignImages.objects.get(campaign=image.campaign, campaign_profile=True)
-        except models.CampaignImages.DoesNotExist:
+            profile = CampaignImage.objects.get(campaign=image.campaign, campaign_profile=True)
+        except CampaignImage.DoesNotExist:
             profile = None
         if profile:
             profile.campaign_profile = False
@@ -263,7 +267,7 @@ def campaign_profile_update(request, page_slug, campaign_slug, campaign_pk, imag
         raise Http404
 
 def campaign_donate(request, campaign_pk):
-    campaign = get_object_or_404(models.Campaign, pk=campaign_pk)
+    campaign = get_object_or_404(Campaign, pk=campaign_pk)
     if request.method == "POST":
         form = DonateForm(request.POST)
         if form.is_valid():
