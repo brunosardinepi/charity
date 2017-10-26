@@ -6,7 +6,7 @@ $(function () {
     $("#upload-input").fileupload({
         dataType: 'json',
         done: function (event, data) {
-            if (data.result.is_valid) {
+            if (data.result.is_valid == 't') {
                 $("#image-list").prepend(
                     "<li><a href='" + data.result.url + "'>" + data.result.name + "</a></li>"
                 )

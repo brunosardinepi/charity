@@ -1,3 +1,5 @@
+import ast
+
 from django.contrib.auth.models import User
 from django.test import Client, RequestFactory, TestCase
 
@@ -150,23 +152,30 @@ class UserProfileTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
         with open('media/tests/up.png', 'rb') as image:
             response = self.client.post('/profile/upload/', {'image': image})
+        content = response.content.decode('ascii')
+        content = ast.literal_eval(content)
         self.assertEqual(response.status_code, 200)
-        response = self.client.get('/profile/')
-        self.assertContains(response, 'media/media/user/images/up', status_code=200)
+        self.assertEqual(content["is_valid"], "t")
 
     def test_image_upload_error_size(self):
         self.client.login(username='testuser', password='testpassword')
         with open('media/tests/error_image_size.jpg', 'rb') as image:
             response = self.client.post('/profile/upload/', {'image': image})
-        self.assertRedirects(response, '/error/image/size/', 302, 200)
+        content = response.content.decode('ascii')
+        content = ast.literal_eval(content)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(content["is_valid"], "f")
+        self.assertEqual(content["redirect"], "error_size")
 
     def test_image_upload_error_type(self):
         self.client.login(username='testuser', password='testpassword')
         with open('media/tests/error_image_type.txt', 'rb') as image:
             response = self.client.post('/profile/upload/', {'image': image})
-        self.assertRedirects(response, '/error/image/type/', 302, 200)
-        response = self.client.get('/error/image/type/')
-        self.assertContains(response, "Upload a valid image. The file you uploaded was either not an image or a corrupted image.", status_code=200)
+        content = response.content.decode('ascii')
+        content = ast.literal_eval(content)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(content["is_valid"], "f")
+        self.assertEqual(content["redirect"], "error_type")
 
     def test_update_card(self):
         self.client.login(username='testuser', password='testpassword')

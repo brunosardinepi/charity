@@ -11,17 +11,18 @@ def image_is_valid(form, model):
         image_type = image_raw.content_type.split('/')[0]
         if image_type in settings.UPLOAD_TYPES:
             if image_raw._size > settings.MAX_IMAGE_UPLOAD_SIZE:
-                 data = {'is_valid': False, 'redirect': "error_size"}
-            image = form.save(commit=False)
-            if type(model) is UserProfile:
-                image.user = model
-            elif type(model) is Page:
-                image.page = model
-            elif type(model) is Campaign:
-                image.campaign = model
-            image.save()
-            data = {'is_valid': True, 'name': image.image.name, 'url': image.image.url}
+                data = {'is_valid': 'f', 'redirect': "error_size"}
+            else:
+                image = form.save(commit=False)
+                if type(model) is UserProfile:
+                    image.user = model
+                elif type(model) is Page:
+                    image.page = model
+                elif type(model) is Campaign:
+                    image.campaign = model
+                image.save()
+                data = {'is_valid': 't', 'name': image.image.name, 'url': image.image.url}
         else:
-             data = {'is_valid': False, 'redirect': "error_type"}
+             data = {'is_valid': 'f', 'redirect': "error_type"}
         return data
 
