@@ -169,12 +169,12 @@ class Page(models.Model):
         return self.managers.all()
 
     def images(self):
-        return PageImages.objects.filter(page=self)
+        return PageImage.objects.filter(page=self)
 
     def profile_picture(self):
         try:
-            return PageImages.objects.filter(page=self, profile_picture=True)
-        except PageImages.MultipleObjectsReturned:
+            return PageImage.objects.filter(page=self, profile_picture=True)
+        except PageImage.MultipleObjectsReturned:
             # create an exception for future use
             print("multiple profile images returned")
 
@@ -203,8 +203,9 @@ def upload_to(instance, filename):
     filename = "media/pages/images/%s.%s" % (create_random_string(), ext)
     return filename
 
-class PageImages(models.Model):
+class PageImage(models.Model):
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE)
     image = models.FileField(upload_to=upload_to, blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)
     profile_picture = models.BooleanField(default=False)
+    uploaded_at = models.DateTimeField(default=timezone.now)

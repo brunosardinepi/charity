@@ -1,20 +1,23 @@
+import json
+
+from time import strftime
+
 from collections import OrderedDict
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404, render
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.utils import timezone
-from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
-from time import strftime
+from django.views import View
 
-import json
 import stripe
+from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 
 from . import forms
-from . import models
+from .models import Page, PageImage
 from campaign.models import Campaign
 from comments.forms import CommentForm
 from comments.models import Comment
@@ -32,7 +35,7 @@ from pagefund.image import image_upload
 stripe.api_key = config.settings['stripe_api_sk']
 
 def page(request, page_slug):
-    page = get_object_or_404(models.Page, page_slug=page_slug)
+    page = get_object_or_404(Page, page_slug=page_slug)
     if page.deleted == True:
         raise Http404
     else:
@@ -148,7 +151,7 @@ def page_create(request):
 
 @login_required
 def page_edit(request, page_slug):
-    page = get_object_or_404(models.Page, page_slug=page_slug)
+    page = get_object_or_404(Page, page_slug=page_slug)
     admin = request.user.userprofile in page.admins.all()
     if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_edit', page):
         manager = True
@@ -167,7 +170,7 @@ def page_edit(request, page_slug):
 
 @login_required
 def page_delete(request, page_slug):
-    page = get_object_or_404(models.Page, page_slug=page_slug)
+    page = get_object_or_404(Page, page_slug=page_slug)
     admin = request.user.userprofile in page.admins.all()
     if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', page):
         manager = True
@@ -201,7 +204,7 @@ def page_delete(request, page_slug):
 
 @login_required
 def subscribe(request, page_pk, action=None):
-    page = get_object_or_404(models.Page, pk=page_pk)
+    page = get_object_or_404(Page, pk=page_pk)
     if action == "subscribe":
         page.subscribers.add(request.user.userprofile)
         new_subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe", "color": "red"}
@@ -215,7 +218,7 @@ def subscribe(request, page_pk, action=None):
 
 @login_required
 def page_invite(request, page_slug):
-    page = get_object_or_404(models.Page, page_slug=page_slug)
+    page = get_object_or_404(Page, page_slug=page_slug)
     # True if the user is an admin
     admin = request.user.userprofile in page.admins.all()
     # True if the user is a manager and has the 'invite' permission
@@ -248,7 +251,7 @@ def page_invite(request, page_slug):
 
 @login_required
 def remove_manager(request, page_slug, manager_pk):
-    page = get_object_or_404(models.Page, page_slug=page_slug)
+    page = get_object_or_404(Page, page_slug=page_slug)
     manager = get_object_or_404(User, pk=manager_pk)
     # only page admins can remove managers
     if request.user.userprofile in page.admins.all():
@@ -264,46 +267,67 @@ def remove_manager(request, page_slug, manager_pk):
     else:
         raise Http404
 
-@login_required
-def page_image_upload(request, page_slug):
-    page = get_object_or_404(models.Page, page_slug=page_slug)
-    admin = request.user.userprofile in page.admins.all()
-    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_image_edit', page):
-        manager = True
-    else:
-        manager = False
-    if admin or manager:
-        form = forms.PageImagesForm(instance=page)
-        if request.method == 'POST':
-            form = forms.PageImagesForm(data=request.POST, files=request.FILES)
-            if form.is_valid():
-                image = form.cleaned_data.get('image',False)
-                image_type = image.content_type.split('/')[0]
-                if image_type in settings.UPLOAD_TYPES:
-                    if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
-                        msg = 'The file size limit is %s. Your file size is %s.' % (
-                            settings.MAX_IMAGE_UPLOAD_SIZE,
-                            image._size
-                        )
-                        raise ValidationError(msg)
-                imageupload = form.save(commit=False)
-                imageupload.page=page
-                try:
-                    profile = models.PageImages.objects.get(page=imageupload.page, profile_picture=True)
-                except models.PageImages.DoesNotExist:
-                    profile = None
-                if profile and imageupload.profile_picture:
-                    profile.profile_picture=False
-                    profile.save()
-                imageupload.page=page
-                imageupload.save()
-            return HttpResponseRedirect(page.get_absolute_url())
-    else:
-        raise Http404
-    return render(request, 'page/page_image_upload.html', {'page': page, 'form': form })
+
+class PageImageUpload(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        images = PageImage.objects.filter(page=page)
+        return render(self.request, 'page/page_image_upload.html', {'page': page, 'images': images})
+
+    def post(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        form = forms.PageImageForm(self.request.POST, self.request.FILES)
+        if form.is_valid():
+            image = form.save(commit=False)
+            image.page = page
+            print(image.page.name)
+            image.save()
+            data = {'is_valid': True, 'name': image.image.name, 'url': image.image.url}
+        else:
+            data = {'is_valid': False}
+        return JsonResponse(data)
+
+
+#@login_required
+#def page_image_upload(request, page_slug):
+#    page = get_object_or_404(Page, page_slug=page_slug)
+#    admin = request.user.userprofile in page.admins.all()
+#    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_image_edit', page):
+#        manager = True
+#    else:
+#        manager = False
+#    if admin or manager:
+#        form = forms.PageImagesForm(instance=page)
+#        if request.method == 'POST':
+#            form = forms.PageImagesForm(data=request.POST, files=request.FILES)
+#            if form.is_valid():
+#                image = form.cleaned_data.get('image',False)
+#                image_type = image.content_type.split('/')[0]
+#                if image_type in settings.UPLOAD_TYPES:
+#                    if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
+#                        msg = 'The file size limit is %s. Your file size is %s.' % (
+#                            settings.MAX_IMAGE_UPLOAD_SIZE,
+#                            image._size
+#                        )
+#                        raise ValidationError(msg)
+#                imageupload = form.save(commit=False)
+#                imageupload.page=page
+#                try:
+#                    profile = PageImage.objects.get(page=imageupload.page, profile_picture=True)
+#                except PageImage.DoesNotExist:
+#                    profile = None
+#                if profile and imageupload.profile_picture:
+#                    profile.profile_picture=False
+#                    profile.save()
+#                imageupload.page=page
+#                imageupload.save()
+#            return HttpResponseRedirect(page.get_absolute_url())
+#    else:
+#        raise Http404
+#    return render(request, 'page/page_image_upload.html', {'page': page, 'form': form })
 
 def page_donate(request, page_pk):
-    page = get_object_or_404(models.Page, pk=page_pk)
+    page = get_object_or_404(Page, pk=page_pk)
     if request.method == "POST":
         form = DonateForm(request.POST)
         if form.is_valid():
@@ -312,9 +336,9 @@ def page_donate(request, page_pk):
 
 @login_required
 def page_image_delete(request, page_slug, image_pk):
-    page = get_object_or_404(models.Page, page_slug=page_slug)
+    page = get_object_or_404(Page, page_slug=page_slug)
     admin = request.user.userprofile in page.admins.all()
-    image = get_object_or_404(models.PageImages, pk=image_pk)
+    image = get_object_or_404(PageImage, pk=image_pk)
     if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_image_edit', page):
         manager = True
     else:
@@ -327,17 +351,17 @@ def page_image_delete(request, page_slug, image_pk):
 
 @login_required
 def page_profile_update(request, page_slug, image_pk):
-    page = get_object_or_404(models.Page, page_slug=page_slug)
+    page = get_object_or_404(Page, page_slug=page_slug)
     admin = request.user.userprofile in page.admins.all()
-    image = get_object_or_404(models.PageImages, pk=image_pk)
+    image = get_object_or_404(PageImage, pk=image_pk)
     if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_image_edit', page):
         manager = True
     else:
         manager = False
     if admin or manager:
         try:
-            profile = models.PageImages.objects.get(page=image.page, profile_picture=True)
-        except models.PageImages.DoesNotExist:
+            profile = PageImage.objects.get(page=image.page, profile_picture=True)
+        except PageImage.DoesNotExist:
             profile = None
         if profile:
             profile.profile_picture = False

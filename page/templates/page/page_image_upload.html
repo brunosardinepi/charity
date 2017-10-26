@@ -3,15 +3,51 @@
 
 {% block title %} Upload {{ page.name }} | {{ block.super }}{% endblock %}
 
+{% block head_extra %}
+    <script src="{% static '/jquery-file-upload/vendor/jquery.ui.widget.js' %}"></script>
+    <script src="{% static '/jquery-file-upload/jquery.iframe-transport.js' %}"></script>
+    <script src="{% static '/jquery-file-upload/jquery.fileupload.js' %}"></script>
+
+    <script>
+        $(function () {
+            $("#upload-button").click(function () {
+                $("#upload-input").click();
+            });
+
+            $("#upload-input").fileupload({
+                dataType: 'json',
+                done: function (event, data) {
+                    if (data.result.is_valid) {
+                        $("#image-list").prepend(
+                            "<li><a href='" + data.result.url + "'>" + data.result.name + "</a></li>"
+                        )
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
 {% block breadcrumbs %}
     <a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a> / Upload
 {% endblock %}
 
 {% block body_content %}
-    <form action="" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Upload Image" />
-    </form>
+    <button type="button" id="upload-button">Upload Images</button>
+    <input id="upload-input" type="file" name="image" multiple
+        style="display:none;"
+        data-url="{% url 'page_image_upload' page_slug=page.page_slug %}"
+        data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}' />
+
+    <h3>Images</h3>
+    {% if images %}
+        <ul id="image-list">
+            {% for i in images %}
+                <li><a href="{{ i.image.url }}">{{ i.image.name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No images!</p>
+    {% endif %}
 {% endblock %}
 

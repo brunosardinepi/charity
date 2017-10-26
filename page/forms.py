@@ -27,9 +27,9 @@ class PageForm(forms.ModelForm):
             'website'
         ]
 
-class PageImagesForm(forms.ModelForm):
+class PageImageForm(forms.ModelForm):
     class Meta:
-        model = models.PageImages
+        model = models.PageImage
         fields = [
             'image',
             'caption',
