@@ -1,3 +1,5 @@
+import random
+import string
 from collections import OrderedDict
 
 from django.contrib.auth.models import User
@@ -160,8 +162,20 @@ class Campaign(models.Model):
         return Comment.objects.filter(campaign=self, deleted=False).order_by('-date')
 
 
+def create_random_string(length=30):
+    if length <= 0:
+        length = 30
+
+    symbols = string.ascii_lowercase + string.ascii_uppercase + string.digits
+    return ''.join([random.choice(symbols) for x in range(length)])
+
+def upload_to(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "media/campaigns/images/%s.%s" % (create_random_string(), ext)
+    return filename
+
 class CampaignImage(models.Model):
     campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE)
-    image = models.FileField(upload_to='media/campaigns/images/', blank=True, null=True)
+    image = models.FileField(upload_to=upload_to, blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)
     campaign_profile = models.BooleanField(default=False)

@@ -1,6 +1,5 @@
 import random
 import string
-
 from collections import OrderedDict
 
 from django.contrib.auth.models import User

@@ -1,4 +1,5 @@
-import smtplib
+import random
+import string
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -145,9 +146,21 @@ def user_signed_up_(request, user, **kwargs):
     body = "This is a test email for a user that has just signed up with PageFund."
     email(user.email, subject, body)
 
+def create_random_string(length=30):
+    if length <= 0:
+        length = 30
+
+    symbols = string.ascii_lowercase + string.ascii_uppercase + string.digits
+    return ''.join([random.choice(symbols) for x in range(length)])
+
+def upload_to(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "media/user/images/%s.%s" % (create_random_string(), ext)
+    return filename
+
 class UserImage(models.Model):
     user = models.ForeignKey('userprofile.UserProfile', on_delete=models.CASCADE)
-    image = models.FileField(upload_to='media/user/images/', blank=True, null=True)
+    image = models.FileField(upload_to=upload_to, blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)
     profile_picture = models.BooleanField(default=False)
 
