@@ -10,6 +10,13 @@ $(function () {
                 $("#image-list").prepend(
                     "<li><a href='" + data.result.url + "'>" + data.result.name + "</a></li>"
                 )
+            } else {
+                if (data.result.redirect == "error_size") {
+                    var url = "/error/image/size/";
+                } else if (data.result.redirect == "error_type") {
+                    var url = "/error/image/type/";
+                }
+                window.location.href = url;
             }
         }
     });

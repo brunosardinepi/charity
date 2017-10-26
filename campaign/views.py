@@ -26,6 +26,7 @@ from page.models import Page
 from pagefund import config, utils
 from userprofile import models as UserProfileModels
 from userprofile.utils import get_user_credit_cards
+from pagefund.image import image_is_valid
 
 
 def campaign(request, page_slug, campaign_pk, campaign_slug):
@@ -197,24 +198,7 @@ class CampaignImageUpload(View):
             manager = False
         if admin or manager:
             form = forms.CampaignImageForm(self.request.POST, self.request.FILES)
-            if form.is_valid():
-                image_raw = form.cleaned_data.get('image',False)
-                image_type = image_raw.content_type.split('/')[0]
-                if image_type in settings.UPLOAD_TYPES:
-                    if image_raw._size > settings.MAX_IMAGE_UPLOAD_SIZE:
-                        msg = 'The file size limit is %s. Your file size is %s.' % (
-                            settings.MAX_IMAGE_UPLOAD_SIZE,
-                            image_raw._size
-                        )
-                        raise ValidationError(msg)
-                    image = form.save(commit=False)
-                    image.campaign = campaign
-                    image.save()
-                    data = {'is_valid': True, 'name': image.image.name, 'url': image.image.url}
-                else:
-                    data = {'is_valid': False}
-            else:
-                data = {'is_valid': False}
+            data = image_is_valid(form, campaign)
             return JsonResponse(data)
         else:
             raise Http404

@@ -14,6 +14,7 @@ from donation.models import Donation
 from invitations.models import ManagerInvitation
 from page import models as PageModels
 from pagefund import config, settings
+from pagefund.image import image_is_valid
 
 
 @login_required
@@ -52,50 +53,8 @@ class UserImageUpload(View):
     def post(self, request):
         userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
         form = forms.UserImageForm(self.request.POST, self.request.FILES)
-        if form.is_valid():
-            image_raw = form.cleaned_data.get('image',False)
-            image_type = image_raw.content_type.split('/')[0]
-            if image_type in settings.UPLOAD_TYPES:
-                if image_raw._size > settings.MAX_IMAGE_UPLOAD_SIZE:
-                    return redirect('error:error_image_size')
-                image = form.save(commit=False)
-                image.user = userprofile
-                image.save()
-                data = {'is_valid': True, 'name': image.image.name, 'url': image.image.url}
-            else:
-                return redirect('error:error_image_type')
-#                data = {'is_valid': False}
-        else:
-            data = {'is_valid': False}
+        data = image_is_valid(form, userprofile)
         return JsonResponse(data)
-
-#@login_required
-#def profile_image_upload(request):
-#    userprofile = get_object_or_404(models.UserProfile, user_id=request.user.id)
-#    form = forms.UserImagesForm(instance=userprofile)
-#    if request.method == 'POST':
-#        form = forms.UserImagesForm(data=request.POST, files=request.FILES)
-#        if form.is_valid():
-#            image = form.cleaned_data.get('image',False)
-#            image_type = image.content_type.split('/')[0]
-#            if image_type in settings.UPLOAD_TYPES:
-#                if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
-#                    return redirect('error:error_image_size')
-#                imageupload = form.save(commit=False)
-#                imageupload.user_id=request.user.id
-#                try:
-#                    profile = models.UserImages.objects.get(user=imageupload.user, profile_picture=True)
-#                except models.UserImages.DoesNotExist:
-#                    profile = None
-#                if profile and imageupload.profile_picture:
-#                    profile.profile_picture=False
-#                    profile.save()
-#                imageupload.user_id=request.user.id
-#                imageupload.save()
-#                return HttpResponseRedirect(userprofile.get_absolute_url())
-#            else:
-#                return redirect('error:error_image_type')
-#    return render(request, 'userprofile/profile_image_upload.html', {'userprofile': userprofile, 'form': form })
 
 @login_required
 def user_image_delete(request, image_pk):

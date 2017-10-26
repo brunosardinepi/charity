@@ -1,12 +1,11 @@
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 
+from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 import sendgrid
 from sendgrid.helpers.mail import *
 
 from . import config, settings
-from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
-from pagefund import config
 
 
 def email(user_email, subject, body):
@@ -60,4 +59,3 @@ def donation_amount(initial_amount):
     stripe_fee = int(initial_amount * 0.029) + 30
     pagefund_fee = int(initial_amount * config.settings['pagefund_fee'])
     return initial_amount - stripe_fee - pagefund_fee
-
