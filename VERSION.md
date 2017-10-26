@@ -15,7 +15,7 @@ Release date: TBD
 * Hooked into Stripe donations to populate total donation amount and count on Pages and Campaigns
 * Donate with default saved card
 * Recurring donations
-* Upload multiple images at a time to a Page or Campaign
+* Upload multiple images at a time to a Page, Campaign, or user profile
 
 ### Changes
 

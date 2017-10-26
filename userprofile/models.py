@@ -97,7 +97,7 @@ class UserProfile(models.Model):
         return Donation.objects.filter(user=self.user)
 
     def images(self):
-        return UserImages.objects.filter(user=self)
+        return UserImage.objects.filter(user=self)
 
     def invitations(self):
         return ManagerInvitation.objects.filter(invite_from=self.user, expired=False)
@@ -112,7 +112,7 @@ class UserProfile(models.Model):
         return StripePlan.objects.filter(user=self.user)
 
     def profile_image(self):
-        return UserImages.objects.filter(user=self, profile_picture=True)
+        return UserImage.objects.filter(user=self, profile_picture=True)
 
     def saved_cards(self):
         return StripeCard.objects.filter(user=self.user.userprofile)
@@ -145,7 +145,7 @@ def user_signed_up_(request, user, **kwargs):
     body = "This is a test email for a user that has just signed up with PageFund."
     email(user.email, subject, body)
 
-class UserImages(models.Model):
+class UserImage(models.Model):
     user = models.ForeignKey('userprofile.UserProfile', on_delete=models.CASCADE)
     image = models.FileField(upload_to='media/user/images/', blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)

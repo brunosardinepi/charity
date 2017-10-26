@@ -11,14 +11,14 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-    <a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a> / Upload
+    <a href="{% url 'userprofile:userprofile' %}">Profile</a> / Upload
 {% endblock %}
 
 {% block body_content %}
     <button type="button" id="upload-button">Upload Images</button>
     <input id="upload-input" type="file" name="image" multiple
         style="display:none;"
-        data-url="{% url 'page_image_upload' page_slug=page.page_slug %}"
+        data-url="{% url 'userprofile:user_image_upload' %}"
         data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}' />
 
     <h3>Images</h3>

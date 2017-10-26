@@ -1,13 +1,14 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views import View
 
 import stripe
 
 from . import forms
-from . import models
+from .models import StripeCard, UserImage, UserProfile
 from .utils import get_user_credit_cards
 from donation.models import Donation
 from invitations.models import ManagerInvitation
@@ -17,7 +18,7 @@ from pagefund import config, settings
 
 @login_required
 def userprofile(request):
-    userprofile = get_object_or_404(models.UserProfile, user_id=request.user.id)
+    userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
     if userprofile.user == request.user:
         cards = get_user_credit_cards(userprofile)
 
@@ -42,49 +43,75 @@ def userprofile(request):
     else:
         raise Http404
 
-@login_required
-def profile_image_upload(request):
-    userprofile = get_object_or_404(models.UserProfile, user_id=request.user.id)
-    form = forms.UserImagesForm(instance=userprofile)
-    if request.method == 'POST':
-        form = forms.UserImagesForm(data=request.POST, files=request.FILES)
+class UserImageUpload(View):
+    def get(self, request):
+        userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
+        images = UserImage.objects.filter(user=userprofile)
+        return render(self.request, 'userprofile/user_image_upload.html', {'userprofile': userprofile, 'images': images})
+
+    def post(self, request):
+        userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
+        form = forms.UserImageForm(self.request.POST, self.request.FILES)
         if form.is_valid():
-            image = form.cleaned_data.get('image',False)
-            image_type = image.content_type.split('/')[0]
+            image_raw = form.cleaned_data.get('image',False)
+            image_type = image_raw.content_type.split('/')[0]
             if image_type in settings.UPLOAD_TYPES:
-                if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
+                if image_raw._size > settings.MAX_IMAGE_UPLOAD_SIZE:
                     return redirect('error:error_image_size')
-                imageupload = form.save(commit=False)
-                imageupload.user_id=request.user.id
-                try:
-                    profile = models.UserImages.objects.get(user=imageupload.user, profile_picture=True)
-                except models.UserImages.DoesNotExist:
-                    profile = None
-                if profile and imageupload.profile_picture:
-                    profile.profile_picture=False
-                    profile.save()
-                imageupload.user_id=request.user.id
-                imageupload.save()
-                return HttpResponseRedirect(userprofile.get_absolute_url())
+                image = form.save(commit=False)
+                image.user = userprofile
+                image.save()
+                data = {'is_valid': True, 'name': image.image.name, 'url': image.image.url}
             else:
                 return redirect('error:error_image_type')
-    return render(request, 'userprofile/profile_image_upload.html', {'userprofile': userprofile, 'form': form })
+#                data = {'is_valid': False}
+        else:
+            data = {'is_valid': False}
+        return JsonResponse(data)
+
+#@login_required
+#def profile_image_upload(request):
+#    userprofile = get_object_or_404(models.UserProfile, user_id=request.user.id)
+#    form = forms.UserImagesForm(instance=userprofile)
+#    if request.method == 'POST':
+#        form = forms.UserImagesForm(data=request.POST, files=request.FILES)
+#        if form.is_valid():
+#            image = form.cleaned_data.get('image',False)
+#            image_type = image.content_type.split('/')[0]
+#            if image_type in settings.UPLOAD_TYPES:
+#                if image._size > settings.MAX_IMAGE_UPLOAD_SIZE:
+#                    return redirect('error:error_image_size')
+#                imageupload = form.save(commit=False)
+#                imageupload.user_id=request.user.id
+#                try:
+#                    profile = models.UserImages.objects.get(user=imageupload.user, profile_picture=True)
+#                except models.UserImages.DoesNotExist:
+#                    profile = None
+#                if profile and imageupload.profile_picture:
+#                    profile.profile_picture=False
+#                    profile.save()
+#                imageupload.user_id=request.user.id
+#                imageupload.save()
+#                return HttpResponseRedirect(userprofile.get_absolute_url())
+#            else:
+#                return redirect('error:error_image_type')
+#    return render(request, 'userprofile/profile_image_upload.html', {'userprofile': userprofile, 'form': form })
 
 @login_required
 def user_image_delete(request, image_pk):
     # needs test
-    image = get_object_or_404(models.UserImages, pk=image_pk)
+    image = get_object_or_404(UserImage, pk=image_pk)
     if request.user.userprofile == image.userprofile:
         image.delete()
         return HttpResponseRedirect(userprofile.get_absolute_url())
 
 @login_required
 def user_profile_update(request, image_pk):
-    userprofile = get_object_or_404(models.UserProfile, user_id=request.user.id)
-    image = get_object_or_404(models.UserImages, pk=image_pk)
+    userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
+    image = get_object_or_404(UserImage, pk=image_pk)
     try:
-        profile = models.UserImages.objects.get(user=image.user, profile_picture=True)
-    except models.UserImages.DoesNotExist:
+        profile = UserImage.objects.get(user=image.user, profile_picture=True)
+    except UserImage.DoesNotExist:
         profile = None
     if profile:
         profile.profile_picture = False
@@ -116,7 +143,7 @@ def add_card(request):
                 card_source = None
             if card_source is None:
                 card_source = customer.sources.create(source=request.POST.get('stripeToken'))
-                models.StripeCard.objects.create(
+                StripeCard.objects.create(
                     user=request.user.userprofile,
                     stripe_card_id=card_source.id,
                     stripe_card_fingerprint=card_source.fingerprint
@@ -126,7 +153,7 @@ def add_card(request):
 @login_required
 def update_card(request):
     if request.method == "POST":
-        card = get_object_or_404(models.StripeCard, pk=request.POST.get('id'))
+        card = get_object_or_404(StripeCard, pk=request.POST.get('id'))
         if request.user.userprofile == card.user:
             if "save" in request.POST:
                 card.name = request.POST.get('name')

@@ -5,9 +5,9 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 
 from . import views
+from campaign import views as CampaignViews
 from invitations import views as InvitationsViews
 from page import views as PageViews
-from campaign import views as CampaignViews
 
 
 urlpatterns = [
@@ -17,9 +17,6 @@ urlpatterns = [
 #    url(r'^accounts/password/reset/', views.PasswordResetView.as_view(), name='password_reset'),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^profile/', include('userprofile.urls', namespace='userprofile')),
-    url(r'^profile/upload/', include('userprofile.urls', namespace='profile_image_upload')),
-    url(r'^profile/image/(?P<image_pk>\d+)/delete/', include('userprofile.urls', namespace='user_image_delete')),
-    url(r'^profile/image/(?P<image_pk>\d+)/update/', include('userprofile.urls', namespace='user_profile_update')),
     url(r'^search/', include('search.urls', namespace='search')),
     url(r'^invite/$', views.invite, name='invite'),
     url(r'^invite/', include('invitations.urls', namespace='invitations')),

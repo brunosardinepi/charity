@@ -150,7 +150,7 @@ class UserProfileTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
         with open('media/tests/up.png', 'rb') as image:
             response = self.client.post('/profile/upload/', {'image': image})
-        self.assertRedirects(response, '/profile/', 302, 200)
+        self.assertEqual(response.status_code, 200)
         response = self.client.get('/profile/')
         self.assertContains(response, 'media/media/user/images/up', status_code=200)
 
@@ -171,7 +171,6 @@ class UserProfileTest(TestCase):
     def test_update_card(self):
         self.client.login(username='testuser', password='testpassword')
         response = self.client.post('/profile/card/update/', {'name': "new!", 'id': self.card.id, 'save': "save"})
-
         self.assertRedirects(response, '/profile/', 302, 200)
         card = models.StripeCard.objects.get(id=self.card.id)
         self.assertEqual(card.name, "new!")

@@ -76,9 +76,9 @@ class UserProfileForm(forms.Form):
         user.userprofile.save()
 
 
-class UserImagesForm(forms.ModelForm):
+class UserImageForm(forms.ModelForm):
     class Meta:
-        model = models.UserImages
+        model = models.UserImage
         fields = [
             'image',
             'caption',
