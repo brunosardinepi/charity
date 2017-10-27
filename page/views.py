@@ -278,7 +278,7 @@ class PageImageUpload(View):
             manager = False
         if admin or manager:
             images = PageImage.objects.filter(page=page)
-            return render(self.request, 'page/page_image_upload.html', {'page': page, 'images': images})
+            return render(self.request, 'page/images.html', {'page': page, 'images': images})
         else:
             raise Http404
 
