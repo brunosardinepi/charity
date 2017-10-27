@@ -102,7 +102,7 @@
 
 {% block body_content %}
     <h1>{{ campaign.name }}</h1>
-    <img src="{{ campaign.profile_image.image.url }}" width="200" />
+    <img src="{{ campaign.profile_picture.image.url }}" width="200" />
     <p>Trending score: {{ campaign.trending_score }}</p>
     <p>Type: {{ campaign.get_type_display }}</p>
     <p>Location: {% if campaign.city %}{{ campaign.city }}{% endif %}{% if campaign.city and campaign.state %}, {% endif %}{% if campaign.state %}{{ campaign.state }}{% endif %}</p>
@@ -145,7 +145,7 @@
         <p><a href="{% url 'campaign_edit' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
         <p><a class="delete-campaign" href="{% url 'campaign_delete' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
         <p><a href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
-        <p><a href="{% url 'campaign_image_upload' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload image</a></p>
+        <p><a href="{% url 'campaign_image_upload' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload and Edit images</a></p>
         {% if campaign.managers_list %}
             <h5>Managers</h5>
             <form method="POST" action"">
@@ -194,7 +194,7 @@
             <p><a href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
         {% endif %}
         {% if "manager_image_edit" in campaign_perms %}
-            <p><a href="{% url 'campaign_image_upload' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload image</a></p>
+            <p><a href="{% url 'campaign_image_upload' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload and Edit images</a></p>
         {% endif %}
     {% endif %}
 
@@ -202,10 +202,6 @@
     <ul>
         {% for image in campaign.images %}
             <li><img src="{{ image.image.url }}" width="200" />{{ image.caption }}<br/>
-            {% if "manager_image_edit" in page_perms or request.user.userprofile in campaign.page.admins.all %}    
-            <p><a id="delete_image" href="{% url 'campaign_image_delete' page_slug=campaign.page.page_slug campaign_slug=campaign.campaign_slug campaign_pk=campaign.pk image_pk=image.pk %}">Delete Image</a></p>
-            <p><a id="update_profile" href="{% url 'campaign_profile_update' page_slug=campaign.page.page_slug campaign_slug=campaign.campaign_slug campaign_pk=campaign.pk image_pk=image.pk %}">Update Profile Image</a></p></li>
-            {% endif %}
         {% endfor %}
     </ul>
 

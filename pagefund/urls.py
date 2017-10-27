@@ -14,7 +14,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/login/', views.LoginView.as_view(), name='login'),
     url(r'^accounts/signup/', views.SignupView.as_view(), name='signup'),
-#    url(r'^accounts/password/reset/', views.PasswordResetView.as_view(), name='password_reset'),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^profile/', include('userprofile.urls', namespace='userprofile')),
     url(r'^search/', include('search.urls', namespace='search')),
@@ -44,12 +43,12 @@ urlpatterns = [
     url(r'^(?P<page_slug>[\w-]+)/campaign/create/$', CampaignViews.campaign_create, name='campaign_create'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/edit/$', CampaignViews.campaign_edit, name='campaign_edit'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/delete/$', CampaignViews.campaign_delete, name='campaign_delete'),
-    url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/image/upload/$', login_required(CampaignViews.CampaignImageUpload.as_view()), name='campaign_image_upload'),
+    url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/images/$', login_required(CampaignViews.CampaignImageUpload.as_view()), name='campaign_image_upload'),
+    url(r'^campaign/image/(?P<image_pk>\d+)/delete/$', CampaignViews.campaign_image_delete, name='campaign_image_delete'),
+    url(r'^campaign/image/(?P<image_pk>\d+)/profile_update/$', CampaignViews.campaign_profile_update, name='campaign_profile_update'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/managers/invite/$', CampaignViews.campaign_invite, name='campaign_invite'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/managers/(?P<manager_pk>\d+)/remove/$', CampaignViews.remove_manager, name='remove_manager'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/$', CampaignViews.campaign, name='campaign'),
-    url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/image/(?P<image_pk>\d+)/delete/$', CampaignViews.campaign_image_delete, name='campaign_image_delete'),
-    url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/image/(?P<image_pk>\d+)/profile_update/$', CampaignViews.campaign_profile_update, name='campaign_profile_update'),
 
     url(r'^$', views.home, name='home'),
 ]

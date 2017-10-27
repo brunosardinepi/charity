@@ -34,6 +34,6 @@ class CampaignImageForm(forms.ModelForm):
         fields = [
             'image',
             'caption',
-            'campaign_profile',
+            'profile_picture',
         ]
 

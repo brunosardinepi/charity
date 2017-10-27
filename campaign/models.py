@@ -145,9 +145,9 @@ class Campaign(models.Model):
     def images(self):
         return CampaignImage.objects.filter(campaign=self)
 
-    def profile_image(self):
+    def profile_picture(self):
         try:
-            return CampaignImage.objects.get(campaign=self, campaign_profile=True)
+            return CampaignImage.objects.get(campaign=self, profile_picture=True)
         except CampaignImage.MultipleObjectsReturned:
             # create an exception for future use
             print("multiple profile images returned")
@@ -178,4 +178,6 @@ class CampaignImage(models.Model):
     campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE)
     image = models.FileField(upload_to=upload_to, blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)
-    campaign_profile = models.BooleanField(default=False)
+    profile_picture = models.BooleanField(default=False)
+    uploaded_at = models.DateTimeField(default=timezone.now)
+    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)

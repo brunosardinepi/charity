@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
-from django.http import Http404, HttpResponseRedirect, JsonResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.views import View
@@ -184,7 +184,7 @@ class CampaignImageUpload(View):
             manager = False
         if admin or manager:
             images = CampaignImage.objects.filter(campaign=campaign)
-            return render(self.request, 'campaign/campaign_image_upload.html', {'campaign': campaign, 'images': images })
+            return render(self.request, 'campaign/images.html', {'campaign': campaign, 'images': images })
         else:
             raise Http404
 
@@ -204,49 +204,40 @@ class CampaignImageUpload(View):
             raise Http404
 
 @login_required
-def campaign_image_delete(request, page_slug, campaign_slug, campaign_pk, image_pk):
-#    page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(Campaign, pk=campaign_pk)
+def campaign_image_delete(request, image_pk):
     image = get_object_or_404(CampaignImage, pk=image_pk)
-
     # write custom decorator for admin/manager check
-    admin = request.user.userprofile in campaing.campaign_admins.all()
-    if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', campaign):
+    admin = request.user.userprofile in image.campaign.campaign_admins.all()
+    if request.user.userprofile in image.campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', image.campaign):
         manager = True
     else:
         manager = False
     if admin or manager:
         image.delete()
-        return HttpResponseRedirect(campaign.get_absolute_url())
+        return HttpResponse('')
     else:
         raise Http404
 
 @login_required
-def campaign_profile_update(request, page_slug, campaign_slug, campaign_pk, image_pk):
-#    page = get_object_or_404(Page, page_slug=page_slug)
-    campaign = get_object_or_404(Campaign, pk=campaign_pk)
+def campaign_profile_update(request, image_pk):
     image = get_object_or_404(CampaignImage, pk=image_pk)
-
     # write custom decorator for admin/manager check
-    admin = request.user.userprofile in campaign.campaign_admins.all()
-    if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', campaign):
+    admin = request.user.userprofile in image.campaign.campaign_admins.all()
+    if request.user.userprofile in image.campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', image.campaign):
         manager = True
     else:
         manager = False
     if admin or manager:
         try:
-            profile = CampaignImage.objects.get(campaign=image.campaign, campaign_profile=True)
+            profile_picture = CampaignImage.objects.get(campaign=image.campaign, profile_picture=True)
         except CampaignImage.DoesNotExist:
-            profile = None
-        if profile:
-            profile.campaign_profile = False
-            profile.save()
-            image.campaign_profile = True
-            image.save()
-        else:
-            image.campaign_profile = True
-            image.save()
-        return HttpResponseRedirect(campaign.get_absolute_url())
+            profile_picture = None
+        if profile_picture:
+            profile_picture.profile_picture = False
+            profile_picture.save()
+        image.profile_picture = True
+        image.save()
+        return HttpResponse('')
     else:
         raise Http404
 

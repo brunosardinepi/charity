@@ -172,7 +172,7 @@ class Page(models.Model):
 
     def profile_picture(self):
         try:
-            return PageImage.objects.filter(page=self, profile_picture=True)
+            return PageImage.objects.get(page=self, profile_picture=True)
         except PageImage.MultipleObjectsReturned:
             # create an exception for future use
             print("multiple profile images returned")
