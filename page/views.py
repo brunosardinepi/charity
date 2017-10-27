@@ -319,27 +319,23 @@ def page_image_delete(request, image_pk):
         raise Http404
 
 @login_required
-def page_profile_update(request, page_slug, image_pk):
-    page = get_object_or_404(Page, page_slug=page_slug)
-    admin = request.user.userprofile in page.admins.all()
+def page_profile_update(request, image_pk):
     image = get_object_or_404(PageImage, pk=image_pk)
-    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_image_edit', page):
+    admin = request.user.userprofile in image.page.admins.all()
+    if request.user.userprofile in image.page.managers.all() and request.user.has_perm('manager_image_edit', image.page):
         manager = True
     else:
         manager = False
     if admin or manager:
         try:
-            profile = PageImage.objects.get(page=image.page, profile_picture=True)
+            profile_picture = PageImage.objects.get(page=image.page, profile_picture=True)
         except PageImage.DoesNotExist:
-            profile = None
-        if profile:
-            profile.profile_picture = False
-            profile.save()
-            image.profile_picture = True
-            image.save()
-        else:
-            image.profile_picture = True
-            image.save()
-        return HttpResponseRedirect(page.get_absolute_url())
+            profile_picture = None
+        if profile_picture:
+            profile_picture.profile_picture = False
+            profile_picture.save()
+        image.profile_picture = True
+        image.save()
+        return HttpResponse('')
     else:
         raise Http404

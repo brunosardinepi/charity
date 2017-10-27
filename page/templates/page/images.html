@@ -22,6 +22,17 @@
             event.preventDefault();
             delete_image(event);
         });
+
+        $(document).on("click", ".set-profile-picture", function(event) {
+            event.preventDefault();
+            var arr = $(this).closest("span").attr("id").split('-');
+            var url = "{% url 'page_profile_update' image_pk=0 %}".replace(0, arr[1]);
+//            var id = $(this).closest("span").attr("id");
+            $.get(url, function() {
+                $(".profile").html("<a class='set-profile-picture' href=''>Make profile picture</a> - ");
+                $("#profile-" + arr[1]).text("Profile picture - ");
+            });
+        });
     </script>
 
 {% endblock %}
@@ -42,7 +53,7 @@
     {% if images %}
         <ul id="image-list">
             {% for i in images %}
-                <li id="image-{{ i.pk }}">{% if i.profile_picture %}Profile picture - {% endif %}<a href="{{ i.image.url }}">{{ i.image.name }}</a> - <a id="delete-{{ i.pk }}" class="delete-image" href="">Delete</a></li>
+                <li id="image-{{ i.pk }}"><span class="profile" id="profile-{{ i.pk }}">{% if i.profile_picture %}Profile picture - {% else %}<a class="set-profile-picture" href="">Make profile picture</a> - {% endif %}</span><a href="{{ i.image.url }}">{{ i.image.name }}</a> - <a id="delete-{{ i.pk }}" class="delete-image" href="">Delete</a></li>
             {% endfor %}
         </ul>
     {% else %}
