@@ -8,6 +8,22 @@
     <script src="{% static '/jquery-file-upload/jquery.iframe-transport.js' %}"></script>
     <script src="{% static '/jquery-file-upload/jquery.fileupload.js' %}"></script>
     <script src="{% static '/js/image_upload.js' %}"></script>
+
+    <script>
+        function delete_image(event) {
+            var arr = event.target.id.split('-');
+            var url = "{% url 'page_image_delete' image_pk=0 %}".replace(0, arr[1]);
+            $.get(url, function () {
+                $("#image-" + arr[1]).remove();
+            });
+        };
+
+        $(document).on('click', ".delete-image", function(event) {
+            event.preventDefault();
+            delete_image(event);
+        });
+    </script>
+
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -25,7 +41,7 @@
     {% if images %}
         <ul id="image-list">
             {% for i in images %}
-                <li><a href="{{ i.image.url }}">{{ i.image.name }}</a></li>
+                <li id="image-{{ i.pk }}"><a href="{{ i.image.url }}">{{ i.image.name }}</a> - <a id="delete-{{ i.pk }}" class="delete-image" href="">Delete</a></li>
             {% endfor %}
         </ul>
     {% else %}

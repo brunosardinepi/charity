@@ -305,17 +305,16 @@ def page_donate(request, page_pk):
             return HttpResponseRedirect(page.get_absolute_url())
 
 @login_required
-def page_image_delete(request, page_slug, image_pk):
-    page = get_object_or_404(Page, page_slug=page_slug)
-    admin = request.user.userprofile in page.admins.all()
+def page_image_delete(request, image_pk):
     image = get_object_or_404(PageImage, pk=image_pk)
-    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_image_edit', page):
+    admin = request.user.userprofile in image.page.admins.all()
+    if request.user.userprofile in image.page.managers.all() and request.user.has_perm('manager_image_edit', image.page):
         manager = True
     else:
         manager = False
     if admin or manager:
         image.delete()
-        return HttpResponseRedirect(page.get_absolute_url())
+        return HttpResponse('')
     else:
         raise Http404
 
