@@ -42,7 +42,7 @@
     {% if images %}
         <ul id="image-list">
             {% for i in images %}
-                <li id="image-{{ i.pk }}"><a href="{{ i.image.url }}">{{ i.image.name }}</a> - <a id="delete-{{ i.pk }}" class="delete-image" href="">Delete</a></li>
+                <li id="image-{{ i.pk }}">{% if i.profile_picture %}Profile picture - {% endif %}<a href="{{ i.image.url }}">{{ i.image.name }}</a> - <a id="delete-{{ i.pk }}" class="delete-image" href="">Delete</a></li>
             {% endfor %}
         </ul>
     {% else %}

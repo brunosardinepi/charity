@@ -208,3 +208,4 @@ class PageImage(models.Model):
     caption = models.CharField(max_length=255, blank=True)
     profile_picture = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(default=timezone.now)
+    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)

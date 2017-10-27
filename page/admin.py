@@ -10,4 +10,10 @@ class PageAdmin(GuardedModelAdmin):
     list_filter = ('category', 'deleted',)
     filter_horizontal = ('admins', 'managers',)
 
+class PageImageAdmin(admin.ModelAdmin):
+    list_display = ('uploaded_by', 'page', 'caption', 'profile_picture', 'uploaded_at',)
+    ordering = ('page', 'uploaded_at',)
+    list_filter = ('page', 'profile_picture',)
+
 admin.site.register(models.Page, PageAdmin)
+admin.site.register(models.PageImage, PageImageAdmin)
