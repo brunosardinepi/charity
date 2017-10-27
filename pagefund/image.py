@@ -21,7 +21,12 @@ def image_is_valid(form, model):
                 elif type(model) is Campaign:
                     image.campaign = model
                 image.save()
-                data = {'is_valid': 't', 'name': image.image.name, 'url': image.image.url}
+                data = {
+                    'is_valid': 't',
+                    'name': image.image.name,
+                    'pk': image.pk,
+                    'url': image.image.url
+                }
         else:
              data = {'is_valid': 'f', 'redirect': "error_type"}
         return data
