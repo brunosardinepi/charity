@@ -151,7 +151,7 @@ class UserProfileTest(TestCase):
     def test_image_upload(self):
         self.client.login(username='testuser', password='testpassword')
         with open('media/tests/up.png', 'rb') as image:
-            response = self.client.post('/profile/upload/', {'image': image})
+            response = self.client.post('/profile/images/', {'image': image})
         content = response.content.decode('ascii')
         content = ast.literal_eval(content)
         self.assertEqual(response.status_code, 200)
@@ -160,7 +160,7 @@ class UserProfileTest(TestCase):
     def test_image_upload_error_size(self):
         self.client.login(username='testuser', password='testpassword')
         with open('media/tests/error_image_size.jpg', 'rb') as image:
-            response = self.client.post('/profile/upload/', {'image': image})
+            response = self.client.post('/profile/images/', {'image': image})
         content = response.content.decode('ascii')
         content = ast.literal_eval(content)
         self.assertEqual(response.status_code, 200)
@@ -170,7 +170,7 @@ class UserProfileTest(TestCase):
     def test_image_upload_error_type(self):
         self.client.login(username='testuser', password='testpassword')
         with open('media/tests/error_image_type.txt', 'rb') as image:
-            response = self.client.post('/profile/upload/', {'image': image})
+            response = self.client.post('/profile/images/', {'image': image})
         content = response.content.decode('ascii')
         content = ast.literal_eval(content)
         self.assertEqual(response.status_code, 200)

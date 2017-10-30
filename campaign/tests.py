@@ -160,7 +160,7 @@ class CampaignTest(TestCase):
         self.assertNotContains(response, "Delete Campaign", status_code=200)
         self.assertNotContains(response, "Manager", status_code=200)
         self.assertNotContains(response, "Invite others to manage Campaign", status_code=200)
-        self.assertNotContains(response, "Upload image", status_code=200)
+        self.assertNotContains(response, "Upload and Edit images", status_code=200)
 
     def test_campaign_admin_logged_in(self):
         request = self.factory.get('home')
@@ -172,7 +172,7 @@ class CampaignTest(TestCase):
         self.assertContains(response, "Edit Campaign", status_code=200)
         self.assertContains(response, "Delete Campaign", status_code=200)
         self.assertContains(response, "Invite others to manage Campaign", status_code=200)
-        self.assertContains(response, "Upload image", status_code=200)
+        self.assertContains(response, "Upload and Edit images", status_code=200)
         self.assertContains(response, "/%s/%s/%s/managers/%s/remove/" % (
             self.page.page_slug,
             self.campaign.pk,
@@ -190,7 +190,7 @@ class CampaignTest(TestCase):
         self.assertContains(response, "Edit Campaign", status_code=200)
         self.assertContains(response, "Delete Campaign", status_code=200)
         self.assertContains(response, "Invite others to manage Campaign", status_code=200)
-        self.assertContains(response, "Upload image", status_code=200)
+        self.assertContains(response, "Upload and Edit images", status_code=200)
 
     def test_campaign_edit_not_admin(self):
         self.client.login(username='ineedfood', password='stomachwantsit')
@@ -398,7 +398,7 @@ class CampaignTest(TestCase):
         self.assertContains(response, "Edit Campaign", status_code=200)
         self.assertContains(response, "Delete Campaign", status_code=200)
         self.assertContains(response, "Invite others to manage Campaign", status_code=200)
-        self.assertContains(response, "Upload image", status_code=200)
+        self.assertContains(response, "Upload and Edit images", status_code=200)
 
 
     def test_ManagerInviteForm(self):
@@ -526,27 +526,27 @@ class CampaignTest(TestCase):
 
     def test_upload_admin(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/%s/%s/%s/image/upload/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/%s/%s/%s/images/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
 
     def test_upload_manager_perms(self):
         self.client.login(username='pizza', password='mehungry')
-        response = self.client.get('/%s/%s/%s/image/upload/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/%s/%s/%s/images/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
 
     def test_upload_manager_no_perms(self):
         self.client.login(username='goforit', password='yougottawin')
-        response = self.client.get('/%s/%s/%s/image/upload/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/%s/%s/%s/images/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 404)
 
     def test_upload_logged_in_no_perms(self):
         self.client.login(username='ijustate', password='foodcoma')
-        response = self.client.get('/%s/%s/%s/image/upload/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/%s/%s/%s/images/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 404)
 
     def test_upload_logged_out(self):
-        response = self.client.get('/%s/%s/%s/image/upload/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
-        self.assertRedirects(response, '/accounts/login/?next=/%s/%s/%s/image/upload/' % (
+        response = self.client.get('/%s/%s/%s/images/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        self.assertRedirects(response, '/accounts/login/?next=/%s/%s/%s/images/' % (
             self.page.page_slug,
             self.campaign.pk,
             self.campaign.campaign_slug

@@ -193,7 +193,7 @@ class PageTest(TestCase):
         self.assertNotContains(response, "Delete Page", status_code=200)
         self.assertNotContains(response, "Manager", status_code=200)
         self.assertNotContains(response, "Invite others to manage Page", status_code=200)
-        self.assertNotContains(response, "Upload image", status_code=200)
+        self.assertNotContains(response, "Upload and Edit images", status_code=200)
 
     def test_page_admin_logged_in(self):
         request = self.factory.get('home')
@@ -205,7 +205,7 @@ class PageTest(TestCase):
         self.assertContains(response, "Edit Page", status_code=200)
         self.assertContains(response, "Delete Page", status_code=200)
         self.assertContains(response, "Invite others to manage Page", status_code=200)
-        self.assertContains(response, "Upload image", status_code=200)
+        self.assertContains(response, "Upload and Edit images", status_code=200)
         self.assertContains(response, "/%s/managers/%s/remove/" % (self.page.page_slug, self.user3.pk), status_code=200)
         self.assertContains(response, "/%s/managers/%s/remove/" % (self.page.page_slug, self.user4.pk), status_code=200)
 
@@ -219,7 +219,7 @@ class PageTest(TestCase):
         self.assertContains(response, "Edit Page", status_code=200)
         self.assertContains(response, "Delete Page", status_code=200)
         self.assertContains(response, "Invite others to manage Page", status_code=200)
-        self.assertContains(response, "Upload image", status_code=200)
+        self.assertContains(response, "Upload and Edit images", status_code=200)
 
     def test_page_edit_logged_out(self):
         response = self.client.get('/%s/edit/' % self.page.page_slug)
@@ -418,7 +418,7 @@ class PageTest(TestCase):
         self.assertContains(response, "Edit Page", status_code=200)
         self.assertContains(response, "Delete Page", status_code=200)
         self.assertContains(response, "Invite others to manage Page", status_code=200)
-        self.assertContains(response, "Upload image", status_code=200)
+        self.assertContains(response, "Upload and Edit images", status_code=200)
 
     def test_ManagerInviteForm(self):
         data = {
@@ -528,24 +528,24 @@ class PageTest(TestCase):
 
     def test_upload_admin(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/%s/image/upload/' % self.page.page_slug)
+        response = self.client.get('/%s/images/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
 
     def test_upload_manager_perms(self):
         self.client.login(username='bobdole', password='dogsarecool')
-        response = self.client.get('/%s/image/upload/' % self.page.page_slug)
+        response = self.client.get('/%s/images/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
 
     def test_upload_manager_no_perms(self):
         self.client.login(username='batman', password='imbatman')
-        response = self.client.get('/%s/image/upload/' % self.page.page_slug)
+        response = self.client.get('/%s/images/' % self.page.page_slug)
         self.assertEqual(response.status_code, 404)
 
     def test_upload_logged_in_no_perms(self):
         self.client.login(username='newguy', password='imnewhere')
-        response = self.client.get('/%s/image/upload/' % self.page.page_slug)
+        response = self.client.get('/%s/images/' % self.page.page_slug)
         self.assertEqual(response.status_code, 404)
 
     def test_upload_logged_out(self):
-        response = self.client.get('/%s/image/upload/' % self.page.page_slug)
-        self.assertRedirects(response, '/accounts/login/?next=/testpage/image/upload/', 302, 200)
+        response = self.client.get('/%s/images/' % self.page.page_slug)
+        self.assertRedirects(response, '/accounts/login/?next=/testpage/images/', 302, 200)
