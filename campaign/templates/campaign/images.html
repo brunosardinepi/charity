@@ -15,6 +15,10 @@
             var url = "{% url 'campaign_image_delete' image_pk=0 %}".replace(0, arr[1]);
             $.get(url, function () {
                 $("#image-" + arr[1]).remove();
+                if (!$("#image-list li").length) {
+                    $("#image-list").remove();
+                    $("<p>No images!</p>").insertAfter("#images-header");
+                };
             });
         };
 
@@ -49,7 +53,7 @@
         data-url="{% url 'campaign_image_upload' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}"
         data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}' />
 
-    <h3>Images</h3>
+    <h3 id="images-header">Images</h3>
     {% if images %}
         <ul id="image-list">
             {% for i in images %}

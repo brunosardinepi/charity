@@ -28,6 +28,7 @@ Release date: TBD
 
 * Campaign invitations showed up blank on the user profile
 * Users couldn't update their name properly
+* Image uploads failed if they were the first image to be uploaded to their respective Page, Campaign, or user profile
 
 
 ## Version 0.8.0
