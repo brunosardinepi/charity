@@ -33,8 +33,13 @@ def userprofile(request):
         if request.method == 'POST':
             form = forms.UserProfileForm(request.POST)
             if form.is_valid():
-                form.save()
-            return HttpResponseRedirect(userprofile.get_absolute_url())
+                request.user.first_name = form.cleaned_data["first_name"]
+                request.user.last_name = form.cleaned_data["last_name"]
+                userprofile.birthday = form.cleaned_data["birthday"]
+                userprofile.state = form.cleaned_data["state"]
+                request.user.save()
+                userprofile.save()
+                return HttpResponseRedirect(userprofile.get_absolute_url())
         return render(request, 'userprofile/profile.html', {
             'userprofile': userprofile,
             'form': form,

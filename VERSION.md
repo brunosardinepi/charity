@@ -27,6 +27,7 @@ Release date: TBD
 ### Fixes
 
 * Campaign invitations showed up blank on the user profile
+* Users couldn't update their name properly
 
 
 ## Version 0.8.0
