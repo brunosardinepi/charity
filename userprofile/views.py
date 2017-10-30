@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.http import Http404, HttpResponseRedirect, JsonResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 
@@ -48,39 +48,41 @@ class UserImageUpload(View):
     def get(self, request):
         userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
         images = UserImage.objects.filter(user=userprofile)
-        return render(self.request, 'userprofile/user_image_upload.html', {'userprofile': userprofile, 'images': images})
+        return render(self.request, 'userprofile/images.html', {'userprofile': userprofile, 'images': images})
 
     def post(self, request):
         userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
         form = forms.UserImageForm(self.request.POST, self.request.FILES)
-        data = image_is_valid(form, userprofile)
+        data = image_is_valid(request, form, userprofile)
         return JsonResponse(data)
 
 @login_required
 def user_image_delete(request, image_pk):
     # needs test
     image = get_object_or_404(UserImage, pk=image_pk)
-    if request.user.userprofile == image.userprofile:
+    if request.user.userprofile == image.user:
         image.delete()
-        return HttpResponseRedirect(userprofile.get_absolute_url())
+        return HttpResponse('')
+    else:
+        raise Http404
 
 @login_required
 def user_profile_update(request, image_pk):
     userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
     image = get_object_or_404(UserImage, pk=image_pk)
-    try:
-        profile = UserImage.objects.get(user=image.user, profile_picture=True)
-    except UserImage.DoesNotExist:
-        profile = None
-    if profile:
-        profile.profile_picture = False
-        profile.save()
+    if image.user == request.user.userprofile:
+        try:
+            profile_picture = UserImage.objects.get(user=image.user, profile_picture=True)
+        except UserImage.DoesNotExist:
+            profile_picture = None
+        if profile_picture:
+            profile_picture.profile_picture = False
+            profile_picture.save()
         image.profile_picture = True
         image.save()
+        return HttpResponse('')
     else:
-        image.profile_picture = True
-        image.save()
-    return HttpResponseRedirect(userprofile.get_absolute_url())
+        raise Http404
 
 @login_required
 def add_card(request):

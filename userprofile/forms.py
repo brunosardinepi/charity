@@ -84,9 +84,3 @@ class UserImageForm(forms.ModelForm):
             'caption',
             'profile_picture',
         ]
-
-#class UpdateCardForm(forms.Form):
-#    name = forms.CharField(max_length=255)
-#    exp_month = forms.CharField(max_length=2)
-#    exp_year = forms.CharField(max_length=4)
-#    id = forms.IntegerField(widget=forms.HiddenInput())

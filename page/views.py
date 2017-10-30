@@ -291,7 +291,7 @@ class PageImageUpload(View):
             manager = False
         if admin or manager:
             form = forms.PageImageForm(self.request.POST, self.request.FILES)
-            data = image_is_valid(form, page)
+            data = image_is_valid(request, form, page)
             return JsonResponse(data)
         else:
             raise Http404

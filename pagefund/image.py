@@ -5,7 +5,7 @@ from page.models import Page
 from userprofile.models import UserProfile
 
 
-def image_is_valid(form, model):
+def image_is_valid(request, form, model):
     if form.is_valid():
         image_raw = form.cleaned_data.get('image',False)
         image_type = image_raw.content_type.split('/')[0]
@@ -18,8 +18,10 @@ def image_is_valid(form, model):
                     image.user = model
                 elif type(model) is Page:
                     image.page = model
+                    image.uploaded_by = request.user
                 elif type(model) is Campaign:
                     image.campaign = model
+                    image.uploaded_by = request.user
                 image.save()
                 data = {
                     'is_valid': 't',

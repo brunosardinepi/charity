@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
+from django.utils import timezone
 
 from allauth.account.signals import user_signed_up
 import stripe
@@ -112,8 +113,8 @@ class UserProfile(models.Model):
     def plans(self):
         return StripePlan.objects.filter(user=self.user)
 
-    def profile_image(self):
-        return UserImage.objects.filter(user=self, profile_picture=True)
+    def profile_picture(self):
+        return UserImage.objects.get(user=self, profile_picture=True)
 
     def saved_cards(self):
         return StripeCard.objects.filter(user=self.user.userprofile)
@@ -171,3 +172,4 @@ class StripeCard(models.Model):
     stripe_card_fingerprint = models.CharField(max_length=255)
     name = models.CharField(max_length=255, blank=True)
     default = models.BooleanField(default=False)
+    uploaded_at = models.DateTimeField(default=timezone.now)

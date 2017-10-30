@@ -198,7 +198,7 @@ class CampaignImageUpload(View):
             manager = False
         if admin or manager:
             form = forms.CampaignImageForm(self.request.POST, self.request.FILES)
-            data = image_is_valid(form, campaign)
+            data = image_is_valid(request, form, campaign)
             return JsonResponse(data)
         else:
             raise Http404
