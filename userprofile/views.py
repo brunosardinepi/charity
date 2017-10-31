@@ -136,3 +136,19 @@ def update_card(request):
                     customer = stripe.Customer.retrieve(request.user.userprofile.stripe_customer_id)
                     customer.sources.retrieve(card.stripe_card_id).delete()
             return HttpResponseRedirect(card.user.get_absolute_url())
+
+@login_required
+def update_notification_preferences(request):
+    if request.method == "POST":
+        userprofile = get_object_or_404(UserProfile, user=request.user)
+        post_data = request.POST.getlist('notification_preferences[]')
+        new_notification_preferences = [n for n in post_data]
+        old_notification_preferences = userprofile.notification_preferences()
+        for o in old_notification_preferences:
+            if o in new_notification_preferences:
+                setattr(userprofile, "%s" % o, True)
+            else:
+                setattr(userprofile, "%s" % o, False)
+        userprofile.save()
+        return HttpResponseRedirect(request.user.userprofile.get_absolute_url())
+

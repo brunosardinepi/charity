@@ -153,7 +153,7 @@
     {% endif %}    
 
     <h3>Notification Preferences</h3>
-    <form method="POST" action"">
+    <form method="POST" action="{% url 'userprofile:update_notification_preferences' %}">
         {% csrf_token %}
         <ul>
             {% for k,n in userprofile.notification_preferences.items %}
