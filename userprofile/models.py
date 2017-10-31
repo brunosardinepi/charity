@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import random
 import string
 
@@ -123,19 +124,54 @@ class UserProfile(models.Model):
         return self.page_managers.filter(deleted=False)
 
     def notification_preferences(self):
-        notifications = {
-            "notification_email_pagefund_news": self.notification_email_pagefund_news,
-            "notification_email_page_created": self.notification_email_page_created,
-            "notification_email_campaign_created": self.notification_email_campaign_created,
-            "notification_email_page_manager": self.notification_email_page_manager,
-            "notification_email_campaign_manager": self.notification_email_campaign_manager,
-            "notification_email_page_donation": self.notification_email_page_donation,
-            "notification_email_recurring_donation": self.notification_email_recurring_donation,
-            "notification_email_campaign_donation": self.notification_email_campaign_donation,
-            "notification_email_campaign_voted": self.notification_email_campaign_voted,
-            "notification_email_campaign_ticket_purchased": self.notification_email_campaign_ticket_purchased,
-            "notification_email_campaign_goal_reached": self.notification_email_campaign_goal_reached,
-            "notification_email_campaign_ticket_sold_out": self.notification_email_campaign_ticket_sold_out
+        notifications = OrderedDict()
+        notifications["notification_email_pagefund_news"] = {
+            "value": self.notification_email_pagefund_news,
+            "label": "PageFund news"
+        }
+        notifications["notification_email_page_created"] = {
+            "value": self.notification_email_page_created,
+            "label": "Page created"
+        }
+        notifications["notification_email_campaign_created"] = {
+            "value": self.notification_email_campaign_created,
+            "label": "Campaign created"
+        }
+        notifications["notification_email_page_manager"] = {
+            "value": self.notification_email_page_manager,
+            "label": "Page manager invitation"
+        }
+        notifications["notification_email_campaign_manager"] = {
+            "value": self.notification_email_campaign_manager,
+            "label": "Campaign manager invitation"
+        }
+        notifications["notification_email_page_donation"] = {
+            "value": self.notification_email_page_donation,
+            "label": "Page donation"
+        }
+        notifications["notification_email_recurring_donation"] = {
+            "value": self.notification_email_recurring_donation,
+            "label": "Recurring donation setup"
+        }
+        notifications["notification_email_campaign_donation"] = {
+            "value": self.notification_email_campaign_donation,
+            "label": "Campaign donation"
+        }
+        notifications["notification_email_campaign_voted"] = {
+            "value": self.notification_email_campaign_voted,
+            "label": "Voted in Campaign"
+        }
+        notifications["notification_email_campaign_ticket_purchased"] = {
+            "value": self.notification_email_campaign_ticket_purchased,
+            "label": "Ticket purchased"
+        }
+        notifications["notification_email_campaign_goal_reached"] = {
+            "value": self.notification_email_campaign_goal_reached,
+            "label": "Campaign goal reached"
+        }
+        notifications["notification_email_campaign_ticket_sold_out"] = {
+            "value": self.notification_email_campaign_ticket_sold_out,
+            "label": "Campaign tickets sold out"
         }
         return notifications
 
