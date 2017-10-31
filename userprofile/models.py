@@ -25,6 +25,18 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     birthday = models.DateField(blank=True, null=True)
     stripe_customer_id = models.CharField(max_length=255, blank=True, null=True)
+    notification_email_pagefund_news = models.BooleanField(default=True)
+    notification_email_page_created = models.BooleanField(default=True)
+    notification_email_campaign_created = models.BooleanField(default=True)
+    notification_email_page_manager = models.BooleanField(default=True)
+    notification_email_campaign_manager = models.BooleanField(default=True)
+    notification_email_page_donation = models.BooleanField(default=True)
+    notification_email_recurring_donation = models.BooleanField(default=True)
+    notification_email_campaign_donation = models.BooleanField(default=True)
+    notification_email_campaign_voted = models.BooleanField(default=True)
+    notification_email_campaign_ticket_purchased = models.BooleanField(default=True)
+    notification_email_campaign_goal_reached = models.BooleanField(default=True)
+    notification_email_campaign_ticket_sold_out = models.BooleanField(default=True)
     STATE_CHOICES = (
         ('AL', 'Alabama'),
         ('AK', 'Alaska'),
