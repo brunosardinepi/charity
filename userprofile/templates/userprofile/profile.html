@@ -152,6 +152,18 @@
         </ul>
     {% endif %}    
 
+    <h3>Notification Preferences</h3>
+    {{ userprofile.notification_preferences }}
+    <form method="POST" action"">
+        {% csrf_token %}
+        <ul>
+            {% for k,n in userprofile.notification_preferences.items %}
+                <li><input name="notification_preferences[]" type="checkbox" value="{{ k }}" {% if n == True %}checked{% endif %} /> {{ k }}</li>
+            {% endfor %}
+        </ul>
+        <input type="submit" value="Save" />
+    </form>
+
     <h3>User Images</h3>
     <ul>
         {% for image in userprofile.images %}

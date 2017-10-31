@@ -122,6 +122,23 @@ class UserProfile(models.Model):
     def manager_pages(self):
         return self.page_managers.filter(deleted=False)
 
+    def notification_preferences(self):
+        notifications = {
+            "notification_email_pagefund_news": self.notification_email_pagefund_news,
+            "notification_email_page_created": self.notification_email_page_created,
+            "notification_email_campaign_created": self.notification_email_campaign_created,
+            "notification_email_page_manager": self.notification_email_page_manager,
+            "notification_email_campaign_manager": self.notification_email_campaign_manager,
+            "notification_email_page_donation": self.notification_email_page_donation,
+            "notification_email_recurring_donation": self.notification_email_recurring_donation,
+            "notification_email_campaign_donation": self.notification_email_campaign_donation,
+            "notification_email_campaign_voted": self.notification_email_campaign_voted,
+            "notification_email_campaign_ticket_purchased": self.notification_email_campaign_ticket_purchased,
+            "notification_email_campaign_goal_reached": self.notification_email_campaign_goal_reached,
+            "notification_email_campaign_ticket_sold_out": self.notification_email_campaign_ticket_sold_out
+        }
+        return notifications
+
     def plans(self):
         return StripePlan.objects.filter(user=self.user)
 
