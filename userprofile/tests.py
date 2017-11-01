@@ -21,9 +21,9 @@ class UserProfileTest(TestCase):
             username='testuser',
             email='test@test.test',
             password='testpassword',
+            first_name='John',
+            last_name='Doe',
         )
-        self.user.userprofile.first_name = 'John'
-        self.user.userprofile.last_name = 'Doe'
         self.user.userprofile.state = 'Kansas'
 
         self.page = Page.objects.create(name="Buffalo")
@@ -191,3 +191,20 @@ class UserProfileTest(TestCase):
         self.assertRedirects(response, '/profile/', 302, 200)
         cards = models.StripeCard.objects.all()
         self.assertNotIn(self.card, cards)
+
+    def test_notification_preferences(self):
+        self.client.login(username='testuser', password='testpassword')
+
+        data = {'notification_preferences[]': ['notification_email_page_donation']}
+        response = self.client.post('/profile/notifications/update/', data)
+        self.assertRedirects(response, '/profile/', 302, 200)
+        response = self.client.get('/profile/')
+        response = response.content.decode("utf-8")
+        self.assertEqual(response.count("checked"), 1)
+
+        data = {'notification_preferences[]': ['notification_email_page_donation', 'notification_email_page_created']}
+        response = self.client.post('/profile/notifications/update/', data)
+        self.assertRedirects(response, '/profile/', 302, 200)
+        response = self.client.get('/profile/')
+        response = response.content.decode("utf-8")
+        self.assertEqual(response.count("checked"), 2)
