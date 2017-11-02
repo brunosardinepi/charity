@@ -104,4 +104,10 @@
             {% endfor %}
         </ul>
     {% endif %}
+    <h2>Campaign Types</h2>
+    <ul>
+        {% for k,v in campaign_types.items %}
+            <li>Type: {{ v.display }}; Count: {{ v.count }}; Donations: {{ v.sum|cents_to_dollars }}</li>
+        {% endfor %}
+    </ul>
 {% endblock %}

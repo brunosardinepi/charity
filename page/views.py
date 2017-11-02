@@ -18,6 +18,7 @@ from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 
 from . import forms
 from .models import Page, PageImage
+from .utils import campaign_types
 from campaign.models import Campaign
 from comments.forms import CommentForm
 from comments.models import Comment
@@ -355,7 +356,8 @@ class PageDashboard(View):
             return render(self.request, 'page/dashboard.html', {
                 'page': page,
                 'donations': donations,
-                'graph': graph
+                'graph': graph,
+                'campaign_types': campaign_types(page)
             })
         else:
             raise Http404
