@@ -352,3 +352,8 @@ class PageDashboard(View):
             return render(self.request, 'page/dashboard.html', {'page': page})
         else:
             raise Http404
+
+    def post(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
+        return render(self.request, 'page/dashboard.html', {'page': page})
