@@ -1,7 +1,10 @@
+from collections import OrderedDict
+from datetime import date, timedelta
 from decimal import Decimal, ROUND_HALF_UP
 
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 import stripe
 
@@ -282,5 +285,17 @@ def donation_statistics(obj):
     elif obj.__class__ is Campaign:
         print("campaign")
 
-
-
+def donation_days(obj, days):
+    today = date.today()
+    donation_history = OrderedDict()
+    if obj.__class__ is Page:
+        # for each day between today and x days ago,
+        # find the donations for that day and
+        # average them, then
+        # add a dictionary k,v pair for date,avg
+        for d in (today - timedelta(n) for n in range(days)):
+            donations_sum = Donation.objects.filter(page=obj, date__year=d.year, date__month=d.month, date__day=d.day).aggregate(Sum('amount')).get('amount__sum')
+            if donations_sum is None:
+                donations_sum = 0
+            donation_history[d] = donations_sum
+    return donation_history

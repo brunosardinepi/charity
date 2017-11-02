@@ -77,4 +77,10 @@
     <p>Donated to campaigns: {{ donations.campaign_donations|cents_to_dollars }} (Avg: {{ donations.campaign_donations_avg|cents_to_dollars }})</p>
     <p>Total donated: {{ donations.total_donations|cents_to_dollars }} (Avg: {{ donations.total_donations_avg|cents_to_dollars }})</p>
     <p>Page recurring donations: {{ donations.plan_donations|cents_to_dollars }} (Avg: {{ donations.plan_donations_avg|cents_to_dollars }})</p>
+    <h2>Donation History</h2>
+    <ul>
+        {% for k,v in donation_history.items %}
+            <li>Date: {{ k }}, Donations: {{ v|cents_to_dollars }}</li>
+        {% endfor %}
+    </ul>
 {% endblock %}
