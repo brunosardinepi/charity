@@ -73,4 +73,7 @@
             <p><a href="{% url 'page_image_upload' page_slug=page.page_slug %}">Upload and Edit images</a></p>
         {% endif %}
     {% endif %}
+    <p>Donated to page: {{ page_donations|cents_to_dollars }}</p>
+    <p>Donated to campaigns: {{ campaign_donations|cents_to_dollars }}</p>
+    <p>Total donated: {{ total_donations|cents_to_dollars }}</p>
 {% endblock %}

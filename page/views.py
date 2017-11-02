@@ -349,7 +349,15 @@ class PageDashboard(View):
         else:
             manager = False
         if admin or manager:
-            return render(self.request, 'page/dashboard.html', {'page': page})
+            total_donations = Donation.objects.filter(page=page).aggregate(Sum('amount')).get('amount__sum')
+            page_donations = Donation.objects.filter(page=page, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
+            campaign_donations = Donation.objects.filter(page=page, campaign__isnull=False).aggregate(Sum('amount')).get('amount__sum')
+            return render(self.request, 'page/dashboard.html', {
+                'page': page,
+                'total_donations': total_donations,
+                'page_donations': page_donations,
+                'campaign_donations': campaign_donations
+            })
         else:
             raise Http404
 
