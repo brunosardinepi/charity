@@ -179,7 +179,7 @@ class Page(models.Model):
             print("multiple profile images returned")
 
     def active_campaigns(self):
-        return Campaign.objects.filter(page=self, is_active=True, deleted=False)
+        return Campaign.objects.filter(page=self, is_active=True, deleted=False).order_by('name')
 
     def inactive_campaigns(self):
         return Campaign.objects.filter(page=self, is_active=False, deleted=False)

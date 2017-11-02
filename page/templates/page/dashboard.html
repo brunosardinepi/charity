@@ -95,5 +95,13 @@
             <li>{{ b.amount|cents_to_dollars }} - {{ b.first_name }} {{ b.last_name }}</li>
         {% endfor %}
     </ul>
-
+    <h2>Trending Scores</h2>
+    <p>Page score: {{ page.trending_score }}</p>
+    {% if page.active_campaigns %}
+        <ul>
+            {% for c in page.active_campaigns %}
+                <li>{{ c.name }} score: {{ c.trending_score }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 {% endblock %}
