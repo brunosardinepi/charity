@@ -23,7 +23,7 @@ from comments.forms import CommentForm
 from comments.models import Comment
 from donation.forms import DonateForm
 from donation.models import Donation
-from donation.utils import donate, donation_graph, donation_statistics
+from donation.utils import donate, donation_graph, donation_history, donation_statistics
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
 from userprofile.utils import get_user_credit_cards
@@ -352,10 +352,12 @@ class PageDashboard(View):
         if admin or manager:
             donations = donation_statistics(page)
             graph = donation_graph(page, 30)
+            history = donation_history(page)
             return render(self.request, 'page/dashboard.html', {
                 'page': page,
                 'donations': donations,
-                'graph': graph
+                'graph': graph,
+                'history': history
             })
         else:
             raise Http404

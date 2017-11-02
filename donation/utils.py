@@ -300,3 +300,7 @@ def donation_graph(obj, days):
             graph[d] = donations_sum
     return graph
 
+def donation_history(obj):
+    if obj.__class__ is Page:
+        history = Donation.objects.filter(page=obj)
+    return history
