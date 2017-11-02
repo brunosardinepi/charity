@@ -23,7 +23,7 @@ from comments.forms import CommentForm
 from comments.models import Comment
 from donation.forms import DonateForm
 from donation.models import Donation
-from donation.utils import donate
+from donation.utils import donate, donation_statistics
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
 from userprofile.utils import get_user_credit_cards
@@ -350,35 +350,10 @@ class PageDashboard(View):
         else:
             manager = False
         if admin or manager:
-            total_donations = Donation.objects.filter(page=page).aggregate(Sum('amount')).get('amount__sum')
-            total_donations_count = Donation.objects.filter(page=page).count()
-            total_donations_avg = total_donations / total_donations_count
-
-            page_donations = Donation.objects.filter(page=page, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
-            page_donations_count = Donation.objects.filter(page=page, campaign__isnull=True).count()
-            page_donations_avg = page_donations / page_donations_count
-
-            campaign_donations = Donation.objects.filter(page=page, campaign__isnull=False).aggregate(Sum('amount')).get('amount__sum')
-            campaign_donations_count = Donation.objects.filter(page=page, campaign__isnull=False).count()
-            campaign_donations_avg = campaign_donations / campaign_donations_count
-
-            plan_donations = StripePlan.objects.filter(page=page, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
-            plan_donations_count = StripePlan.objects.filter(page=page, campaign__isnull=True).count()
-            if plan_donations_count > 0:
-                plan_donations_avg = plan_donations / plan_donations_count
-            else:
-                plan_donations = 0
-                plan_donations_avg = 0
+            donations = donation_statistics(page)
             return render(self.request, 'page/dashboard.html', {
                 'page': page,
-                'total_donations': total_donations,
-                'total_donations_avg': total_donations_avg,
-                'page_donations': page_donations,
-                'page_donations_avg': page_donations_avg,
-                'campaign_donations': campaign_donations,
-                'campaign_donations_avg': campaign_donations_avg,
-                'plan_donations': plan_donations,
-                'plan_donations_avg': plan_donations_avg
+                'donations': donations
             })
         else:
             raise Http404

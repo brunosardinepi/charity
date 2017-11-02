@@ -1,10 +1,13 @@
 from decimal import Decimal, ROUND_HALF_UP
 
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 
 import stripe
 
 from .models import Donation
+from campaign.models import Campaign
+from page.models import Page
 from pagefund import config
 from plans.models import StripePlan
 from plans.utils import create_plan
@@ -243,3 +246,41 @@ def donate(request, form, page=None, campaign=None):
     if campaign is not None:
         campaign.save()
     page.save()
+
+def donation_statistics(obj):
+    if obj.__class__ is Page:
+        total_donations = Donation.objects.filter(page=obj).aggregate(Sum('amount')).get('amount__sum')
+        total_donations_count = Donation.objects.filter(page=obj).count()
+        total_donations_avg = total_donations / total_donations_count
+
+        page_donations = Donation.objects.filter(page=obj, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
+        page_donations_count = Donation.objects.filter(page=obj, campaign__isnull=True).count()
+        page_donations_avg = page_donations / page_donations_count
+
+        campaign_donations = Donation.objects.filter(page=obj, campaign__isnull=False).aggregate(Sum('amount')).get('amount__sum')
+        campaign_donations_count = Donation.objects.filter(page=obj, campaign__isnull=False).count()
+        campaign_donations_avg = campaign_donations / campaign_donations_count
+
+        plan_donations = StripePlan.objects.filter(page=obj, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
+        plan_donations_count = StripePlan.objects.filter(page=obj, campaign__isnull=True).count()
+        if plan_donations_count > 0:
+            plan_donations_avg = plan_donations / plan_donations_count
+        else:
+            plan_donations = 0
+            plan_donations_avg = 0
+        donations = {
+            'total_donations': total_donations,
+            'total_donations_avg': total_donations_avg,
+            'page_donations': page_donations,
+            'page_donations_avg': page_donations_avg,
+            'campaign_donations': campaign_donations,
+            'campaign_donations_avg': campaign_donations_avg,
+            'plan_donations': plan_donations,
+            'plan_donations_avg': plan_donations_avg
+        }
+        return donations
+    elif obj.__class__ is Campaign:
+        print("campaign")
+
+
+
