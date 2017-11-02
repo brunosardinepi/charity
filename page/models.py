@@ -130,6 +130,7 @@ class Page(models.Model):
             ('manager_delete', 'Manager -- delete Page'),
             ('manager_invite', 'Manager -- invite users to manage Page'),
             ('manager_image_edit', 'Manager -- upload and edit media on Page'),
+            ('manager_view_dashboard', 'Manager -- view Page dashboard'),
         )
 
     def __str__(self):
