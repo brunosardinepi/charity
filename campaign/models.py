@@ -27,6 +27,7 @@ class Campaign(models.Model):
     description = models.TextField(blank=True)
     donation_count = models.IntegerField(default=0)
     donation_money = models.IntegerField(default=0)
+    ended_on = models.DateTimeField(blank=True, null=True)
     goal = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
     name = models.CharField(max_length=255, db_index=True)
