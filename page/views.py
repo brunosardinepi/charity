@@ -30,6 +30,7 @@ from userprofile.utils import get_user_credit_cards
 from userprofile import models as UserProfileModels
 from pagefund import config, settings, utils
 from pagefund.image import image_is_valid
+from plans.models import StripePlan
 
 
 stripe.api_key = config.settings['stripe_api_sk']
@@ -352,12 +353,22 @@ class PageDashboard(View):
             total_donations = Donation.objects.filter(page=page).aggregate(Sum('amount')).get('amount__sum')
             total_donations_count = Donation.objects.filter(page=page).count()
             total_donations_avg = total_donations / total_donations_count
+
             page_donations = Donation.objects.filter(page=page, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
             page_donations_count = Donation.objects.filter(page=page, campaign__isnull=True).count()
             page_donations_avg = page_donations / page_donations_count
+
             campaign_donations = Donation.objects.filter(page=page, campaign__isnull=False).aggregate(Sum('amount')).get('amount__sum')
             campaign_donations_count = Donation.objects.filter(page=page, campaign__isnull=False).count()
             campaign_donations_avg = campaign_donations / campaign_donations_count
+
+            plan_donations = StripePlan.objects.filter(page=page, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
+            plan_donations_count = StripePlan.objects.filter(page=page, campaign__isnull=True).count()
+            if plan_donations_count > 0:
+                plan_donations_avg = plan_donations / plan_donations_count
+            else:
+                plan_donations = 0
+                plan_donations_avg = 0
             return render(self.request, 'page/dashboard.html', {
                 'page': page,
                 'total_donations': total_donations,
@@ -365,7 +376,9 @@ class PageDashboard(View):
                 'page_donations': page_donations,
                 'page_donations_avg': page_donations_avg,
                 'campaign_donations': campaign_donations,
-                'campaign_donations_avg': campaign_donations_avg
+                'campaign_donations_avg': campaign_donations_avg,
+                'plan_donations': plan_donations,
+                'plan_donations_avg': plan_donations_avg
             })
         else:
             raise Http404

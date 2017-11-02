@@ -76,4 +76,5 @@
     <p>Donated to page: {{ page_donations|cents_to_dollars }} (Avg: {{ page_donations_avg|cents_to_dollars }})</p>
     <p>Donated to campaigns: {{ campaign_donations|cents_to_dollars }} (Avg: {{ campaign_donations_avg|cents_to_dollars }})</p>
     <p>Total donated: {{ total_donations|cents_to_dollars }} (Avg: {{ total_donations_avg|cents_to_dollars }})</p>
+    <p>Page recurring donations: {{ plan_donations|cents_to_dollars }} (Avg: {{ plan_donations_avg|cents_to_dollars }})</p>
 {% endblock %}
