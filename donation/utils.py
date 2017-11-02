@@ -285,9 +285,9 @@ def donation_statistics(obj):
     elif obj.__class__ is Campaign:
         print("campaign")
 
-def donation_days(obj, days):
+def donations_graph(obj, days):
     today = date.today()
-    donation_graphs = OrderedDict()
+    graph = OrderedDict()
     if obj.__class__ is Page:
         # for each day between today and x days ago,
         # find the donations for that day and
@@ -297,5 +297,5 @@ def donation_days(obj, days):
             donations_sum = Donation.objects.filter(page=obj, date__year=d.year, date__month=d.month, date__day=d.day).aggregate(Sum('amount')).get('amount__sum')
             if donations_sum is None:
                 donations_sum = 0
-            donation_graphs[d] = donations_sum
-    return donation_graphs
+            graph[d] = donations_sum
+    return graph
