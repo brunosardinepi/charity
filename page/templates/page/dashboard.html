@@ -16,6 +16,10 @@
     </script>
 {% endblock %}
 
+{% block breadcrumbs %}
+    <a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a> / Dashboard
+{% endblock %}
+
 {% block body_content %}
     <h1>{{ page.name }}</h1>
     {% if request.user.userprofile in page.admins.all %}
@@ -53,6 +57,20 @@
                 </table>
                 <input type="submit" value="Save" />
             </form>
+        {% endif %}
+    {% else %}
+        {% get_obj_perms request.user for page as "page_perms" %}
+        {% if "manager_edit" in page_perms %}
+            <p><a href="{% url 'page_edit' page_slug=page.page_slug %}">Edit Page</a></p>
+        {% endif %}
+        {% if "manager_delete" in page_perms %}
+            <p><a class="delete-page" href="{% url 'page_delete' page_slug=page.page_slug %}">Delete Page</a></p>
+        {% endif %}
+        {% if "manager_invite" in page_perms %}
+            <p><a href="{% url 'page_invite' page_slug=page.page_slug  %}">Invite others to manage Page</a></p>
+        {% endif %}
+        {% if "manager_image_edit" in page_perms %}
+            <p><a href="{% url 'page_image_upload' page_slug=page.page_slug %}">Upload and Edit images</a></p>
         {% endif %}
     {% endif %}
 {% endblock %}
