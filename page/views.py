@@ -352,12 +352,10 @@ class PageDashboard(View):
         if admin or manager:
             donations = donation_statistics(page)
             graph = donation_graph(page, 30)
-            history = donation_history(page)
             return render(self.request, 'page/dashboard.html', {
                 'page': page,
                 'donations': donations,
-                'graph': graph,
-                'history': history
+                'graph': graph
             })
         else:
             raise Http404

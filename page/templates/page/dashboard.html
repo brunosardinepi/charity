@@ -85,8 +85,15 @@
     </ul>
     <h2>Donation History</h2>
     <ul>
-        {% for d in history %}
+        {% for d in page.donations %}
             <li>Date: {{ d.date }}; Amount: {% if d.anonymous_amount %}Anonymous{% else %}{{ d.amount|cents_to_dollars }}{% endif %}; Page: {{ d.page }};{% if d.campaign %} Campaign: {{ d.campaign }};{% endif %} User: {% if d.anonymous_donor == True %}Anonymous{% else %}{{ d.user.first_name }} {{ d.user.last_name }}{% endif %}</li>
         {% endfor %}
     </ul>
+    <h2>Top Donors</h2>
+    <ul>
+        {% for a, b in page.top_donors %}
+            <li>{{ b.amount|cents_to_dollars }} - {{ b.first_name }} {{ b.last_name }}</li>
+        {% endfor %}
+    </ul>
+
 {% endblock %}
