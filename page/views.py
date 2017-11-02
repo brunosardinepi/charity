@@ -350,13 +350,22 @@ class PageDashboard(View):
             manager = False
         if admin or manager:
             total_donations = Donation.objects.filter(page=page).aggregate(Sum('amount')).get('amount__sum')
+            total_donations_count = Donation.objects.filter(page=page).count()
+            total_donations_avg = total_donations / total_donations_count
             page_donations = Donation.objects.filter(page=page, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
+            page_donations_count = Donation.objects.filter(page=page, campaign__isnull=True).count()
+            page_donations_avg = page_donations / page_donations_count
             campaign_donations = Donation.objects.filter(page=page, campaign__isnull=False).aggregate(Sum('amount')).get('amount__sum')
+            campaign_donations_count = Donation.objects.filter(page=page, campaign__isnull=False).count()
+            campaign_donations_avg = campaign_donations / campaign_donations_count
             return render(self.request, 'page/dashboard.html', {
                 'page': page,
                 'total_donations': total_donations,
+                'total_donations_avg': total_donations_avg,
                 'page_donations': page_donations,
-                'campaign_donations': campaign_donations
+                'page_donations_avg': page_donations_avg,
+                'campaign_donations': campaign_donations,
+                'campaign_donations_avg': campaign_donations_avg
             })
         else:
             raise Http404
