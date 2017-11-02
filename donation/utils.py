@@ -285,7 +285,7 @@ def donation_statistics(obj):
     elif obj.__class__ is Campaign:
         print("campaign")
 
-def donations_graph(obj, days):
+def donation_graph(obj, days):
     today = date.today()
     graph = OrderedDict()
     if obj.__class__ is Page:
@@ -299,3 +299,4 @@ def donations_graph(obj, days):
                 donations_sum = 0
             graph[d] = donations_sum
     return graph
+
