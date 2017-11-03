@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from django.db.models import Sum
+from django.db.models import F, Sum
 
 from campaign.models import Campaign
 from campaign.utils import campaign_duration
@@ -27,8 +27,11 @@ def campaign_types(page):
     return campaign_types
 
 def campaign_average_duration(page):
-    campaigns = Campaign.objects.filter(page=page, is_active=False, deleted=False)
+    campaigns = Campaign.objects.filter(page=page, is_active=False, deleted=False, donation_money__gte=F('goal'))
     durations = []
     for c in campaigns:
         durations.append(campaign_duration(c))
-    return sum(durations) / len(durations)
+    if len(durations) > 0:
+        return sum(durations) / len(durations)
+    else:
+        return 0
