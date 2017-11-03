@@ -18,7 +18,7 @@ from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 
 from . import forms
 from .models import Page, PageImage
-from .utils import campaign_average_duration, campaign_types
+from .utils import campaign_average_duration, campaign_success_pct, campaign_types
 from campaign.models import Campaign
 from comments.forms import CommentForm
 from comments.models import Comment
@@ -356,7 +356,8 @@ class PageDashboard(View):
                 'donations': donation_statistics(page),
                 'graph': donation_graph(page, 30),
                 'campaign_types': campaign_types(page),
-                'campaign_average_duration': campaign_average_duration(page)
+                'campaign_average_duration': campaign_average_duration(page),
+                'campaign_success_pct': campaign_success_pct(page)
             })
         else:
             raise Http404

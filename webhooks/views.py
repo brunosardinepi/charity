@@ -46,7 +46,7 @@ def charge_succeeded(request):
         anonymous_amount = event_json['data']['object']['metadata']['anonymous_amount']
         anonymous_donor = event_json['data']['object']['metadata']['anonymous_donor']
         try:
-            campaign_pk = event_json['plan']['metadata']['campaign']
+            campaign_pk = event_json['data']['object']['metadata']['campaign']
             campaign = get_object_or_404(Campaign, pk=campaign_pk)
         except KeyError:
             campaign = None

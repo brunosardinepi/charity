@@ -112,4 +112,10 @@
     </ul>
     <h2>Average Campaign Duration</h2>
     <p>{{ campaign_average_duration }} days</p>
+    <h2>Campaign Success Percentage</h2>
+    <ul>
+        {% for k,v in campaign_success_pct.items %}
+            <li>Type: {{ v.display }}; Success Pct: {{ v.success_pct }}</li>
+        {% endfor %}
+    </ul>
 {% endblock %}
