@@ -22,3 +22,8 @@ def email_new_campaign(email_to, campaign):
         except urllib.HTTPError as e:
             print (e.read())
             exit()
+
+def campaign_duration(campaign):
+    if campaign.ended_on is not None:
+        duration = campaign.ended_on - campaign.created_on
+        return duration.days

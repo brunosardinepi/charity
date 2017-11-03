@@ -18,7 +18,7 @@ from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 
 from . import forms
 from .models import Page, PageImage
-from .utils import campaign_types
+from .utils import campaign_average_duration, campaign_types
 from campaign.models import Campaign
 from comments.forms import CommentForm
 from comments.models import Comment
@@ -351,13 +351,12 @@ class PageDashboard(View):
         else:
             manager = False
         if admin or manager:
-            donations = donation_statistics(page)
-            graph = donation_graph(page, 30)
             return render(self.request, 'page/dashboard.html', {
                 'page': page,
-                'donations': donations,
-                'graph': graph,
-                'campaign_types': campaign_types(page)
+                'donations': donation_statistics(page),
+                'graph': donation_graph(page, 30),
+                'campaign_types': campaign_types(page),
+                'campaign_average_duration': campaign_average_duration(page)
             })
         else:
             raise Http404

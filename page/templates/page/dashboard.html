@@ -110,4 +110,6 @@
             <li>Type: {{ v.display }}; Count: {{ v.count }}; Donations: {{ v.sum|cents_to_dollars }}</li>
         {% endfor %}
     </ul>
+    <h2>Average Campaign Duration</h2>
+    <p>{{ campaign_average_duration }} days</p>
 {% endblock %}
