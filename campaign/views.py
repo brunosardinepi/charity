@@ -168,6 +168,7 @@ def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
         remove_perm('manager_delete', manager, campaign)
         remove_perm('manager_invite', manager, campaign)
         remove_perm('manager_image_edit', manager, campaign)
+        remove_perm('manager_view_dashboard', manager, campaign)
         # redirect to campaign
         return HttpResponseRedirect(campaign.get_absolute_url())
     else:

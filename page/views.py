@@ -264,6 +264,7 @@ def remove_manager(request, page_slug, manager_pk):
         remove_perm('manager_delete', manager, page)
         remove_perm('manager_invite', manager, page)
         remove_perm('manager_image_edit', manager, page)
+        remove_perm('manager_view_dashboard', manager, page)
         # redirect to page
         return HttpResponseRedirect(page.get_absolute_url())
     else:

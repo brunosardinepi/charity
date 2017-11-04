@@ -254,15 +254,27 @@ def donation_statistics(obj):
     if obj.__class__ is Page:
         total_donations = Donation.objects.filter(page=obj).aggregate(Sum('amount')).get('amount__sum')
         total_donations_count = Donation.objects.filter(page=obj).count()
-        total_donations_avg = total_donations / total_donations_count
+        if total_donations_count > 0:
+            total_donations_avg = total_donations / total_donations_count
+        else:
+            total_donations = 0
+            total_donations_avg = 0
 
         page_donations = Donation.objects.filter(page=obj, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
         page_donations_count = Donation.objects.filter(page=obj, campaign__isnull=True).count()
-        page_donations_avg = page_donations / page_donations_count
+        if page_donations_count > 0:
+            page_donations_avg = page_donations / page_donations_count
+        else:
+            page_donations = 0
+            page_donations_avg = 0
 
         campaign_donations = Donation.objects.filter(page=obj, campaign__isnull=False).aggregate(Sum('amount')).get('amount__sum')
         campaign_donations_count = Donation.objects.filter(page=obj, campaign__isnull=False).count()
-        campaign_donations_avg = campaign_donations / campaign_donations_count
+        if campaign_donations_count > 0:
+            campaign_donations_avg = campaign_donations / campaign_donations_count
+        else:
+            campaign_donations = 0
+            campaign_donations_avg = 0
 
         plan_donations = StripePlan.objects.filter(page=obj, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
         plan_donations_count = StripePlan.objects.filter(page=obj, campaign__isnull=True).count()

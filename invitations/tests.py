@@ -50,7 +50,8 @@ class ManagerInvitationTest(TestCase):
             manager_edit=True,
             manager_delete=True,
             manager_invite=True,
-            manager_image_edit=True
+            manager_image_edit=True,
+            manager_view_dashboard=True,
         )
 
         self.invitation2 = models.GeneralInvitation.objects.create(
@@ -102,7 +103,7 @@ class ManagerInvitationTest(TestCase):
         self.assertNotIn(self.invitation, invitations)
 
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/testpage/')
+        response = self.client.get('/testpage/dashboard/')
         self.assertContains(response, "%s %s" % (self.user2.first_name, self.user2.last_name), status_code=200)
         self.assertContains(response, self.user2.email, status_code=200)
 

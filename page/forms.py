@@ -47,6 +47,7 @@ class ManagerInviteForm(forms.Form):
     manager_delete = forms.BooleanField(required=False, label='Delete Page')
     manager_invite = forms.BooleanField(required=False, label='Invite users to manage Page')
     manager_image_edit = forms.BooleanField(required=False, label='Upload image')
+    manager_view_dashboard = forms.BooleanField(required=False, label='View dashboard')
 
 class PageBankForm(forms.Form):
     account_holder_first_name = forms.CharField(max_length=255)

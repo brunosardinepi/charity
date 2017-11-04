@@ -4,7 +4,7 @@ from django.http import Http404
 from django.test import Client, RequestFactory, TestCase
 from django.urls import reverse
 from django.utils import timezone
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, get_perms
 
 from . import forms
 from . import models
@@ -72,6 +72,7 @@ class PageTest(TestCase):
         assign_perm('manager_delete', self.user3, self.page)
         assign_perm('manager_invite', self.user3, self.page)
         assign_perm('manager_image_edit', self.user3, self.page)
+        assign_perm('manager_view_dashboard', self.user3, self.page)
 
         self.page2 = models.Page.objects.create(
             name='Office',
@@ -183,25 +184,20 @@ class PageTest(TestCase):
         self.assertContains(response, self.page.website, status_code=200)
 
     def test_page_admin_logged_out(self):
-        request = self.factory.get('home')
-        request.user = AnonymousUser()
-        response = views.page(request, self.page.page_slug)
+        response = self.client.get('/%s/' % self.page.page_slug)
 
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, "Admin", status_code=200)
-        self.assertNotContains(response, "Edit Page", status_code=200)
-        self.assertNotContains(response, "Delete Page", status_code=200)
-        self.assertNotContains(response, "Manager", status_code=200)
-        self.assertNotContains(response, "Invite others to manage Page", status_code=200)
-        self.assertNotContains(response, "Upload and Edit images", status_code=200)
+        self.assertNotContains(response, "Dashboard", status_code=200)
 
     def test_page_admin_logged_in(self):
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.page(request, self.page.page_slug)
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/%s/' % self.page.page_slug)
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Admin", status_code=200)
+        self.assertContains(response, "Dashboard", status_code=200)
+
+        response = self.client.get('/%s/dashboard/' % self.page.page_slug)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Edit Page", status_code=200)
         self.assertContains(response, "Delete Page", status_code=200)
         self.assertContains(response, "Invite others to manage Page", status_code=200)
@@ -210,16 +206,20 @@ class PageTest(TestCase):
         self.assertContains(response, "/%s/managers/%s/remove/" % (self.page.page_slug, self.user4.pk), status_code=200)
 
     def test_page_manager_logged_in(self):
-        request = self.factory.get('home')
-        request.user = self.user3
-        response = views.page(request, self.page.page_slug)
+        self.client.login(username='bobdole', password='dogsarecool')
+        response = self.client.get('/%s/' % self.page.page_slug)
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Manager", status_code=200)
+        self.assertContains(response, "Dashboard", status_code=200)
+
+        response = self.client.get('/%s/dashboard/' % self.page.page_slug)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Edit Page", status_code=200)
         self.assertContains(response, "Delete Page", status_code=200)
         self.assertContains(response, "Invite others to manage Page", status_code=200)
         self.assertContains(response, "Upload and Edit images", status_code=200)
+        self.assertNotContains(response, "/%s/managers/%s/remove/" % (self.page.page_slug, self.user3.pk), status_code=200)
+        self.assertNotContains(response, "/%s/managers/%s/remove/" % (self.page.page_slug, self.user4.pk), status_code=200)
 
     def test_page_edit_logged_out(self):
         response = self.client.get('/%s/edit/' % self.page.page_slug)
@@ -389,7 +389,8 @@ class PageTest(TestCase):
             'manager_edit': "True",
             'manager_delete': "True",
             'manager_invite': "True",
-            'manager_image_edit': "True"
+            'manager_image_edit': "True",
+            'manager_view_dashboard': "True"
         }
 
         self.client.login(username='testuser', password='testpassword')
@@ -413,7 +414,7 @@ class PageTest(TestCase):
         invitation = ManagerInvitation.objects.get(invite_to=self.user5.email)
         response = self.client.get('/invite/manager/accept/%s/%s/' % (invitation.pk, invitation.key))
         self.assertRedirects(response, invitation.page.get_absolute_url(), 302, 200)
-        response = self.client.get('/%s/' % invitation.page.page_slug)
+        response = self.client.get('/%s/dashboard/' % invitation.page.page_slug)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Edit Page", status_code=200)
         self.assertContains(response, "Delete Page", status_code=200)

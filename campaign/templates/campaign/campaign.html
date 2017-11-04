@@ -158,6 +158,7 @@
                         <th>Delete</th>
                         <th>Invite</th>
                         <th>Upload</th>
+                        <th>View Dashboard</th>
                         <th></th>
                     </tr>
                 {% for manager in campaign.managers_list %}
@@ -169,6 +170,7 @@
                         <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_delete" {% if 'manager_delete' in campaign_perms %}checked{% endif %} /></td>
                         <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_invite" {% if 'manager_invite' in campaign_perms %}checked{% endif %} /></td>
                         <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_image_edit" {% if 'manager_image_edit' in campaign_perms %}checked{% endif %} /></td>
+                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_view_dashboard" {% if 'manager_view_dashboard' in page_perms %}checked{% endif %} /></td>
                         <td><a href="{% url 'remove_manager' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug manager_pk=manager.pk %}">Remove<a/></td>
                 {% endfor %}
                 </table>
