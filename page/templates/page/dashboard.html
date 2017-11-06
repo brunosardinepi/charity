@@ -84,11 +84,29 @@
         {% endfor %}
     </ul>
     <h2>Donation History</h2>
-    <ul>
-        {% for d in page.donations %}
-            <li>Date: {{ d.date }}; Amount: {% if d.anonymous_amount %}Anonymous{% else %}{{ d.amount|cents_to_dollars }}{% endif %}; Page: {{ d.page }};{% if d.campaign %} Campaign: {{ d.campaign }};{% endif %} User: {% if d.anonymous_donor == True %}Anonymous{% else %}{{ d.user.first_name }} {{ d.user.last_name }}{% endif %}</li>
-        {% endfor %}
-    </ul>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Page</th>
+                <th>Campaign</th>
+                <th>Donor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in page.donations %}
+                <tr>
+                    <td>{{ d.date }}</td>
+                    <td>{% if d.anonymous_amount %}Anonymous{% else %}{{ d.amount|cents_to_dollars }}{% endif %}</td>
+                    <td>{{ d.page }}</td>
+                    <td>{% if d.campaign %}{{ d.campaign }}{% else %}--{% endif %}</td>
+                    <td>{% if d.anonymous_donor == True %}Anonymous{% else %}{{ d.user.first_name }} {{ d.user.last_name }}{% endif %}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
     <h2>Top Donors</h2>
     <ul>
         {% for a, b in page.top_donors %}
