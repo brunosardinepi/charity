@@ -1,5 +1,6 @@
 import json
 
+from datetime import timezone
 from time import strftime
 
 from collections import OrderedDict
@@ -342,6 +343,35 @@ def page_profile_update(request, image_pk):
         return HttpResponse('')
     else:
         raise Http404
+
+class PageAjaxDonations(View):
+    def post(self, request):
+        page = get_object_or_404(Page, pk=request.POST.get("page_pk"))
+        sort_by = request.POST.get("sort_by")
+        if sort_by == "asc":
+            donationset = Donation.objects.filter(page=page).order_by('date')
+        elif sort_by == "desc":
+            donationset = Donation.objects.filter(page=page).order_by('-date')
+        data = OrderedDict()
+        for d in donationset:
+            d.date = d.date.replace(tzinfo=timezone.utc).astimezone(tz=None)
+            data["pk%s" % d.pk] = {
+                "date": d.date.strftime("%b %-d, %Y, %-I:%M %p"),
+                "anonymous_amount": d.anonymous_amount,
+                "amount": d.amount,
+                "page": d.page.name,
+                "anonymous_donor": d.anonymous_donor,
+                "user": {
+                    "first_name": d.user.first_name,
+                    "last_name": d.user.last_name
+                }
+            }
+            if d.campaign:
+                data["pk%s" % d.pk]["campaign"] = d.campaign.name
+            else:
+                data["pk%s" % d.pk]["campaign"] = ""
+        return HttpResponse(json.dumps(data), content_type="application/json")
+
 
 class PageDashboard(View):
     def get(self, request, page_slug):

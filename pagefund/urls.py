@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^create/$', PageViews.page_create, name='page_create'),
     url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),
     url(r'^(?P<page_slug>[\w-]+)/dashboard/$', login_required(PageViews.PageDashboard.as_view()), name='page_dashboard'),
+    url(r'^page/dashboard/ajax/donations/', PageViews.PageAjaxDonations.as_view(), name='page_ajax_donations'),
     url(r'^(?P<page_slug>[\w-]+)/delete/$', PageViews.page_delete, name='page_delete'),
     url(r'^page/(?P<page_pk>\d+)/donate/$', PageViews.page_donate, name='page_donate'),
     url(r'^(?P<page_slug>[\w-]+)/images/$', login_required(PageViews.PageImageUpload.as_view()), name='page_image_upload'),

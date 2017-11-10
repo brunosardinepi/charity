@@ -14,17 +14,50 @@
             });
         });
 
+
         function sort(event) {
             var parent_th = $(event.target).parent("th");
             if (parent_th.hasClass("asc")) {
                 var sort_by = "desc";
-                console.log(sort_by);
-                parent_th.attr("class", sort_by);
             } else if (parent_th.hasClass("desc")) {
                 var sort_by = "asc";
-                console.log(sort_by);
-                parent_th.attr("class", sort_by);
             };
+
+            var url = "{% url 'page_ajax_donations' %}";
+
+            $.ajax({
+                url : url,
+                type : "POST",
+                traditional: true,
+                data : {
+                    page_pk : "{{ page.pk }}",
+                    sort_by : sort_by
+                },
+                success : function(result) {
+                    $("#donation-history-body").empty();
+                    parent_th.attr("class", sort_by);
+                    for (var key in result) {
+                        var date = result[key]["date"];
+                        if (result[key]["anonymous_amount"] == true) {
+                            var amount = "Anonymous";
+                        } else if (result[key]["anonymous_amount"] == false) {
+                            var amount = "$" + result[key]['amount'] / 100;
+                        };
+                        var page = result[key]["page"];
+                        if (result[key]["campaign"]) {
+                            var campaign = result[key]["campaign"];
+                        } else {
+                            var campaign = "--";
+                        };
+                        if (result[key]["anonymous_donor"] == true) {
+                            var donor = "Anonymous";
+                        } else if (result[key]["anonymous_donor"] == false) {
+                            var donor = result[key]["user"]["first_name"] + " " + result[key]["user"]["last_name"];
+                        };
+                        $("#donation-history-body").append("<tr><td>" + date + "</td><td>" + amount + "</td><td>" + page + "</td><td>" + campaign + "</td><td>" + donor + "</td></tr>");
+                    }
+                }
+            });
         };
 
         $(document).on("click", ".sort", function(event) {
@@ -116,10 +149,10 @@
                 <th>Donor</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="donation-history-body">
             {% for d in page.donations %}
                 <tr>
-                    <td>{{ d.date }}</td>
+                    <td>{{ d.date|date:'N j, Y, g:i A' }}</td>
                     <td>{% if d.anonymous_amount %}Anonymous{% else %}{{ d.amount|cents_to_dollars }}{% endif %}</td>
                     <td>{{ d.page }}</td>
                     <td>{% if d.campaign %}{{ d.campaign }}{% else %}--{% endif %}</td>

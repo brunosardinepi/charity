@@ -49,6 +49,8 @@ def query_list(q, s=''):
         sponsored_campaign = Campaign.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, page__is_sponsored=True, deleted=False).order_by('-rank')
     results = list(chain(results_page, results_campaign))
     sponsored = list(chain(sponsored_page, sponsored_campaign))
+    results.sort(key=lambda x: x.rank, reverse=True)
+    sponsored.sort(key=lambda x: x.rank, reverse=True)
     return (results, sponsored)
 
 def state_list(s):
