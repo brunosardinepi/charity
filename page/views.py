@@ -361,12 +361,11 @@ class PageAjaxDonations(View):
                 "date": d.date.strftime("%b %-d, %Y, %-I:%M %p"),
                 "anonymous_amount": d.anonymous_amount,
                 "amount": d.amount,
-                "page": d.page.name,
                 "anonymous_donor": d.anonymous_donor,
                 "user": {
                     "first_name": d.user.first_name,
                     "last_name": d.user.last_name
-                }
+                },
             }
             if d.campaign:
                 data["pk%s" % d.pk]["campaign"] = d.campaign.name
