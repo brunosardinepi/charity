@@ -1,4 +1,5 @@
 import json
+import operator
 
 from datetime import timezone
 from time import strftime
@@ -357,20 +358,36 @@ class PageAjaxDonations(View):
         data = OrderedDict()
         for d in donationset:
             d.date = d.date.replace(tzinfo=timezone.utc).astimezone(tz=None)
-            data["pk%s" % d.pk] = {
-                "date": d.date.strftime("%b %-d, %Y, %-I:%M %p"),
+            data["pk{}".format(d.pk)] = {
+                "date": d.date.strftime("%b. %-d, %Y, %-I:%M %p"),
                 "anonymous_amount": d.anonymous_amount,
-                "amount": d.amount,
                 "anonymous_donor": d.anonymous_donor,
                 "user": {
                     "first_name": d.user.first_name,
                     "last_name": d.user.last_name
                 },
             }
-            if d.campaign:
-                data["pk%s" % d.pk]["campaign"] = d.campaign.name
+            if d.anonymous_amount is True:
+               data["pk{}".format(d.pk)]["amount"] = 0
             else:
-                data["pk%s" % d.pk]["campaign"] = ""
+                data["pk{}".format(d.pk)]["amount"] = d.amount
+            if d.anonymous_donor is True:
+                data["pk{}".format(d.pk)]["user"]["first_name"] = ""
+                data["pk{}".format(d.pk)]["user"]["last_name"] = ""
+            if d.campaign:
+                data["pk{}".format(d.pk)]["campaign"] = d.campaign.name
+            else:
+                data["pk{}".format(d.pk)]["campaign"] = ""
+        if sort_by == "asc":
+            if column == "user":
+                data = sorted(data.values(), key=lambda x: (x['user']['first_name']), reverse=True)
+            else:
+                data = sorted(data.values(), key=operator.itemgetter('{}'.format(column)), reverse=True)
+        else:
+            if column == "user":
+                data = sorted(data.values(), key=lambda x: (x['user']['first_name']))
+            else:
+                data = sorted(data.values(), key=operator.itemgetter('{}'.format(column)))
         return HttpResponse(json.dumps(data), content_type="application/json")
 
 
