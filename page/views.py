@@ -348,10 +348,12 @@ class PageAjaxDonations(View):
     def post(self, request):
         page = get_object_or_404(Page, pk=request.POST.get("page_pk"))
         sort_by = request.POST.get("sort_by")
+        column = request.POST.get("column")
+        column = column.split("sort-")[1]
         if sort_by == "asc":
-            donationset = Donation.objects.filter(page=page).order_by('date')
-        elif sort_by == "desc":
-            donationset = Donation.objects.filter(page=page).order_by('-date')
+            donationset = Donation.objects.filter(page=page).order_by('{}'.format(column))
+        else:
+            donationset = Donation.objects.filter(page=page).order_by('-{}'.format(column))
         data = OrderedDict()
         for d in donationset:
             d.date = d.date.replace(tzinfo=timezone.utc).astimezone(tz=None)

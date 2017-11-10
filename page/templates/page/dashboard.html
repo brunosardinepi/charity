@@ -15,12 +15,12 @@
         });
 
 
-        function sort(event) {
+        function sort(event, column) {
             var parent_th = $(event.target).parent("th");
-            if (parent_th.hasClass("asc")) {
-                var sort_by = "desc";
-            } else if (parent_th.hasClass("desc")) {
+            if (parent_th.hasClass("desc")) {
                 var sort_by = "asc";
+            } else {
+                var sort_by = "desc";
             };
 
             var url = "{% url 'page_ajax_donations' %}";
@@ -31,7 +31,8 @@
                 traditional: true,
                 data : {
                     page_pk : "{{ page.pk }}",
-                    sort_by : sort_by
+                    sort_by : sort_by,
+                    column : column,
                 },
                 success : function(result) {
                     $("#donation-history-body").empty();
@@ -62,7 +63,8 @@
 
         $(document).on("click", ".sort", function(event) {
             event.preventDefault();
-            sort(event);
+            var column = $(event.target).attr("id");
+            sort(event, column);
         });
     </script>
 {% endblock %}
@@ -142,11 +144,11 @@
     <table>
         <thead>
             <tr>
-                <th class="desc"><a class="sort" href="">Date</a></th>
-                <th>Amount</th>
-                <th>Page</th>
-                <th>Campaign</th>
-                <th>Donor</th>
+                <th class="desc"><a class="sort" id="sort-date" href="">Date</a></th>
+                <th><a class="sort" id="sort-amount" href="">Amount</a></th>
+                <th><a class="sort" id="sort-page" href="">Page</a></th>
+                <th><a class="sort" id="sort-campaign" href="">Campaign</a></th>
+                <th><a class="sort" id="sort-user" href="">Donor</a></th>
             </tr>
         </thead>
         <tbody id="donation-history-body">
