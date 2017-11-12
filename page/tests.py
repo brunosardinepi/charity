@@ -13,6 +13,7 @@ from . import views
 from campaign import models as CampaignModels
 from donation.models import Donation
 from invitations.models import ManagerInvitation
+from plans.models import StripePlan
 
 
 class PageTest(TestCase):
@@ -126,6 +127,25 @@ class PageTest(TestCase):
             page=self.page,
             campaign=self.campaign,
             user=self.user
+        )
+
+        self.plan = StripePlan.objects.create(
+            amount=2000,
+            page=self.page,
+            campaign=self.campaign,
+            user=self.user,
+            stripe_plan_id="plan_adagD87asg2342huif3whluq3qr",
+            stripe_subscription_id="sub_Sh2982SKDnjSADioqdn3s",
+            interval="month"
+        )
+
+        self.plan2 = StripePlan.objects.create(
+            amount=6500,
+            page=self.page,
+            user=self.user2,
+            stripe_plan_id="plan_AS8o7tasdASDh23eads254",
+            stripe_subscription_id="sub_87sadfZDSHF8o723rhnu23",
+            interval="month"
         )
 
     def test_page_exists(self):
@@ -594,4 +614,12 @@ class PageTest(TestCase):
         self.assertContains(response, "Donated to campaigns: ${} (Avg: ${})".format(
             int(campaign_donations / 100),
             campaign_donations_avg),
+            status_code=200)
+
+        plan_donations = StripePlan.objects.filter(page=self.page, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
+        plan_donations_count = StripePlan.objects.filter(page=self.page, campaign__isnull=True).count()
+        plan_donations_avg = int((plan_donations / plan_donations_count) / 100)
+        self.assertContains(response, "Page recurring donations: ${} (Avg: ${})".format(
+            int(plan_donations / 100),
+            plan_donations_avg),
             status_code=200)
