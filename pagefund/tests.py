@@ -17,6 +17,8 @@ from allauth.account.forms import BaseSignupForm
 from allauth.account.signals import user_signed_up
 from allauth.account import app_settings
 from allauth.utils import get_user_model, get_username_max_length
+import sendgrid
+from sendgrid.helpers.mail import *
 
 from . import views
 from campaign.models import Campaign
@@ -25,36 +27,43 @@ from page.models import Page
 from pagefund import config
 
 
-class SignupTest:
-    def __init__(self, signal):
-        self.signal = signal
-        self.handler = mock.Mock()
+class EmailTest(TestCase):
+    def test_email(self):
+        sg = sendgrid.SendGridAPIClient(apikey=config.settings["sendgrid_api_key"])
+        from_email = Email("no-reply@page.fund")
+        to_email = Email("gn9012@gmail.com")
+        subject = "Test email"
+        content = Content("text/plain", "Test email sent at {}".format(datetime.datetime.now()))
+        mail = Mail(from_email, subject, to_email, content)
+        response = sg.client.mail.send.post(request_body=mail.get())
 
-    def __enter__(self):
-        self.signal.connect(self.handler)
-        return self.handler
+        self.assertEqual(response.status_code, 202)
 
-    def __exit__(self, exc_type, exc_value, tb):
-        self.signal.disconnect(self.handler)
 
+class SignupTest(TestCase):
     def test_user_signed_up_signal(self):
-        with SignupTest(user_signed_up) as handler:
-            data = {
-                'first_name': 'Testing',
-                'last_name': 'Signup',
-                'birthday': '11/12/90',
-                'state': 'CO',
-                'email': 'mytestemail@gmail.com',
-                'email2': 'mytestemail@gmail.com',
-                'password1': 'mytestpassword',
-                'password2': 'mytestpassword',
-            }
-            response = self.client.post('/accounts/signup/', data)
+        self.signal_was_called = False
 
-            handler.assert_called_once_with(
-                sender=mock.ANY,
-                signal=user_signed_up,
-            )
+        def handler(sender, **kwargs):
+            self.signal_was_called = True
+
+        user_signed_up.connect(handler)
+
+        data = {
+            'first_name': 'Testing',
+            'last_name': 'Signup',
+            'birthday': '11/12/90',
+            'state': 'CO',
+            'email': 'mytestemail@gmail.com',
+            'email2': 'mytestemail@gmail.com',
+            'password1': 'mytestpassword',
+            'password2': 'mytestpassword',
+        }
+        response = self.client.post('/accounts/signup/', data)
+
+        self.assertTrue(self.signal_was_called)
+
+        user_signed_up.disconnect(handler)
 
 
 class HomeTest(TestCase):
