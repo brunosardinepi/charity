@@ -153,14 +153,15 @@ class Page(models.Model):
         donors = Donation.objects.filter(page=self).values_list('user', flat=True).distinct()
         top_donors = {}
         for d in donors:
-            user = get_object_or_404(User, pk=d)
-            total_amount = Donation.objects.filter(user=user, page=self, anonymous_amount=False, anonymous_donor=False).aggregate(Sum('amount')).get('amount__sum')
-            if total_amount is not None:
-                top_donors[d] = {
-                    'first_name': user.first_name,
-                    'last_name': user.last_name,
-                    'amount': total_amount
-                }
+            if d is not None:
+                user = get_object_or_404(User, pk=d)
+                total_amount = Donation.objects.filter(user=user, page=self, anonymous_amount=False, anonymous_donor=False).aggregate(Sum('amount')).get('amount__sum')
+                if total_amount is not None:
+                    top_donors[d] = {
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                        'amount': total_amount
+                    }
         top_donors = OrderedDict(sorted(top_donors.items(), key=lambda t: t[1]['amount'], reverse=True))
         top_donors = list(top_donors.items())[:10]
         return top_donors

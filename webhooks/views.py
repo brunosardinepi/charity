@@ -55,23 +55,57 @@ def charge_succeeded(request):
             comment = event_json['data']['object']['metadata']['comment']
         except KeyError:
             comment = ''
-        pf_user_pk = event_json['data']['object']['metadata']['pf_user_pk']
+        # get the user's pk if this was a donation from a logged-in user
+        try:
+            pf_user_pk = event_json['data']['object']['metadata']['pf_user_pk']
+        # get the donor's first/last name if they weren't logged in when they donated
+        except KeyError:
+            pf_user_pk = None
+            first_name = event_json['data']['object']['metadata']['first_name']
+            last_name = event_json['data']['object']['metadata']['last_name']
 
     amount = event_json['data']['object']['amount']
     page = get_object_or_404(Page, pk=page_pk)
     stripe_charge_id = event_json['data']['object']['id']
-    user = get_object_or_404(User, pk=pf_user_pk)
+    # get the user object if this was a donation from a logged-in user
+    if pf_user_pk is not None:
+        user = get_object_or_404(User, pk=pf_user_pk)
+        Donation.objects.create(
+            amount=amount,
+            anonymous_amount=anonymous_amount,
+            anonymous_donor=anonymous_donor,
+            comment=comment,
+            page=page,
+            campaign=campaign,
+            stripe_charge_id=stripe_charge_id,
+            user=user,
+         )
+    else:
+#        user = ""
+        Donation.objects.create(
+            amount=amount,
+            anonymous_amount=anonymous_amount,
+            anonymous_donor=anonymous_donor,
+            comment=comment,
+            page=page,
+            campaign=campaign,
+            stripe_charge_id=stripe_charge_id,
+            donor_first_name=first_name,
+            donor_last_name=last_name,
+         )
 
-    Donation.objects.create(
-        amount=amount,
-        anonymous_amount=anonymous_amount,
-        anonymous_donor=anonymous_donor,
-        comment=comment,
-        page=page,
-        campaign=campaign,
-        stripe_charge_id=stripe_charge_id,
-        user=user
-     )
+#    Donation.objects.create(
+#        amount=amount,
+#        anonymous_amount=anonymous_amount,
+#        anonymous_donor=anonymous_donor,
+#        comment=comment,
+#        page=page,
+#        campaign=campaign,
+#        stripe_charge_id=stripe_charge_id,
+#        user=user,
+#        first_name=first_name,
+#        last_name=last_name,
+#     )
 
     print("donation created")
     return HttpResponse(status=200)

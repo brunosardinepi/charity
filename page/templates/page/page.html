@@ -189,7 +189,7 @@
         <h4>All Donations</h4>
         <ul>
             {% for d in page.donations %}
-                <li>{% if d.anonymous_amount and d.anonymous_donor %}Anonymous donation{% endif %}{% if not d.anonymous_amount %}{{ d.amount|cents_to_dollars }}{% endif %}{% if not d.anonymous_amount and not d.anonymous_donor %} - {% endif %}{% if not d.anonymous_donor %}{{ d.user.first_name }} {{ d.user.last_name }}{% endif %} @ {{ d.date }}{% if d.campaign %} via <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign.name }}</a>{% endif %}
+                <li>{% if d.anonymous_amount and d.anonymous_donor %}Anonymous donation{% endif %}{% if not d.anonymous_amount %}{{ d.amount|cents_to_dollars }}{% endif %}{% if not d.anonymous_amount and not d.anonymous_donor %} - {% endif %}{% if not d.anonymous_donor %}{% if d.user %}{{ d.user.first_name }} {{ d.user.last_name }}{% else %}{{ d.donor_first_name }} {{ d.donor_last_name }}{% endif %}{% endif %} @ {{ d.date }}{% if d.campaign %} via <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign.name }}</a>{% endif %}
                     {% if d.comment %}
                         <ul>
                             <li>{{ d.comment }}</li>
@@ -202,7 +202,11 @@
         <p>No donations!</p>
     {% endif %}
 
-    {% include "donation/donate.html" with page=page donate_form=donate_form api_key=api_key%}
+    {% if request.user.is_authenticated %}
+        {% include "donation/donate.html" with page=page donate_form=donate_form api_key=api_key%}
+    {% else %}
+        {% include "donation/donate_unauthenticated.html" with page=page donate_form=donate_form api_key=api_key%}
+    {% endif %}
 
 {% endblock %}
 

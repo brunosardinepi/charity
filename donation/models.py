@@ -12,7 +12,9 @@ class Donation(models.Model):
     date = models.DateTimeField(default=timezone.now)
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE, blank=True, null=True)
     stripe_charge_id = models.CharField(max_length=255, blank=True, null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    donor_first_name = models.CharField(max_length=255, blank=True, null=True)
+    donor_last_name = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         if self.page:

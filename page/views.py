@@ -24,7 +24,7 @@ from .utils import campaign_average_duration, campaign_success_pct, campaign_typ
 from campaign.models import Campaign
 from comments.forms import CommentForm
 from comments.models import Comment
-from donation.forms import DonateForm
+from donation.forms import DonateForm, DonateUnauthenticatedForm
 from donation.models import Donation
 from donation.utils import donate, donation_graph, donation_history, donation_statistics
 from invitations.models import ManagerInvitation
@@ -44,7 +44,10 @@ def page(request, page_slug):
         raise Http404
     else:
         form = CommentForm
-        donate_form = DonateForm()
+        if request.user.is_authenticated():
+            donate_form = DonateForm()
+        else:
+            donate_form = DonateUnauthenticatedForm()
         template_params = {}
 
         if request.user.is_authenticated:
@@ -304,7 +307,10 @@ class PageImageUpload(View):
 def page_donate(request, page_pk):
     page = get_object_or_404(Page, pk=page_pk)
     if request.method == "POST":
-        form = DonateForm(request.POST)
+        if request.user.is_authenticated():
+            form = DonateForm(request.POST)
+        else:
+            form = DonateUnauthenticatedForm(request.POST)
         if form.is_valid():
             donate(request=request, form=form, page=page, campaign=None)
             return HttpResponseRedirect(page.get_absolute_url())
