@@ -9,6 +9,7 @@ from guardian.shortcuts import assign_perm, get_perms
 
 from . import forms
 from . import models
+from .utils import campaign_types
 from . import views
 from campaign import models as CampaignModels
 from donation.models import Donation
@@ -24,31 +25,31 @@ class PageTest(TestCase):
         self.user = User.objects.create_user(
             username='testuser',
             email='test@test.test',
-            password='testpassword'
+            password='testpassword',
         )
 
         self.user2 = User.objects.create_user(
             username='harrypotter',
             email='harry@potter.com',
-            password='imawizard'
+            password='imawizard',
         )
 
         self.user3 = User.objects.create_user(
             username='bobdole',
             email='bob@dole.com',
-            password='dogsarecool'
+            password='dogsarecool',
         )
 
         self.user4 = User.objects.create_user(
             username='batman',
             email='batman@bat.cave',
-            password='imbatman'
+            password='imbatman',
         )
 
         self.user5 = User.objects.create_user(
             username='newguy',
             email='its@me.com',
-            password='imnewhere'
+            password='imnewhere',
         )
 
         self.page = models.Page.objects.create(
@@ -64,7 +65,7 @@ class PageTest(TestCase):
             category='Animal',
             contact_email='contact@page.com',
             contact_phone='111-111-1111',
-            website='testpage.com'
+            website='testpage.com',
         )
 
         self.page.admins.add(self.user.userprofile)
@@ -87,38 +88,40 @@ class PageTest(TestCase):
             donation_count=203,
             donation_money=3055,
             category='Animal',
-            deleted=True
+            deleted=True,
         )
 
         self.campaign = CampaignModels.Campaign.objects.create(
             name='Test Campaign',
             page=self.page,
+            type='event',
             description='This is a description for Test Campaign.',
             goal='11',
             donation_count=21,
-            donation_money=31
+            donation_money=31,
         )
 
         self.campaign2 = CampaignModels.Campaign.objects.create(
             name='Another One',
             page=self.page,
+            type='event',
             description='My cat died yesterday',
             goal='12',
             donation_count=22,
-            donation_money=33
+            donation_money=33,
         )
 
         self.invitation = ManagerInvitation.objects.create(
             invite_to=self.user2.email,
             invite_from=self.user,
-            page=self.page
+            page=self.page,
         )
 
         self.donation = Donation.objects.create(
             amount=2000,
             comment='I donated!',
             page=self.page,
-            user=self.user
+            user=self.user,
         )
 
         self.donation2 = Donation.objects.create(
@@ -126,7 +129,7 @@ class PageTest(TestCase):
             comment='I like campaigns.',
             page=self.page,
             campaign=self.campaign,
-            user=self.user
+            user=self.user,
         )
 
         self.plan = StripePlan.objects.create(
@@ -136,7 +139,7 @@ class PageTest(TestCase):
             user=self.user,
             stripe_plan_id="plan_adagD87asg2342huif3whluq3qr",
             stripe_subscription_id="sub_Sh2982SKDnjSADioqdn3s",
-            interval="month"
+            interval="month",
         )
 
         self.plan2 = StripePlan.objects.create(
@@ -145,7 +148,7 @@ class PageTest(TestCase):
             user=self.user2,
             stripe_plan_id="plan_AS8o7tasdASDh23eads254",
             stripe_subscription_id="sub_87sadfZDSHF8o723rhnu23",
-            interval="month"
+            interval="month",
         )
 
     def test_page_exists(self):
@@ -650,3 +653,11 @@ class PageTest(TestCase):
 
         total_donation_amount = int((self.donation.amount + self.donation2.amount) / 100)
         self.assertContains(response, "${} - {} {}".format(total_donation_amount, self.user.first_name, self.user.last_name), status_code=200)
+
+    def test_dashboard_campaign_types(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/dashboard/'.format(self.page.page_slug))
+
+        campaigns = campaign_types(self.page)
+        for k,v in campaigns.items():
+            self.assertContains(response, "Type: {}; Count: {}; Donations: ${}".format(v["display"], v["count"], int(v["sum"] / 100)), status_code=200)
