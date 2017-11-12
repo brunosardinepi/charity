@@ -3,6 +3,24 @@
 This is the version history for PageFund development.
 
 
+## Version 0.10.0
+
+Release date: TBD
+
+### Additions
+
+* Users can set their email notification preferences
+* Page admin dashboard
+
+### Changes
+
+* Any personal preferences about pages and campaigns, such as subscriptions, were moved from the home page to the user's profile page
+
+### Fixes
+
+* None
+
+
 ## Version 0.9.0
 
 Release date: 10/30/2017
