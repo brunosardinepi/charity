@@ -28,15 +28,13 @@ def home(request):
     else:
         campaign_donations = int(campaign_donations["donation_money__sum"])
     donations = page_donations + campaign_donations
+
     attr = {
         'donations': donations,
         'sponsored': sponsored,
         'trending_pages': trending_pages,
         'trending_campaigns': trending_campaigns
     }
-    if request.user.is_authenticated:
-        subscriptions = request.user.userprofile.subscribers.filter(deleted=False)
-        attr['subscriptions'] = subscriptions
     return render(request, 'home.html', attr)
 
 

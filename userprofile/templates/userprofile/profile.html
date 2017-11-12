@@ -1,6 +1,7 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
 {% load donation_extras %}
+{% load page_extras %}
 
 {% block title %} Profile | {{ block.super }}{% endblock %}
 
@@ -91,6 +92,14 @@
     <ul>
         {% for s in userprofile.subscriptions %}
             <li><a href="{% url 'page' page_slug=s.page_slug %}">{{ s.name }}</a></li>
+            {% active_campaigns s.pk as a_campaigns %}
+            {% if a_campaigns %}
+                <ul>
+                    {% for campaign in a_campaigns %}
+                        <li><a href="{% url 'campaign' page_slug=s.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
         {% endfor %}
     </ul>
 
