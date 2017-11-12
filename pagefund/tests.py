@@ -1,3 +1,4 @@
+import datetime
 import django
 import os
 
@@ -113,6 +114,28 @@ class HomeTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Sign up with Google", status_code=200)
         self.assertContains(response, "Sign up with Facebook", status_code=200)
+
+        data = {
+            'first_name': 'Testing',
+            'last_name': 'Signup',
+            'birthday': '11/12/90',
+            'state': 'CO',
+            'email': 'mytestemail@gmail.com',
+            'email2': 'mytestemail@gmail.com',
+            'password1': 'mytestpassword',
+            'password2': 'mytestpassword',
+        }
+        response = self.client.post('/accounts/signup/', data)
+        self.assertRedirects(response, '/', 302, 200)
+
+        user = User.objects.filter(email='mytestemail@gmail.com')
+        self.assertEqual(len(user), 1)
+        user = user[0]
+        self.assertEqual(user.first_name, data['first_name'])
+        self.assertEqual(user.last_name, data['last_name'])
+        self.assertEqual(user.userprofile.birthday, datetime.date(1990, 11, 12))
+        self.assertEqual(user.userprofile.state, data['state'])
+        self.assertEqual(user.email, data['email'])
 
     def test_invite_logged_out(self):
         response = self.client.get('/invite/')
