@@ -1,3 +1,4 @@
+from unittest import mock
 import datetime
 import django
 import os
@@ -22,6 +23,38 @@ from campaign.models import Campaign
 from invitations.models import GeneralInvitation
 from page.models import Page
 from pagefund import config
+
+
+class SignupTest:
+    def __init__(self, signal):
+        self.signal = signal
+        self.handler = mock.Mock()
+
+    def __enter__(self):
+        self.signal.connect(self.handler)
+        return self.handler
+
+    def __exit__(self, exc_type, exc_value, tb):
+        self.signal.disconnect(self.handler)
+
+    def test_user_signed_up_signal(self):
+        with SignupTest(user_signed_up) as handler:
+            data = {
+                'first_name': 'Testing',
+                'last_name': 'Signup',
+                'birthday': '11/12/90',
+                'state': 'CO',
+                'email': 'mytestemail@gmail.com',
+                'email2': 'mytestemail@gmail.com',
+                'password1': 'mytestpassword',
+                'password2': 'mytestpassword',
+            }
+            response = self.client.post('/accounts/signup/', data)
+
+            handler.assert_called_once_with(
+                sender=mock.ANY,
+                signal=user_signed_up,
+            )
 
 
 class HomeTest(TestCase):
@@ -137,31 +170,6 @@ class HomeTest(TestCase):
         self.assertEqual(user.userprofile.birthday, datetime.date(1990, 11, 12))
         self.assertEqual(user.userprofile.state, data['state'])
         self.assertEqual(user.email, data['email'])
-
-    def test_user_signed_up_signal(self):
-        self.signal_was_called = False
-
-        def handler(sender, **kwargs):
-            self.signal_was_called = True
-
-        user_signed_up.connect(handler)
-
-        data = {
-            'first_name': 'Testing',
-            'last_name': 'Signup',
-            'birthday': '11/12/90',
-            'state': 'CO',
-            'email': 'mytestemail@gmail.com',
-            'email2': 'mytestemail@gmail.com',
-            'password1': 'mytestpassword',
-            'password2': 'mytestpassword',
-        }
-        response = self.client.post('/accounts/signup/', data)
-
-        self.assertTrue(self.signal_was_called)
-
-        user_signed_up.disconnect(handler)
-
 
     def test_invite_logged_out(self):
         response = self.client.get('/invite/')
