@@ -9,7 +9,7 @@ from guardian.shortcuts import assign_perm, get_perms
 
 from . import forms
 from . import models
-from .utils import campaign_types
+from .utils import campaign_average_duration, campaign_types
 from . import views
 from campaign import models as CampaignModels
 from donation.models import Donation
@@ -661,3 +661,9 @@ class PageTest(TestCase):
         campaigns = campaign_types(self.page)
         for k,v in campaigns.items():
             self.assertContains(response, "Type: {}; Count: {}; Donations: ${}".format(v["display"], v["count"], int(v["sum"] / 100)), status_code=200)
+
+    def test_dashboard_average_campaign_duration(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/dashboard/'.format(self.page.page_slug))
+
+        self.assertContains(response, "{} days".format(campaign_average_duration(self.page)), status_code=200)
