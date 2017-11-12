@@ -623,3 +623,7 @@ class PageTest(TestCase):
             int(plan_donations / 100),
             plan_donations_avg),
             status_code=200)
+
+        self.assertContains(response, self.page.name, status_code=200)
+        self.assertContains(response, self.campaign.name, status_code=200)
+        self.assertContains(response, self.campaign2.name, status_code=200)
