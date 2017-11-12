@@ -588,7 +588,7 @@ class PageTest(TestCase):
         response = self.client.get('/%s/images/' % self.page.page_slug)
         self.assertRedirects(response, '/accounts/login/?next=/testpage/images/', 302, 200)
 
-    def test_dashboard_donations(self):
+    def test_dashboard_total_donations(self):
         self.client.login(username='testuser', password='testpassword')
         response = self.client.get('/{}/dashboard/'.format(self.page.page_slug))
 
@@ -600,6 +600,10 @@ class PageTest(TestCase):
             total_donations_avg),
             status_code=200)
 
+    def test_dashboard_page_donations(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/dashboard/'.format(self.page.page_slug))
+
         page_donations = Donation.objects.filter(page=self.page, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
         page_donations_count = Donation.objects.filter(page=self.page, campaign__isnull=True).count()
         page_donations_avg = int((page_donations / page_donations_count) / 100)
@@ -607,6 +611,10 @@ class PageTest(TestCase):
             int(page_donations / 100),
             page_donations_avg),
             status_code=200)
+
+    def test_dashboard_campaign_donations(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/dashboard/'.format(self.page.page_slug))
 
         campaign_donations = Donation.objects.filter(page=self.page, campaign__isnull=False).aggregate(Sum('amount')).get('amount__sum')
         campaign_donations_count = Donation.objects.filter(page=self.page, campaign__isnull=False).count()
@@ -616,6 +624,10 @@ class PageTest(TestCase):
             campaign_donations_avg),
             status_code=200)
 
+    def test_dashboard_plan_donations(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/dashboard/'.format(self.page.page_slug))
+
         plan_donations = StripePlan.objects.filter(page=self.page, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
         plan_donations_count = StripePlan.objects.filter(page=self.page, campaign__isnull=True).count()
         plan_donations_avg = int((plan_donations / plan_donations_count) / 100)
@@ -624,6 +636,17 @@ class PageTest(TestCase):
             plan_donations_avg),
             status_code=200)
 
+    def test_dashboard_donation_history(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/dashboard/'.format(self.page.page_slug))
+
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
         self.assertContains(response, self.campaign2.name, status_code=200)
+
+    def test_dashboard_top_donors(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/dashboard/'.format(self.page.page_slug))
+
+        total_donation_amount = int((self.donation.amount + self.donation2.amount) / 100)
+        self.assertContains(response, "${} - {} {}".format(total_donation_amount, self.user.first_name, self.user.last_name), status_code=200)
