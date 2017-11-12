@@ -13,6 +13,7 @@ from django.utils.timezone import now
 
 from allauth.account.auth_backends import AuthenticationBackend
 from allauth.account.forms import BaseSignupForm
+from allauth.account.signals import user_signed_up
 from allauth.account import app_settings
 from allauth.utils import get_user_model, get_username_max_length
 
@@ -136,6 +137,31 @@ class HomeTest(TestCase):
         self.assertEqual(user.userprofile.birthday, datetime.date(1990, 11, 12))
         self.assertEqual(user.userprofile.state, data['state'])
         self.assertEqual(user.email, data['email'])
+
+    def test_user_signed_up_signal(self):
+        self.signal_was_called = False
+
+        def handler(sender, **kwargs):
+            self.signal_was_called = True
+
+        user_signed_up.connect(handler)
+
+        data = {
+            'first_name': 'Testing',
+            'last_name': 'Signup',
+            'birthday': '11/12/90',
+            'state': 'CO',
+            'email': 'mytestemail@gmail.com',
+            'email2': 'mytestemail@gmail.com',
+            'password1': 'mytestpassword',
+            'password2': 'mytestpassword',
+        }
+        response = self.client.post('/accounts/signup/', data)
+
+        self.assertTrue(self.signal_was_called)
+
+        user_signed_up.disconnect(handler)
+
 
     def test_invite_logged_out(self):
         response = self.client.get('/invite/')
