@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
+from django.db.models import Sum
 from django.http import Http404
 from django.test import Client, RequestFactory, TestCase
 from django.urls import reverse
@@ -10,6 +11,7 @@ from . import forms
 from . import models
 from . import views
 from campaign import models as CampaignModels
+from donation.models import Donation
 from invitations.models import ManagerInvitation
 
 
@@ -109,6 +111,21 @@ class PageTest(TestCase):
             invite_to=self.user2.email,
             invite_from=self.user,
             page=self.page
+        )
+
+        self.donation = Donation.objects.create(
+            amount=2000,
+            comment='I donated!',
+            page=self.page,
+            user=self.user
+        )
+
+        self.donation2 = Donation.objects.create(
+            amount=800,
+            comment='I like campaigns.',
+            page=self.page,
+            campaign=self.campaign,
+            user=self.user
         )
 
     def test_page_exists(self):
@@ -550,3 +567,31 @@ class PageTest(TestCase):
     def test_upload_logged_out(self):
         response = self.client.get('/%s/images/' % self.page.page_slug)
         self.assertRedirects(response, '/accounts/login/?next=/testpage/images/', 302, 200)
+
+    def test_dashboard_donations(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/dashboard/'.format(self.page.page_slug))
+
+        total_donations = Donation.objects.filter(page=self.page).aggregate(Sum('amount')).get('amount__sum')
+        total_donations_count = Donation.objects.filter(page=self.page).count()
+        total_donations_avg = int((total_donations / total_donations_count) / 100)
+        self.assertContains(response, "Total donated: ${} (Avg: ${})".format(
+            int(total_donations / 100),
+            total_donations_avg),
+            status_code=200)
+
+        page_donations = Donation.objects.filter(page=self.page, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
+        page_donations_count = Donation.objects.filter(page=self.page, campaign__isnull=True).count()
+        page_donations_avg = int((page_donations / page_donations_count) / 100)
+        self.assertContains(response, "Donated to page: ${} (Avg: ${})".format(
+            int(page_donations / 100),
+            page_donations_avg),
+            status_code=200)
+
+        campaign_donations = Donation.objects.filter(page=self.page, campaign__isnull=False).aggregate(Sum('amount')).get('amount__sum')
+        campaign_donations_count = Donation.objects.filter(page=self.page, campaign__isnull=False).count()
+        campaign_donations_avg = int((campaign_donations / campaign_donations_count) / 100)
+        self.assertContains(response, "Donated to campaigns: ${} (Avg: ${})".format(
+            int(campaign_donations / 100),
+            campaign_donations_avg),
+            status_code=200)
