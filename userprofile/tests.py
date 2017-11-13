@@ -1,7 +1,7 @@
 import ast
 
 from django.contrib.auth.models import User
-from django.core.files.uploadedfile import InMemoryUploadedFile, SimpleUploadedFile
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, RequestFactory, TestCase
 
 from . import forms

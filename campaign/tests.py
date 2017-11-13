@@ -1,5 +1,8 @@
+import ast
+
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, RequestFactory, TestCase
 from django.utils import timezone
 from guardian.shortcuts import assign_perm

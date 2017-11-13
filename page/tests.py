@@ -1,5 +1,8 @@
+import ast
+
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import Sum
 from django.http import Http404
 from django.test import Client, RequestFactory, TestCase
@@ -675,3 +678,50 @@ class PageTest(TestCase):
         campaigns = campaign_success_pct(self.page)
         for k,v in campaigns.items():
             self.assertContains(response, "Type: {}; Success Pct: {}".format(v["display"], v["success_pct"]), status_code=200)
+
+    def test_image_upload(self):
+        self.client.login(username='testuser', password='testpassword')
+        content = b"a" * 1024
+        image = SimpleUploadedFile("image.png", content, content_type="image/png")
+        response = self.client.post('/{}/images/'.format(self.page.page_slug), {'image': image})
+        self.assertEqual(response.status_code, 200)
+
+        images = models.PageImage.objects.filter(page=self.page)
+        self.assertEqual(len(images), 1)
+
+        image = images[0]
+        response = self.client.get('/{}/'.format(self.page.page_slug))
+        self.assertContains(response, image.image.url, status_code=200)
+
+        image.delete()
+        images = models.PageImage.objects.filter(page=self.page)
+        self.assertEqual(len(images), 0)
+
+    def test_image_upload_error_size(self):
+        self.client.login(username='testuser', password='testpassword')
+        content = b"a" * 1024 * 1024 * 5
+        image = SimpleUploadedFile("image.png", content, content_type="image/png")
+        response = self.client.post('/{}/images/'.format(self.page.page_slug), {'image': image})
+        content = response.content.decode('ascii')
+        content = ast.literal_eval(content)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(content["is_valid"], "f")
+        self.assertEqual(content["redirect"], "error_size")
+
+        images = models.PageImage.objects.filter(page=self.page)
+        self.assertEqual(len(images), 0)
+
+    def test_image_upload_error_type(self):
+        self.client.login(username='testuser', password='testpassword')
+        content = b"a"
+        image = SimpleUploadedFile("notimage.txt", content, content_type="text/html")
+        response = self.client.post('/{}/images/'.format(self.page.page_slug), {'image': image})
+        content = response.content.decode('ascii')
+        content = ast.literal_eval(content)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(content["is_valid"], "f")
+        self.assertEqual(content["redirect"], "error_type")
+
+        images = models.PageImage.objects.filter(page=self.page)
+        self.assertEqual(len(images), 0)
+
