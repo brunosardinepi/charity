@@ -20,6 +20,7 @@ from comments.forms import CommentForm
 from donation.forms import DonateForm
 from donation.models import Donation
 from donation.utils import donate
+from error.utils import error_email
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
 from page.models import Page
@@ -39,8 +40,18 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
         template_params = {}
 
         if request.user.is_authenticated:
-            cards = get_user_credit_cards(request.user.userprofile)
-            template_params["cards"] = cards
+            try:
+                cards = get_user_credit_cards(request.user.userprofile)
+                template_params["cards"] = cards
+            except Exception as e:
+                template_params["stripe_error"] = True
+                error = {
+                    "e": e,
+                    "user": request.user.pk,
+                    "page": campaign.page.pk,
+                    "campaign": campaign.pk,
+                }
+                error_email(error)
 
         if request.method == "POST":
             utils.update_manager_permissions(request.POST.getlist('permissions[]'), campaign)

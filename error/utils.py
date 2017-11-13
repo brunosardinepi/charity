@@ -14,10 +14,8 @@ def error_email(error):
     message = error["e"]
     date = datetime.now()
 
-    body = "We got a Stripe error for user pk:{} on ".format(user)
+    body = "We got a Stripe error for user pk:{} on page pk:{} ".format(user, page)
     if campaign is not None:
-        body =+ "campaign pk:{} ".format(campaign)
-    else:
-        body += "page pk:{} ".format(page)
+        body += "campaign pk:{} ".format(campaign)
     body += "at {}. Full message: {}".format(date, message)
     email("gn9012@gmail.com", "ERROR: Stripe", body)
