@@ -1,6 +1,7 @@
 #!/home/gnowak/pagefund/pagefundenv/bin/python3
 
 from collections import Counter, OrderedDict
+from decimal import Decimal
 import config
 import psycopg2
 import statistics
@@ -44,9 +45,9 @@ def find_ties(cur, page_ids):
     # sort by trending score from highest to lowest
     scores = []
 
-    # debugging only. delete after
-    query = "update page_page set trending_score = {} where id = {};".format(40.0, 29)
-    cur.execute(query)
+#    # debugging only. delete after
+#    query = "update page_page set trending_score = {} where id = {};".format(40.0, 29)
+#    cur.execute(query)
 
     # get a list of the duplicate trending scores
     query = "select trending_score from page_page order by trending_score desc;"
@@ -76,13 +77,16 @@ def find_ties(cur, page_ids):
 
     return pages
 
-def break_ties(cur, page_ids):
-    # go through each key in the page_ids dictionary
-    # run the pages through the trending function, but divide the points by 10 to make them a decimal,
+def break_ties(cur, ties):
+    # go through each key in the ties dictionary
+    print(ties)
+    for k in ties:
+        # run the pages through the trending function, but divide the points by 10 to make them a decimal,
+        print(k)
+        trending(cur, ties[k], 10, 100, True)
     # and add them to the current trending score instead of replacing it
-    print("hello")
 
-def trending(cur, page_ids, trim_pct):
+def trending(cur, page_ids, trim_pct, factor, breaking_ties=False):
     # find the comments, subscriptions, donation_count, and donation_amount for each page and put them in their own list
     # initialize the lists we need for storing data later
     comments, subscriptions, donation_count, donation_amount = [], [], [], []
@@ -139,8 +143,20 @@ def trending(cur, page_ids, trim_pct):
             'subscriptions': s,
             'donation_count': dc,
             'donation_amount': da,
-            'points': 0
+#            'points': 0,
         }
+
+        if breaking_ties is True:
+            # get the existing trending score
+            query = "select trending_score from page_page where id = '{}';".format(p)
+            cur.execute(query)
+            rows = cur.fetchall()
+            pages[p]['points'] = rows[0][0]
+        else:
+            # reset the trending score
+            pages[p]['points'] = 0
+
+        print(pages[p]['points'])
 
     # once all the stats have been added to their own lists, find the trimmed mean and trimmed stdev for each stat
     c_avg, c_stdev = trimmed_mean(comments, trim_pct), trimmed_stdev(comments, trim_pct)
@@ -162,9 +178,14 @@ def trending(cur, page_ids, trim_pct):
     for k, v in pages.items():
         print(k, v)
         # point amounts for above average (aa), average (a), and below average (ba)
-        aa, a, ba = 4, 2, 1
+        aa = Decimal(4/factor)
+        a = Decimal(2/factor)
+        ba = Decimal(1/factor)
         # multipliers for comments (cm), subscriptions (sm), donation count (dcm), and donation amount (dam)
-        cm, sm, dcm, dam = 1, 4, 4.5, 1
+        cm = Decimal(1)
+        sm = Decimal(4)
+        dcm = Decimal(4.5)
+        dam = Decimal(1)
         print("c_avg type = %s; c_stdev type = %s; v['comments'] type = %s" % (type(c_avg), type(c_stdev), type(v['comments'])))
         print("testing to see if 'comments' (%s) is within 1 stdev (%s) of the mean (%s)" % (v['comments'], c_stdev, c_avg))
         # if this page's comments are within 1 standard deviation of the mean
@@ -267,10 +288,10 @@ if __name__ == "__main__":
     page_ids = [p[0] for p in rows]
     print(page_ids)
     # find the trending scores for the pages
-    trending(cur, page_ids, 10)
+    trending(cur, page_ids, 10, 1, False)
 
     # find ties, then break ties
     ties = find_ties(cur, page_ids)
-    break_ties(ties)
+    break_ties(cur, ties)
 
     conn.close()
