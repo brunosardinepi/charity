@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'plans',
     'webhooks',
     'faqs',
+    'votes',
 ]
 
 MIDDLEWARE = [

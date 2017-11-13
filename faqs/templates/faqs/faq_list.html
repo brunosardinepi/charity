@@ -11,7 +11,7 @@
             {{ faq.question }}
             <ul>
                 <li>{{ faq.answer|safe }}</li>
-                <li>{{ faq.upvotes }} upvote{{ faq.upvotes|pluralize }}, {{ faq.downvotes }} downvote{{ faq.downvotes|pluralize }}</li>
+                <li>{{ faq.score }} - upvote / downvote</li>
             </ul>
         </li>
         {% endfor %}
