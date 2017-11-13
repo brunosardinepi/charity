@@ -21,6 +21,7 @@
         <nav>
             <a href="{% url 'home' %}">Home</a>
             <a href="{% url 'search:search' %}">Search</a>
+            <a href="{% url 'faqs:faq_list' %}">FAQs</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'userprofile:userprofile' %}">Profile</a>
                 <a href="{% url 'account_logout' %}">Logout</a>

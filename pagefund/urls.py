@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^password/reset/(?P<invitation_pk>\d+)/(?P<key>[\w-]+)/$', InvitationsViews.forgot_password_reset, name='forgot_password_reset'),
     url(r'^webhooks/', include('webhooks.urls', namespace='webhooks')),
     url(r'^plans/', include('plans.urls', namespace='plans')),
+    url(r'^faq/', include('faqs.urls', namespace='faqs')),
 
     url(r'^create/$', PageViews.page_create, name='page_create'),
     url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),

@@ -1,0 +1,19 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} FAQs | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+    <h1>Frequently Asked Questions (FAQs)</h1>
+    <ul>
+        {% for faq in faqs %}
+        <li>
+            {{ faq.question }}
+            <ul>
+                <li>{{ faq.answer|safe }}</li>
+                <li>{{ faq.upvotes }} upvote{{ faq.upvotes|pluralize }}, {{ faq.downvotes }} downvote{{ faq.downvotes|pluralize }}</li>
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
