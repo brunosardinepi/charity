@@ -1,6 +1,6 @@
 #!/home/gnowak/pagefund/pagefundenv/bin/python3
 
-import collections
+from collections import Counter, OrderedDict
 import config
 import psycopg2
 import statistics
@@ -40,18 +40,47 @@ def trimmed_stdev(l, p):
     # return the standard deviation of the trimmed list
     return int(statistics.pstdev(x))
 
-def find_ties(page_ids):
+def find_ties(cur, page_ids):
     # sort by trending score from highest to lowest
-    # compare the current page's trending score to the next page's trending score
-    # if it's different, move on and do it again for the next page until we reach the end
-    # if it's the same, put both of these into their own dictionary with the score as the key and the page ids as the value,
-    # then check the next page to see if it's the same, and repeat until it's different
-    # return a dictionary of ties
+    scores = []
+
+    # debugging only. delete after
+    query = "update page_page set trending_score = {} where id = {};".format(40.0, 29)
+    cur.execute(query)
+
+    # get a list of the duplicate trending scores
+    query = "select trending_score from page_page order by trending_score desc;"
+    cur.execute(query)
+    rows = cur.fetchall()
+    for row in rows:
+        print(row)
+        scores.append(row[0])
+        print("*" * 20)
+    print(scores)
+
+    # find the duplicate scores in the list to determine ties
+    scores = [p for p, count in Counter(scores).items() if count > 1]
+    print(scores)
+    # new dict to hold the ties
+    pages = {}
+    # for each trending score, get a list of the pages that have that trending score
+    for score in scores:
+        pages_list = []
+        query = "select id from page_page where trending_score = {};".format(score)
+        cur.execute(query)
+        rows = cur.fetchall()
+        for row in rows:
+            pages_list.append(row[0])
+        pages[score] = pages_list
+    print(pages)
+
+    return pages
 
 def break_ties(cur, page_ids):
     # go through each key in the page_ids dictionary
     # run the pages through the trending function, but divide the points by 10 to make them a decimal,
     # and add them to the current trending score instead of replacing it
+    print("hello")
 
 def trending(cur, page_ids, trim_pct):
     # find the comments, subscriptions, donation_count, and donation_amount for each page and put them in their own list
@@ -213,7 +242,7 @@ def trending(cur, page_ids, trim_pct):
         print("*" * 20)
 
     # debugging
-    pages = collections.OrderedDict(sorted(pages.items(), key=lambda t: t[1]['points'], reverse=True))
+    pages = OrderedDict(sorted(pages.items(), key=lambda t: t[1]['points'], reverse=True))
     for k, v in pages.items():
         print("page %s; points: %s; comments: %s; subscriptions: %s; donation count: %s; donation amount: %s" % (k, v["points"], v["comments"], v["subscriptions"], v["donation_count"], v["donation_amount"]))
 
@@ -222,6 +251,7 @@ if __name__ == "__main__":
     # connect to the database
     try:
         conn = psycopg2.connect("dbname='%s' user='%s' host='%s' password='%s'" % (config.settings["db_name"], config.settings["db_user"], config.settings["db_host"], config.settings["db_password"]))
+        conn.autocommit = True
     except:
         print("I am unable to connect to the database")
 
@@ -238,7 +268,9 @@ if __name__ == "__main__":
     print(page_ids)
     # find the trending scores for the pages
     trending(cur, page_ids, 10)
-    # commit the database changes
-    conn.commit()
-    # close the database connection
+
+    # find ties, then break ties
+    ties = find_ties(cur, page_ids)
+    break_ties(ties)
+
     conn.close()
