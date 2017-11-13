@@ -1,4 +1,6 @@
+import datetime
 import json
+import pytz
 
 from django.contrib.auth.models import User
 from django.http import HttpResponse
@@ -18,6 +20,10 @@ from plans.models import StripePlan
 @csrf_exempt
 def charge_succeeded(request):
     event_json = json.loads(request.body.decode('utf-8'))
+    date = datetime.datetime.utcfromtimestamp(event_json['data']['object']['created']).replace(tzinfo=pytz.utc)
+    tz = pytz.timezone('America/Chicago')
+    date = date.astimezone(tz)
+    print("date = {}".format(date))
     print(json.dumps(event_json, indent=4, sort_keys=True))
 
     if not event_json['data']['object']['metadata']:
@@ -75,6 +81,7 @@ def charge_succeeded(request):
             anonymous_amount=anonymous_amount,
             anonymous_donor=anonymous_donor,
             comment=comment,
+            date=date,
             page=page,
             campaign=campaign,
             stripe_charge_id=stripe_charge_id,
@@ -87,6 +94,7 @@ def charge_succeeded(request):
             anonymous_amount=anonymous_amount,
             anonymous_donor=anonymous_donor,
             comment=comment,
+            date=date,
             page=page,
             campaign=campaign,
             stripe_charge_id=stripe_charge_id,
