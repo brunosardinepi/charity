@@ -13,6 +13,7 @@ Release date: TBD
 * Page admin dashboard
 * Users can donate if they don't have an account
 * Tiebreakers for trending pages and campaigns
+* Error handling and email notifications when there is an Stripe connection error
 
 ### Changes
 
