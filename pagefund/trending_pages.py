@@ -41,7 +41,7 @@ def trimmed_stdev(l, p):
     # return the standard deviation of the trimmed list
     return int(statistics.pstdev(x))
 
-def find_ties(cur, page_ids):
+def find_ties(cur):
     # sort by trending score from highest to lowest
     scores = []
 
@@ -291,7 +291,7 @@ if __name__ == "__main__":
     trending(cur, page_ids, 10, 1, False)
 
     # find ties, then break ties
-    ties = find_ties(cur, page_ids)
+    ties = find_ties(cur)
     break_ties(cur, ties)
 
     conn.close()

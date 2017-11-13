@@ -1,6 +1,7 @@
 #!/home/gnowak/pagefund/pagefundenv/bin/python3
 
-import collections
+from decimal import Decimal
+from collections import Counter, OrderedDict
 import config
 import psycopg2
 import statistics
@@ -40,7 +41,52 @@ def trimmed_stdev(l, p):
     print("the stdev of the new list is: %s" % statistics.pstdev(x))
     return int(statistics.pstdev(x))
 
-def trending(cur, campaign_ids):
+def find_ties(cur):
+    # sort by trending score from highest to lowest
+    scores = []
+
+#    # debugging only. delete after
+#    query = "update page_page set trending_score = {} where id = {};".format(40.0, 29)
+#    cur.execute(query)
+
+    # get a list of the duplicate trending scores
+    query = "select trending_score from campaign_campaign order by trending_score desc;"
+    cur.execute(query)
+    rows = cur.fetchall()
+    for row in rows:
+        print(row)
+        scores.append(row[0])
+        print("*" * 20)
+    print(scores)
+
+    # find the duplicate scores in the list to determine ties
+    scores = [c for c, count in Counter(scores).items() if count > 1]
+    print(scores)
+    # new dict to hold the ties
+    campaigns = {}
+    # for each trending score, get a list of the campaigns that have that trending score
+    for score in scores:
+        campaigns_list = []
+        query = "select id from campaign_campaign where trending_score = {};".format(score)
+        cur.execute(query)
+        rows = cur.fetchall()
+        for row in rows:
+            campaigns_list.append(row[0])
+        campaigns[score] = campaigns_list
+    print(campaigns)
+
+    return campaigns
+
+def break_ties(cur, ties):
+    # go through each key in the ties dictionary
+    print(ties)
+    for k in ties:
+        # run the campaigns through the trending function, but divide the points by 10 to make them a decimal,
+        print(k)
+        trending(cur, ties[k], 10, 100, True)
+    # and add them to the current trending score instead of replacing it
+
+def trending(cur, campaign_ids, trim_pct, factor, breaking_ties=False):
     # find the comments, subscriptions, donation_count, and donation_amount for each campaign and put them in their own list
     comments, subscriptions, donation_count, donation_amount = [], [], [], []
     campaigns = {}
@@ -84,23 +130,34 @@ def trending(cur, campaign_ids):
         # store in a dict for access later
         campaigns[p] = {
             'comments': c,
-#            'subscriptions': s,
             'donation_count': dc,
             'donation_amount': da,
-            'points': 0
+#            'points': 0,
         }
 
+        if breaking_ties is True:
+            # get the existing trending score
+            query = "select trending_score from campaign_campaign where id = '{}';".format(p)
+            cur.execute(query)
+            rows = cur.fetchall()
+            campaigns[p]['points'] = rows[0][0]
+        else:
+            # reset the trending score
+            campaigns[p]['points'] = 0
+
+        print(campaigns[p]['points'])
+
     # once all the stats have been added to their own lists, find the trimmed mean and trimmed stdev for each stat
-    c_avg, c_stdev = trimmed_mean(comments, 10), trimmed_stdev(comments, 10)
+    c_avg, c_stdev = trimmed_mean(comments, trim_pct), trimmed_stdev(comments, trim_pct)
     print("c_avg = %s" % c_avg)
     print("c_stdev = %s" % c_stdev)
 #    s_avg, s_stdev = trimmed_mean(subscriptions, 10), trimmed_stdev(subscriptions, 10)
 #    print("s_avg = %s" % s_avg)
 #    print("s_stdev = %s" % s_stdev)
-    dc_avg, dc_stdev = trimmed_mean(donation_count, 10), trimmed_stdev(donation_count, 10)
+    dc_avg, dc_stdev = trimmed_mean(donation_count, trim_pct), trimmed_stdev(donation_count, trim_pct)
     print("dc_avg = %s" % dc_avg)
     print("dc_stdev = %s" % dc_stdev)
-    da_avg, da_stdev = trimmed_mean(donation_amount, 10), trimmed_stdev(donation_amount, 10)
+    da_avg, da_stdev = trimmed_mean(donation_amount, trim_pct), trimmed_stdev(donation_amount, trim_pct)
     print("da_avg = %s" % da_avg)
     print("da_stdev = %s" % da_stdev)
 
@@ -110,9 +167,14 @@ def trending(cur, campaign_ids):
 
     for k, v in campaigns.items():
         print(k, v)
-        aa, a, ba = 4, 2, 1
-        # Multipliers
-        cm, sm, dcm, dam = 1, 4, 4.5, 1
+        # point amounts for above average (aa), average (a), and below average (ba)
+        aa = Decimal(4/factor)
+        a = Decimal(2/factor)
+        ba = Decimal(1/factor)
+        # multipliers for comments (cm), donation count (dcm), and donation amount (dam)
+        cm = Decimal(1)
+        dcm = Decimal(4.5)
+        dam = Decimal(1)
         print("c_avg type = %s; c_stdev type = %s; v['comments'] type = %s" % (type(c_avg), type(c_stdev), type(v['comments'])))
         print("testing to see if 'comments' (%s) is within 1 stdev (%s) of the mean (%s)" % (v['comments'], c_stdev, c_avg))
         if (c_avg - c_stdev) <= v['comments'] <= (c_avg + c_stdev):
@@ -164,30 +226,21 @@ def trending(cur, campaign_ids):
 
         print("*" * 20)
 
-#        print("campaigns before sort = %s" % campaigns)
-        campaigns = collections.OrderedDict(sorted(campaigns.items(), key=lambda t: t[1]['points'], reverse=True))
-#        print("campaigns after sort = %s" % campaigns)
-
-#        all_points = []
+        # debugging
+        campaigns = OrderedDict(sorted(campaigns.items(), key=lambda t: t[1]['points'], reverse=True))
         for k, v in campaigns.items():
             print("campaign %s; points: %s; comments: %s; donation count: %s; donation amount: %s" % (k, v["points"], v["comments"], v["donation_count"], v["donation_amount"]))
-            # put all the points in a list
-#            all_points.append(v["points"])
-#            dup_points = [item for item, count in collections.Counter(all_points).items() if count > 1]
-#        print("all_points = %s" % all_points)
-#        print("dup_points = %s" % dup_points)
-# find the duplicates
-# go through the pages for each point amount and find the pages that have each point
-# assign decimal points based on who wins each category to break ties
+
 
 if __name__ == "__main__":
     try:
         conn = psycopg2.connect("dbname='%s' user='%s' host='%s' password='%s'" % (config.settings["db_name"], config.settings["db_user"], config.settings["db_host"], config.settings["db_password"]))
+        conn.autocommit = True
     except:
         print("I am unable to connect to the database")
 
     cur = conn.cursor()
-    query = "select id from campaign_campaign"
+    query = "select id from campaign_campaign where is_active = 't';"
     cur.execute(query)
     rows = cur.fetchall()
     for r in rows:
@@ -195,6 +248,10 @@ if __name__ == "__main__":
 
     campaign_ids = [p[0] for p in rows]
     print(campaign_ids)
-    trending(cur, campaign_ids)
-    conn.commit()
+    trending(cur, campaign_ids, 10, 1, False)
+
+    # find ties, then break ties
+    ties = find_ties(cur)
+    break_ties(cur, ties)
+
     conn.close()
