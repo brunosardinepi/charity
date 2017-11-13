@@ -115,7 +115,9 @@
     <p><a href="{% url 'userprofile:user_image_upload' %}">Upload and Edit images</a></p>
 
     <h3>Saved Credit Cards</h3>
-    {% if cards %}
+    {% if stripe_error %}
+        <p>We're having trouble communicating with our payment processor. This error generated an email and sent it to our dev team. We're looking into the issue now, thanks!</p>
+    {% elif cards %}
         <ul>
             {% for x, c in cards.items %}
                 <form action="{% url 'userprofile:update_card' %}" method="post">
@@ -132,16 +134,18 @@
         </ul>
     {% endif %}
 
-    <h3>Add Credit Card</h3>
-    <form action="{% url 'userprofile:add_card' %}" method="post" id="add-card-form">
-        {% csrf_token %}
-        <div class="form-row">
-            <label for="card-element">Credit or debit card</label>
-            <div id="card-element"></div>
-            <div id="card-errors" role="alert"></div>
-        </div>
-        <button>Add card</button>
-    </form>
+    {% if not stripe_error %}
+        <h3>Add Credit Card</h3>
+        <form action="{% url 'userprofile:add_card' %}" method="post" id="add-card-form">
+            {% csrf_token %}
+            <div class="form-row">
+                <label for="card-element">Credit or debit card</label>
+                <div id="card-element"></div>
+                <div id="card-errors" role="alert"></div>
+            </div>
+            <button>Add card</button>
+        </form>
+    {% endif %}
 
     <h3>Recurring Donations</h3>
     {% if userprofile.plans %}

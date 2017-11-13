@@ -1,6 +1,6 @@
 <h3>Donate</h3>
 {% if stripe_error %}
-    <p>We're having trouble communicating with our payment processor, so we were unable to load your saved credit cards. This error generated an email and sent it to our dev team. We're looking into the issue now, thanks!</p>
+    <p>We're having trouble communicating with our payment processor. This error generated an email and sent it to our dev team. We're looking into the issue now, thanks!</p>
 {% else %}
     {% if page %}
         <form action="{% url 'page_donate' page_pk=page.pk %}" method="post" id="payment-form">

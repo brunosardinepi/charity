@@ -11,6 +11,7 @@ from . import forms
 from .models import StripeCard, UserImage, UserProfile
 from .utils import get_user_credit_cards
 from donation.models import Donation
+from error.utils import error_email
 from invitations.models import ManagerInvitation
 from page import models as PageModels
 from pagefund import config, settings
@@ -21,7 +22,19 @@ from pagefund.image import image_is_valid
 def userprofile(request):
     userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
     if userprofile.user == request.user:
-        cards = get_user_credit_cards(userprofile)
+        try:
+            cards = get_user_credit_cards(userprofile)
+            stripe_error = None
+        except Exception as e:
+            cards = None
+            stripe_error = True
+            error = {
+                "e": e,
+                "user": request.user.pk,
+                "page": "profile",
+                "campaign": None,
+            }
+            error_email(error)
 
         data = {
             'first_name': request.user.first_name,
@@ -44,7 +57,8 @@ def userprofile(request):
             'userprofile': userprofile,
             'form': form,
             'cards': cards,
-            'api_pk': config.settings['stripe_api_pk']
+            'stripe_error': stripe_error,
+            'api_pk': config.settings['stripe_api_pk'],
         })
     else:
         raise Http404
