@@ -45,10 +45,6 @@ def find_ties(cur):
     # sort by trending score from highest to lowest
     scores = []
 
-#    # debugging only. delete after
-#    query = "update page_page set trending_score = {} where id = {};".format(40.0, 29)
-#    cur.execute(query)
-
     # get a list of the duplicate trending scores
     query = "select trending_score from page_page order by trending_score desc;"
     cur.execute(query)
@@ -143,7 +139,6 @@ def trending(cur, page_ids, trim_pct, factor, breaking_ties=False):
             'subscriptions': s,
             'donation_count': dc,
             'donation_amount': da,
-#            'points': 0,
         }
 
         if breaking_ties is True:
@@ -278,7 +273,7 @@ if __name__ == "__main__":
 
     cur = conn.cursor()
     # get all the pages
-    query = "select id from page_page"
+    query = "select id from page_page where deleted = 'f';"
     cur.execute(query)
     rows = cur.fetchall()
     for r in rows:

@@ -12,6 +12,7 @@ Release date: TBD
 * Users can set their email notification preferences
 * Page admin dashboard
 * Users can donate if they don't have an account
+* Tiebreakers for trending pages and campaigns
 
 ### Changes
 

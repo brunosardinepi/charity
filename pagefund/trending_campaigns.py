@@ -1,53 +1,49 @@
 #!/home/gnowak/pagefund/pagefundenv/bin/python3
 
-from decimal import Decimal
 from collections import Counter, OrderedDict
+from decimal import Decimal
 import config
 import psycopg2
 import statistics
 
 
 def trim(l, p):
+    # copy of the list
     x = list(l)
+    # convert the percentage to a decimal
     p /= 100
-    print("list = %s" % x)
-    print("percentage = %s" % p)
-    print("the mean of the original list is: %s" % statistics.mean(x))
-    # find number of items in x
+    # length of the list
     c = len(x)
-    print("there are %s items in the list" % c)
+    # make sure there are at least 4 items in the list before trimming
+    # anything less would leave us with too few results
     if c > 3:
+        # find the top and bottom percentage number
         r = int(c * p)
+        # make sure we have something to trim
         if r > 0:
-            print("we'll remove %s items from the front and back" % r)
-            # re-order x from big to small
+            # sort the list
             x.sort()
-            print("sorted list = %s" % x)
-            # remove 10% of items from the front
+            # delete the top and bottom percentage number
             del x[:r]
-            print("removed %s items from the front and got: %s" % (r, x))
-            # remove 10% of items from the back
             del x[-r:]
-            print("removed %s items from the back and got: %s" % (r, x))
+    # return the trimmed list
     return x
 
 def trimmed_mean(l, p):
+    # trim the list
     x = trim(l, p)
-    print("the mean of the new list is: %s" % statistics.mean(x))
+    # return the mean of the trimmed list
     return int(statistics.mean(x))
 
 def trimmed_stdev(l, p):
+    # trim the list
     x = trim(l, p)
-    print("the stdev of the new list is: %s" % statistics.pstdev(x))
+    # return the standard deviation of the trimmed list
     return int(statistics.pstdev(x))
 
 def find_ties(cur):
     # sort by trending score from highest to lowest
     scores = []
-
-#    # debugging only. delete after
-#    query = "update page_page set trending_score = {} where id = {};".format(40.0, 29)
-#    cur.execute(query)
 
     # get a list of the duplicate trending scores
     query = "select trending_score from campaign_campaign order by trending_score desc;"
@@ -87,43 +83,42 @@ def break_ties(cur, ties):
     # and add them to the current trending score instead of replacing it
 
 def trending(cur, campaign_ids, trim_pct, factor, breaking_ties=False):
-    # find the comments, subscriptions, donation_count, and donation_amount for each campaign and put them in their own list
-    comments, subscriptions, donation_count, donation_amount = [], [], [], []
+    # find the comments, donation_count, and donation_amount for each campaign and put them in their own list
+    # initialize the lists we need for storing data later
+    comments, donation_count, donation_amount = [], [], []
     campaigns = {}
+    # do for each campaign
     for p in campaign_ids:
+        # find the number of comments for the campaign
         query = "select count(*) from comments_comment where campaign_id = '%s' and deleted = 'f';" % p
         cur.execute(query)
         c = cur.fetchall()
         c = c[0][0]
         if c is None:
             c = 0
+        # append to the comments list
         comments.append(c)
         print("c = %s" % c)
 
-#        query = "select count(*) from page_page_subscribers where page_id = '%s';" % p
-#        cur.execute(query)
-#        s = cur.fetchall()
-#        s = s[0][0]
-#        if s is None:
-#            s = 0
-#        subscriptions.append(s)
-#        print("s = %s" % s)
-
+        # find the number of donations for the campaign
         query = "select count(*) from donation_donation where campaign_id = '%s';" % p
         cur.execute(query)
         dc = cur.fetchall()
         dc = dc[0][0]
         if dc is None:
             dc = 0
+        # append to the donation list
         donation_count.append(dc)
         print("dc = %s" % dc)
 
+        # find the total amount of the donations for the page
         query = "select sum(amount) from donation_donation where campaign_id = '%s';" % p
         cur.execute(query)
         da = cur.fetchall()
         da = da[0][0]
         if da is None:
             da = 0
+        # append to the donation amount list
         donation_amount.append(da)
         print("da = %s" % da)
 
@@ -132,7 +127,6 @@ def trending(cur, campaign_ids, trim_pct, factor, breaking_ties=False):
             'comments': c,
             'donation_count': dc,
             'donation_amount': da,
-#            'points': 0,
         }
 
         if breaking_ties is True:
@@ -151,9 +145,6 @@ def trending(cur, campaign_ids, trim_pct, factor, breaking_ties=False):
     c_avg, c_stdev = trimmed_mean(comments, trim_pct), trimmed_stdev(comments, trim_pct)
     print("c_avg = %s" % c_avg)
     print("c_stdev = %s" % c_stdev)
-#    s_avg, s_stdev = trimmed_mean(subscriptions, 10), trimmed_stdev(subscriptions, 10)
-#    print("s_avg = %s" % s_avg)
-#    print("s_stdev = %s" % s_stdev)
     dc_avg, dc_stdev = trimmed_mean(donation_count, trim_pct), trimmed_stdev(donation_count, trim_pct)
     print("dc_avg = %s" % dc_avg)
     print("dc_stdev = %s" % dc_stdev)
@@ -177,49 +168,57 @@ def trending(cur, campaign_ids, trim_pct, factor, breaking_ties=False):
         dam = Decimal(1)
         print("c_avg type = %s; c_stdev type = %s; v['comments'] type = %s" % (type(c_avg), type(c_stdev), type(v['comments'])))
         print("testing to see if 'comments' (%s) is within 1 stdev (%s) of the mean (%s)" % (v['comments'], c_stdev, c_avg))
+        # if this campaign's comments are within 1 standard deviation of the mean
         if (c_avg - c_stdev) <= v['comments'] <= (c_avg + c_stdev):
+            # average * comments multiplier
             v['points'] += (a * cm)
             print("AVERAGE... awarded %s points" % (a * cm))
+        # if this campaign's comments are above 1 standard deviation of the mean
         elif v['comments'] > (c_avg + c_stdev):
+            # above average * comments multiplier
             v['points'] += (aa * cm)
             print("ABOVE AVERAGE... awarded %s points" % (aa * cm))
+        # if this campaign's comments are below 1 standard deviation of the mean
         elif v['comments'] < (c_avg - c_stdev):
+            # below average * comments multiplier
             v['points'] += (ba * cm)
             print("BELOW AVERAGE... awarded %s point" % (ba * cm))
 
-#        print("testing to see if 'subscriptions' (%s) is within 1 stdev (%s) of the mean (%s)" % (v['subscriptions'], s_stdev, s_avg))
-#        if (s_avg - s_stdev) <= v['subscriptions'] <= (s_avg + s_stdev):
-#            v['points'] += (a * sm)
-#            print("AVERAGE... awarded %s points" % (a * sm))
-#        elif v['subscriptions'] > (s_avg + s_stdev):
-#            v['points'] += (aa * sm)
-#            print("ABOVE AVERAGE... awarded %s points" % (aa * sm))
-#        elif v['subscriptions'] < (s_avg - s_stdev):
-#            v['points'] += (ba * sm)
-#            print("BELOW AVERAGE... awarded %s points" % (ba * sm))
-
         print("testing to see if 'donation_count' (%s) is within 1 stdev (%s) of the mean (%s)" % (v['donation_count'], dc_stdev, dc_avg))
+        # if this campaign's donation count is within 1 standard deviation of the mean
         if (dc_avg - dc_stdev) <= v['donation_count'] <= (dc_avg + dc_stdev):
+            # average * donation count multiplier
             v['points'] += (a * dcm)
             print("AVERAGE... awarded %s points" % (a * dcm))
+        # if this campaign's donation count is above 1 standard deviation of the mean
         elif v['donation_count'] > (dc_avg + dc_stdev):
+            # above average * donation count multiplier
             v['points'] += (aa * dcm)
             print("ABOVE AVERAGE... awarded %s points" % (aa * dcm))
+        # if this campaign's donation count is below 1 standard deviation of the mean
         elif v['donation_count'] < (dc_avg - dc_stdev):
+            # below average * donation count multiplier
             v['points'] += (ba * dcm)
             print("BELOW AVERAGE... awarded %s point" % (ba * dcm))
 
         print("testing to see if 'donation_amount' (%s) is within 1 stdev (%s) of the mean (%s)" % (v['donation_amount'], da_stdev, da_avg))
+        # if this campaign's donation amount is within 1 standard deviation of the mean
         if (da_avg - da_stdev) <= v['donation_amount'] <= (da_avg + da_stdev):
+            # average * donation amount multiplier
             v['points'] += (a * dam)
             print("AVERAGE... awarded %s points" % (a * dam))
+        # if this campaign's donation amount is above 1 standard deviation of the mean
         elif v['donation_amount'] > (da_avg + da_stdev):
+            # above average * donation amount multiplier
             v['points'] += (aa * dam)
             print("ABOVE AVERAGE... awarded %s points" % (aa * dam))
+        # if this campaign's donation amount is below 1 standard deviation of the mean
         elif v['donation_amount'] < (da_avg - da_stdev):
+            # below average * donation amount multiplier
             v['points'] += (ba * dam)
             print("BELOW AVERAGE... awarded %s point" % (ba * dam))
 
+        # update the trending score in the database
         query = "update campaign_campaign set trending_score = '%s' where id = '%s';" % (v['points'], k)
         print(query)
         cur.execute(query)
@@ -233,6 +232,7 @@ def trending(cur, campaign_ids, trim_pct, factor, breaking_ties=False):
 
 
 if __name__ == "__main__":
+    # connect to the database
     try:
         conn = psycopg2.connect("dbname='%s' user='%s' host='%s' password='%s'" % (config.settings["db_name"], config.settings["db_user"], config.settings["db_host"], config.settings["db_password"]))
         conn.autocommit = True
@@ -240,14 +240,17 @@ if __name__ == "__main__":
         print("I am unable to connect to the database")
 
     cur = conn.cursor()
+    # get all the active campaigns
     query = "select id from campaign_campaign where is_active = 't';"
     cur.execute(query)
     rows = cur.fetchall()
     for r in rows:
         print(r)
 
+    # create a list of the campaigns ids
     campaign_ids = [p[0] for p in rows]
     print(campaign_ids)
+    # find the trending scores for the campaigns
     trending(cur, campaign_ids, 10, 1, False)
 
     # find ties, then break ties
