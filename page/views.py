@@ -28,6 +28,7 @@ from comments.models import Comment
 from donation.forms import DonateForm, DonateUnauthenticatedForm
 from donation.models import Donation
 from donation.utils import donate, donation_graph, donation_history, donation_statistics
+from error.utils import error_email
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
 from userprofile.utils import get_user_credit_cards
@@ -52,9 +53,18 @@ def page(request, page_slug):
         template_params = {}
 
         if request.user.is_authenticated:
-            cards = get_user_credit_cards(request.user.userprofile)
-            template_params["cards"] = cards
-
+            try:
+                cards = get_user_credit_cards(request.user.userprofile)
+                template_params["cards"] = cards
+            except Exception as e:
+                template_params["stripe_error"] = True
+                error = {
+                    "e": e,
+                    "user": request.user.pk,
+                    "page": page.pk,
+                    "campaign": None,
+                }
+                error_email(error)
         try:
             user_subscription_check = page.subscribers.get(user_id=request.user.pk)
         except UserProfileModels.UserProfile.DoesNotExist:
