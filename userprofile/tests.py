@@ -1,7 +1,7 @@
 import ast
 
 from django.contrib.auth.models import User
-from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.files.uploadedfile import InMemoryUploadedFile, SimpleUploadedFile
 from django.test import Client, RequestFactory, TestCase
 
 from . import forms
@@ -151,14 +151,13 @@ class UserProfileTest(TestCase):
 
     def test_image_upload(self):
         self.client.login(username='testuser', password='testpassword')
-        image = SimpleUploadedFile("image.png", b"file_content", content_type="image/png")
+        content = b"a" * 1024
+        image = SimpleUploadedFile("image.png", content, content_type="image/png")
         response = self.client.post('/profile/images/', {'image': image})
         self.assertEqual(response.status_code, 200)
 
         images = models.UserImage.objects.filter(user=self.user.userprofile)
-        print(images)
         self.assertEqual(len(images), 1)
-        print(images[0].image.url)
 
         image = images[0]
         response = self.client.get('/profile/')
@@ -166,28 +165,35 @@ class UserProfileTest(TestCase):
 
         image.delete()
         images = models.UserImage.objects.filter(user=self.user.userprofile)
-        print(images)
         self.assertEqual(len(images), 0)
 
     def test_image_upload_error_size(self):
         self.client.login(username='testuser', password='testpassword')
-        with open('media/tests/error_image_size.jpg', 'rb') as image:
-            response = self.client.post('/profile/images/', {'image': image})
+        content = b"a" * 1024 * 1024 * 5
+        image = SimpleUploadedFile("image.png", content, content_type="image/png")
+        response = self.client.post('/profile/images/', {'image': image})
         content = response.content.decode('ascii')
         content = ast.literal_eval(content)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(content["is_valid"], "f")
         self.assertEqual(content["redirect"], "error_size")
 
+        images = models.UserImage.objects.filter(user=self.user.userprofile)
+        self.assertEqual(len(images), 0)
+
     def test_image_upload_error_type(self):
         self.client.login(username='testuser', password='testpassword')
-        with open('media/tests/error_image_type.txt', 'rb') as image:
-            response = self.client.post('/profile/images/', {'image': image})
+        content = b"a"
+        image = SimpleUploadedFile("notimage.txt", content, content_type="text/html")
+        response = self.client.post('/profile/images/', {'image': image})
         content = response.content.decode('ascii')
         content = ast.literal_eval(content)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(content["is_valid"], "f")
         self.assertEqual(content["redirect"], "error_type")
+
+        images = models.UserImage.objects.filter(user=self.user.userprofile)
+        self.assertEqual(len(images), 0)
 
     def test_update_card(self):
         self.client.login(username='testuser', password='testpassword')
