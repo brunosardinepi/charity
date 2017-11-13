@@ -1,11 +1,12 @@
 from collections import OrderedDict
+import os
 import random
 import string
 
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from django.db.models.signals import post_save
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
@@ -230,6 +231,11 @@ class UserImage(models.Model):
     caption = models.CharField(max_length=255, blank=True)
     profile_picture = models.BooleanField(default=False)
 
+@receiver(post_delete, sender=UserImage)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    if instance.image:
+        if os.path.isfile(instance.image.path):
+            os.remove(instance.image.path)
 
 class StripeCard(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
