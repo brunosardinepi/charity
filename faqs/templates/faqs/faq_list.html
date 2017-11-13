@@ -3,15 +3,48 @@
 
 {% block title %} FAQs | {{ block.super }}{% endblock %}
 
+{% block head_extra %}
+    <script src="{% static 'js/comment_csrf.js' %}"></script>
+    <script>
+        function vote(event) {
+            var obj = $(event.target).parents().eq(2).attr("id");
+            var score = $(event.target).attr("class");
+            var url = "{% url 'votes:vote' %}";
+
+            $.ajax({
+                url : url,
+                type : "POST",
+                traditional: true,
+                data : {
+                    obj : obj,
+                    score : score,
+                },
+                success : function(result) {
+                    $("#score-" + result.pk).text(result.score);
+                }
+            });
+        };
+
+        $(document).on("click", "a[class^=vote]", function(event) {
+            event.preventDefault();
+            vote(event);
+        });
+    </script>
+{% endblock %}
+
 {% block body_content %}
     <h1>Frequently Asked Questions (FAQs)</h1>
     <ul>
         {% for faq in faqs %}
-        <li>
+        <li id="faq-{{ faq.pk }}">
             {{ faq.question }}
             <ul>
                 <li>{{ faq.answer|safe }}</li>
-                <li>{{ faq.score }} - upvote / downvote</li>
+                {% if request.user.is_authenticated %}
+                    <li><span id="score-{{ faq.pk }}">{{ faq.score }}</span> - <a class="vote-upvote" href="">upvote</a> / <a class="vote-downvote" href="">downvote</a></li>
+                {% else %}
+                    <li><span id="score-{{ faq.pk }}">{{ faq.score }}</span> - <a href="{% url 'login' %}?next={{ request.path }}">Login</a> to upvote/downvote</li>
+                {% endif %}
             </ul>
         </li>
         {% endfor %}
