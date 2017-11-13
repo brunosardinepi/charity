@@ -146,7 +146,7 @@
                 <th class="desc"><a class="sort" id="sort-date" href="">Date</a></th>
                 <th><a class="sort" id="sort-amount" href="">Amount</a></th>
                 <th><a class="sort" id="sort-campaign" href="">Campaign</a></th>
-                <th><a class="sort" id="sort-user" href="">Donor</a></th>
+                <th><a class="sort" id="sort-donor_first_name" href="">Donor</a></th>
             </tr>
         </thead>
         <tbody id="donation-history-body">
@@ -155,7 +155,7 @@
                     <td>{{ d.date|date:'N j, Y, g:i A' }}</td>
                     <td>{% if d.anonymous_amount %}Anonymous{% else %}{{ d.amount|cents_to_dollars }}{% endif %}</td>
                     <td>{% if d.campaign %}{{ d.campaign }}{% else %}--{% endif %}</td>
-                    <td>{% if d.anonymous_donor == True %}Anonymous{% else %}{{ d.user.first_name }} {{ d.user.last_name }}{% endif %}</td>
+                    <td>{% if d.anonymous_donor == True %}Anonymous{% else %}{% if d.user %}{{ d.user.first_name }} {{ d.user.last_name }}{% else %}{{ d.donor_first_name }} {{ d.donor_last_name }}{% endif %}{% endif %}</td>
                 </tr>
             {% endfor %}
         </tbody>

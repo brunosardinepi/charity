@@ -152,7 +152,6 @@ def donate(request, form, page=None, campaign=None):
     metadata["anonymous_amount"] = form.cleaned_data['anonymous_amount']
     metadata["anonymous_donor"] = form.cleaned_data['anonymous_donor']
     metadata["comment"] = form.cleaned_data['comment']
-    metadata["page"] = page.id
     metadata["pf_user_pk"] = request.user.pk
 
     if request.user.is_authenticated:
@@ -205,6 +204,10 @@ def donate(request, form, page=None, campaign=None):
         else:
             if campaign is not None:
                 metadata["campaign"] = campaign.id
+                metadata["page"] = campaign.page.id
+            elif page is not None:
+                metadata["page"] = page.id
+
 
             metadata["pf_user_pk"] = request.user.pk
 
@@ -222,6 +225,11 @@ def donate(request, form, page=None, campaign=None):
     else:
         metadata["first_name"] = form.cleaned_data['first_name']
         metadata["last_name"] = form.cleaned_data['last_name']
+        if campaign is not None:
+            metadata["campaign"] = campaign.id
+            metadata["page"] = campaign.page.id
+        elif page is not None:
+            metadata["page"] = page.id
         charge = stripe.Charge.create(
             amount=amount,
             currency="usd",

@@ -11,6 +11,7 @@ Release date: TBD
 
 * Users can set their email notification preferences
 * Page admin dashboard
+* Users can donate if they don't have an account
 
 ### Changes
 

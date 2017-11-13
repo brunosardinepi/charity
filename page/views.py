@@ -8,6 +8,7 @@ from collections import OrderedDict
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models.functions import Lower
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404, render
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
@@ -357,10 +358,7 @@ class PageAjaxDonations(View):
         sort_by = request.POST.get("sort_by")
         column = request.POST.get("column")
         column = column.split("sort-")[1]
-        if sort_by == "asc":
-            donationset = Donation.objects.filter(page=page).order_by('{}'.format(column))
-        else:
-            donationset = Donation.objects.filter(page=page).order_by('-{}'.format(column))
+        donationset = Donation.objects.filter(page=page)
         data = OrderedDict()
         for d in donationset:
             d.date = d.date.replace(tzinfo=timezone.utc).astimezone(tz=None)
@@ -369,8 +367,8 @@ class PageAjaxDonations(View):
                 "anonymous_amount": d.anonymous_amount,
                 "anonymous_donor": d.anonymous_donor,
                 "user": {
-                    "first_name": d.user.first_name,
-                    "last_name": d.user.last_name
+                    "first_name": d.donor_first_name,
+                    "last_name": d.donor_last_name,
                 },
             }
             if d.anonymous_amount is True:
@@ -385,13 +383,13 @@ class PageAjaxDonations(View):
             else:
                 data["pk{}".format(d.pk)]["campaign"] = ""
         if sort_by == "asc":
-            if column == "user":
-                data = sorted(data.values(), key=lambda x: (x['user']['first_name']), reverse=True)
+            if column == "donor_first_name":
+                data = sorted(data.values(), key=lambda x: (x['user']['first_name'].lower()), reverse=True)
             else:
                 data = sorted(data.values(), key=operator.itemgetter('{}'.format(column)), reverse=True)
         else:
-            if column == "user":
-                data = sorted(data.values(), key=lambda x: (x['user']['first_name']))
+            if column == "donor_first_name":
+                data = sorted(data.values(), key=lambda x: (x['user']['first_name']).lower())
             else:
                 data = sorted(data.values(), key=operator.itemgetter('{}'.format(column)))
         return HttpResponse(json.dumps(data), content_type="application/json")
