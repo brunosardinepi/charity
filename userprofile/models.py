@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from itertools import chain
 import os
 import random
 import string
@@ -103,12 +104,6 @@ class UserProfile(models.Model):
     def get_absolute_url(self):
         return reverse('userprofile:userprofile')
 
-    def admin_campaigns(self):
-        return self.campaign_admins.filter(deleted=False)
-
-    def admin_pages(self):
-        return self.page_admins.filter(deleted=False)
-
     def donations(self):
         return Donation.objects.filter(user=self.user).order_by('-date')
 
@@ -118,11 +113,20 @@ class UserProfile(models.Model):
     def invitations(self):
         return ManagerInvitation.objects.filter(invite_from=self.user, expired=False)
 
-    def manager_campaigns(self):
-        return self.campaign_managers.filter(deleted=False)
+    def my_campaigns(self):
+        admin_campaigns = self.campaign_admins.filter(deleted=False)
+        manager_campaigns = self.campaign_managers.filter(deleted=False)
+        campaigns = list(chain(admin_campaigns, manager_campaigns))
+        campaigns = sorted(set(campaigns),key=lambda x: x.name)
+        return campaigns
 
-    def manager_pages(self):
-        return self.page_managers.filter(deleted=False)
+    def my_pages(self):
+        admin_pages = self.page_admins.filter(deleted=False)
+        manager_pages = self.page_managers.filter(deleted=False)
+        subscribed_pages = self.subscribers.filter(deleted=False)
+        pages = list(chain(admin_pages, manager_pages, subscribed_pages))
+        pages = sorted(set(pages),key=lambda x: x.name)
+        return pages
 
     def notification_preferences(self):
         notifications = OrderedDict()
@@ -184,9 +188,6 @@ class UserProfile(models.Model):
 
     def saved_cards(self):
         return StripeCard.objects.filter(user=self.user.userprofile)
-
-    def subscriptions(self):
-        return self.subscribers.filter(deleted=False)
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):

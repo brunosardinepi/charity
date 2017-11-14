@@ -60,46 +60,17 @@
 
     <p>Stripe Customer ID: {{ userprofile.stripe_customer_id }}</p>
 
-    <h2>Pages I Admin</h2>
+    <h2>My Pages</h2>
     <ul>
-        {% for p in userprofile.admin_pages %}
+        {% for p in userprofile.my_pages %}
             <li><a href="{% url 'page' page_slug=p.page_slug %}">{{ p.name }}</a></li>
         {% endfor %}
     </ul>   
 
-    <h2>Pages I Manage</h2>
+    <h2>My Campaigns</h2>
     <ul>
-        {% for p in userprofile.manager_pages %}
-            <li><a href="{% url 'page' page_slug=p.page_slug %}">{{ p.name }}</a></li>
-        {% endfor %}
-    </ul>   
-
-    <h2>Campaigns I Admin</h2>
-    <ul>
-        {% for c in userprofile.admin_campaigns %}
+        {% for c in userprofile.my_campaigns %}
             <li><a href="{% url 'campaign' page_slug=c.page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a></li>
-        {% endfor %}
-    </ul>
-
-    <h2>Campaigns I Manage</h2>
-    <ul>
-        {% for c in userprofile.manager_campaigns %}
-            <li><a href="{% url 'campaign' page_slug=c.page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a></li>
-        {% endfor %}
-    </ul>   
-
-    <h2>Page Subscriptions</h2>
-    <ul>
-        {% for s in userprofile.subscriptions %}
-            <li><a href="{% url 'page' page_slug=s.page_slug %}">{{ s.name }}</a></li>
-            {% active_campaigns s.pk as a_campaigns %}
-            {% if a_campaigns %}
-                <ul>
-                    {% for campaign in a_campaigns %}
-                        <li><a href="{% url 'campaign' page_slug=s.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a></li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
         {% endfor %}
     </ul>
 
