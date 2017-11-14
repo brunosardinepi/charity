@@ -1,5 +1,6 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
+{% load votes_extras %}
 
 {% block title %} FAQs | {{ block.super }}{% endblock %}
 
@@ -42,7 +43,9 @@
             <ul>
                 <li>{{ faq.answer|safe }}</li>
                 {% if request.user.is_authenticated %}
-                    <li><span id="upvotes-{{ faq.pk }}">{{ faq.upvotes }}</span> <a class="vote-upvote" href="">upvote{{ faq.upvotes|pluralize }}</a>, <span id="downvotes-{{ faq.pk }}">{{ faq.downvotes }}</span> <a class="vote-downvote" href="">downvote{{ faq.downvotes|pluralize }}</a></li>
+                    {% user_vote_was user=request.user obj="faq" pk=faq.pk as user_vote_was %}
+                    {{ user_vote_was }}
+                    <li><span id="upvotes-{{ faq.pk }}">{{ faq.upvotes }}</span> <a class="vote-upvote" href="">{% if user_vote_was == "upvote" %}<span class="user-vote" style="color:green;">{% endif %}upvote{{ faq.upvotes|pluralize }}{% if user_vote_was == "upvote" %}</span>{% endif %}</a>, <span id="downvotes-{{ faq.pk }}">{{ faq.downvotes }}</span> <a class="vote-downvote" href="">{% if user_vote_was == "downvote" %}<span class="user-vote" style="color:green;">{% endif %}downvote{{ faq.downvotes|pluralize }}{% if user_vote_was == "downvote" %}</span>{% endif %}</a></li>
                 {% else %}
                     <li><span id="upvotes-{{ faq.pk }}">{{ faq.upvotes }}</span> <a class="vote-upvote" href="{% url 'login' %}?next={{ request.path }}">upvote{{ faq.upvotes|pluralize }}</a>, <span id="downvotes-{{ faq.pk }}">{{ faq.downvotes }}</span> <a class="vote-downvote" href="{% url 'login' %}?next={{ request.path }}">downvote{{ faq.downvotes|pluralize }}</a></li>
                 {% endif %}
