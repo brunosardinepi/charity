@@ -3,6 +3,7 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView
 
 from . import views
 from campaign import views as CampaignViews
@@ -29,6 +30,7 @@ urlpatterns = [
     url(r'^plans/', include('plans.urls', namespace='plans')),
     url(r'^faq/', include('faqs.urls', namespace='faqs')),
     url(r'^votes/', include('votes.urls', namespace='votes')),
+    url(r'^about/$', TemplateView.as_view(template_name="about.html")),
 
     url(r'^create/$', PageViews.page_create, name='page_create'),
     url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),
