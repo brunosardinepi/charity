@@ -2,6 +2,7 @@
 {% load static from staticfiles %}
 {% load donation_extras %}
 {% load page_extras %}
+{% load userprofile_extras %}
 
 {% block title %} Profile | {{ block.super }}{% endblock %}
 
@@ -63,14 +64,16 @@
     <h2>My Pages</h2>
     <ul>
         {% for p in userprofile.my_pages %}
-            <li><a href="{% url 'page' page_slug=p.page_slug %}">{{ p.name }}</a></li>
+            {% user_admin_status user=request.user type="page" obj=p as user_admin_status %}
+            <li><a href="{% url 'page' page_slug=p.page_slug %}">{{ p.name }}</a> {{ user_admin_status }}</li>
         {% endfor %}
     </ul>   
 
     <h2>My Campaigns</h2>
     <ul>
         {% for c in userprofile.my_campaigns %}
-            <li><a href="{% url 'campaign' page_slug=c.page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a></li>
+            {% user_admin_status user=request.user type="campaign" obj=c as user_admin_status %}
+            <li><a href="{% url 'campaign' page_slug=c.page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a> {{ user_admin_status }}</li>
         {% endfor %}
     </ul>
 
