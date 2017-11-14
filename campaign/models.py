@@ -22,6 +22,7 @@ class Campaign(models.Model):
     campaign_admins = models.ManyToManyField('userprofile.UserProfile', related_name='campaign_admins', blank=True)
     campaign_managers = models.ManyToManyField('userprofile.UserProfile', related_name='campaign_managers', blank=True)
     campaign_slug = models.SlugField(max_length=255)
+    category = models.CharField(max_length=255)
     city = models.CharField(max_length=255, blank=True)
     created_on = models.DateTimeField(default=timezone.now)
     deleted = models.BooleanField(default=False)
@@ -125,10 +126,10 @@ class Campaign(models.Model):
     def save(self, *args, **kwargs):
         if self.id:
             self.campaign_slug = slugify(self.campaign_slug)
-            super(Campaign, self).save(*args, **kwargs)
         elif not self.id:
             self.campaign_slug = slugify(self.name)
-            super(Campaign, self).save(*args, **kwargs)
+        self.category = self.page.category
+        super(Campaign, self).save(*args, **kwargs)
 
     def top_donors(self):
         donors = Donation.objects.filter(campaign=self).values_list('user', flat=True).distinct()

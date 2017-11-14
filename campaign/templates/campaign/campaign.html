@@ -105,6 +105,7 @@
     <img src="{{ campaign.profile_picture.image.url }}" width="200" />
     <p>Trending score: {{ campaign.trending_score }}</p>
     <p>Type: {{ campaign.get_type_display }}</p>
+    <p>Category: {{ campaign.category|title }}</p>
     <p>Location: {% if campaign.city %}{{ campaign.city }}{% endif %}{% if campaign.city and campaign.state %}, {% endif %}{% if campaign.state %}{{ campaign.state }}{% endif %}</p>
     <p>Description: {{ campaign.description }}</p>
     <p>Goal: ${{ campaign.goal }}</p>
