@@ -15,7 +15,8 @@ Release date: TBD
 * Tiebreakers for trending pages and campaigns
 * Error handling and email notifications when there is an Stripe connection error
 * FAQs
-* About Us
+* About Us placeholder page
+* Terms of Service placeholder page
 
 ### Changes
 

@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^faq/', include('faqs.urls', namespace='faqs')),
     url(r'^votes/', include('votes.urls', namespace='votes')),
     url(r'^about/$', TemplateView.as_view(template_name="about.html")),
+    url(r'^terms-of-service/$', TemplateView.as_view(template_name="terms_of_service.html")),
 
     url(r'^create/$', PageViews.page_create, name='page_create'),
     url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),

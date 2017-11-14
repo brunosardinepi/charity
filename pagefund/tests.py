@@ -254,6 +254,10 @@ class HomeTest(TestCase):
         response = self.client.get('/about/')
         self.assertEqual(response.status_code, 200)
 
+    def test_terms_of_service(self):
+        response = self.client.get('/terms-of-service/')
+        self.assertEqual(response.status_code, 200)
+
 class AccountTests(TestCase):
     def _create_user(self, username='john', password='doe'):
         user = get_user_model().objects.create(
