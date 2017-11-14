@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import json
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -53,12 +54,23 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
                 }
                 error_email(error)
 
+        try:
+            user_subscription_check = campaign.campaign_subscribers.get(user_id=request.user.pk)
+        except UserProfileModels.UserProfile.DoesNotExist:
+            user_subscription_check = None
+
+        if user_subscription_check:
+            subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe", "color": "red"}
+        else:
+            subscribe_attr = {"name": "subscribe", "value": "Subscribe", "color": "green"}
+
         if request.method == "POST":
             utils.update_manager_permissions(request.POST.getlist('permissions[]'), campaign)
 
         template_params["campaign"] = campaign
         template_params["form"] = form
         template_params["donate_form"] = donate_form
+        template_params["subscribe_attr"] = subscribe_attr
         template_params["api_pk"] = config.settings['stripe_api_pk']
         return render(request, 'campaign/campaign.html', template_params)
 
@@ -260,3 +272,17 @@ def campaign_donate(request, campaign_pk):
         if form.is_valid():
             donate(request=request, form=form, page=None, campaign=campaign)
             return HttpResponseRedirect(campaign.get_absolute_url())
+
+@login_required
+def subscribe(request, campaign_pk, action=None):
+    campaign = get_object_or_404(Campaign, pk=campaign_pk)
+    if action == "subscribe":
+        campaign.campaign_subscribers.add(request.user.userprofile)
+        new_subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe", "color": "red"}
+    elif action == "unsubscribe":
+        campaign.campaign_subscribers.remove(request.user.userprofile)
+        new_subscribe_attr = {"name": "subscribe", "value": "Subscribe", "color": "green"}
+    else:
+        print("something went wrong")
+    new_subscribe_attr = json.dumps(new_subscribe_attr)
+    return HttpResponse(new_subscribe_attr)

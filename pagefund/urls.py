@@ -20,7 +20,6 @@ urlpatterns = [
     url(r'^search/', include('search.urls', namespace='search')),
     url(r'^invite/$', views.invite, name='invite'),
     url(r'^invite/', include('invitations.urls', namespace='invitations')),
-    url(r'^subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),
     url(r'^comments/', include('comments.urls', namespace='comments')),
     url(r'^donation/', include('donation.urls', namespace='donation')),
     url(r'^error/', include('error.urls', namespace='error')),
@@ -33,6 +32,7 @@ urlpatterns = [
     url(r'^about/$', TemplateView.as_view(template_name="about.html")),
     url(r'^terms-of-service/$', TemplateView.as_view(template_name="terms_of_service.html")),
 
+    url(r'^subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),
     url(r'^create/$', PageViews.page_create, name='page_create'),
     url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),
     url(r'^(?P<page_slug>[\w-]+)/dashboard/$', login_required(PageViews.PageDashboard.as_view()), name='page_dashboard'),
@@ -46,6 +46,7 @@ urlpatterns = [
     url(r'^(?P<page_slug>[\w-]+)/managers/(?P<manager_pk>\d+)/remove/$', PageViews.remove_manager, name='remove_manager'),
     url(r'^(?P<page_slug>[\w-]+)/$', PageViews.page, name='page'),
 
+    url(r'^campaign/subscribe/(?P<campaign_pk>\d+)/(?P<action>[\w-]*)/$', CampaignViews.subscribe, name='campaign_subscribe'),
     url(r'^campaign/(?P<campaign_pk>\d+)/donate/$', CampaignViews.campaign_donate, name='campaign_donate'),
     url(r'^(?P<page_slug>[\w-]+)/campaign/create/$', CampaignViews.campaign_create, name='campaign_create'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/edit/$', CampaignViews.campaign_edit, name='campaign_edit'),
