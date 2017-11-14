@@ -14,10 +14,13 @@ Release date: TBD
 * Users can donate if they don't have an account
 * Tiebreakers for trending pages and campaigns
 * Error handling and email notifications when there is an Stripe connection error
+* FAQs
+* About Us
 
 ### Changes
 
 * Any personal preferences about pages and campaigns, such as subscriptions, were moved from the home page to the user's profile page
+* Removed the option for users to cover Stripe fees
 
 ### Fixes
 

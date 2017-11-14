@@ -9,8 +9,6 @@ class FAQ(models.Model):
     answer = models.TextField()
     date = models.DateTimeField(default=timezone.now)
     archived = models.BooleanField(default=False)
-    downvotes = models.IntegerField(default=0)
-    upvotes = models.IntegerField(default=1)
 
     def __str__(self):
         return self.question[:10]
