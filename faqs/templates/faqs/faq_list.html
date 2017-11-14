@@ -8,7 +8,7 @@
     <script>
         function vote(event) {
             var obj = $(event.target).parents().eq(2).attr("id");
-            var score = $(event.target).attr("class");
+            var vote = $(event.target).attr("class");
             var url = "{% url 'votes:vote' %}";
 
             $.ajax({
@@ -17,10 +17,11 @@
                 traditional: true,
                 data : {
                     obj : obj,
-                    score : score,
+                    vote : vote,
                 },
                 success : function(result) {
-                    $("#score-" + result.pk).text(result.score);
+                    $("#upvotes-" + result.pk).text(result.upvotes);
+                    $("#downvotes-" + result.pk).text(result.downvotes);
                 }
             });
         };
@@ -41,9 +42,9 @@
             <ul>
                 <li>{{ faq.answer|safe }}</li>
                 {% if request.user.is_authenticated %}
-                    <li><span id="score-{{ faq.pk }}">{{ faq.score }}</span> - <a class="vote-upvote" href="">upvote</a> / <a class="vote-downvote" href="">downvote</a></li>
+                    <li><span id="upvotes-{{ faq.pk }}">{{ faq.upvotes }}</span> <a class="vote-upvote" href="">upvote{{ faq.upvotes|pluralize }}</a>, <span id="downvotes-{{ faq.pk }}">{{ faq.downvotes }}</span> <a class="vote-downvote" href="">downvote{{ faq.downvotes|pluralize }}</a></li>
                 {% else %}
-                    <li><span id="score-{{ faq.pk }}">{{ faq.score }}</span> - <a href="{% url 'login' %}?next={{ request.path }}">Login</a> to upvote/downvote</li>
+                    <li><span id="upvotes-{{ faq.pk }}">{{ faq.upvotes }}</span> <a class="vote-upvote" href="{% url 'login' %}?next={{ request.path }}">upvote{{ faq.upvotes|pluralize }}</a>, <span id="downvotes-{{ faq.pk }}">{{ faq.downvotes }}</span> <a class="vote-downvote" href="{% url 'login' %}?next={{ request.path }}">downvote{{ faq.downvotes|pluralize }}</a></li>
                 {% endif %}
             </ul>
         </li>

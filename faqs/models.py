@@ -12,5 +12,14 @@ class FAQ(models.Model):
     downvotes = models.IntegerField(default=0)
     upvotes = models.IntegerField(default=1)
 
+    def __str__(self):
+        return self.question[:10]
+
+    def upvotes(self):
+        return Vote.objects.filter(faq=self, score=1).count()
+
+    def downvotes(self):
+        return Vote.objects.filter(faq=self, score=-1).count()
+
     def score(self):
         return Vote.objects.filter(faq=self).aggregate(models.Sum('score')).get('score__sum')
