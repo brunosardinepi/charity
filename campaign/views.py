@@ -18,7 +18,7 @@ from . import forms
 from .models import Campaign, CampaignImage
 from .utils import email_new_campaign
 from comments.forms import CommentForm
-from donation.forms import DonateForm
+from donation.forms import BaseDonate, DonateForm
 from donation.models import Donation
 from donation.utils import donate
 from error.utils import error_email
@@ -37,7 +37,7 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
         raise Http404
     else:
         form = CommentForm
-        donate_form = DonateForm()
+        donate_form = BaseDonate()
         template_params = {}
 
         if request.user.is_authenticated:

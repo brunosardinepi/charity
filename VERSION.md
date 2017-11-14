@@ -17,6 +17,7 @@ Release date: TBD
 * FAQs
 * About Us placeholder page
 * Terms of Service placeholder page
+* Users can subscribe to Campaigns
 
 ### Changes
 
