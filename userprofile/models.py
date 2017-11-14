@@ -116,7 +116,8 @@ class UserProfile(models.Model):
     def my_campaigns(self):
         admin_campaigns = self.campaign_admins.filter(deleted=False)
         manager_campaigns = self.campaign_managers.filter(deleted=False)
-        campaigns = list(chain(admin_campaigns, manager_campaigns))
+        subscribed_campaigns = self.campaign_subscribers.filter(deleted=False)
+        campaigns = list(chain(admin_campaigns, manager_campaigns, subscribed_campaigns))
         campaigns = sorted(set(campaigns),key=lambda x: x.name)
         return campaigns
 

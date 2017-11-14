@@ -22,6 +22,7 @@ class Campaign(models.Model):
     campaign_admins = models.ManyToManyField('userprofile.UserProfile', related_name='campaign_admins', blank=True)
     campaign_managers = models.ManyToManyField('userprofile.UserProfile', related_name='campaign_managers', blank=True)
     campaign_slug = models.SlugField(max_length=255)
+    campaign_subscribers = models.ManyToManyField('userprofile.UserProfile', related_name='campaign_subscribers', blank=True)
     category = models.CharField(max_length=255)
     city = models.CharField(max_length=255, blank=True)
     created_on = models.DateTimeField(default=timezone.now)
