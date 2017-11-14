@@ -24,7 +24,8 @@ Release date: TBD
 
 ### Fixes
 
-* None
+* Searches threw an error when filtering by category 
+* Setting manager permissions on Pages generated an error
 
 
 ## Version 0.9.0

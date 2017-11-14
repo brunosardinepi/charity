@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models.functions import Lower
 from django.db.models import Sum
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.utils import timezone
@@ -427,5 +427,7 @@ class PageDashboard(View):
 
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
+        print("page = {}".format(page))
         utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
-        return render(self.request, 'page/dashboard.html', {'page': page})
+        return redirect('page_dashboard', page_slug=page.page_slug)
+#        return render(self.request, 'page/dashboard.html', {'page': page})
