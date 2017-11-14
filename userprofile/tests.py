@@ -58,6 +58,18 @@ class UserProfileTest(TestCase):
 
         self.campaign2.campaign_managers.add(self.user.userprofile)
 
+        self.campaign3 = Campaign.objects.create(
+            name='Pencil',
+            page=self.page,
+            type='Event',
+            description='I write with a pencil.',
+            goal='153',
+            donation_count='3',
+            donation_money='98'
+        )
+
+        self.campaign3.campaign_subscribers.add(self.user.userprofile)
+
         self.invitation = ManagerInvitation.objects.create(
             invite_to="rupert@oi.mate",
             invite_from=self.user,
@@ -107,6 +119,7 @@ class UserProfileTest(TestCase):
         self.assertNotContains(response, self.page3.name, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
         self.assertContains(response, self.campaign2.name, status_code=200)
+        self.assertContains(response, self.campaign3.name, status_code=200)
         self.assertContains(response, '$%s to <a href="/%s/">%s</a> @' % (
             int(self.donation.amount / 100),
             self.page.page_slug,
