@@ -110,7 +110,7 @@ class UserProfile(models.Model):
         return self.page_admins.filter(deleted=False)
 
     def donations(self):
-        return Donation.objects.filter(user=self.user)
+        return Donation.objects.filter(user=self.user).order_by('-date')
 
     def images(self):
         return UserImage.objects.filter(user=self)
