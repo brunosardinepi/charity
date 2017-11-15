@@ -18,6 +18,11 @@ class Vote(models.Model):
         blank=True,
         null=True,
     )
+    reply = models.ForeignKey('comments.Reply',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
     faq = models.ForeignKey('faqs.FAQ',
         on_delete=models.CASCADE,
         blank=True,
