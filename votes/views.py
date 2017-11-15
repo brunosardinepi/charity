@@ -17,7 +17,7 @@ class VoteView(View):
         pk = obj_original.split("-")[1]
 
         score = request.POST.get('vote')
-        score = score.split("-")[1]
+        score = score.split(" ")[1]
         if score == 'upvote':
             score = 1
         elif score == 'downvote':
@@ -27,9 +27,11 @@ class VoteView(View):
         if obj == 'comment':
             comment = get_object_or_404(Comment, pk=pk)
             existing_vote = Vote.objects.filter(user=request.user, comment=comment)
+            type = 'c'
         elif obj == 'faq':
             faq = get_object_or_404(FAQ, pk=pk)
             existing_vote = Vote.objects.filter(user=request.user, faq=faq)
+            type = 'f'
 
         if len(existing_vote) > 0:
             # vote already exists, so delete it
@@ -55,5 +57,6 @@ class VoteView(View):
             'pk': pk,
             'upvotes': upvotes,
             'downvotes': downvotes,
+            'type': type,
         }
         return HttpResponse(json.dumps(data), content_type="application/json")

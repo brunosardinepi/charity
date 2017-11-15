@@ -9,10 +9,19 @@ register = template.Library()
 @register.simple_tag
 def user_vote_was(user, obj, pk):
     if obj == 'faq':
-        vote = get_object_or_404(Vote, faq=pk, user=user)
+        try:
+            vote = Vote.objects.get(faq=pk, user=user)
+        except Vote.DoesNotExist:
+            vote = None
     elif obj == 'comment':
-        vote = get_object_or_404(Vote, comment=pk, user=user)
-    if vote.score == 1:
-        return "upvote"
-    elif vote.score == -1:
-        return "downvote"
+        try:
+            vote = Vote.objects.get(comment=pk, user=user)
+        except Vote.DoesNotExist:
+            vote = None
+    if vote is not None:
+        if vote.score == 1:
+            return "upvote"
+        elif vote.score == -1:
+            return "downvote"
+    else:
+        return None
