@@ -18,6 +18,11 @@ def user_vote_was(user, obj, pk):
             vote = Vote.objects.get(comment=pk, user=user)
         except Vote.DoesNotExist:
             vote = None
+    elif obj == 'reply':
+        try:
+            vote = Vote.objects.get(reply=pk, user=user)
+        except Vote.DoesNotExist:
+            vote = None
     if vote is not None:
         if vote.score == 1:
             return "upvote"

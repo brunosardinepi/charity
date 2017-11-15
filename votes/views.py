@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views import View
 
 from .models import Vote
-from comments.models import Comment
+from comments.models import Comment, Reply
 from faqs.models import FAQ
 
 
@@ -16,11 +16,11 @@ class VoteView(View):
         obj = obj_original.split("-")[0]
         pk = obj_original.split("-")[1]
 
-        score = request.POST.get('vote')
-        score = score.split(" ")[1]
-        if score == 'upvote':
+        vote_original = request.POST.get('vote')
+        vote_original = vote_original.split(" ")[1]
+        if vote_original == 'upvote':
             score = 1
-        elif score == 'downvote':
+        elif vote_original == 'downvote':
             score = -1
 
         # check if a vote already exists on this object for this user
@@ -28,6 +28,10 @@ class VoteView(View):
             comment = get_object_or_404(Comment, pk=pk)
             existing_vote = Vote.objects.filter(user=request.user, comment=comment)
             type = 'c'
+        elif obj == 'reply':
+            reply = get_object_or_404(Reply, pk=pk)
+            existing_vote = Vote.objects.filter(user=request.user, reply=reply)
+            type = 'r'
         elif obj == 'faq':
             faq = get_object_or_404(FAQ, pk=pk)
             existing_vote = Vote.objects.filter(user=request.user, faq=faq)
@@ -45,6 +49,14 @@ class VoteView(View):
             )
             upvotes = comment.upvotes()
             downvotes = comment.downvotes()
+        elif obj == 'reply':
+            vote = Vote.objects.create(
+                user=request.user,
+                score=score,
+                reply=reply,
+            )
+            upvotes = reply.upvotes()
+            downvotes = reply.downvotes()
         elif obj == 'faq':
             vote = Vote.objects.create(
                 user=request.user,
@@ -58,5 +70,6 @@ class VoteView(View):
             'upvotes': upvotes,
             'downvotes': downvotes,
             'type': type,
+            'vote': vote_original,
         }
         return HttpResponse(json.dumps(data), content_type="application/json")
