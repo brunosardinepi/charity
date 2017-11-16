@@ -135,7 +135,7 @@
 
     <p><a href="{% url 'campaign_create' page_slug=page.page_slug %}">Create Campaign</a></p>
 
-    {% include "comments/comments.html" with model="page" obj=page pk=page.pk %}
+    {% include "comments/comments.html" with model="page" obj=page %}
 
     {% get_obj_perms request.user for page as "page_perms" %}
     {% if request.user.userprofile in page.admins.all or "manager_view_dashboard" in page_perms %}

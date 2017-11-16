@@ -4,7 +4,7 @@
 
 <h3>Comments</h3>
 {% if request.user.is_authenticated %}
-    <form id="comment" action="{% url 'comments:comment' model=model pk=pk %}" method="POST">
+    <form id="comment" action="{% url 'comments:comment' model=model pk=obj.pk %}" method="POST">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Comment" />
