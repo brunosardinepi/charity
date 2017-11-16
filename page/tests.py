@@ -323,8 +323,8 @@ class PageTest(TestCase):
         self.assertContains(response, 'name="unsubscribe"', status_code=200)
 
     def test_page_subscribe_redirect(self):
-        response = self.client.get('/subscribe/%s/subscribe/' % self.page.pk)
-        self.assertRedirects(response, '/accounts/login/?next=/subscribe/%s/subscribe/' % self.page.pk, 302, 200)
+        response = self.client.get('/page/subscribe/%s/subscribe/' % self.page.pk)
+        self.assertRedirects(response, '/accounts/login/?next=/page/subscribe/%s/subscribe/' % self.page.pk, 302, 200)
 
     def test_page_create_logged_out(self):
         response = self.client.get('/create/')

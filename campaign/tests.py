@@ -555,3 +555,7 @@ class CampaignTest(TestCase):
             self.campaign.campaign_slug
             ), 302, 200
         )
+
+    def test_campaign_subscribe_redirect(self):
+        response = self.client.get('/campaign/subscribe/{}/subscribe/'.format(self.campaign.pk))
+        self.assertRedirects(response, '/accounts/login/?next=/campaign/subscribe/{}/subscribe/'.format(self.campaign.pk), 302, 200)

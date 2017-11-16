@@ -42,7 +42,7 @@
     {% if request.user.is_authenticated %}
         <button id="subscribe" name="{{ subscribe_attr.name }}" style="background-color:{{ subscribe_attr.color }}">{{ subscribe_attr.value  }}</button>
     {% else %}
-        <button onclick="location.href='{% url 'signup' %}?next={{request.path}}'" style="background-color:green">Subscribe</button>
+        <button onclick="location.href='{% url 'login' %}?next=/campaign/subscribe/{{ campaign.pk }}/subscribe/'" style="background-color:green">Subscribe</button>
     {% endif %}
 
     {% include "comments/comments.html" with model="campaign" obj=campaign %}
