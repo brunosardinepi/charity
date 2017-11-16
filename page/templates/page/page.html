@@ -6,8 +6,13 @@
 {% block title %} {{ page.name }} | {{ block.super }}{% endblock %}
 
 {% block head_extra %}
+    <script>
+        var model = "page";
+        var model_pk = {{ page.pk }};
+    </script>
     <script src="{% static 'js/comment_csrf.js' %}"></script>
     <script src="{% static 'js/vote.js' %}"></script>
+    <script src="{% static 'js/subscribe.js' %}"></script>
     <script>
         $(document).ready(function() {
 
