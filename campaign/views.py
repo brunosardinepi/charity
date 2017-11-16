@@ -332,7 +332,7 @@ class CampaignDashboard(View):
     def get(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
         admin = request.user.userprofile in campaign.campaign_admins.all()
-        if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_view_dashboard', page):
+        if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_view_dashboard', campaign):
             manager = True
         else:
             manager = False

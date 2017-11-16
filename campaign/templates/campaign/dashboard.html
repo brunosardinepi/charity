@@ -70,7 +70,6 @@
 {% block body_content %}
     <h1>{{ campaign.name }}</h1>
     {% if request.user.userprofile in campaign.campaign_admins.all %}
-        <h4>Admin</h4>
         <p><a href="{% url 'campaign_edit' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
         <p><a class="delete-campaign" href="{% url 'campaign_delete' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
         <p><a href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
