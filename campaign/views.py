@@ -1,5 +1,6 @@
 from collections import OrderedDict
 import json
+import operator
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -20,7 +21,7 @@ from .utils import email_new_campaign
 from comments.forms import CommentForm
 from donation.forms import BaseDonate, DonateForm
 from donation.models import Donation
-from donation.utils import donate
+from donation.utils import donate, donation_graph, donation_statistics
 from error.utils import error_email
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
@@ -286,3 +287,67 @@ def subscribe(request, campaign_pk, action=None):
         print("something went wrong")
     new_subscribe_attr = json.dumps(new_subscribe_attr)
     return HttpResponse(new_subscribe_attr)
+
+class CampaignAjaxDonations(View):
+    def post(self, request):
+        campaign = get_object_or_404(Campaign, pk=request.POST.get("campaign_pk"))
+        sort_by = request.POST.get("sort_by")
+        column = request.POST.get("column")
+        column = column.split("sort-")[1]
+        donationset = Donation.objects.filter(campaign=campaign)
+        data = OrderedDict()
+        for d in donationset:
+            d.date = d.date.replace(tzinfo=timezone.utc).astimezone(tz=None)
+            data["pk{}".format(d.pk)] = {
+                "date": d.date.strftime("%b. %-d, %Y, %-I:%M %p"),
+                "anonymous_amount": d.anonymous_amount,
+                "anonymous_donor": d.anonymous_donor,
+                "user": {
+                    "first_name": d.donor_first_name,
+                    "last_name": d.donor_last_name,
+                },
+            }
+            if d.anonymous_amount is True:
+               data["pk{}".format(d.pk)]["amount"] = 0
+            else:
+                data["pk{}".format(d.pk)]["amount"] = d.amount
+            if d.anonymous_donor is True:
+                data["pk{}".format(d.pk)]["user"]["first_name"] = ""
+                data["pk{}".format(d.pk)]["user"]["last_name"] = ""
+            data["pk{}".format(d.pk)]["campaign"] = d.campaign.name
+        if sort_by == "asc":
+            if column == "donor_first_name":
+                data = sorted(data.values(), key=lambda x: (x['user']['first_name'].lower()), reverse=True)
+            else:
+                data = sorted(data.values(), key=operator.itemgetter('{}'.format(column)), reverse=True)
+        else:
+            if column == "donor_first_name":
+                data = sorted(data.values(), key=lambda x: (x['user']['first_name']).lower())
+            else:
+                data = sorted(data.values(), key=operator.itemgetter('{}'.format(column)))
+        return HttpResponse(json.dumps(data), content_type="application/json")
+
+
+class CampaignDashboard(View):
+    def get(self, request, page_slug, campaign_pk, campaign_slug):
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        admin = request.user.userprofile in campaign.campaign_admins.all()
+        if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_view_dashboard', page):
+            manager = True
+        else:
+            manager = False
+        if admin or manager:
+            return render(self.request, 'campaign/dashboard.html', {
+                'campaign': campaign,
+                'donations': donation_statistics(campaign),
+                'graph': donation_graph(campaign, 30),
+            })
+        else:
+            raise Http404
+
+    def post(self, request, campaign_pk):
+        campaign = get_object_or_404(Campaign, campaign_pk=campaign_pk)
+        print("campaign = {}".format(campaign))
+        utils.update_manager_permissions(request.POST.getlist('permissions[]'), campaign)
+        return redirect('campaign_dashboard', page_slug=campaign.page.page_slug, campaign_pk=campaign.pk)
+

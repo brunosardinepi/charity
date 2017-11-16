@@ -299,23 +299,36 @@ def donation_statistics(obj):
             'plan_donations': plan_donations,
             'plan_donations_avg': plan_donations_avg
         }
-        return donations
     elif obj.__class__ is Campaign:
-        print("campaign")
+        total_donations = Donation.objects.filter(campaign=obj).aggregate(Sum('amount')).get('amount__sum')
+        total_donations_count = Donation.objects.filter(campaign=obj).count()
+        if total_donations_count > 0:
+            total_donations_avg = total_donations / total_donations_count
+        else:
+            total_donations = 0
+            total_donations_avg = 0
+
+        donations = {
+            'total_donations': total_donations,
+            'total_donations_avg': total_donations_avg,
+        }
+    return donations
 
 def donation_graph(obj, days):
     today = date.today()
     graph = OrderedDict()
-    if obj.__class__ is Page:
-        # for each day between today and x days ago,
-        # find the donations for that day and
-        # average them, then
-        # add a dictionary k,v pair for date,avg
-        for d in (today - timedelta(n) for n in range(days)):
+    # for each day between today and x days ago,
+    # find the donations for that day and
+    # average them, then
+    # add a dictionary k,v pair for date,avg
+    for d in (today - timedelta(n) for n in range(days)):
+        if obj.__class__ is Page:
             donations_sum = Donation.objects.filter(page=obj, date__year=d.year, date__month=d.month, date__day=d.day).aggregate(Sum('amount')).get('amount__sum')
-            if donations_sum is None:
-                donations_sum = 0
-            graph[d] = donations_sum
+        elif obj.__class__ is Campaign:
+            donations_sum = Donation.objects.filter(campaign=obj, date__year=d.year, date__month=d.month, date__day=d.day).aggregate(Sum('amount')).get('amount__sum')
+        if donations_sum is None:
+            donations_sum = 0
+        graph[d] = donations_sum
     return graph
 
 def donation_history(obj):

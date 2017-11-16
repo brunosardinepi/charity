@@ -47,64 +47,9 @@
 
     {% include "comments/comments.html" with model="campaign" obj=campaign %}
 
-    {% if request.user.userprofile in campaign.campaign_admins.all %}
-        <h4>Admin</h4>
-        <p><a href="{% url 'campaign_edit' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
-        <p><a class="delete-campaign" href="{% url 'campaign_delete' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
-        <p><a href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
-        <p><a href="{% url 'campaign_image_upload' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload and Edit images</a></p>
-        {% if campaign.managers_list %}
-            <h5>Managers</h5>
-            <form method="POST" action"">
-                {% csrf_token %}
-                <table>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
-                        <th>Invite</th>
-                        <th>Upload</th>
-                        <th>View Dashboard</th>
-                        <th></th>
-                    </tr>
-                {% for manager in campaign.managers_list %}
-                    {% get_obj_perms manager.user for campaign as "campaign_perms" %}
-                    <tr>
-                        <td>{{ manager.first_name }} {{ manager.last_name }}</td>
-                        <td>{{ manager.user.email }}</td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_edit" {% if 'manager_edit' in campaign_perms %}checked{% endif %} /></td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_delete" {% if 'manager_delete' in campaign_perms %}checked{% endif %} /></td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_invite" {% if 'manager_invite' in campaign_perms %}checked{% endif %} /></td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_image_edit" {% if 'manager_image_edit' in campaign_perms %}checked{% endif %} /></td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_view_dashboard" {% if 'manager_view_dashboard' in page_perms %}checked{% endif %} /></td>
-                        <td><a href="{% url 'remove_manager' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug manager_pk=manager.pk %}">Remove<a/></td>
-                {% endfor %}
-                </table>
-                <input type="submit" value="Save" />
-            </form>
-        {% endif %}
-    {% else %}
-        <p>you're NOT an admin</p>
-    {% endif %}
-
-    {% if request.user.userprofile not in campaign.page.admins.all %}
-        {% get_obj_perms request.user for campaign as "campaign_perms" %}
-        {% if campaign_perms %}
-            <h4>Manager</h4>
-        {% endif %}
-        {% if "manager_edit" in campaign_perms %}
-            <p><a href="{% url 'campaign_edit' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
-        {% endif %}
-        {% if "manager_delete" in campaign_perms %}
-            <p><a class="delete-campaign" href="{% url 'campaign_delete' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
-        {% endif %}
-        {% if "manager_invite" in campaign_perms %}
-            <p><a href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
-        {% endif %}
-        {% if "manager_image_edit" in campaign_perms %}
-            <p><a href="{% url 'campaign_image_upload' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload and Edit images</a></p>
-        {% endif %}
+    {% get_obj_perms request.user for campaign as "campaign_perms" %}
+    {% if request.user.userprofile in campaign.campaign_admins.all or "manager_view_dashboard" in campaign_perms %}
+        <p><a href="{% url 'campaign_dashboard' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Dashboard</a></p>
     {% endif %}
 
     <h3>Campaign Images</h3>
