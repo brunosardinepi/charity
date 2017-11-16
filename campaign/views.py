@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views import View
 
@@ -345,9 +345,7 @@ class CampaignDashboard(View):
         else:
             raise Http404
 
-    def post(self, request, campaign_pk):
-        campaign = get_object_or_404(Campaign, campaign_pk=campaign_pk)
-        print("campaign = {}".format(campaign))
+    def post(self, request, page_slug, campaign_pk, campaign_slug):
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
         utils.update_manager_permissions(request.POST.getlist('permissions[]'), campaign)
-        return redirect('campaign_dashboard', page_slug=campaign.page.page_slug, campaign_pk=campaign.pk)
-
+        return redirect('campaign_dashboard', page_slug=campaign.page.page_slug, campaign_pk=campaign.pk, campaign_slug=campaign.campaign_slug)

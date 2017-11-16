@@ -355,7 +355,8 @@ class CampaignTest(TestCase):
             'manager_edit': "True",
             'manager_delete': "True",
             'manager_invite': "True",
-            'manager_image_edit': "True"
+            'manager_image_edit': "True",
+            'manager_view_dashboard': "True",
         }
 
         self.client.login(username='testuser', password='testpassword')
@@ -404,7 +405,6 @@ class CampaignTest(TestCase):
         self.assertContains(response, "Delete Campaign", status_code=200)
         self.assertContains(response, "Invite others to manage Campaign", status_code=200)
         self.assertContains(response, "Upload and Edit images", status_code=200)
-
 
     def test_ManagerInviteForm(self):
         data = {
@@ -478,6 +478,7 @@ class CampaignTest(TestCase):
         permissions.append(str(self.user4.pk) + "_manager_delete")
         permissions.append(str(self.user4.pk) + "_manager_invite")
         permissions.append(str(self.user4.pk) + "_manager_image_edit")
+        permissions.append(str(self.user4.pk) + "_manager_view_dashboard")
         data = {'permissions[]': permissions}
 
         self.client.login(username='testuser', password='testpassword')
@@ -488,6 +489,7 @@ class CampaignTest(TestCase):
         self.assertTrue(self.user4.has_perm('manager_delete', self.campaign))
         self.assertTrue(self.user4.has_perm('manager_invite', self.campaign))
         self.assertTrue(self.user4.has_perm('manager_image_edit', self.campaign))
+        self.assertTrue(self.user4.has_perm('manager_view_dashboard', self.campaign))
 
     def test_campaign_permissions_remove(self):
         permissions = []

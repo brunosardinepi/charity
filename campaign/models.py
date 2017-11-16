@@ -112,6 +112,7 @@ class Campaign(models.Model):
             ('manager_delete', 'Manager -- delete Campaign'),
             ('manager_invite', 'Manager -- invite users to manage Campaign'),
             ('manager_image_edit', 'Manager -- upload media to Campaign'),
+            ('manager_view_dashboard', 'Manager -- view Campaign dashboard'),
         )
 
     def __str__(self):
