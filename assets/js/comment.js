@@ -12,7 +12,7 @@ function comment() {
                 $("#no-comments").remove();
                 $("#comment").after("<ul id='comment_list'></ul>");
             }
-            $("#comment_list").prepend("<li id='comment-" + json.id + "' class='comment'>" + json.content + " - " + json.user + " @ " + json.date + " - <a class='show-reply' id='" + json.id + "' href=''>Reply</a> - <a id='delete-comment-" + json.id + "' class='delete-cr' href=''>Delete</a></li>");
+            $("#comment_list").prepend("<li id='comment-" + json.id + "' class='comment'>" + json.content + " - " + json.user + " @ " + json.date + " - <button id='upvotes-c-" + json.id + "' class='vote upvote user-vote'>1</button> <button id='downvotes-c-" + json.id + "' class='vote downvote'>0</button> - <a class='show-reply' id='" + json.id + "' href=''>Reply</a> - <a id='delete-comment-" + json.id + "' class='delete-cr' href=''>Delete</a></li>");
         }
     });
 };
@@ -43,7 +43,7 @@ function reply(id) {
                     $("#" + id).after("<ul id='comment-" + id + "-replies' class='reply-list'></ul>");
                 }
             }
-            $("#comment-" + id + "-replies").append("<li id='reply-" + json.id + "'>" + json.content + " - " + json.user + " @ " + json.date + " - <a id='delete-reply-" + json.id + "' class='delete-cr' href=''>Delete</a></li>");
+            $("#comment-" + id + "-replies").append("<li id='reply-" + json.id + "'>" + json.content + " - " + json.user + " @ " + json.date + " - <button id='upvotes-r-" + json.id + "' class='vote upvote user-vote'>1</button> <button id='downvotes-r-" + json.id + "' class='vote downvote'>0</button> - <a id='delete-reply-" + json.id + "' class='delete-cr' href=''>Delete</a></li>");
         }
     });
 };
