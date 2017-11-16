@@ -61,7 +61,7 @@ $(document).on('submit', "#reply", function(event) {
 
 function delete_obj(event) {
     var arr = event.target.id.split('-');
-    var url = "/comments/delete/" + model + "/" + arr[2] + "/";
+    var url = "/comments/delete/" + arr[1] + "/" + arr[2] + "/";
 //    var url = "{% url 'comments:delete' model=0 pk=1 %}".replace(0, arr[1]).replace(1, arr[2]);
     $.get(url, function () {
         $("#" + arr[1] + "-" + arr[2]).remove();
