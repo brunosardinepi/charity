@@ -409,7 +409,7 @@ class PageDashboard(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
         admin = request.user.userprofile in page.admins.all()
-        if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_view_dashboard', page):
+        if request.user.userprofile in page.managers.all():
             manager = True
         else:
             manager = False
