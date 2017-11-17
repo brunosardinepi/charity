@@ -5,7 +5,9 @@ This is the version history for PageFund development.
 
 ## Version 0.10.0
 
-Release date: TBD
+Release date: 11/17/2017
+
+90 files changed, 3146 insertions(+), 776 deletions(-)
 
 ### Additions
 
