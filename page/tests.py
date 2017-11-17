@@ -464,6 +464,52 @@ class PageTest(TestCase):
         self.assertContains(response, "Invite others to manage Page", status_code=200)
         self.assertContains(response, "Upload and Edit images", status_code=200)
 
+    def test_page_dashboard_invite(self):
+        data = {
+            'email': self.user5.email,
+            'manager_edit': "True",
+            'manager_delete': "True",
+            'manager_invite': "True",
+            'manager_image_edit': "True",
+            'manager_view_dashboard': "False",
+        }
+
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post('/{}/managers/invite/'.format(self.page.page_slug), data)
+        self.assertTrue(ManagerInvitation.objects.all().count(), 2)
+        self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
+
+        self.client.login(username='newguy', password='imnewhere')
+        invitation = ManagerInvitation.objects.get(invite_to=self.user5.email)
+        response = self.client.get('/invite/manager/accept/{}/{}/'.format(invitation.pk, invitation.key))
+        self.assertRedirects(response, invitation.page.get_absolute_url(), 302, 200)
+        response = self.client.get('/{}/dashboard/'.format(invitation.page.page_slug))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Edit Page")
+        self.assertContains(response, "Delete Page")
+        self.assertContains(response, "Invite others to manage Page")
+        self.assertContains(response, "Upload and Edit images")
+        self.assertNotContains(response, "Donation History")
+
+        self.client.login(username='testuser', password='testpassword')
+        permissions = []
+        permissions.append(str(self.user5.pk) + "_manager_edit")
+        permissions.append(str(self.user5.pk) + "_manager_delete")
+        permissions.append(str(self.user5.pk) + "_manager_invite")
+        permissions.append(str(self.user5.pk) + "_manager_image_edit")
+        permissions.append(str(self.user5.pk) + "_manager_view_dashboard")
+        data = {'permissions[]': permissions}
+        response = self.client.post('/{}/dashboard/'.format(self.page.page_slug), data)
+
+        self.client.login(username='newguy', password='imnewhere')
+        response = self.client.get('/{}/dashboard/'.format(self.page.page_slug))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Edit Page")
+        self.assertContains(response, "Delete Page")
+        self.assertContains(response, "Invite others to manage Page")
+        self.assertContains(response, "Upload and Edit images")
+        self.assertContains(response, "Donation History")
+
     def test_ManagerInviteForm(self):
         data = {
             'email': self.user2.email,
