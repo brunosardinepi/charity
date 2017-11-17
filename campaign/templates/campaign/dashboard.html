@@ -124,39 +124,41 @@
         {% endif %}
     {% endif %}
 
-    <p>Total donated: {{ donations.total_donations|cents_to_dollars }} (Avg: {{ donations.total_donations_avg|cents_to_dollars }})</p>
-    <h2>Donation Graph</h2>
-    <ul>
-        {% for k,v in graph.items %}
-            <li>Date: {{ k }}, Donations: {{ v|cents_to_dollars }}</li>
-        {% endfor %}
-    </ul>
-    <h2>Donation History</h2>
-    <table>
-        <thead>
-            <tr>
-                <th class="desc"><a class="sort" id="sort-date" href="">Date</a></th>
-                <th><a class="sort" id="sort-amount" href="">Amount</a></th>
-                <th><a class="sort" id="sort-donor_first_name" href="">Donor</a></th>
-            </tr>
-        </thead>
-        <tbody id="donation-history-body">
-            {% for d in campaign.donations %}
-                <tr>
-                    <td>{{ d.date|date:'N j, Y, g:i A' }}</td>
-                    <td>{% if d.anonymous_amount %}Anonymous{% else %}{{ d.amount|cents_to_dollars }}{% endif %}</td>
-                    <td>{% if d.anonymous_donor == True %}Anonymous{% else %}{% if d.user %}{{ d.user.first_name }} {{ d.user.last_name }}{% else %}{{ d.donor_first_name }} {{ d.donor_last_name }}{% endif %}{% endif %}</td>
-                </tr>
+    {% if request.user.userprofile in campaign.campaign_admins.all or "manager_view_dashboard" in campaign_perms %}
+        <p>Total donated: {{ donations.total_donations|cents_to_dollars }} (Avg: {{ donations.total_donations_avg|cents_to_dollars }})</p>
+        <h2>Donation Graph</h2>
+        <ul>
+            {% for k,v in graph.items %}
+                <li>Date: {{ k }}, Donations: {{ v|cents_to_dollars }}</li>
             {% endfor %}
-        </tbody>
-    </table>
+        </ul>
+        <h2>Donation History</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th class="desc"><a class="sort" id="sort-date" href="">Date</a></th>
+                    <th><a class="sort" id="sort-amount" href="">Amount</a></th>
+                    <th><a class="sort" id="sort-donor_first_name" href="">Donor</a></th>
+                </tr>
+            </thead>
+            <tbody id="donation-history-body">
+                {% for d in campaign.donations %}
+                    <tr>
+                        <td>{{ d.date|date:'N j, Y, g:i A' }}</td>
+                        <td>{% if d.anonymous_amount %}Anonymous{% else %}{{ d.amount|cents_to_dollars }}{% endif %}</td>
+                        <td>{% if d.anonymous_donor == True %}Anonymous{% else %}{% if d.user %}{{ d.user.first_name }} {{ d.user.last_name }}{% else %}{{ d.donor_first_name }} {{ d.donor_last_name }}{% endif %}{% endif %}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-    <h2>Top Donors</h2>
-    <ul>
-        {% for a, b in campaign.top_donors %}
-            <li>{{ b.amount|cents_to_dollars }} - {{ b.first_name }} {{ b.last_name }}</li>
-        {% endfor %}
-    </ul>
-    <h2>Trending Scores</h2>
-    <p>Campaign score: {{ campaign.trending_score }}</p>
+        <h2>Top Donors</h2>
+        <ul>
+            {% for a, b in campaign.top_donors %}
+                <li>{{ b.amount|cents_to_dollars }} - {{ b.first_name }} {{ b.last_name }}</li>
+            {% endfor %}
+        </ul>
+        <h2>Trending Scores</h2>
+        <p>Campaign score: {{ campaign.trending_score }}</p>
+    {% endif %}
 {% endblock %}
