@@ -1,6 +1,8 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
 {% load donation_extras %}
+{% load page_extras %}
+{% load userprofile_extras %}
 
 {% block title %} Profile | {{ block.super }}{% endblock %}
 
@@ -59,38 +61,19 @@
 
     <p>Stripe Customer ID: {{ userprofile.stripe_customer_id }}</p>
 
-    <h2>Pages I Admin</h2>
+    <h2>My Pages</h2>
     <ul>
-        {% for p in userprofile.admin_pages %}
-            <li><a href="{% url 'page' page_slug=p.page_slug %}">{{ p.name }}</a></li>
+        {% for p in userprofile.my_pages %}
+            {% user_admin_status user=request.user type="page" obj=p as user_admin_status %}
+            <li><a href="{% url 'page' page_slug=p.page_slug %}">{{ p.name }}</a> {{ user_admin_status }}</li>
         {% endfor %}
     </ul>   
 
-    <h2>Pages I Manage</h2>
+    <h2>My Campaigns</h2>
     <ul>
-        {% for p in userprofile.manager_pages %}
-            <li><a href="{% url 'page' page_slug=p.page_slug %}">{{ p.name }}</a></li>
-        {% endfor %}
-    </ul>   
-
-    <h2>Campaigns I Admin</h2>
-    <ul>
-        {% for c in userprofile.admin_campaigns %}
-            <li><a href="{% url 'campaign' page_slug=c.page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a></li>
-        {% endfor %}
-    </ul>
-
-    <h2>Campaigns I Manage</h2>
-    <ul>
-        {% for c in userprofile.manager_campaigns %}
-            <li><a href="{% url 'campaign' page_slug=c.page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a></li>
-        {% endfor %}
-    </ul>   
-
-    <h2>Page Subscriptions</h2>
-    <ul>
-        {% for s in userprofile.subscriptions %}
-            <li><a href="{% url 'page' page_slug=s.page_slug %}">{{ s.name }}</a></li>
+        {% for c in userprofile.my_campaigns %}
+            {% user_admin_status user=request.user type="campaign" obj=c as user_admin_status %}
+            <li><a href="{% url 'campaign' page_slug=c.page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a> {{ user_admin_status }}</li>
         {% endfor %}
     </ul>
 
@@ -106,7 +89,9 @@
     <p><a href="{% url 'userprofile:user_image_upload' %}">Upload and Edit images</a></p>
 
     <h3>Saved Credit Cards</h3>
-    {% if cards %}
+    {% if stripe_error %}
+        <p>We're having trouble communicating with our payment processor. This error generated an email and sent it to our dev team. We're looking into the issue now, thanks!</p>
+    {% elif cards %}
         <ul>
             {% for x, c in cards.items %}
                 <form action="{% url 'userprofile:update_card' %}" method="post">
@@ -123,16 +108,18 @@
         </ul>
     {% endif %}
 
-    <h3>Add Credit Card</h3>
-    <form action="{% url 'userprofile:add_card' %}" method="post" id="add-card-form">
-        {% csrf_token %}
-        <div class="form-row">
-            <label for="card-element">Credit or debit card</label>
-            <div id="card-element"></div>
-            <div id="card-errors" role="alert"></div>
-        </div>
-        <button>Add card</button>
-    </form>
+    {% if not stripe_error %}
+        <h3>Add Credit Card</h3>
+        <form action="{% url 'userprofile:add_card' %}" method="post" id="add-card-form">
+            {% csrf_token %}
+            <div class="form-row">
+                <label for="card-element">Credit or debit card</label>
+                <div id="card-element"></div>
+                <div id="card-errors" role="alert"></div>
+            </div>
+            <button>Add card</button>
+        </form>
+    {% endif %}
 
     <h3>Recurring Donations</h3>
     {% if userprofile.plans %}
@@ -151,6 +138,17 @@
             {% endfor %}
         </ul>
     {% endif %}    
+
+    <h3>Notification Preferences</h3>
+    <form method="POST" action="{% url 'userprofile:update_notification_preferences' %}">
+        {% csrf_token %}
+        <ul>
+            {% for k,n in userprofile.notification_preferences.items %}
+                <li><input name="notification_preferences[]" type="checkbox" value="{{ k }}" {% if n.value == True %}checked{% endif %} /> {{ n.label }}</li>
+            {% endfor %}
+        </ul>
+        <input type="submit" value="Save" />
+    </form>
 
     <h3>User Images</h3>
     <ul>

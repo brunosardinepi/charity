@@ -11,5 +11,6 @@ urlpatterns = [
     url(r'^images/$', login_required(views.UserImageUpload.as_view()), name='user_image_upload'),
     url(r'^image/(?P<image_pk>\d+)/delete/', views.user_image_delete, name='user_image_delete'),
     url(r'^image/(?P<image_pk>\d+)/profile-picture/', views.user_profile_update, name='user_profile_update'),
+    url(r'^notifications/update/', views.update_notification_preferences, name='update_notification_preferences'),
     url(r'^$', views.userprofile, name='userprofile'),
 ]

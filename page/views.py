@@ -1,13 +1,16 @@
 import json
+import operator
 
+from datetime import timezone
 from time import strftime
 
 from collections import OrderedDict
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models.functions import Lower
 from django.db.models import Sum
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.utils import timezone
@@ -18,18 +21,21 @@ from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 
 from . import forms
 from .models import Page, PageImage
+from .utils import campaign_average_duration, campaign_success_pct, campaign_types
 from campaign.models import Campaign
 from comments.forms import CommentForm
 from comments.models import Comment
-from donation.forms import DonateForm
+from donation.forms import DonateForm, DonateUnauthenticatedForm
 from donation.models import Donation
-from donation.utils import donate
+from donation.utils import donate, donation_graph, donation_history, donation_statistics
+from error.utils import error_email
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
 from userprofile.utils import get_user_credit_cards
 from userprofile import models as UserProfileModels
 from pagefund import config, settings, utils
 from pagefund.image import image_is_valid
+from plans.models import StripePlan
 
 
 stripe.api_key = config.settings['stripe_api_sk']
@@ -40,13 +46,25 @@ def page(request, page_slug):
         raise Http404
     else:
         form = CommentForm
-        donate_form = DonateForm()
+        if request.user.is_authenticated():
+            donate_form = DonateForm()
+        else:
+            donate_form = DonateUnauthenticatedForm()
         template_params = {}
 
         if request.user.is_authenticated:
-            cards = get_user_credit_cards(request.user.userprofile)
-            template_params["cards"] = cards
-
+            try:
+                cards = get_user_credit_cards(request.user.userprofile)
+                template_params["cards"] = cards
+            except Exception as e:
+                template_params["stripe_error"] = True
+                error = {
+                    "e": e,
+                    "user": request.user.pk,
+                    "page": page.pk,
+                    "campaign": None,
+                }
+                error_email(error)
         try:
             user_subscription_check = page.subscribers.get(user_id=request.user.pk)
         except UserProfileModels.UserProfile.DoesNotExist:
@@ -262,6 +280,7 @@ def remove_manager(request, page_slug, manager_pk):
         remove_perm('manager_delete', manager, page)
         remove_perm('manager_invite', manager, page)
         remove_perm('manager_image_edit', manager, page)
+        remove_perm('manager_view_dashboard', manager, page)
         # redirect to page
         return HttpResponseRedirect(page.get_absolute_url())
     else:
@@ -299,7 +318,10 @@ class PageImageUpload(View):
 def page_donate(request, page_pk):
     page = get_object_or_404(Page, pk=page_pk)
     if request.method == "POST":
-        form = DonateForm(request.POST)
+        if request.user.is_authenticated():
+            form = DonateForm(request.POST)
+        else:
+            form = DonateUnauthenticatedForm(request.POST)
         if form.is_valid():
             donate(request=request, form=form, page=page, campaign=None)
             return HttpResponseRedirect(page.get_absolute_url())
@@ -339,3 +361,71 @@ def page_profile_update(request, image_pk):
         return HttpResponse('')
     else:
         raise Http404
+
+class PageAjaxDonations(View):
+    def post(self, request):
+        page = get_object_or_404(Page, pk=request.POST.get("page_pk"))
+        sort_by = request.POST.get("sort_by")
+        column = request.POST.get("column")
+        column = column.split("sort-")[1]
+        donationset = Donation.objects.filter(page=page)
+        data = OrderedDict()
+        for d in donationset:
+            d.date = d.date.replace(tzinfo=timezone.utc).astimezone(tz=None)
+            data["pk{}".format(d.pk)] = {
+                "date": d.date.strftime("%b. %-d, %Y, %-I:%M %p"),
+                "anonymous_amount": d.anonymous_amount,
+                "anonymous_donor": d.anonymous_donor,
+                "user": {
+                    "first_name": d.donor_first_name,
+                    "last_name": d.donor_last_name,
+                },
+            }
+            if d.anonymous_amount is True:
+               data["pk{}".format(d.pk)]["amount"] = 0
+            else:
+                data["pk{}".format(d.pk)]["amount"] = d.amount
+            if d.anonymous_donor is True:
+                data["pk{}".format(d.pk)]["user"]["first_name"] = ""
+                data["pk{}".format(d.pk)]["user"]["last_name"] = ""
+            if d.campaign:
+                data["pk{}".format(d.pk)]["campaign"] = d.campaign.name
+            else:
+                data["pk{}".format(d.pk)]["campaign"] = ""
+        if sort_by == "asc":
+            if column == "donor_first_name":
+                data = sorted(data.values(), key=lambda x: (x['user']['first_name'].lower()), reverse=True)
+            else:
+                data = sorted(data.values(), key=operator.itemgetter('{}'.format(column)), reverse=True)
+        else:
+            if column == "donor_first_name":
+                data = sorted(data.values(), key=lambda x: (x['user']['first_name']).lower())
+            else:
+                data = sorted(data.values(), key=operator.itemgetter('{}'.format(column)))
+        return HttpResponse(json.dumps(data), content_type="application/json")
+
+
+class PageDashboard(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        admin = request.user.userprofile in page.admins.all()
+        if request.user.userprofile in page.managers.all():
+            manager = True
+        else:
+            manager = False
+        if admin or manager:
+            return render(self.request, 'page/dashboard.html', {
+                'page': page,
+                'donations': donation_statistics(page),
+                'graph': donation_graph(page, 30),
+                'campaign_types': campaign_types(page),
+                'campaign_average_duration': campaign_average_duration(page),
+                'campaign_success_pct': campaign_success_pct(page)
+            })
+        else:
+            raise Http404
+
+    def post(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
+        return redirect('page_dashboard', page_slug=page.page_slug)

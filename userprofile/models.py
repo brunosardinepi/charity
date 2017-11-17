@@ -1,10 +1,13 @@
+from collections import OrderedDict
+from itertools import chain
+import os
 import random
 import string
 
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from django.db.models.signals import post_save
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
@@ -25,6 +28,18 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     birthday = models.DateField(blank=True, null=True)
     stripe_customer_id = models.CharField(max_length=255, blank=True, null=True)
+    notification_email_pagefund_news = models.BooleanField(default=True)
+    notification_email_page_created = models.BooleanField(default=True)
+    notification_email_campaign_created = models.BooleanField(default=True)
+    notification_email_page_manager = models.BooleanField(default=True)
+    notification_email_campaign_manager = models.BooleanField(default=True)
+    notification_email_page_donation = models.BooleanField(default=True)
+    notification_email_recurring_donation = models.BooleanField(default=True)
+    notification_email_campaign_donation = models.BooleanField(default=True)
+    notification_email_campaign_voted = models.BooleanField(default=True)
+    notification_email_campaign_ticket_purchased = models.BooleanField(default=True)
+    notification_email_campaign_goal_reached = models.BooleanField(default=True)
+    notification_email_campaign_ticket_sold_out = models.BooleanField(default=True)
     STATE_CHOICES = (
         ('AL', 'Alabama'),
         ('AK', 'Alaska'),
@@ -89,14 +104,8 @@ class UserProfile(models.Model):
     def get_absolute_url(self):
         return reverse('userprofile:userprofile')
 
-    def admin_campaigns(self):
-        return self.campaign_admins.filter(deleted=False)
-
-    def admin_pages(self):
-        return self.page_admins.filter(deleted=False)
-
     def donations(self):
-        return Donation.objects.filter(user=self.user)
+        return Donation.objects.filter(user=self.user).order_by('-date')
 
     def images(self):
         return UserImage.objects.filter(user=self)
@@ -104,11 +113,73 @@ class UserProfile(models.Model):
     def invitations(self):
         return ManagerInvitation.objects.filter(invite_from=self.user, expired=False)
 
-    def manager_campaigns(self):
-        return self.campaign_managers.filter(deleted=False)
+    def my_campaigns(self):
+        admin_campaigns = self.campaign_admins.filter(deleted=False)
+        manager_campaigns = self.campaign_managers.filter(deleted=False)
+        subscribed_campaigns = self.campaign_subscribers.filter(deleted=False)
+        campaigns = list(chain(admin_campaigns, manager_campaigns, subscribed_campaigns))
+        campaigns = sorted(set(campaigns),key=lambda x: x.name)
+        return campaigns
 
-    def manager_pages(self):
-        return self.page_managers.filter(deleted=False)
+    def my_pages(self):
+        admin_pages = self.page_admins.filter(deleted=False)
+        manager_pages = self.page_managers.filter(deleted=False)
+        subscribed_pages = self.subscribers.filter(deleted=False)
+        pages = list(chain(admin_pages, manager_pages, subscribed_pages))
+        pages = sorted(set(pages),key=lambda x: x.name)
+        return pages
+
+    def notification_preferences(self):
+        notifications = OrderedDict()
+        notifications["notification_email_pagefund_news"] = {
+            "value": self.notification_email_pagefund_news,
+            "label": "PageFund news"
+        }
+        notifications["notification_email_page_created"] = {
+            "value": self.notification_email_page_created,
+            "label": "Page created"
+        }
+        notifications["notification_email_campaign_created"] = {
+            "value": self.notification_email_campaign_created,
+            "label": "Campaign created"
+        }
+        notifications["notification_email_page_manager"] = {
+            "value": self.notification_email_page_manager,
+            "label": "Page manager invitation"
+        }
+        notifications["notification_email_campaign_manager"] = {
+            "value": self.notification_email_campaign_manager,
+            "label": "Campaign manager invitation"
+        }
+        notifications["notification_email_page_donation"] = {
+            "value": self.notification_email_page_donation,
+            "label": "Page donation"
+        }
+        notifications["notification_email_recurring_donation"] = {
+            "value": self.notification_email_recurring_donation,
+            "label": "Recurring donation setup"
+        }
+        notifications["notification_email_campaign_donation"] = {
+            "value": self.notification_email_campaign_donation,
+            "label": "Campaign donation"
+        }
+        notifications["notification_email_campaign_voted"] = {
+            "value": self.notification_email_campaign_voted,
+            "label": "Voted in Campaign"
+        }
+        notifications["notification_email_campaign_ticket_purchased"] = {
+            "value": self.notification_email_campaign_ticket_purchased,
+            "label": "Ticket purchased"
+        }
+        notifications["notification_email_campaign_goal_reached"] = {
+            "value": self.notification_email_campaign_goal_reached,
+            "label": "Campaign goal reached"
+        }
+        notifications["notification_email_campaign_ticket_sold_out"] = {
+            "value": self.notification_email_campaign_ticket_sold_out,
+            "label": "Campaign tickets sold out"
+        }
+        return notifications
 
     def plans(self):
         return StripePlan.objects.filter(user=self.user)
@@ -118,9 +189,6 @@ class UserProfile(models.Model):
 
     def saved_cards(self):
         return StripeCard.objects.filter(user=self.user.userprofile)
-
-    def subscriptions(self):
-        return self.subscribers.filter(deleted=False)
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -165,6 +233,11 @@ class UserImage(models.Model):
     caption = models.CharField(max_length=255, blank=True)
     profile_picture = models.BooleanField(default=False)
 
+@receiver(post_delete, sender=UserImage)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    if instance.image:
+        if os.path.isfile(instance.image.path):
+            os.remove(instance.image.path)
 
 class StripeCard(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)

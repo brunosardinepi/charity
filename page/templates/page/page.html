@@ -1,100 +1,24 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
 {% load guardian_tags %}
-{% load comment_extras %}
 {% load donation_extras %}
 
 {% block title %} {{ page.name }} | {{ block.super }}{% endblock %}
 
 {% block head_extra %}
+    <script>
+        var model = "page";
+        var model_pk = {{ page.pk }};
+    </script>
     <script src="{% static 'js/comment_csrf.js' %}"></script>
+    <script src="{% static 'js/comment.js' %}"></script>
+    <script src="{% static 'js/subscribe.js' %}"></script>
+    <script src="{% static 'js/vote.js' %}"></script>
     <script>
         $(document).ready(function() {
-
             $(".delete-page").click(function () {
                 return confirm("Are you sure you want to delete this Page?");
             });
-            
-            $("#subscribe").click(function () {
-                var action = $("#subscribe").attr("name");
-                var url = "/subscribe/" + {{ page.pk }} + "/" + action + "/";
-                $.get(url, function (data) {
-                    subscribe_attr = JSON.parse(data);
-                    $("#subscribe").attr("name", subscribe_attr.name);
-                    $("#subscribe").css("background-color", subscribe_attr.color);
-                    $("#subscribe").text(subscribe_attr.value);
-                });
-            });
-
-            function comment() {
-                $.ajax({
-                    url : "{% url 'comments:comment' model='page' pk=page.pk %}",
-                    type : "POST",
-                    data : { comment_text : $("#comment-text").val() },
-                    success : function(json) {
-                        $("#comment-text").val('');
-                        if (!$("#comment_list").length) {
-                            $("#no-comments").remove();
-                            $("#comment").after("<ul id='comment_list'></ul>");
-                        }
-                        $("#comment_list").prepend("<li id='comment-" + json.id + "' class='comment'>" + json.content + " - " + json.user + " @ " + json.date + " - <a class='show-reply' id='" + json.id + "' href=''>Reply</a> - <a id='delete-comment-" + json.id + "' class='delete-cr' href=''>Delete</a></li>");
-                    }
-                });
-            };
-
-            $("#comment").on('submit', function(event) {
-                event.preventDefault();
-                comment();
-            });
-
-            function show_reply_textarea(event) {
-                var url = "{% url 'comments:reply' comment_pk=0 %}".replace(0, event.target.id);
-                $(event.target).parent().after("<form id='reply' action=" + url + " method='POST'>{% csrf_token %}<textarea id='reply-text'></textarea><input type='submit' value='Reply' /></form>");
-            };
-
-            function reply(id) {
-                $.ajax({
-                    url : "{% url 'comments:reply' comment_pk=0 %}".replace(0, id),
-                    type : "POST",
-                    data : { reply_text : $("#reply-text").val() },
-                    success : function(json) {
-                        $("#reply").remove();
-                        if (!$("#comment-" + id + "-replies").length) {
-                            if ($("#delete-comment-" + id).length) {
-                                $("#delete-comment-" + id).after("<ul id='comment-" + id + "-replies' class='reply-list'></ul>");
-                            } else if ("#" + id.length) {
-                                $("#" + id).after("<ul id='comment-" + id + "-replies' class='reply-list'></ul>");
-                            }
-                        }
-                        $("#comment-" + id + "-replies").append("<li id='reply-" + json.id + "'>" + json.content + " - " + json.user + " @ " + json.date + " - <a id='delete-reply-" + json.id + "' class='delete-cr' href=''>Delete</a></li>");
-                    }
-                });
-            };
-
-            $(document).on('click', ".show-reply", function(event) {
-                event.preventDefault();
-                show_reply_textarea(event);
-            });
-
-            $(document).on('submit', "#reply", function(event) {
-                event.preventDefault();
-                var id = $("#reply").prev().find(".show-reply").attr("id");
-                reply(id);
-            });
-
-            function delete_obj(event) {
-                var arr = event.target.id.split('-');
-                var url = "{% url 'comments:delete' model=0 pk=1 %}".replace(0, arr[1]).replace(1, arr[2]);
-                $.get(url, function () {
-                    $("#" + arr[1] + "-" + arr[2]).remove();
-                });
-            };
-
-            $(document).on('click', ".delete-cr", function(event) {
-                event.preventDefault();
-                delete_obj(event);
-            });
-
         });
     </script>
 
@@ -116,7 +40,7 @@
     {% if request.user.is_authenticated %}
         <button id="subscribe" name="{{ subscribe_attr.name }}" style="background-color:{{ subscribe_attr.color }}">{{ subscribe_attr.value  }}</button>
     {% else %}
-        <button onclick="location.href='{% url 'signup' %}?next={{request.path}}'" style="background-color:green">Subscribe</button>
+        <button onclick="location.href='{% url 'login' %}?next=/page/subscribe/{{ page.pk }}/subscribe/'" style="background-color:green">Subscribe</button>
     {% endif %}
 
     <h3>Active Campaigns</h3>
@@ -135,92 +59,11 @@
 
     <p><a href="{% url 'campaign_create' page_slug=page.page_slug %}">Create Campaign</a></p>
 
-    <h3>Comments</h3>
-    {% if request.user.is_authenticated %}
-        <form id="comment" action="{% url 'comments:comment' model='page' pk=page.pk %}" method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Comment" />
-        </form>
-    {% else %}
-        <p>You must be logged in to comment!</p>
-    {% endif %}
-    {% if page.comments %}
-        <ul id="comment_list">
-            {% for c in page.comments %}
-                <li id="comment-{{ c.pk }}" class="comment">
-                    {{ c.content }} - {{ c.user.first_name }} {{ c.user.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} - <a class="show-reply" id="{{ c.pk }}" href="">Reply</a>{% if c.user == request.user %} - <a id="delete-comment-{{ c.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</a>
-                    {% comment_replies c.pk as replies %}
-                    {% if replies %}
-                        <ul id="comment-{{ c.pk }}-replies" class="reply-list">
-                            {% for r in replies %}
-                                <li id="reply-{{ r.pk }}" class="reply">{{ r.content }} - {{ r.user.first_name }} {{ r.user.last_name }} @ {{ r.date|date:"m/d/y g:i A" }} {% if r.user == request.user %} - <a id="delete-reply-{{ r.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p id="no-comments">No comments</p>
-    {% endif %}
+    {% include "comments/comments.html" with model="page" obj=page %}
 
-    {% if request.user.userprofile in page.admins.all %}
-        <h4>Admin</h4>
-        <p><a href="{% url 'page_edit' page_slug=page.page_slug %}">Edit Page</a></p>
-        <p><a class="delete-page" href="{% url 'page_delete' page_slug=page.page_slug %}">Delete Page</a></p>
-        <p><a href="{% url 'page_invite' page_slug=page.page_slug  %}">Invite others to manage Page</a></p>
-        <p><a href="{% url 'page_image_upload' page_slug=page.page_slug %}">Upload and Edit images</a></p>
-        {% if page.managers_list %}
-            <h5>Managers</h5>
-            <form method="POST" action"">
-                {% csrf_token %}
-                <table>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
-                        <th>Invite</th>
-                        <th>Upload</th>
-                        <th></th>
-                    </tr>
-                {% for manager in page.managers_list %}
-                    {% get_obj_perms manager.user for page as "page_perms" %}
-                    <tr>
-                        <td>{{ manager.user.first_name }} {{ manager.user.last_name }}</td>
-                        <td>{{ manager.user.email }}</td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_edit" {% if 'manager_edit' in page_perms %}checked{% endif %} /></td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_delete" {% if 'manager_delete' in page_perms %}checked{% endif %} /></td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_invite" {% if 'manager_invite' in page_perms %}checked{% endif %} /></td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_image_edit" {% if 'manager_image_edit' in page_perms %}checked{% endif %} /></td>
-                        <td><a href="{% url 'remove_manager' page_slug=page.page_slug manager_pk=manager.pk %}">Remove<a/></td>
-                {% endfor %}
-                </table>
-                <input type="submit" value="Save" />
-            </form>
-        {% endif %}
-    {% else %}
-        <p>you're NOT an admin</p>
-    {% endif %}
-
-    {% if request.user.userprofile not in page.admins.all %}
-        {% get_obj_perms request.user for page as "page_perms" %}
-        {% if page_perms %}
-            <h4>Manager</h4>
-        {% endif %}
-        {% if "manager_edit" in page_perms %}
-            <p><a href="{% url 'page_edit' page_slug=page.page_slug %}">Edit Page</a></p>
-        {% endif %}
-        {% if "manager_delete" in page_perms %}
-            <p><a class="delete-page" href="{% url 'page_delete' page_slug=page.page_slug %}">Delete Page</a></p>
-        {% endif %}
-        {% if "manager_invite" in page_perms %}
-            <p><a href="{% url 'page_invite' page_slug=page.page_slug  %}">Invite others to manage Page</a></p>
-        {% endif %}
-        {% if "manager_image_edit" in page_perms %}
-            <p><a href="{% url 'page_image_upload' page_slug=page.page_slug %}">Upload and Edit images</a></p>
-        {% endif %}
+    {% get_obj_perms request.user for page as "page_perms" %}
+    {% if request.user.userprofile in page.admins.all or page_perms %}
+        <p><a href="{% url 'page_dashboard' page_slug=page.page_slug %}">Dashboard</a></p>
     {% endif %}
 
     <h3>Page Images</h3>
@@ -242,7 +85,7 @@
         <h4>All Donations</h4>
         <ul>
             {% for d in page.donations %}
-                <li>{% if d.anonymous_amount and d.anonymous_donor %}Anonymous donation{% endif %}{% if not d.anonymous_amount %}{{ d.amount|cents_to_dollars }}{% endif %}{% if not d.anonymous_amount and not d.anonymous_donor %} - {% endif %}{% if not d.anonymous_donor %}{{ d.user.first_name }} {{ d.user.last_name }}{% endif %} @ {{ d.date }}{% if d.campaign %} via <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign.name }}</a>{% endif %}
+                <li>{% if d.anonymous_amount and d.anonymous_donor %}Anonymous donation{% endif %}{% if not d.anonymous_amount %}{{ d.amount|cents_to_dollars }}{% endif %}{% if not d.anonymous_amount and not d.anonymous_donor %} - {% endif %}{% if not d.anonymous_donor %}{% if d.user %}{{ d.user.first_name }} {{ d.user.last_name }}{% else %}{{ d.donor_first_name }} {{ d.donor_last_name }}{% endif %}{% endif %} @ {{ d.date }}{% if d.campaign %} via <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign.name }}</a>{% endif %}
                     {% if d.comment %}
                         <ul>
                             <li>{{ d.comment }}</li>
@@ -255,7 +98,11 @@
         <p>No donations!</p>
     {% endif %}
 
-    {% include "donation/donate.html" with page=page donate_form=donate_form api_key=api_key%}
+    {% if request.user.is_authenticated %}
+        {% include "donation/donate.html" with page=page donate_form=donate_form api_key=api_key%}
+    {% else %}
+        {% include "donation/donate_unauthenticated.html" with page=page donate_form=donate_form api_key=api_key%}
+    {% endif %}
 
 {% endblock %}
 

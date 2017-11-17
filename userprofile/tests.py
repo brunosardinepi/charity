@@ -1,6 +1,7 @@
 import ast
 
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, RequestFactory, TestCase
 
 from . import forms
@@ -21,9 +22,9 @@ class UserProfileTest(TestCase):
             username='testuser',
             email='test@test.test',
             password='testpassword',
+            first_name='John',
+            last_name='Doe',
         )
-        self.user.userprofile.first_name = 'John'
-        self.user.userprofile.last_name = 'Doe'
         self.user.userprofile.state = 'Kansas'
 
         self.page = Page.objects.create(name="Buffalo")
@@ -56,6 +57,18 @@ class UserProfileTest(TestCase):
         )
 
         self.campaign2.campaign_managers.add(self.user.userprofile)
+
+        self.campaign3 = Campaign.objects.create(
+            name='Pencil',
+            page=self.page,
+            type='Event',
+            description='I write with a pencil.',
+            goal='153',
+            donation_count='3',
+            donation_money='98'
+        )
+
+        self.campaign3.campaign_subscribers.add(self.user.userprofile)
 
         self.invitation = ManagerInvitation.objects.create(
             invite_to="rupert@oi.mate",
@@ -106,6 +119,7 @@ class UserProfileTest(TestCase):
         self.assertNotContains(response, self.page3.name, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
         self.assertContains(response, self.campaign2.name, status_code=200)
+        self.assertContains(response, self.campaign3.name, status_code=200)
         self.assertContains(response, '$%s to <a href="/%s/">%s</a> @' % (
             int(self.donation.amount / 100),
             self.page.page_slug,
@@ -150,32 +164,49 @@ class UserProfileTest(TestCase):
 
     def test_image_upload(self):
         self.client.login(username='testuser', password='testpassword')
-        with open('media/tests/up.png', 'rb') as image:
-            response = self.client.post('/profile/images/', {'image': image})
-        content = response.content.decode('ascii')
-        content = ast.literal_eval(content)
+        content = b"a" * 1024
+        image = SimpleUploadedFile("image.png", content, content_type="image/png")
+        response = self.client.post('/profile/images/', {'image': image})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(content["is_valid"], "t")
+
+        images = models.UserImage.objects.filter(user=self.user.userprofile)
+        self.assertEqual(len(images), 1)
+
+        image = images[0]
+        response = self.client.get('/profile/')
+        self.assertContains(response, image.image.url, status_code=200)
+
+        image.delete()
+        images = models.UserImage.objects.filter(user=self.user.userprofile)
+        self.assertEqual(len(images), 0)
 
     def test_image_upload_error_size(self):
         self.client.login(username='testuser', password='testpassword')
-        with open('media/tests/error_image_size.jpg', 'rb') as image:
-            response = self.client.post('/profile/images/', {'image': image})
+        content = b"a" * 1024 * 1024 * 5
+        image = SimpleUploadedFile("image.png", content, content_type="image/png")
+        response = self.client.post('/profile/images/', {'image': image})
         content = response.content.decode('ascii')
         content = ast.literal_eval(content)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(content["is_valid"], "f")
         self.assertEqual(content["redirect"], "error_size")
 
+        images = models.UserImage.objects.filter(user=self.user.userprofile)
+        self.assertEqual(len(images), 0)
+
     def test_image_upload_error_type(self):
         self.client.login(username='testuser', password='testpassword')
-        with open('media/tests/error_image_type.txt', 'rb') as image:
-            response = self.client.post('/profile/images/', {'image': image})
+        content = b"a"
+        image = SimpleUploadedFile("notimage.txt", content, content_type="text/html")
+        response = self.client.post('/profile/images/', {'image': image})
         content = response.content.decode('ascii')
         content = ast.literal_eval(content)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(content["is_valid"], "f")
         self.assertEqual(content["redirect"], "error_type")
+
+        images = models.UserImage.objects.filter(user=self.user.userprofile)
+        self.assertEqual(len(images), 0)
 
     def test_update_card(self):
         self.client.login(username='testuser', password='testpassword')
@@ -191,3 +222,20 @@ class UserProfileTest(TestCase):
         self.assertRedirects(response, '/profile/', 302, 200)
         cards = models.StripeCard.objects.all()
         self.assertNotIn(self.card, cards)
+
+    def test_notification_preferences(self):
+        self.client.login(username='testuser', password='testpassword')
+
+        data = {'notification_preferences[]': ['notification_email_page_donation']}
+        response = self.client.post('/profile/notifications/update/', data)
+        self.assertRedirects(response, '/profile/', 302, 200)
+        response = self.client.get('/profile/')
+        response = response.content.decode("utf-8")
+        self.assertEqual(response.count("checked"), 1)
+
+        data = {'notification_preferences[]': ['notification_email_page_donation', 'notification_email_page_created']}
+        response = self.client.post('/profile/notifications/update/', data)
+        self.assertRedirects(response, '/profile/', 302, 200)
+        response = self.client.get('/profile/')
+        response = response.content.decode("utf-8")
+        self.assertEqual(response.count("checked"), 2)

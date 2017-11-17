@@ -1,10 +1,13 @@
 import random
+import os
 import string
 from collections import OrderedDict
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_delete
 from django.db.models import Sum
+from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
@@ -130,6 +133,7 @@ class Page(models.Model):
             ('manager_delete', 'Manager -- delete Page'),
             ('manager_invite', 'Manager -- invite users to manage Page'),
             ('manager_image_edit', 'Manager -- upload and edit media on Page'),
+            ('manager_view_dashboard', 'Manager -- view Page dashboard'),
         )
 
     def __str__(self):
@@ -152,14 +156,15 @@ class Page(models.Model):
         donors = Donation.objects.filter(page=self).values_list('user', flat=True).distinct()
         top_donors = {}
         for d in donors:
-            user = get_object_or_404(User, pk=d)
-            total_amount = Donation.objects.filter(user=user, page=self, anonymous_amount=False, anonymous_donor=False).aggregate(Sum('amount')).get('amount__sum')
-            if total_amount is not None:
-                top_donors[d] = {
-                    'first_name': user.first_name,
-                    'last_name': user.last_name,
-                    'amount': total_amount
-                }
+            if d is not None:
+                user = get_object_or_404(User, pk=d)
+                total_amount = Donation.objects.filter(user=user, page=self, anonymous_amount=False, anonymous_donor=False).aggregate(Sum('amount')).get('amount__sum')
+                if total_amount is not None:
+                    top_donors[d] = {
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                        'amount': total_amount
+                    }
         top_donors = OrderedDict(sorted(top_donors.items(), key=lambda t: t[1]['amount'], reverse=True))
         top_donors = list(top_donors.items())[:10]
         return top_donors
@@ -178,7 +183,7 @@ class Page(models.Model):
             print("multiple profile images returned")
 
     def active_campaigns(self):
-        return Campaign.objects.filter(page=self, is_active=True, deleted=False)
+        return Campaign.objects.filter(page=self, is_active=True, deleted=False).order_by('name')
 
     def inactive_campaigns(self):
         return Campaign.objects.filter(page=self, is_active=False, deleted=False)
@@ -209,3 +214,9 @@ class PageImage(models.Model):
     profile_picture = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(default=timezone.now)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
+
+@receiver(post_delete, sender=PageImage)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    if instance.image:
+        if os.path.isfile(instance.image.path):
+            os.remove(instance.image.path)

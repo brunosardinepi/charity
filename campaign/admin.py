@@ -5,9 +5,9 @@ from . import models
 
 
 class CampaignAdmin(GuardedModelAdmin):
-    list_display = ('id', 'name', 'campaign_slug', 'page', 'deleted',)
+    list_display = ('id', 'name', 'campaign_slug', 'page', 'deleted', 'is_active',)
     ordering = ('id', 'name', 'campaign_slug', 'page',)
-    list_filter = ('page', 'deleted',)
+    list_filter = ('page', 'deleted', 'is_active',)
     filter_horizontal = ('campaign_admins', 'campaign_managers',)
 
 class CampaignImageAdmin(admin.ModelAdmin):

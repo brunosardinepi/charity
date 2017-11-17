@@ -1,3 +1,5 @@
+from unittest import mock
+import datetime
 import django
 import os
 
@@ -12,14 +14,56 @@ from django.utils.timezone import now
 
 from allauth.account.auth_backends import AuthenticationBackend
 from allauth.account.forms import BaseSignupForm
+from allauth.account.signals import user_signed_up
 from allauth.account import app_settings
 from allauth.utils import get_user_model, get_username_max_length
+import sendgrid
+from sendgrid.helpers.mail import *
 
 from . import views
 from campaign.models import Campaign
 from invitations.models import GeneralInvitation
 from page.models import Page
 from pagefund import config
+
+
+class EmailTest(TestCase):
+    def test_email(self):
+        sg = sendgrid.SendGridAPIClient(apikey=config.settings["sendgrid_api_key"])
+        from_email = Email("no-reply@page.fund")
+        to_email = Email("gn9012@gmail.com")
+        subject = "Test email"
+        content = Content("text/plain", "Test email sent at {}".format(datetime.datetime.now()))
+        mail = Mail(from_email, subject, to_email, content)
+        response = sg.client.mail.send.post(request_body=mail.get())
+
+        self.assertEqual(response.status_code, 202)
+
+
+class SignupTest(TestCase):
+    def test_user_signed_up_signal(self):
+        self.signal_was_called = False
+
+        def handler(sender, **kwargs):
+            self.signal_was_called = True
+
+        user_signed_up.connect(handler)
+
+        data = {
+            'first_name': 'Testing',
+            'last_name': 'Signup',
+            'birthday': '11/12/90',
+            'state': 'CO',
+            'email': 'mytestemail@gmail.com',
+            'email2': 'mytestemail@gmail.com',
+            'password1': 'mytestpassword',
+            'password2': 'mytestpassword',
+        }
+        response = self.client.post('/accounts/signup/', data)
+
+        self.assertTrue(self.signal_was_called)
+
+        user_signed_up.disconnect(handler)
 
 
 class HomeTest(TestCase):
@@ -114,6 +158,28 @@ class HomeTest(TestCase):
         self.assertContains(response, "Sign up with Google", status_code=200)
         self.assertContains(response, "Sign up with Facebook", status_code=200)
 
+        data = {
+            'first_name': 'Testing',
+            'last_name': 'Signup',
+            'birthday': '11/12/90',
+            'state': 'CO',
+            'email': 'mytestemail@gmail.com',
+            'email2': 'mytestemail@gmail.com',
+            'password1': 'mytestpassword',
+            'password2': 'mytestpassword',
+        }
+        response = self.client.post('/accounts/signup/', data)
+        self.assertRedirects(response, '/', 302, 200)
+
+        user = User.objects.filter(email='mytestemail@gmail.com')
+        self.assertEqual(len(user), 1)
+        user = user[0]
+        self.assertEqual(user.first_name, data['first_name'])
+        self.assertEqual(user.last_name, data['last_name'])
+        self.assertEqual(user.userprofile.birthday, datetime.date(1990, 11, 12))
+        self.assertEqual(user.userprofile.state, data['state'])
+        self.assertEqual(user.email, data['email'])
+
     def test_invite_logged_out(self):
         response = self.client.get('/invite/')
 
@@ -182,6 +248,14 @@ class HomeTest(TestCase):
 
     def test_forgot_password_request(self):
         response = self.client.get('/forgot/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_about(self):
+        response = self.client.get('/about/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_terms_of_service(self):
+        response = self.client.get('/terms-of-service/')
         self.assertEqual(response.status_code, 200)
 
 class AccountTests(TestCase):

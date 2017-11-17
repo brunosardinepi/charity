@@ -1,10 +1,16 @@
+from collections import OrderedDict
+from datetime import date, timedelta
 from decimal import Decimal, ROUND_HALF_UP
 
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 import stripe
 
 from .models import Donation
+from campaign.models import Campaign
+from page.models import Page
 from pagefund import config
 from plans.models import StripePlan
 from plans.utils import create_plan
@@ -60,24 +66,25 @@ def get_card_source(request):
     return customer, card_source
 
 def unique_donor_check(request, page=None, campaign=None):
-    page_donations = Donation.objects.filter(page=page, user=request.user)
-    if campaign is None:
-        if page_donations:
-            return False
-        else:
-            return "page"
-    else:
-        campaign_donations = Donation.objects.filter(campaign=campaign, user=request.user)
-        if page_donations:
-            if campaign_donations:
+    if request.user.is_authenticated():
+        page_donations = Donation.objects.filter(page=page, user=request.user)
+        if campaign is None:
+            if page_donations:
                 return False
             else:
-                return "campaign"
+                return "page"
         else:
-            if campaign_donations:
-                return False
+            campaign_donations = Donation.objects.filter(campaign=campaign, user=request.user)
+            if page_donations:
+                if campaign_donations:
+                    return False
+                else:
+                    return "campaign"
             else:
-                return "both"
+                if campaign_donations:
+                    return False
+                else:
+                    return "both"
 
 def card_check(request, id):
     try:
@@ -135,11 +142,15 @@ def donate(request, form, page=None, campaign=None):
     amount = form.cleaned_data['amount'] * 100
     stripe_fee = Decimal(amount * 0.029) + 30
     pagefund_fee = Decimal(amount * config.settings['pagefund_fee'])
-    if form.cleaned_data['cover_fees'] == True:
-        pagefund_fee += stripe_fee
     final_amount = amount - stripe_fee - pagefund_fee
     cents = Decimal('0')
     final_amount = final_amount.quantize(cents, ROUND_HALF_UP)
+
+    metadata = {}
+    metadata["anonymous_amount"] = form.cleaned_data['anonymous_amount']
+    metadata["anonymous_donor"] = form.cleaned_data['anonymous_donor']
+    metadata["comment"] = form.cleaned_data['comment']
+    metadata["pf_user_pk"] = request.user.pk
 
     if request.user.is_authenticated:
         saved_card = request.POST.get('saved_card')
@@ -188,46 +199,47 @@ def donate(request, form, page=None, campaign=None):
             else:
                 # this is a one-time donation, charge the card
                 charge = charge_source(c, page, campaign)
-
         else:
-            if page is not None:
-                charge = stripe.Charge.create(
-                    amount=amount,
-                    currency="usd",
-                    source=request.POST.get('stripeToken'),
-                    description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
-                    destination={
-                        "amount": final_amount,
-                        "account": page.stripe_account_id,
-                    },
-                    metadata={
-                        "anonymous_amount": form.cleaned_data['anonymous_amount'],
-                        "anonymous_donor": form.cleaned_data['anonymous_donor'],
-                        "comment": form.cleaned_data['comment'],
-                        "page": page.id,
-                        "pf_user_pk": request.user.pk
-                    }
-                )
-            elif campaign is not None:
-                charge = stripe.Charge.create(
-                    amount=amount,
-                    currency="usd",
-                    source=request.POST.get('stripeToken'),
-                    description="$%s donation to %s via the %s campaign." % (form.cleaned_data['amount'], campaign.page.name, campaign.name),
-                    destination={
-                        "amount": final_amount,
-                        "account": campaign.page.stripe_account_id,
-                    },
-                    metadata={
-                        "anonymous_amount": form.cleaned_data['anonymous_amount'],
-                        "anonymous_donor": form.cleaned_data['anonymous_donor'],
-                        "comment": form.cleaned_data['comment'],
-                        "campaign": campaign.id,
-                        "page": campaign.page.id,
-                        "pf_user_pk": request.user.pk
-                    }
-                )
-            # if creating a plan, set this card as default
+            if campaign is not None:
+                metadata["campaign"] = campaign.id
+                metadata["page"] = campaign.page.id
+            elif page is not None:
+                metadata["page"] = page.id
+
+
+            metadata["pf_user_pk"] = request.user.pk
+
+            charge = stripe.Charge.create(
+                amount=amount,
+                currency="usd",
+                source=request.POST.get('stripeToken'),
+                description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
+                destination={
+                    "amount": final_amount,
+                    "account": page.stripe_account_id,
+                },
+                metadata=metadata,
+            )
+    else:
+        metadata["first_name"] = form.cleaned_data['first_name']
+        metadata["last_name"] = form.cleaned_data['last_name']
+        if campaign is not None:
+            metadata["campaign"] = campaign.id
+            metadata["page"] = campaign.page.id
+        elif page is not None:
+            metadata["page"] = page.id
+        charge = stripe.Charge.create(
+            amount=amount,
+            currency="usd",
+            source=request.POST.get('stripeToken'),
+            description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
+            destination={
+                "amount": final_amount,
+                "account": page.stripe_account_id,
+            },
+            metadata=metadata,
+        )
+
     if page is None:
         page = campaign.page
         campaign.donation_money += amount
@@ -243,3 +255,83 @@ def donate(request, form, page=None, campaign=None):
     if campaign is not None:
         campaign.save()
     page.save()
+
+def donation_statistics(obj):
+    if obj.__class__ is Page:
+        total_donations = Donation.objects.filter(page=obj).aggregate(Sum('amount')).get('amount__sum')
+        total_donations_count = Donation.objects.filter(page=obj).count()
+        if total_donations_count > 0:
+            total_donations_avg = total_donations / total_donations_count
+        else:
+            total_donations = 0
+            total_donations_avg = 0
+
+        page_donations = Donation.objects.filter(page=obj, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
+        page_donations_count = Donation.objects.filter(page=obj, campaign__isnull=True).count()
+        if page_donations_count > 0:
+            page_donations_avg = page_donations / page_donations_count
+        else:
+            page_donations = 0
+            page_donations_avg = 0
+
+        campaign_donations = Donation.objects.filter(page=obj, campaign__isnull=False).aggregate(Sum('amount')).get('amount__sum')
+        campaign_donations_count = Donation.objects.filter(page=obj, campaign__isnull=False).count()
+        if campaign_donations_count > 0:
+            campaign_donations_avg = campaign_donations / campaign_donations_count
+        else:
+            campaign_donations = 0
+            campaign_donations_avg = 0
+
+        plan_donations = StripePlan.objects.filter(page=obj, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
+        plan_donations_count = StripePlan.objects.filter(page=obj, campaign__isnull=True).count()
+        if plan_donations_count > 0:
+            plan_donations_avg = plan_donations / plan_donations_count
+        else:
+            plan_donations = 0
+            plan_donations_avg = 0
+        donations = {
+            'total_donations': total_donations,
+            'total_donations_avg': total_donations_avg,
+            'page_donations': page_donations,
+            'page_donations_avg': page_donations_avg,
+            'campaign_donations': campaign_donations,
+            'campaign_donations_avg': campaign_donations_avg,
+            'plan_donations': plan_donations,
+            'plan_donations_avg': plan_donations_avg
+        }
+    elif obj.__class__ is Campaign:
+        total_donations = Donation.objects.filter(campaign=obj).aggregate(Sum('amount')).get('amount__sum')
+        total_donations_count = Donation.objects.filter(campaign=obj).count()
+        if total_donations_count > 0:
+            total_donations_avg = total_donations / total_donations_count
+        else:
+            total_donations = 0
+            total_donations_avg = 0
+
+        donations = {
+            'total_donations': total_donations,
+            'total_donations_avg': total_donations_avg,
+        }
+    return donations
+
+def donation_graph(obj, days):
+    today = date.today()
+    graph = OrderedDict()
+    # for each day between today and x days ago,
+    # find the donations for that day and
+    # average them, then
+    # add a dictionary k,v pair for date,avg
+    for d in (today - timedelta(n) for n in range(days)):
+        if obj.__class__ is Page:
+            donations_sum = Donation.objects.filter(page=obj, date__year=d.year, date__month=d.month, date__day=d.day).aggregate(Sum('amount')).get('amount__sum')
+        elif obj.__class__ is Campaign:
+            donations_sum = Donation.objects.filter(campaign=obj, date__year=d.year, date__month=d.month, date__day=d.day).aggregate(Sum('amount')).get('amount__sum')
+        if donations_sum is None:
+            donations_sum = 0
+        graph[d] = donations_sum
+    return graph
+
+def donation_history(obj):
+    if obj.__class__ is Page:
+        history = Donation.objects.filter(page=obj)
+    return history

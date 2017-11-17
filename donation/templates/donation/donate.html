@@ -1,99 +1,104 @@
 <h3>Donate</h3>
-{% if page %}
-    <form action="{% url 'page_donate' page_pk=page.pk %}" method="post" id="payment-form">
-{% elif campaign %}
-    <form action="{% url 'campaign_donate' campaign_pk=campaign.pk %}" method="post" id="payment-form">
-{% endif %}
-    {% csrf_token %}
-    <div class="form-row">
-        {{ donate_form.as_p  }}
-        {% if cards %}
-            {% for x, c in cards.items %}
-                <input type="radio" name="saved_card" value="{{ c.id }}" {% if c.default == True %}checked="checked" {% endif %}/>{{ c.name }} ({{ c.last4 }})<br />
-            {% endfor %}
-        {% endif %}
-        <p><a id="new-card" href="">New card</a></p>
-        <div id="new-card-info" style="display:none;">
-            <p><label for="id_save_card">Save card:</label> <input type="checkbox" name="save_card" id="id_save_card" /></p>
-            <div id="card-element"></div>
-            <div id="card-errors" role="alert"></div>
+{% if stripe_error %}
+    <p>We're having trouble communicating with our payment processor. This error generated an email and sent it to our dev team. We're looking into the issue now, thanks!</p>
+{% else %}
+    {% if page %}
+        <form action="{% url 'page_donate' page_pk=page.pk %}" method="post" id="payment-form">
+    {% elif campaign %}
+        <form action="{% url 'campaign_donate' campaign_pk=campaign.pk %}" method="post" id="payment-form">
+    {% endif %}
+        {% csrf_token %}
+        <div class="form-row">
+            {{ donate_form.as_p  }}
+            {% if cards %}
+                {% for x, c in cards.items %}
+                    <input type="radio" name="saved_card" value="{{ c.id }}" {% if c.default == True %}checked="checked" {% endif %}/>{{ c.name }} ({{ c.last4 }})<br />
+                {% endfor %}
+            {% elif cards_error_authentication %}
+            {% endif %}
+            <p><a id="new-card" href="">New card</a></p>
+            <div id="new-card-info" style="display:none;">
+                <p><label for="id_save_card">Save card:</label> <input type="checkbox" name="save_card" id="id_save_card" /></p>
+                <div id="card-element"></div>
+                <div id="card-errors" role="alert"></div>
+            </div>
         </div>
-    </div>
-    <button>Donate</button>
-</form>
+        <button>Donate</button>
+    </form>
 
-<script>
-    var stripe = Stripe('{{ api_pk }}');
-    var elements = stripe.elements();
-    var style = {
-        base: {
-            fontSize: '16px',
-            lineHeight: '24px'
-        }
-    };
+    <script>
+        var stripe = Stripe('{{ api_pk }}');
+        var elements = stripe.elements();
+        var style = {
+            base: {
+                fontSize: '16px',
+                lineHeight: '24px'
+            }
+        };
 
-    var card = elements.create('card', {style: style});
-    card.mount("#card-element");
+        var card = elements.create('card', {style: style});
+        card.mount("#card-element");
 
-    card.addEventListener('change', function(event) {
-        var displayError = document.getElementById('card-errors');
-        if (event.error) {
-            displayError.textContent = event.error.message;
-        } else {
-            displayError.textContent = '';
-        }
-    });
+        card.addEventListener('change', function(event) {
+            var displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
 
-    $(document).on('click', "#new-card", function(event) {
-        event.preventDefault();
-        $("#new-card-info").show();
-        $("#new-card").text("Cancel new card");
-        $("#new-card").attr("id", "hide-new-card");
-    });
+        $(document).on('click', "#new-card", function(event) {
+            event.preventDefault();
+            $("#new-card-info").show();
+            $("#new-card").text("Cancel new card");
+            $("#new-card").attr("id", "hide-new-card");
+        });
 
-    $(document).on('click', "#hide-new-card", function(event) {
-        event.preventDefault();
-        $("#new-card-info").hide();
-        $("#hide-new-card").text("New card");
-        $("#hide-new-card").attr("id", "new-card");
-    });
+        $(document).on('click', "#hide-new-card", function(event) {
+            event.preventDefault();
+            $("#new-card-info").hide();
+            $("#hide-new-card").text("New card");
+            $("#hide-new-card").attr("id", "new-card");
+        });
     
-    $(document).on('submit', "#payment-form", function(event) {
-        event.preventDefault();
-        if (document.getElementById("id_anonymous_donor").checked) {
-            var extraDetails = {};
-        } else {
-            var extraDetails = {
-                name: "{{ request.user.first_name }} {{ request.user.last_name }}",
+        $(document).on('submit', "#payment-form", function(event) {
+            event.preventDefault();
+            if (document.getElementById("id_anonymous_donor").checked) {
+                var extraDetails = {};
+            } else {
+                var extraDetails = {
+                    name: "{{ request.user.first_name }} {{ request.user.last_name }}",
+                };
             };
-        };
 
-        if ($("#hide-new-card").length > 0) {
-            console.log("hide-new-card length");
-            console.log($("#hide-new-card").length);
-            $("input[type='radio']").removeAttr("checked");
-            stripe.createToken(card, extraDetails).then(function(result) {
-                if (result.error) {
-                    var errorElement = document.getElementById('card-errors');
-                    errorElement.textContent = result.error.message;
-                } else {
-                    stripeTokenHandler(result.token);
-                }
-            });
-        } else if ($("#new-card").length > 0) {
-            console.log("new-card length");
+            if ($("#hide-new-card").length > 0) {
+                console.log("hide-new-card length");
+                console.log($("#hide-new-card").length);
+                $("input[type='radio']").removeAttr("checked");
+                stripe.createToken(card, extraDetails).then(function(result) {
+                    if (result.error) {
+                        var errorElement = document.getElementById('card-errors');
+                        errorElement.textContent = result.error.message;
+                    } else {
+                        stripeTokenHandler(result.token);
+                    }
+                });
+            } else if ($("#new-card").length > 0) {
+                console.log("new-card length");
+                var form = document.getElementById("payment-form");
+                form.submit();
+            };
+        });
+
+        function stripeTokenHandler(token) {
             var form = document.getElementById("payment-form");
+            var hiddenInput = document.createElement("input");
+            hiddenInput.setAttribute("type", "hidden");
+            hiddenInput.setAttribute("name", "stripeToken");
+            hiddenInput.setAttribute("value", token.id);
+            form.appendChild(hiddenInput);
             form.submit();
-        };
-    });
-
-    function stripeTokenHandler(token) {
-        var form = document.getElementById("payment-form");
-        var hiddenInput = document.createElement("input");
-        hiddenInput.setAttribute("type", "hidden");
-        hiddenInput.setAttribute("name", "stripeToken");
-        hiddenInput.setAttribute("value", token.id);
-        form.appendChild(hiddenInput);
-        form.submit();
-    }
-</script>
+        }
+    </script>
+{% endif %}

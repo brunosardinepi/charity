@@ -11,6 +11,7 @@ from . import forms
 from .models import StripeCard, UserImage, UserProfile
 from .utils import get_user_credit_cards
 from donation.models import Donation
+from error.utils import error_email
 from invitations.models import ManagerInvitation
 from page import models as PageModels
 from pagefund import config, settings
@@ -21,7 +22,19 @@ from pagefund.image import image_is_valid
 def userprofile(request):
     userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
     if userprofile.user == request.user:
-        cards = get_user_credit_cards(userprofile)
+        try:
+            cards = get_user_credit_cards(userprofile)
+            stripe_error = None
+        except Exception as e:
+            cards = None
+            stripe_error = True
+            error = {
+                "e": e,
+                "user": request.user.pk,
+                "page": "profile",
+                "campaign": None,
+            }
+            error_email(error)
 
         data = {
             'first_name': request.user.first_name,
@@ -44,7 +57,8 @@ def userprofile(request):
             'userprofile': userprofile,
             'form': form,
             'cards': cards,
-            'api_pk': config.settings['stripe_api_pk']
+            'stripe_error': stripe_error,
+            'api_pk': config.settings['stripe_api_pk'],
         })
     else:
         raise Http404
@@ -136,3 +150,19 @@ def update_card(request):
                     customer = stripe.Customer.retrieve(request.user.userprofile.stripe_customer_id)
                     customer.sources.retrieve(card.stripe_card_id).delete()
             return HttpResponseRedirect(card.user.get_absolute_url())
+
+@login_required
+def update_notification_preferences(request):
+    if request.method == "POST":
+        userprofile = get_object_or_404(UserProfile, user=request.user)
+        post_data = request.POST.getlist('notification_preferences[]')
+        new_notification_preferences = [n for n in post_data]
+        old_notification_preferences = userprofile.notification_preferences()
+        for o in old_notification_preferences:
+            if o in new_notification_preferences:
+                setattr(userprofile, "%s" % o, True)
+            else:
+                setattr(userprofile, "%s" % o, False)
+        userprofile.save()
+        return HttpResponseRedirect(request.user.userprofile.get_absolute_url())
+

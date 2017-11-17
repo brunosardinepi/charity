@@ -67,6 +67,7 @@ def invite(data):
                 manager_delete=form.cleaned_data['manager_delete'],
                 manager_invite=form.cleaned_data['manager_invite'],
                 manager_image_edit=form.cleaned_data['manager_image_edit'],
+                manager_view_dashboard=form.cleaned_data['manager_view_dashboard'],
             )
 
             # create the email
@@ -91,6 +92,7 @@ def invite(data):
                 manager_delete=form.cleaned_data['manager_delete'],
                 manager_invite=form.cleaned_data['manager_invite'],
                 manager_image_edit=form.cleaned_data['manager_image_edit'],
+                manager_view_dashboard=form.cleaned_data['manager_view_dashboard'],
             )
 
             # create the email

@@ -1,0 +1,42 @@
+{% load comment_extras %}
+{% load votes_extras %}
+
+
+<h3>Comments</h3>
+{% if request.user.is_authenticated %}
+    <form id="comment" action="{% url 'comments:comment' model=model pk=obj.pk %}" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Comment" />
+    </form>
+{% else %}
+    <p>You must be logged in to comment!</p>
+{% endif %}
+{% if obj.comments %}
+    <ul id="comment_list">
+        {% for c in obj.comments %}
+            {% user_vote_was user=request.user obj="comment" pk=c.pk as user_vote_was %}
+            <li id="comment-{{ c.pk }}" class="comment">
+                {{ c.content }} - {{ c.user.first_name }} {{ c.user.last_name }} @ {{ c.date|date:"m/d/y g:i A" }} -
+                <button id="upvotes-c-{{ c.pk }}" class="vote upvote{% if user_vote_was == 'upvote' %} user-vote{% endif %}">{{ c.upvotes }}</button>
+                <button id="downvotes-c-{{ c.pk }}" class="vote downvote{% if user_vote_was == 'downvote' %} user-vote{% endif %}">{{ c.downvotes }}</button> -
+                <a class="show-reply" id="{{ c.pk }}" href="">Reply</a>{% if c.user == request.user %} - <a id="delete-comment-{{ c.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</a>
+                {% comment_replies c.pk as replies %}
+                {% if replies %}
+                    <ul id="comment-{{ c.pk }}-replies" class="reply-list">
+                        {% for r in replies %}
+                            <li id="reply-{{ r.pk }}" class="reply">
+                                {{ r.content }} - {{ r.user.first_name }} {{ r.user.last_name }} @ {{ r.date|date:"m/d/y g:i A" }} -
+                                <button id="upvotes-r-{{ r.pk }}" class="vote upvote{% if user_vote_was == 'upvote' %} user-vote{% endif %}">{{ r.upvotes }}</button>
+                                <button id="downvotes-r-{{ r.pk }}" class="vote downvote{% if user_vote_was == 'downvote' %} user-vote{% endif %}">{{ r.downvotes }}</button>
+                                {% if r.user == request.user %} - <a id="delete-reply-{{ r.pk }}" class="delete-cr" href="">Delete</a>{% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p id="no-comments">No comments</p>
+{% endif %}

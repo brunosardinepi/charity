@@ -1,10 +1,13 @@
 import random
+import os
 import string
 from collections import OrderedDict
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_delete
 from django.db.models import Sum
+from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
@@ -19,6 +22,8 @@ class Campaign(models.Model):
     campaign_admins = models.ManyToManyField('userprofile.UserProfile', related_name='campaign_admins', blank=True)
     campaign_managers = models.ManyToManyField('userprofile.UserProfile', related_name='campaign_managers', blank=True)
     campaign_slug = models.SlugField(max_length=255)
+    campaign_subscribers = models.ManyToManyField('userprofile.UserProfile', related_name='campaign_subscribers', blank=True)
+    category = models.CharField(max_length=255)
     city = models.CharField(max_length=255, blank=True)
     created_on = models.DateTimeField(default=timezone.now)
     deleted = models.BooleanField(default=False)
@@ -27,6 +32,7 @@ class Campaign(models.Model):
     description = models.TextField(blank=True)
     donation_count = models.IntegerField(default=0)
     donation_money = models.IntegerField(default=0)
+    ended_on = models.DateTimeField(blank=True, null=True)
     goal = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
     name = models.CharField(max_length=255, db_index=True)
@@ -106,6 +112,7 @@ class Campaign(models.Model):
             ('manager_delete', 'Manager -- delete Campaign'),
             ('manager_invite', 'Manager -- invite users to manage Campaign'),
             ('manager_image_edit', 'Manager -- upload media to Campaign'),
+            ('manager_view_dashboard', 'Manager -- view Campaign dashboard'),
         )
 
     def __str__(self):
@@ -121,10 +128,10 @@ class Campaign(models.Model):
     def save(self, *args, **kwargs):
         if self.id:
             self.campaign_slug = slugify(self.campaign_slug)
-            super(Campaign, self).save(*args, **kwargs)
         elif not self.id:
             self.campaign_slug = slugify(self.name)
-            super(Campaign, self).save(*args, **kwargs)
+        self.category = self.page.category
+        super(Campaign, self).save(*args, **kwargs)
 
     def top_donors(self):
         donors = Donation.objects.filter(campaign=self).values_list('user', flat=True).distinct()
@@ -181,3 +188,9 @@ class CampaignImage(models.Model):
     profile_picture = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(default=timezone.now)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
+
+@receiver(post_delete, sender=CampaignImage)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    if instance.image:
+        if os.path.isfile(instance.image.path):
+            os.remove(instance.image.path)

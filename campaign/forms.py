@@ -27,6 +27,7 @@ class ManagerInviteForm(forms.Form):
     manager_delete = forms.BooleanField(required=False, label='Delete Campaign')
     manager_invite = forms.BooleanField(required=False, label='Invite users to manage Campaign')
     manager_image_edit = forms.BooleanField(required=False, label='Upload image')
+    manager_view_dashboard = forms.BooleanField(required=False, label='View dashboard')
 
 class CampaignImageForm(forms.ModelForm):
     class Meta:

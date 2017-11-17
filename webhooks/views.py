@@ -1,4 +1,6 @@
+import datetime
 import json
+import pytz
 
 from django.contrib.auth.models import User
 from django.http import HttpResponse
@@ -18,6 +20,10 @@ from plans.models import StripePlan
 @csrf_exempt
 def charge_succeeded(request):
     event_json = json.loads(request.body.decode('utf-8'))
+    date = datetime.datetime.utcfromtimestamp(event_json['data']['object']['created']).replace(tzinfo=pytz.utc)
+    tz = pytz.timezone('America/Chicago')
+    date = date.astimezone(tz)
+    print("date = {}".format(date))
     print(json.dumps(event_json, indent=4, sort_keys=True))
 
     if not event_json['data']['object']['metadata']:
@@ -46,7 +52,7 @@ def charge_succeeded(request):
         anonymous_amount = event_json['data']['object']['metadata']['anonymous_amount']
         anonymous_donor = event_json['data']['object']['metadata']['anonymous_donor']
         try:
-            campaign_pk = event_json['plan']['metadata']['campaign']
+            campaign_pk = event_json['data']['object']['metadata']['campaign']
             campaign = get_object_or_404(Campaign, pk=campaign_pk)
         except KeyError:
             campaign = None
@@ -55,23 +61,59 @@ def charge_succeeded(request):
             comment = event_json['data']['object']['metadata']['comment']
         except KeyError:
             comment = ''
-        pf_user_pk = event_json['data']['object']['metadata']['pf_user_pk']
+        # get the user's pk if this was a donation from a logged-in user
+        try:
+            pf_user_pk = event_json['data']['object']['metadata']['pf_user_pk']
+        # get the donor's first/last name if they weren't logged in when they donated
+        except KeyError:
+            pf_user_pk = None
+            first_name = event_json['data']['object']['metadata']['first_name']
+            last_name = event_json['data']['object']['metadata']['last_name']
 
     amount = event_json['data']['object']['amount']
     page = get_object_or_404(Page, pk=page_pk)
     stripe_charge_id = event_json['data']['object']['id']
-    user = get_object_or_404(User, pk=pf_user_pk)
+    # get the user object if this was a donation from a logged-in user
+    if pf_user_pk is not None:
+        user = get_object_or_404(User, pk=pf_user_pk)
+        Donation.objects.create(
+            amount=amount,
+            anonymous_amount=anonymous_amount,
+            anonymous_donor=anonymous_donor,
+            comment=comment,
+            date=date,
+            page=page,
+            campaign=campaign,
+            stripe_charge_id=stripe_charge_id,
+            user=user,
+         )
+    else:
+#        user = ""
+        Donation.objects.create(
+            amount=amount,
+            anonymous_amount=anonymous_amount,
+            anonymous_donor=anonymous_donor,
+            comment=comment,
+            date=date,
+            page=page,
+            campaign=campaign,
+            stripe_charge_id=stripe_charge_id,
+            donor_first_name=first_name,
+            donor_last_name=last_name,
+         )
 
-    Donation.objects.create(
-        amount=amount,
-        anonymous_amount=anonymous_amount,
-        anonymous_donor=anonymous_donor,
-        comment=comment,
-        page=page,
-        campaign=campaign,
-        stripe_charge_id=stripe_charge_id,
-        user=user
-     )
+#    Donation.objects.create(
+#        amount=amount,
+#        anonymous_amount=anonymous_amount,
+#        anonymous_donor=anonymous_donor,
+#        comment=comment,
+#        page=page,
+#        campaign=campaign,
+#        stripe_charge_id=stripe_charge_id,
+#        user=user,
+#        first_name=first_name,
+#        last_name=last_name,
+#     )
 
     print("donation created")
     return HttpResponse(status=200)
