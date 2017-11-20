@@ -75,16 +75,22 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
         template_params["api_pk"] = config.settings['stripe_api_pk']
         return render(request, 'campaign/campaign.html', template_params)
 
-@login_required
-def campaign_create(request, page_slug):
-    page = get_object_or_404(Page, page_slug=page_slug)
-    form = forms.CampaignForm()
-    if request.method == 'POST':
+
+class CampaignCreate(View):
+    def get(self, request, page_slug=None):
+        data = {}
+        if page_slug is not None:
+            page = get_object_or_404(Page, page_slug=page_slug)
+            data['page'] = page
+        form = forms.CampaignForm()
+        data['form'] = form
+        return render(request, 'campaign/campaign_create.html', data)
+    def post(self, request):
         form = forms.CampaignForm(request.POST)
         if form.is_valid():
             campaign = form.save(commit=False)
             campaign.user = request.user
-            campaign.page = page
+            campaign.page = form.cleaned_data['page']
             campaign.save()
             campaign.campaign_admins.add(request.user.userprofile)
 
@@ -96,7 +102,7 @@ def campaign_create(request, page_slug):
                 email_new_campaign(manager.user.email, campaign)
 
             return HttpResponseRedirect(campaign.get_absolute_url())
-    return render(request, 'campaign/campaign_create.html', {'form': form, 'page': page})
+
 
 @login_required
 def campaign_edit(request, page_slug, campaign_pk, campaign_slug):

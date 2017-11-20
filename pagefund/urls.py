@@ -48,7 +48,8 @@ urlpatterns = [
 
     url(r'^campaign/subscribe/(?P<campaign_pk>\d+)/(?P<action>[\w-]*)/$', CampaignViews.subscribe, name='campaign_subscribe'),
     url(r'^campaign/(?P<campaign_pk>\d+)/donate/$', CampaignViews.campaign_donate, name='campaign_donate'),
-    url(r'^(?P<page_slug>[\w-]+)/campaign/create/$', CampaignViews.campaign_create, name='campaign_create'),
+    url(r'^campaign/create/$', login_required(CampaignViews.CampaignCreate.as_view()), name='campaign_create'),
+    url(r'^(?P<page_slug>[\w-]+)/campaign/create/$', login_required(CampaignViews.CampaignCreate.as_view()), name='campaign_create'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/edit/$', CampaignViews.campaign_edit, name='campaign_edit'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/delete/$', CampaignViews.campaign_delete, name='campaign_delete'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/dashboard/$', login_required(CampaignViews.CampaignDashboard.as_view()), name='campaign_dashboard'),
