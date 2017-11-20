@@ -5,6 +5,7 @@ import operator
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.postgres.search import SearchRank, SearchQuery, SearchVector
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
@@ -103,6 +104,30 @@ class CampaignCreate(View):
 
             return HttpResponseRedirect(campaign.get_absolute_url())
 
+def campaign_search_pages(request):
+    if request.method == "POST":
+        q = request.POST.get('q')
+
+        if q == "0":
+            q = False
+
+        query = SearchQuery(q)
+        vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
+        rank_metric = 0.2
+        results = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, is_sponsored=False, deleted=False).order_by('-rank')
+
+        response_data = OrderedDict()
+        if results:
+            for r in results:
+                response_data[r.page_slug] = {
+                    'name': r.name,
+                    'city': r.city,
+                    'state': r.state,
+                }
+        return HttpResponse(
+            json.dumps(response_data),
+            content_type="application/json"
+        )
 
 @login_required
 def campaign_edit(request, page_slug, campaign_pk, campaign_slug):

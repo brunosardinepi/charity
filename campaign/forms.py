@@ -38,3 +38,5 @@ class CampaignImageForm(forms.ModelForm):
             'profile_picture',
         ]
 
+class CampaignSearchPagesForm(forms.Form):
+    page = forms.CharField(max_length=255)
