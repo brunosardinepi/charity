@@ -22,12 +22,16 @@
         <input id="q" type="text" placeholder="Search for Pages" />
     </form>
 
-    <form action="" method="post" enctype="multipart/form-data">
+    <form action="{% url 'campaign_create' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
         <div id="results">
             <p>Search Results:</p>
-            <ul id="results-list"></ul>
+            <ul id="results-list">
+                {% if page %}
+                    <li><input type="radio" name="page" value="{{ page.pk }}" checked="checked" />{{ page.name }}  - {% if page.city %}{{ page.city }}, {% endif %}{{ page.state }}</li>
+                {% endif %}
+            </ul>
         </div>
 
         {{ form.as_p }}
