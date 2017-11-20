@@ -131,14 +131,17 @@ class CampaignTest(TestCase):
 
     def test_duplicate_campaign_slug(self):
         self.client.login(username='testuser', password='testpassword')
-
         data = {
             'name': "MyCampaign",
-            'campaign_slug': "campaignslug"
+            'campaign_slug': self.campaign.campaign_slug,
+            'page': self.page.pk,
+            'type': "event",
+            'goal': 1000,
+            'city': "Honolulu",
+            'state': "HI",
         }
-
-        response = self.client.post('/%s/campaign/create/' % self.page.page_slug, data)
-        self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 1)
+        response = self.client.post('/campaign/create/', data)
+        self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 2)
 
     def test_campaign_status_logged_out(self):
         request = self.factory.get('home')
@@ -263,11 +266,24 @@ class CampaignTest(TestCase):
         self.assertRedirects(response, '/accounts/login/?next=/%s/campaign/create/' % self.page.page_slug, 302, 200)
 
     def test_campaign_create_logged_in(self):
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.campaign_create(request, self.page.page_slug)
-
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/campaign/create/'.format(self.page.page_slug))
         self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/campaign/create/')
+        self.assertEqual(response.status_code, 200)
+
+        data = {
+            'name': "MyCampaign",
+            'campaign_slug': "sdjflhalkjfhsaf",
+            'page': self.page.pk,
+            'type': "event",
+            'goal': 1000,
+            'city': "Honolulu",
+            'state': "HI",
+        }
+        response = self.client.post('/campaign/create/', data)
+        self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 2)
 
     def test_campaignform(self):
         form = forms.CampaignForm({
