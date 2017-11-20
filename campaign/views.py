@@ -89,20 +89,28 @@ class CampaignCreate(View):
     def post(self, request):
         form = forms.CampaignForm(request.POST)
         if form.is_valid():
-            campaign = form.save(commit=False)
-            campaign.user = request.user
-            campaign.page = form.cleaned_data['page']
-            campaign.save()
-            campaign.campaign_admins.add(request.user.userprofile)
+            # check if the user selected a page and redirect to a an error page if needed
+            page_pk = request.POST.get('page')
+            if page_pk:
+                page = get_object_or_404(Page, pk=page_pk)
+                campaign = form.save(commit=False)
+                campaign.user = request.user
+                campaign.page = page
+                campaign.save()
+                campaign.campaign_admins.add(request.user.userprofile)
 
-            admins = page.admins.all()
-            for admin in admins:
-                email_new_campaign(admin.user.email, campaign)
-            managers = page.managers.all()
-            for manager in managers:
-                email_new_campaign(manager.user.email, campaign)
+                admins = page.admins.all()
+                for admin in admins:
+                    email_new_campaign(admin.user.email, campaign)
+                managers = page.managers.all()
+                for manager in managers:
+                    email_new_campaign(manager.user.email, campaign)
 
-            return HttpResponseRedirect(campaign.get_absolute_url())
+                return HttpResponseRedirect(campaign.get_absolute_url())
+            else:
+                # redirect to error page
+                print("no page selected")
+
 
 def campaign_search_pages(request):
     if request.method == "POST":
@@ -120,6 +128,7 @@ def campaign_search_pages(request):
         if results:
             for r in results:
                 response_data[r.page_slug] = {
+                    'pk': r.pk,
                     'name': r.name,
                     'city': r.city,
                     'state': r.state,

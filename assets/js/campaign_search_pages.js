@@ -20,8 +20,7 @@ function search() {
                 } else {
                     var location = "";
                 }
-
-                $("#results-list").append("<li><a href='/" + key +  "/'>" + result[key]['name'] + "</a> " + location + "</li>");
+                $("#results-list").append("<li><input type='radio' name='page' value='" + result[key]['pk'] + "' />" + result[key]['name'] + " - " + location + "</li>");
             }
         }
     });

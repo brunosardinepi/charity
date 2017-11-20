@@ -22,14 +22,16 @@
         <input id="q" type="text" placeholder="Search for Pages" />
     </form>
 
-    <div id="results">
-        <p>Search Results:</p>
-        <ul id="results-list"></ul>
-    </div>
-
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
+
+        <div id="results">
+            <p>Search Results:</p>
+            <ul id="results-list"></ul>
+        </div>
+
         {{ form.as_p }}
+
         <input type="submit" value="Create campaign" />
     </form>
 {% endblock %}
