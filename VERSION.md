@@ -3,6 +3,23 @@
 This is the version history for PageFund development.
 
 
+## Version 0.11.0
+
+Release date: TBD
+
+### Additions
+
+* None
+
+### Changes
+
+* Campaigns can be created from the home page or from a specific Page
+
+### Fixes
+
+* None
+
+
 ## Version 0.10.0
 
 Release date: 11/17/2017
