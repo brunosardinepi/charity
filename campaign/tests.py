@@ -700,3 +700,13 @@ class CampaignTest(TestCase):
         images = models.CampaignImage.objects.filter(campaign=self.campaign)
         self.assertEqual(len(images), 0)
 
+    def test_campaign_active(self):
+        response = self.client.get('/{}/{}/{}/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This campaign is active.")
+
+        self.campaign.is_active = False
+        self.campaign.save()
+        response = self.client.get('/{}/{}/{}/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This campaign has ended.")

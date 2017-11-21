@@ -9,7 +9,7 @@ Release date: TBD
 
 ### Additions
 
-* None
+* Campaign end dates
 
 ### Changes
 
