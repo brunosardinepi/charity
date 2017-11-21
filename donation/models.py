@@ -1,7 +1,5 @@
 from django.contrib.auth.models import User
-#from django.db.models.signals import post_save
 from django.db import models
-#from django.dispatch import receiver
 from django.utils import timezone
 
 
@@ -10,6 +8,7 @@ class Donation(models.Model):
     anonymous_amount = models.BooleanField(default=False)
     anonymous_donor = models.BooleanField(default=False)
     campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE, blank=True, null=True)
+    campaign_participant = models.ForeignKey('campaign.VoteParticipant', on_delete=models.CASCADE, blank=True, null=True)
     comment = models.TextField(blank=True)
     date = models.DateTimeField(default=timezone.now)
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE, blank=True, null=True)
@@ -40,12 +39,3 @@ class Donation(models.Model):
                 self.donor_first_name = self.user.first_name
                 self.donor_last_name = self.user.last_name
         super(Donation, self).save(*args, **kwargs)
-
-#    @receiver(post_save, sender=User)
-#    def assign_donor_name(sender, instance, created, **kwargs):
-#        if created:
-#            print(instance)
-#            if instance.user:
-#                instance.donor_first_name = instance.user.first_name
-#                instance.donor_last_name = instance.user.last_name
-#                instance.save()
