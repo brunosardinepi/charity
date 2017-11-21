@@ -31,7 +31,9 @@
 {% block body_content %}
     <h1>{{ campaign.name }}</h1>
     <img src="{{ campaign.profile_picture.image.url }}" width="200" />
+    <p>This campaign {% if campaign.is_active == True %}is active{% else %}has ended{% endif %}.</p>
     <p>Trending score: {{ campaign.trending_score }}</p>
+    <p>End date: {{ campaign.end_date }}</p>
     <p>Type: {{ campaign.get_type_display }}</p>
     <p>Category: {{ campaign.category|title }}</p>
     <p>Location: {% if campaign.city %}{{ campaign.city }}{% endif %}{% if campaign.city and campaign.state %}, {% endif %}{% if campaign.state %}{{ campaign.state }}{% endif %}</p>
