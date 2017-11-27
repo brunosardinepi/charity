@@ -46,7 +46,7 @@
         <ul>
             {% for p in campaign.vote_participants %}
                 <li>
-                    {{ p.name }}
+                    <a href="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug vote_participant_pk=p.pk %}">{{ p.name }}</a>
                     <ul>
                         <li>{{ p.description }}</li>
                     </ul>
@@ -100,7 +100,4 @@
     {% else %}
         <p>No donations!</p>
     {% endif %}
-
-    {% include "donation/donate.html" with campaign=campaign donate_form=donate_form api_key=api_key%}
-
 {% endblock %}

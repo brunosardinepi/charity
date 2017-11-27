@@ -39,22 +39,7 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
         raise Http404
     else:
         form = CommentForm
-        donate_form = BaseDonate()
         template_params = {}
-
-        if request.user.is_authenticated:
-            try:
-                cards = get_user_credit_cards(request.user.userprofile)
-                template_params["cards"] = cards
-            except Exception as e:
-                template_params["stripe_error"] = True
-                error = {
-                    "e": e,
-                    "user": request.user.pk,
-                    "page": campaign.page.pk,
-                    "campaign": campaign.pk,
-                }
-                error_email(error)
 
         try:
             user_subscription_check = campaign.campaign_subscribers.get(user_id=request.user.pk)
@@ -71,9 +56,7 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
 
         template_params["campaign"] = campaign
         template_params["form"] = form
-        template_params["donate_form"] = donate_form
         template_params["subscribe_attr"] = subscribe_attr
-        template_params["api_pk"] = config.settings['stripe_api_pk']
         return render(request, 'campaign/campaign.html', template_params)
 
 
@@ -361,9 +344,38 @@ def campaign_profile_update(request, image_pk):
     else:
         raise Http404
 
-def campaign_donate(request, campaign_pk):
-    campaign = get_object_or_404(Campaign, pk=campaign_pk)
-    if request.method == "POST":
+
+class CampaignDonate(View):
+    def get(self, request, page_slug, campaign_pk, campaign_slug, vote_participant_pk):
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        vote_participant = get_object_or_404(VoteParticipant, pk=vote_participant_pk)
+        if campaign.deleted == True:
+            raise Http404
+        else:
+            donate_form = BaseDonate()
+            template_params = {}
+
+            if request.user.is_authenticated:
+                try:
+                    cards = get_user_credit_cards(request.user.userprofile)
+                    template_params["cards"] = cards
+                except Exception as e:
+                    template_params["stripe_error"] = True
+                    error = {
+                        "e": e,
+                        "user": request.user.pk,
+                        "page": campaign.page.pk,
+                        "campaign": campaign.pk,
+                    }
+                    error_email(error)
+            template_params["campaign"] = campaign
+            template_params["donate_form"] = donate_form
+            template_params["api_pk"] = config.settings['stripe_api_pk']
+            template_params["vote_participant"] = vote_participant
+            return render(request, 'campaign/donate.html', template_params)
+
+    def post(self, request, page_slug, campaign_pk, campaign_slug, vote_participant_pk):
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
         form = DonateForm(request.POST)
         if form.is_valid():
             donate(request=request, form=form, page=None, campaign=campaign)

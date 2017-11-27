@@ -3,7 +3,7 @@ from django.test import Client, TestCase
 from django.utils import timezone
 
 from . import models
-from campaign.models import Campaign
+from campaign.models import Campaign, VoteParticipant
 from page.models import Page
 
 import unittest
@@ -137,6 +137,16 @@ class DonationTest(TestCase):
             user=self.user
         )
 
+        self.vote_participant = VoteParticipant.objects.create(
+            name="Harry",
+            campaign=self.campaign,
+        )
+
+        self.vote_participant2 = VoteParticipant.objects.create(
+            name="Sally",
+            campaign=self.campaign,
+        )
+
     def test_donation_exists(self):
         donations = models.Donation.objects.all()
         self.assertIn(self.donation, donations)
@@ -169,7 +179,7 @@ class DonationTest(TestCase):
         self.assertNotContains(response, "$%s - %s %s" % (int(self.donation6.amount / 100), self.user.first_name, self.user.last_name), status_code=200)
         self.assertContains(response, "Anonymous donation @", status_code=200)
 
-    def test_donate_campaign(self):
+    def test_donations_campaign(self):
         response = self.client.get('/%s/%s/%s/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "$%s" % int(self.donation4.amount / 100), status_code=200)
@@ -178,3 +188,14 @@ class DonationTest(TestCase):
         self.assertContains(response, "$%s @" % int(self.donation8.amount / 100), status_code=200)
         self.assertNotContains(response, "$%s - %s %s" % (int(self.donation9.amount / 100), self.user.first_name, self.user.last_name), status_code=200)
         self.assertContains(response, "Anonymous donation @", status_code=200)
+
+    def test_donate_campaign(self):
+        response = self.client.get('/{}/{}/{}/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.vote_participant.name)
+        self.assertContains(response, self.vote_participant2.name)
+
+        response = self.client.get('/{}/{}/{}/donate/{}/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug, self.vote_participant.pk))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Voting for: {}".format(self.vote_participant.name))
+        self.assertNotContains(response, "Voting for: {}".format(self.vote_participant2.name))
