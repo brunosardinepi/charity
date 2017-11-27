@@ -1,0 +1,18 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} Create Campaign - Vote | {{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}
+    <a href="{% url 'page' page_slug=campaign.page.page_slug %}">{{ campaign.page.name }}</a> / {{ campaign.name }} / Create vote participants
+{% endblock %}
+
+{% block body_content %}
+    <h1>Create Campaign - Vote</h1>
+    
+    <form method="POST" action="">
+        {% csrf_token %}
+        {{ formset.as_p }}
+        <input type="submit" class="button" value="Save">
+    </form>
+{% endblock %}

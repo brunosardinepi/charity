@@ -15,6 +15,11 @@ class CampaignImageAdmin(admin.ModelAdmin):
     ordering = ('campaign', 'uploaded_at',)
     list_filter = ('campaign', 'profile_picture',)
 
+class VoteParticipantAdmin(admin.ModelAdmin):
+    list_display = ('campaign', 'name',)
+    ordering = list_display
+    list_filter = ('campaign',)
 
 admin.site.register(models.Campaign, CampaignAdmin)
 admin.site.register(models.CampaignImage, CampaignImageAdmin)
+admin.site.register(models.VoteParticipant, VoteParticipantAdmin)

@@ -17,7 +17,7 @@ from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 import stripe
 
 from . import forms
-from .models import Campaign, CampaignImage
+from .models import Campaign, CampaignImage, VoteParticipant
 from .utils import email_new_campaign
 from comments.forms import CommentForm
 from donation.forms import BaseDonate, DonateForm
@@ -106,11 +106,66 @@ class CampaignCreate(View):
                 for manager in managers:
                     email_new_campaign(manager.user.email, campaign)
 
-                return HttpResponseRedirect(campaign.get_absolute_url())
+                if campaign.type == 'vote':
+#                    return render(request, 'campaign/campaign_create_vote.html', {'campaign': campaign})
+                    return redirect('campaign_create_vote', campaign_pk=campaign.pk)
+                else:
+                    return HttpResponseRedirect(campaign.get_absolute_url())
             else:
                 # redirect to error page
                 print("no page selected")
 
+
+class CampaignCreateVote(View):
+    def get(self, request, campaign_pk):
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        print("get, campaign = {}".format(campaign))
+        print("campaign name = {}, pk = {}".format(campaign.name, campaign.pk))
+        formset = forms.VoteParticipantInlineFormSet(
+            queryset=VoteParticipant.objects.none(),
+        )
+        return render(request, 'campaign/campaign_create_vote.html', {
+            'campaign': campaign,
+            'formset': formset,
+        })
+    def post(self, request, campaign_pk):
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        print("post, campaign = {}".format(campaign))
+        formset = forms.VoteParticipantInlineFormSet(request.POST)
+        if formset.is_valid():
+            formset.save(commit=False)
+            for f in formset:
+                if f.is_valid() and not f.empty_permitted:
+                    vote_participant = f.save(commit=False)
+                    vote_participant.campaign = campaign
+                    vote_participant.save()
+            return HttpResponseRedirect(campaign.get_absolute_url())
+
+class CampaignEditVote(View):
+    def get(self, request, page_slug, campaign_pk, campaign_slug):
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        q = VoteParticipant.objects.filter(campaign=campaign)
+        formset = forms.VoteParticipantInlineFormSet(queryset=q)
+        return render(request, 'campaign/campaign_edit_vote.html', {
+            'campaign': campaign,
+            'formset': formset,
+        })
+    def post(self, request, page_slug, campaign_pk, campaign_slug):
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        print("post, campaign = {}".format(campaign))
+        formset = forms.VoteParticipantInlineFormSet(request.POST)
+        if formset.is_valid():
+            formset.save(commit=False)
+            for f in formset:
+                if f.is_valid() and not f.empty_permitted:
+                    vote_participant = f.save(commit=False)
+                    vote_participant.campaign = campaign
+                    vote_participant.save()
+            for d in formset.deleted_objects:
+                d.delete()
+            return HttpResponseRedirect(campaign.get_absolute_url())
+        else:
+            print("invalid")
 
 def campaign_search_pages(request):
     if request.method == "POST":

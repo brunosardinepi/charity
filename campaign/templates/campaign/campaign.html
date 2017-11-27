@@ -41,6 +41,20 @@
     <p>Goal: ${{ campaign.goal }}</p>
     <p>{{ campaign.donation_money|cents_to_dollars }} raised by {{ campaign.donation_count }} donors</p>
 
+    {% if campaign.vote_participants %}
+        <h2>Vote</h2>
+        <ul>
+            {% for p in campaign.vote_participants %}
+                <li>
+                    {{ p.name }}
+                    <ul>
+                        <li>{{ p.description }}</li>
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
     {% if request.user.is_authenticated %}
         <button id="subscribe" name="{{ subscribe_attr.name }}" style="background-color:{{ subscribe_attr.color }}">{{ subscribe_attr.value  }}</button>
     {% else %}

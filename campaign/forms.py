@@ -8,7 +8,7 @@ class CampaignForm(forms.ModelForm):
         model = models.Campaign
         fields = [
             'name',
-            'campaign_slug',
+#            'campaign_slug',
             'type',
             'goal',
             'end_date',
@@ -41,3 +41,26 @@ class CampaignImageForm(forms.ModelForm):
 
 class CampaignSearchPagesForm(forms.Form):
     page = forms.CharField(max_length=255)
+
+class VoteParticipantForm(forms.ModelForm):
+    class Meta:
+        model = models.VoteParticipant
+        fields = [
+            'name',
+            'description',
+        ]
+
+VoteParticipantFormSet = forms.modelformset_factory(
+    models.VoteParticipant,
+    form=VoteParticipantForm,
+    extra=1,
+)
+
+VoteParticipantInlineFormSet = forms.inlineformset_factory(
+    models.Campaign,
+    models.VoteParticipant,
+    extra=1,
+    fields=('name', 'description',),
+    formset=VoteParticipantFormSet,
+    min_num=2,
+)

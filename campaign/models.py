@@ -172,6 +172,9 @@ class Campaign(models.Model):
     def comments(self):
         return Comment.objects.filter(campaign=self, deleted=False).order_by('-date')
 
+    def vote_participants(self):
+        return VoteParticipant.objects.filter(campaign=self).order_by('name')
+
 
 class VoteParticipant(models.Model):
     name = models.CharField(max_length=255)
