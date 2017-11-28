@@ -27,8 +27,8 @@ def email_new_campaign(email_to, campaign):
             exit()
 
 def campaign_duration(campaign):
-    if campaign.ended_on is not None:
-        duration = campaign.ended_on - campaign.created_on
+    if campaign.end_date is not None:
+        duration = campaign.end_date - campaign.created_on
         return duration.days
 
 def campaign_reached_goal(campaign):
