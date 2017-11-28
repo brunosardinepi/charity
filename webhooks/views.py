@@ -10,7 +10,7 @@ from django.views.decorators.http import require_POST
 
 import stripe
 
-from campaign.models import Campaign
+from campaign.models import Campaign, VoteParticipant
 from donation.models import Donation
 from page.models import Page
 from plans.models import StripePlan
@@ -69,6 +69,11 @@ def charge_succeeded(request):
             pf_user_pk = None
             first_name = event_json['data']['object']['metadata']['first_name']
             last_name = event_json['data']['object']['metadata']['last_name']
+        try:
+            vote_participant_pk = event_json['data']['object']['metadata']['vote_participant']
+            vote_participant = get_object_or_404(VoteParticipant, pk=vote_participant_pk)
+        except KeyError:
+            vote_participant = None
 
     amount = event_json['data']['object']['amount']
     page = get_object_or_404(Page, pk=page_pk)
@@ -76,44 +81,59 @@ def charge_succeeded(request):
     # get the user object if this was a donation from a logged-in user
     if pf_user_pk is not None:
         user = get_object_or_404(User, pk=pf_user_pk)
-        Donation.objects.create(
-            amount=amount,
-            anonymous_amount=anonymous_amount,
-            anonymous_donor=anonymous_donor,
-            comment=comment,
-            date=date,
-            page=page,
-            campaign=campaign,
-            stripe_charge_id=stripe_charge_id,
-            user=user,
-         )
+        if vote_participant is not None:
+            Donation.objects.create(
+                amount=amount,
+                anonymous_amount=anonymous_amount,
+                anonymous_donor=anonymous_donor,
+                comment=comment,
+                date=date,
+                page=page,
+                campaign=campaign,
+                campaign_participant=vote_participant,
+                stripe_charge_id=stripe_charge_id,
+                user=user,
+             )
+        else:
+            Donation.objects.create(
+                amount=amount,
+                anonymous_amount=anonymous_amount,
+                anonymous_donor=anonymous_donor,
+                comment=comment,
+                date=date,
+                page=page,
+                campaign=campaign,
+                stripe_charge_id=stripe_charge_id,
+                user=user,
+             )
     else:
-#        user = ""
-        Donation.objects.create(
-            amount=amount,
-            anonymous_amount=anonymous_amount,
-            anonymous_donor=anonymous_donor,
-            comment=comment,
-            date=date,
-            page=page,
-            campaign=campaign,
-            stripe_charge_id=stripe_charge_id,
-            donor_first_name=first_name,
-            donor_last_name=last_name,
-         )
-
-#    Donation.objects.create(
-#        amount=amount,
-#        anonymous_amount=anonymous_amount,
-#        anonymous_donor=anonymous_donor,
-#        comment=comment,
-#        page=page,
-#        campaign=campaign,
-#        stripe_charge_id=stripe_charge_id,
-#        user=user,
-#        first_name=first_name,
-#        last_name=last_name,
-#     )
+        if vote_participant is not None:
+            Donation.objects.create(
+                amount=amount,
+                anonymous_amount=anonymous_amount,
+                anonymous_donor=anonymous_donor,
+                comment=comment,
+                date=date,
+                page=page,
+                campaign=campaign,
+                campaign_participant=vote_participant,
+                stripe_charge_id=stripe_charge_id,
+                donor_first_name=first_name,
+                donor_last_name=last_name,
+             )
+        else:
+            Donation.objects.create(
+                amount=amount,
+                anonymous_amount=anonymous_amount,
+                anonymous_donor=anonymous_donor,
+                comment=comment,
+                date=date,
+                page=page,
+                campaign=campaign,
+                stripe_charge_id=stripe_charge_id,
+                donor_first_name=first_name,
+                donor_last_name=last_name,
+             )
 
     print("donation created")
     return HttpResponse(status=200)

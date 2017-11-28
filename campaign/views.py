@@ -20,7 +20,7 @@ from . import forms
 from .models import Campaign, CampaignImage, VoteParticipant
 from .utils import email_new_campaign
 from comments.forms import CommentForm
-from donation.forms import BaseDonate, DonateForm
+from donation.forms import BaseDonate, DonateForm, DonateUnauthenticatedForm
 from donation.models import Donation
 from donation.utils import donate, donation_graph, donation_statistics
 from error.utils import error_email
@@ -41,9 +41,13 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
         form = CommentForm
         template_params = {}
 
-        try:
-            user_subscription_check = campaign.campaign_subscribers.get(user_id=request.user.pk)
-        except UserProfileModels.UserProfile.DoesNotExist:
+        if request.user.is_authenticated():
+            try:
+                user_subscription_check = campaign.campaign_subscribers.get(user_id=request.user.pk)
+            except UserProfileModels.UserProfile.DoesNotExist:
+                user_subscription_check = None
+            user_subscription_check = None
+        else:
             user_subscription_check = None
 
         if user_subscription_check:
@@ -352,7 +356,10 @@ class CampaignDonate(View):
         if campaign.deleted == True:
             raise Http404
         else:
-            donate_form = BaseDonate()
+            if request.user.is_authenticated():
+                donate_form = BaseDonate()
+            else:
+                donate_form = DonateUnauthenticatedForm()
             template_params = {}
 
             if request.user.is_authenticated:
@@ -376,7 +383,10 @@ class CampaignDonate(View):
 
     def post(self, request, page_slug, campaign_pk, campaign_slug, vote_participant_pk):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        form = DonateForm(request.POST)
+        if request.user.is_authenticated():
+            form = BaseDonate(request.POST)
+        else:
+            form = DonateUnauthenticatedForm(request.POST)
         if form.is_valid():
             donate(request=request, form=form, page=None, campaign=campaign)
             return HttpResponseRedirect(campaign.get_absolute_url())

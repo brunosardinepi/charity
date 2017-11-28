@@ -58,7 +58,7 @@ class CampaignTest(TestCase):
             name='Test Campaign',
             campaign_slug='campaignslug',
             page=self.page,
-            type='Event',
+            type='Vote',
             city='Dallas',
             state='Texas',
             description='This is a description for Test Campaign.',
@@ -95,6 +95,16 @@ class CampaignTest(TestCase):
             campaign=self.campaign
         )
 
+        self.vote_participant = models.VoteParticipant.objects.create(
+            name="Harry",
+            campaign=self.campaign,
+        )
+
+        self.vote_participant2 = models.VoteParticipant.objects.create(
+            name="Sally",
+            campaign=self.campaign,
+        )
+
         self.donation = Donation.objects.create(
             amount=2000,
             comment='I donated!',
@@ -109,6 +119,49 @@ class CampaignTest(TestCase):
             page=self.campaign.page,
             campaign=self.campaign,
             user=self.user,
+        )
+
+        self.donation3 = models.Donation.objects.create(
+            amount=163,
+            anonymous_amount=True,
+            anonymous_donor=True,
+            comment='Total ghost',
+            page=self.campaign.page,
+            campaign=self.campaign,
+            campaign_participant=self.vote_participant,
+            user=self.user,
+        )
+
+        self.donation4 = models.Donation.objects.create(
+            amount=1375,
+            anonymous_donor=True,
+            comment='No name',
+            page=self.campaign.page,
+            campaign=self.campaign,
+            campaign_participant=self.vote_participant,
+            donor_first_name="Frank",
+            donor_last_name="Jackson",
+        )
+
+        self.donation5 = models.Donation.objects.create(
+            amount=5665,
+            anonymous_amount=True,
+            comment='Goodbye amount',
+            page=self.campaign.page,
+            campaign=self.campaign,
+            campaign_participant=self.vote_participant2,
+            user=self.user
+        )
+
+        self.donation6 = models.Donation.objects.create(
+            amount=8365,
+            anonymous_amount=True,
+            anonymous_donor=True,
+            comment='What is happening',
+            page=self.campaign.page,
+            campaign=self.campaign,
+            campaign_participant=self.vote_participant2,
+            user=self.user
         )
 
     def test_campaign_exists(self):
@@ -144,9 +197,7 @@ class CampaignTest(TestCase):
         self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 2)
 
     def test_campaign_status_logged_out(self):
-        request = self.factory.get('home')
-        request.user = AnonymousUser()
-        response = views.campaign(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
+        response = self.client.get('/%s/%s/%s/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.campaign.name, status_code=200)
@@ -157,11 +208,13 @@ class CampaignTest(TestCase):
         self.assertContains(response, self.campaign.goal, status_code=200)
         self.assertContains(response, self.campaign.donation_count, status_code=200)
         self.assertContains(response, int(self.campaign.donation_money / 100), status_code=200)
+        self.assertContains(response, self.vote_participant.name)
+        self.assertContains(response, self.vote_participant2.name)
+        self.assertContains(response, int(self.vote_participant.vote_amount() / 100))
+        self.assertContains(response, int(self.vote_participant2.vote_amount() / 100))
 
     def test_campaign_status_logged_in(self):
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.campaign(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
+        response = self.client.get('/%s/%s/%s/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.campaign.name, status_code=200)
