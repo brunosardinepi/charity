@@ -10,6 +10,7 @@ Release date: TBD
 ### Additions
 
 * Campaign end dates
+* Campaign voting
 
 ### Changes
 
