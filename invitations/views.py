@@ -43,6 +43,7 @@ def accept_invitation(request, invitation_pk, key):
             return HttpResponseRedirect(invitation.page.get_absolute_url())
         elif invitation.campaign:
             invitation.campaign.campaign_managers.add(request.user.userprofile)
+            invitation.campaign.campaign_subscribers.add(request.user.userprofile)
             for k, v in permissions.items():
                 if v == True:
                     assign_perm(k, request.user, invitation.campaign)

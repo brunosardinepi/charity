@@ -103,6 +103,7 @@ class CampaignCreate(View):
                 campaign.page = page
                 campaign.save()
                 campaign.campaign_admins.add(request.user.userprofile)
+                campaign.campaign_subscribers.add(request.user.userprofile)
 
                 admins = page.admins.all()
                 for admin in admins:

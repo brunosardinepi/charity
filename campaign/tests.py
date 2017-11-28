@@ -196,6 +196,9 @@ class CampaignTest(TestCase):
         response = self.client.post('/campaign/create/', data)
         self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 2)
 
+        campaign = models.Campaign.objects.get(name="MyCampaign")
+        self.assertIn(self.user.userprofile, campaign.campaign_subscribers.all())
+
     def test_campaign_status_logged_out(self):
         response = self.client.get('/%s/%s/%s/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
@@ -486,6 +489,7 @@ class CampaignTest(TestCase):
             invitation.campaign.campaign_slug
         ))
         self.assertEqual(response.status_code, 200)
+        self.assertIn(self.user5.userprofile, self.campaign.campaign_subscribers.all())
         self.assertContains(response, "Edit Campaign", status_code=200)
         self.assertContains(response, "Delete Campaign", status_code=200)
         self.assertContains(response, "Invite others to manage Campaign", status_code=200)

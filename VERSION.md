@@ -15,6 +15,7 @@ Release date: TBD
 ### Changes
 
 * Campaigns can be created from the home page or from a specific Page
+* Campaign admins and managers get automatically subscribed to the Campaign when it is created or they accept a manager invitation
 
 ### Fixes
 
