@@ -48,6 +48,7 @@ urlpatterns = [
 
     url(r'^campaign/subscribe/(?P<campaign_pk>\d+)/(?P<action>[\w-]*)/$', CampaignViews.subscribe, name='campaign_subscribe'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/donate/(?P<vote_participant_pk>\d+)/$', CampaignViews.CampaignDonate.as_view(), name='campaign_donate'),
+    url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/donate/$', CampaignViews.CampaignDonate.as_view(), name='campaign_donate'),
     url(r'^campaign/create/$', login_required(CampaignViews.CampaignCreate.as_view()), name='campaign_create'),
     url(r'^campaign/create/search/$', CampaignViews.campaign_search_pages, name='campaign_search_pages'),
     url(r'^campaign/create/(?P<campaign_pk>\d+)/vote/$', login_required(CampaignViews.CampaignCreateVote.as_view()), name='campaign_create_vote'),

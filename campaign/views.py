@@ -41,13 +41,29 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
         form = CommentForm
         template_params = {}
 
-        if request.user.is_authenticated():
-            try:
-                user_subscription_check = campaign.campaign_subscribers.get(user_id=request.user.pk)
-            except UserProfileModels.UserProfile.DoesNotExist:
+        if not campaign.type == "vote":
+            donate_form = BaseDonate()
+            if request.user.is_authenticated:
+                try:
+                    cards = get_user_credit_cards(request.user.userprofile)
+                    template_params["cards"] = cards
+                except Exception as e:
+                    template_params["stripe_error"] = True
+                    error = {
+                        "e": e,
+                        "user": request.user.pk,
+                        "page": campaign.page.pk,
+                        "campaign": campaign.pk,
+                    }
+                    error_email(error)
+            else:
                 user_subscription_check = None
-            user_subscription_check = None
         else:
+            donate_form = None
+
+        try:
+            user_subscription_check = campaign.campaign_subscribers.get(user_id=request.user.pk)
+        except UserProfileModels.UserProfile.DoesNotExist:
             user_subscription_check = None
 
         if user_subscription_check:
@@ -60,6 +76,8 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
 
         template_params["campaign"] = campaign
         template_params["form"] = form
+        template_params["donate_form"] = donate_form
+        template_params["api_pk"] = config.settings['stripe_api_pk']
         template_params["subscribe_attr"] = subscribe_attr
         return render(request, 'campaign/campaign.html', template_params)
 
@@ -350,9 +368,12 @@ def campaign_profile_update(request, image_pk):
 
 
 class CampaignDonate(View):
-    def get(self, request, page_slug, campaign_pk, campaign_slug, vote_participant_pk):
+    def get(self, request, page_slug, campaign_pk, campaign_slug, vote_participant_pk=None):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        vote_participant = get_object_or_404(VoteParticipant, pk=vote_participant_pk)
+        if vote_participant_pk is not None:
+            vote_participant = get_object_or_404(VoteParticipant, pk=vote_participant_pk)
+        else:
+            vote_participant = None
         if campaign.deleted == True:
             raise Http404
         else:
@@ -381,7 +402,7 @@ class CampaignDonate(View):
             template_params["vote_participant"] = vote_participant
             return render(request, 'campaign/donate.html', template_params)
 
-    def post(self, request, page_slug, campaign_pk, campaign_slug, vote_participant_pk):
+    def post(self, request, page_slug, campaign_pk, campaign_slug, vote_participant_pk=None):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
         if request.user.is_authenticated():
             form = BaseDonate(request.POST)

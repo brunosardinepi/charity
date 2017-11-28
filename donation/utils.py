@@ -124,8 +124,12 @@ def charge_source(c, page=None, campaign=None):
             "page": campaign.page.id,
             "pf_user_pk": c["pf_user_pk"],
         }
-        if c["vote_participant"]:
+#        if c["vote_participant"]:
+#            metadata["vote_participant"] = c["vote_participant"]
+        try:
             metadata["vote_participant"] = c["vote_participant"]
+        except KeyError:
+            pass
         charge = stripe.Charge.create(
                 amount=c["amount"],
                 currency="usd",

@@ -100,4 +100,9 @@
     {% else %}
         <p>No donations!</p>
     {% endif %}
+
+    {% if not campaign.type == "vote" %}
+        {% include "donation/donate.html" with campaign=campaign donate_form=donate_form api_key=api_key %}
+    {% endif %}
+
 {% endblock %}

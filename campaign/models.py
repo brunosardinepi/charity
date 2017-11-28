@@ -43,12 +43,13 @@ class Campaign(models.Model):
 
     TYPE_CHOICES = (
         ('event', 'Event'),
+        ('general', 'General'),
         ('vote', 'Vote'),
     )
     type = models.CharField(
         max_length=255,
         choices=TYPE_CHOICES,
-        default='Event',
+        default='general',
     )
 
     STATE_CHOICES = (
