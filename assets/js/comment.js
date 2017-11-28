@@ -25,7 +25,7 @@ $(document).on("submit", "#comment", function(event) {
 function show_reply_textarea(event) {
     var url = "/comments/" + event.target.id + "/reply/";
 //    var url = "{% url 'comments:reply' comment_pk=0 %}".replace(0, event.target.id);
-    $(event.target).parent().after("<form id='reply' action=" + url + " method='POST'><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "' /><textarea id='reply-text'></textarea><input type='submit' value='Reply' /></form>");
+    $(event.target).parent().after("<form id='reply' action=" + url + " method='POST'><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "' /><textarea id='reply-text' autofocus></textarea><input type='submit' value='Reply' /></form>");
 };
 
 function reply(id) {
