@@ -38,7 +38,6 @@ class Campaign(models.Model):
     name = models.CharField(max_length=255, db_index=True)
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE, related_name='campaigns')
     trending_score = models.DecimalField(default=0, max_digits=10, decimal_places=1)
-    vote_winner_gets = models.TextField(blank=True)
     event_location = models.TextField(blank=True)
 
 
@@ -181,6 +180,9 @@ class VoteParticipant(models.Model):
     name = models.CharField(max_length=255)
     campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE)
     description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.name
 
     def vote_amount(self):
         return Donation.objects.filter(campaign_participant=self).aggregate(Sum('amount')).get('amount__sum')
