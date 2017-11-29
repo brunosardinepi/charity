@@ -15,8 +15,8 @@ from page.models import Page
 
 def home(request):
     sponsored = Page.objects.filter(is_sponsored=True, deleted=False)
-    trending_pages = Page.objects.all().order_by('-trending_score')[:10]
-    trending_campaigns = Campaign.objects.all().order_by('-trending_score')[:10]
+    trending_pages = Page.objects.filter(deleted=False).order_by('-trending_score')[:10]
+    trending_campaigns = Campaign.objects.filter(deleted=False, is_active=True).order_by('-trending_score')[:10]
     page_donations = Page.objects.filter(deleted=False).aggregate(Sum('donation_money'))
     if page_donations["donation_money__sum"] == None:
         page_donations = 0

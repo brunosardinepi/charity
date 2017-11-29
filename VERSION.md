@@ -19,7 +19,7 @@ Release date: TBD
 
 ### Fixes
 
-* None
+* Filtered expired Campaigns off the home page
 
 
 ## Version 0.10.0
