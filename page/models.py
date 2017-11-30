@@ -30,8 +30,6 @@ class Page(models.Model):
     deleted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     deleted_on = models.DateTimeField(blank=True, null=True)
     description = models.TextField(blank=True)
-    donation_count = models.IntegerField(default=0)
-    donation_money = models.IntegerField(default=0)
     ein = models.CharField(max_length=255)
     is_sponsored = models.BooleanField(default=False)
     managers = models.ManyToManyField('userprofile.UserProfile', related_name='page_managers', blank=True)
@@ -194,6 +192,14 @@ class Page(models.Model):
     def donations(self):
         return Donation.objects.filter(page=self).order_by('-date')
 
+    def donation_count(self):
+        return Donation.objects.filter(page=self).count()
+
+    def donation_money(self):
+        return Donation.objects.filter(page=self).aggregate(Sum('amount')).get('amount__sum')
+
+    def unique_donors(self):
+        return Donation.objects.filter(page=self).distinct('donor_first_name').distinct('donor_last_name').count()
 
 def create_random_string(length=30):
     if length <= 0:

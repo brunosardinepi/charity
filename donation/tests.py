@@ -38,8 +38,6 @@ class DonationTest(TestCase):
             name='Test Page',
             page_slug='testpage',
             description='This is a description for Test Page.',
-            donation_count='20',
-            donation_money='30',
             category='Animal'
         )
 
@@ -52,8 +50,6 @@ class DonationTest(TestCase):
             state='Texas',
             description='This is a description for Test Campaign.',
             goal='666',
-            donation_count='5',
-            donation_money='100'
         )
 
         self.donation = models.Donation.objects.create(

@@ -65,15 +65,26 @@ def has_dashboard_access(user, obj, permission):
     # or if there's a permission, then they need to be a manager with that permission.
     # otherwise, just a manager
 
+    print("user = {}".format(user))
+    print("obj = {}".format(obj))
+    print("permission = {}".format(permission))
+
     if user.userprofile.is_admin(obj):
+        print("user is an admin")
         return True
     elif user.userprofile.is_manager(obj):
+        print("user is a manager")
         if permission:
+            print("this requires a permission")
             if user.has_perm(permission, obj):
+                print("you have permission, good")
                 return True
             else:
+                print("you're a manager but don't have the right permissions")
                 return False
         else:
+            print("no permission required, you're good")
             return True
     else:
+        print("you aren't a manager or an admin")
         return False

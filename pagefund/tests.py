@@ -22,6 +22,7 @@ from sendgrid.helpers.mail import *
 
 from . import views
 from campaign.models import Campaign
+from donation.models import Donation
 from invitations.models import GeneralInvitation
 from page.models import Page
 from pagefund import config
@@ -85,8 +86,8 @@ class HomeTest(TestCase):
             password='imthatguy',
         )
 
-        self.page = Page.objects.create(name="Buffalo", donation_money=600, is_sponsored=True, trending_score=30.0)
-        self.page2 = Page.objects.create(name="Antelope", donation_money=100, is_sponsored=False, trending_score=29.0)
+        self.page = Page.objects.create(name="Buffalo", is_sponsored=True, trending_score=30.0)
+        self.page2 = Page.objects.create(name="Antelope", is_sponsored=False, trending_score=29.0)
         self.page3 = Page.objects.create(name="page3", is_sponsored=False, trending_score=28.0)
         self.page4 = Page.objects.create(name="page4", is_sponsored=False, trending_score=27.0)
         self.page5 = Page.objects.create(name="page5", is_sponsored=False, trending_score=26.0)
@@ -99,10 +100,10 @@ class HomeTest(TestCase):
 
         self.page.subscribers.add(self.user.userprofile)
 
-        self.campaign = Campaign.objects.create(name="Blue", page=self.page, donation_money=50, trending_score=30.0)
-        self.campaign2 = Campaign.objects.create(name="Green", page=self.page, donation_money=900, trending_score=29.0)
-        self.campaign3 = Campaign.objects.create(name="Yellow", page=self.page, donation_money=500, trending_score=28.0)
-        self.campaign4 = Campaign.objects.create(name="campaign4", page=self.page2, donation_money=24, trending_score=27.0)
+        self.campaign = Campaign.objects.create(name="Blue", page=self.page, trending_score=30.0)
+        self.campaign2 = Campaign.objects.create(name="Green", page=self.page, trending_score=29.0)
+        self.campaign3 = Campaign.objects.create(name="Yellow", page=self.page, trending_score=28.0)
+        self.campaign4 = Campaign.objects.create(name="campaign4", page=self.page2, trending_score=27.0)
         self.campaign5 = Campaign.objects.create(name="campaign5", page=self.page2, trending_score=26.0)
         self.campaign6 = Campaign.objects.create(name="campaign6", page=self.page2, trending_score=25.0, is_active=False)
         self.campaign7 = Campaign.objects.create(name="campaign7", page=self.page2, trending_score=24.0)
@@ -112,13 +113,31 @@ class HomeTest(TestCase):
         self.campaign11 = Campaign.objects.create(name="campaign11", page=self.page2, trending_score=20.0)
         self.campaign12 = Campaign.objects.create(name="campaign12", page=self.page2, trending_score=2.0)
 
+        self.donation = Donation.objects.create(
+            amount=2000,
+            comment='I donated!',
+            page=self.page,
+            user=self.user
+        )
+
+        self.donation2 = Donation.objects.create(
+            amount=3500,
+            comment='Get good.',
+            page=self.page,
+            user=self.user
+        )
+
+        self.donation3 = Donation.objects.create(
+            amount=6000,
+            comment='I am rich.',
+            page=self.page,
+            user=self.user2
+        )
 
     def test_home_logged_out(self):
         response = self.client.get('/')
 
-        page_donations = Page.objects.filter(deleted=False).aggregate(Sum('donation_money'))
-        campaign_donations = Campaign.objects.filter(deleted=False).aggregate(Sum('donation_money'))
-        donations = int((int(page_donations["donation_money__sum"]) + int(campaign_donations["donation_money__sum"])) / 100)
+        donations = int(Donation.objects.all().aggregate(Sum('amount')).get('amount__sum') / 100)
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, donations, status_code=200)

@@ -9,6 +9,7 @@ from . import config
 from . import forms
 from .utils import email
 from campaign.models import Campaign
+from donation.models import Donation
 from invitations.models import GeneralInvitation
 from page.models import Page
 
@@ -17,18 +18,7 @@ def home(request):
     sponsored = Page.objects.filter(is_sponsored=True, deleted=False)
     trending_pages = Page.objects.filter(deleted=False).order_by('-trending_score')[:10]
     trending_campaigns = Campaign.objects.filter(deleted=False, is_active=True).order_by('-trending_score')[:10]
-    page_donations = Page.objects.filter(deleted=False).aggregate(Sum('donation_money'))
-    if page_donations["donation_money__sum"] == None:
-        page_donations = 0
-    else:
-        page_donations = int(page_donations["donation_money__sum"])
-    campaign_donations = Campaign.objects.filter(deleted=False).aggregate(Sum('donation_money'))
-    if campaign_donations["donation_money__sum"] == None:
-        campaign_donations = 0
-    else:
-        campaign_donations = int(campaign_donations["donation_money__sum"])
-    donations = page_donations + campaign_donations
-
+    donations = Donation.objects.all().aggregate(Sum('amount')).get('amount__sum')
     attr = {
         'donations': donations,
         'sponsored': sponsored,

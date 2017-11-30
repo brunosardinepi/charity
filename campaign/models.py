@@ -30,8 +30,6 @@ class Campaign(models.Model):
     deleted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     deleted_on = models.DateTimeField(blank=True, null=True)
     description = models.TextField(blank=True)
-    donation_count = models.IntegerField(default=0)
-    donation_money = models.IntegerField(default=0)
     end_date = models.DateTimeField(blank=True, null=True)
     goal = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
@@ -167,6 +165,12 @@ class Campaign(models.Model):
     def donations(self):
         return Donation.objects.filter(campaign=self).order_by('-date')
 
+    def donation_count(self):
+        return Donation.objects.filter(campaign=self).count()
+
+    def donation_money(self):
+        return Donation.objects.filter(campaign=self).aggregate(Sum('amount')).get('amount__sum')
+
     def managers_list(self):
         return self.campaign_managers.all()
 
@@ -176,6 +180,8 @@ class Campaign(models.Model):
     def vote_participants(self):
         return VoteParticipant.objects.filter(campaign=self).order_by('name')
 
+    def unique_donors(self):
+        return Donation.objects.filter(campaign=self).distinct('donor_first_name').distinct('donor_last_name').count()
 
 class VoteParticipant(models.Model):
     name = models.CharField(max_length=255)

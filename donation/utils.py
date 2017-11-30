@@ -65,27 +65,6 @@ def get_card_source(request):
         card_source = None
     return customer, card_source
 
-def unique_donor_check(request, page=None, campaign=None):
-    if request.user.is_authenticated():
-        page_donations = Donation.objects.filter(page=page, user=request.user)
-        if campaign is None:
-            if page_donations:
-                return False
-            else:
-                return "page"
-        else:
-            campaign_donations = Donation.objects.filter(campaign=campaign, user=request.user)
-            if page_donations:
-                if campaign_donations:
-                    return False
-                else:
-                    return "campaign"
-            else:
-                if campaign_donations:
-                    return False
-                else:
-                    return "both"
-
 def card_check(request, id):
     try:
         card = StripeCard.objects.get(user=request.user.userprofile, id=id)
@@ -124,8 +103,6 @@ def charge_source(c, page=None, campaign=None):
             "page": campaign.page.id,
             "pf_user_pk": c["pf_user_pk"],
         }
-#        if c["vote_participant"]:
-#            metadata["vote_participant"] = c["vote_participant"]
         try:
             metadata["vote_participant"] = c["vote_participant"]
         except KeyError:
@@ -230,8 +207,6 @@ def donate(request, form, page=None, campaign=None):
             elif page is not None:
                 metadata["page"] = page.id
 
-#            metadata["pf_user_pk"] = request.user.pk
-
                 charge = stripe.Charge.create(
                     amount=amount,
                     currency="usd",
@@ -246,23 +221,6 @@ def donate(request, form, page=None, campaign=None):
     else:
         metadata["first_name"] = form.cleaned_data['first_name']
         metadata["last_name"] = form.cleaned_data['last_name']
-#        if campaign is not None:
-#            metadata["campaign"] = campaign.id
-#            metadata["page"] = campaign.page.id
-#        elif page is not None:
-#            metadata["page"] = page.id
-#        print(metadata)
-#        charge = stripe.Charge.create(
-#            amount=amount,
-#            currency="usd",
-#            source=request.POST.get('stripeToken'),
-#            description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
-#            destination={
-#                "amount": final_amount,
-#                "account": page.stripe_account_id,
-#            },
-#            metadata=metadata,
-#        )
         if campaign is not None:
             metadata["campaign"] = campaign.id
             metadata["page"] = campaign.page.id
@@ -296,16 +254,6 @@ def donate(request, form, page=None, campaign=None):
 
     if page is None:
         page = campaign.page
-        campaign.donation_money += amount
-    page.donation_money += amount
-    unique_donor = unique_donor_check(request=request, page=page, campaign=campaign)
-    if unique_donor == "page":
-        page.donation_count += 1
-    elif unique_donor == "campaign":
-        campaign.donation_count += 1
-    elif unique_donor == "both":
-        page.donation_count += 1
-        campaign.donation_count += 1
     if campaign is not None:
         campaign.save()
     page.save()

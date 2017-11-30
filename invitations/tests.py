@@ -36,8 +36,6 @@ class ManagerInvitationTest(TestCase):
             name='Test Page',
             page_slug='testpage',
             description='This is a description for Test Page.',
-            donation_count='20',
-            donation_money='30',
             category='Animal'
         )
 

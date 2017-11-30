@@ -43,8 +43,6 @@ class CommentTest(TestCase):
             name='Test Page',
             page_slug='testpage',
             description='This is a description for Test Page.',
-            donation_count='20',
-            donation_money='30',
             category='Animal'
         )
 
@@ -54,8 +52,6 @@ class CommentTest(TestCase):
             page=self.page,
             description='This is a description for Test Campaign.',
             goal='11',
-            donation_count='21',
-            donation_money='31'
         )
 
         self.comment = models.Comment.objects.create(

@@ -40,8 +40,6 @@ class UserProfileTest(TestCase):
             type='Event',
             description='This is a description for Test Campaign.',
             goal='666',
-            donation_count='5',
-            donation_money='100'
         )
 
         self.campaign.campaign_admins.add(self.user.userprofile)
@@ -52,8 +50,6 @@ class UserProfileTest(TestCase):
             type='Event',
             description='I use a mousepad.',
             goal='15',
-            donation_count='1',
-            donation_money='2'
         )
 
         self.campaign2.campaign_managers.add(self.user.userprofile)
@@ -64,8 +60,6 @@ class UserProfileTest(TestCase):
             type='Event',
             description='I write with a pencil.',
             goal='153',
-            donation_count='3',
-            donation_money='98'
         )
 
         self.campaign3.campaign_subscribers.add(self.user.userprofile)

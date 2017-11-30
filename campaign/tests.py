@@ -63,8 +63,6 @@ class CampaignTest(TestCase):
             state='Texas',
             description='This is a description for Test Campaign.',
             goal='666',
-            donation_count=5,
-            donation_money=100
         )
 
         self.campaign.campaign_admins.add(self.user.userprofile)
@@ -84,8 +82,6 @@ class CampaignTest(TestCase):
             state='Texas',
             description='Im the captain',
             goal='334',
-            donation_count=52,
-            donation_money=10340,
             deleted=True
         )
 
@@ -209,8 +205,8 @@ class CampaignTest(TestCase):
         self.assertContains(response, self.campaign.state, status_code=200)
         self.assertContains(response, self.campaign.description, status_code=200)
         self.assertContains(response, self.campaign.goal, status_code=200)
-        self.assertContains(response, self.campaign.donation_count, status_code=200)
-        self.assertContains(response, int(self.campaign.donation_money / 100), status_code=200)
+        self.assertContains(response, self.campaign.donation_count(), status_code=200)
+        self.assertContains(response, int(self.campaign.donation_money() / 100), status_code=200)
         self.assertContains(response, self.vote_participant.name)
         self.assertContains(response, self.vote_participant2.name)
         self.assertContains(response, int(self.vote_participant.vote_amount() / 100))
@@ -226,8 +222,8 @@ class CampaignTest(TestCase):
         self.assertContains(response, self.campaign.state, status_code=200)
         self.assertContains(response, self.campaign.description, status_code=200)
         self.assertContains(response, self.campaign.goal, status_code=200)
-        self.assertContains(response, self.campaign.donation_count, status_code=200)
-        self.assertContains(response, int(self.campaign.donation_money / 100), status_code=200)
+        self.assertContains(response, self.campaign.donation_count(), status_code=200)
+        self.assertContains(response, int(self.campaign.donation_money() / 100), status_code=200)
 
     def test_campaign_admin_logged_out(self):
         request = self.factory.get('home')
