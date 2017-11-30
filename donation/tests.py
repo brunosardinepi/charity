@@ -3,6 +3,7 @@ from django.test import Client, TestCase
 from django.utils import timezone
 
 from . import models
+from .forms import BaseDonate
 from campaign.models import Campaign, VoteParticipant
 from page.models import Page
 
@@ -199,3 +200,15 @@ class DonationTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Voting for: {}".format(self.vote_participant.name))
         self.assertNotContains(response, "Voting for: {}".format(self.vote_participant2.name))
+
+    def test_donateform_bad_amount(self):
+        form = BaseDonate({
+            'amount': 1000000,
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_donateform_good_amount(self):
+        form = BaseDonate({
+            'amount': 999999,
+        })
+        self.assertTrue(form.is_valid())
