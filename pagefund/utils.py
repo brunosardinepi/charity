@@ -59,3 +59,21 @@ def donation_amount(initial_amount):
     stripe_fee = int(initial_amount * 0.029) + 30
     pagefund_fee = int(initial_amount * config.settings['pagefund_fee'])
     return initial_amount - stripe_fee - pagefund_fee
+
+def has_dashboard_access(user, obj, permission):
+    # user needs to be an admin,
+    # or if there's a permission, then they need to be a manager with that permission.
+    # otherwise, just a manager
+
+    if user.userprofile.is_admin(obj):
+        return True
+    elif user.userprofile.is_manager(obj):
+        if permission:
+            if user.has_perm(permission, obj):
+                return True
+            else:
+                return False
+        else:
+            return True
+    else:
+        return False

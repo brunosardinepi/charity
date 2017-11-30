@@ -104,6 +104,20 @@ class UserProfile(models.Model):
     def get_absolute_url(self):
         return reverse('userprofile:userprofile')
 
+    def is_admin(self, obj):
+        name = type(obj).__name__
+        if name == "Campaign":
+            return self in obj.campaign_admins.all()
+        elif name == "Page":
+            return self in obj.admins.all()
+
+    def is_manager(self, obj):
+        name = type(obj).__name__
+        if name == "Campaign":
+            return self in obj.campaign_managers.all()
+        elif name == "Page":
+            return self in obj.managers.all()
+
     def donations(self):
         return Donation.objects.filter(user=self.user).order_by('-date')
 

@@ -205,12 +205,13 @@ def campaign_edit(request, page_slug, campaign_pk, campaign_slug):
     campaign = get_object_or_404(Campaign, pk=campaign_pk)
 
     # write custom decorator for admin/manager check
-    admin = request.user.userprofile in campaign.campaign_admins.all()
-    if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_edit', campaign):
-        manager = True
-    else:
-        manager = False
-    if admin or manager:
+#    admin = request.user.userprofile in campaign.campaign_admins.all()
+#    if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_edit', campaign):
+#        manager = True
+#    else:
+#        manager = False
+#    if admin or manager:
+    if utils.has_dashboard_access(request.user, campaign, 'manager_edit'):
         form = forms.CampaignForm(instance=campaign)
         if request.method == 'POST':
             form = forms.CampaignForm(instance=campaign, data=request.POST)
@@ -227,12 +228,13 @@ def campaign_delete(request, page_slug, campaign_pk, campaign_slug):
     campaign = get_object_or_404(Campaign, pk=campaign_pk)
 
     # write custom decorator for admin/manager check
-    admin = request.user.userprofile in campaign.campaign_admins.all()
-    if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_delete', campaign):
-        manager = True
-    else:
-        manager = False
-    if admin or manager:
+#    admin = request.user.userprofile in campaign.campaign_admins.all()
+#    if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_delete', campaign):
+#        manager = True
+#    else:
+#        manager = False
+#    if admin or manager:
+    if utils.has_dashboard_access(request.user, campaign, 'manager_delete'):
         campaign.deleted = True
         campaign.deleted_by = request.user
         campaign.deleted_on = timezone.now()
@@ -250,14 +252,15 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
 
     # write custom decorator for admin/manager check
     # True if the user is an admin
-    admin = request.user.userprofile in campaign.campaign_admins.all()
+#    admin = request.user.userprofile in campaign.campaign_admins.all()
     # True if the user is a manager and has the 'invite' permission
-    if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_invite', campaign):
-        manager = True
-    else:
-        manager = False
+#    if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_invite', campaign):
+#        manager = True
+#    else:
+#        manager = False
     # if the user is either an admin or a manager, so either must be True
-    if admin or manager:
+#    if admin or manager:
+    if utils.has_dashboard_access(request.user, campaign, 'manager_invite'):
         form = forms.ManagerInviteForm()
         if request.method == 'POST':
             form = forms.ManagerInviteForm(request.POST)
@@ -285,7 +288,8 @@ def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
     campaign = get_object_or_404(Campaign, pk=campaign_pk)
     manager = get_object_or_404(User, pk=manager_pk)
     # only campaign admins can remove managers
-    if request.user.userprofile in campaign.campaign_admins.all():
+#    if request.user.userprofile in campaign.campaign_admins.all():
+    if utils.has_dashboard_access(request.user, campaign, None):
         # remove the manager
         campaign.campaign_managers.remove(manager.userprofile)
         # revoke the permissions
@@ -303,12 +307,13 @@ class CampaignImageUpload(View):
     def get(self, request, page_slug, campaign_pk, campaign_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        admin = request.user.userprofile in campaign.page.admins.all()
-        if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', campaign):
-            manager = True
-        else:
-            manager = False
-        if admin or manager:
+#        admin = request.user.userprofile in campaign.page.admins.all()
+#        if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', campaign):
+#            manager = True
+#        else:
+#            manager = False
+#        if admin or manager:
+        if utils.has_dashboard_access(request.user, campaign, 'manager_image_edit'):
             images = CampaignImage.objects.filter(campaign=campaign)
             return render(self.request, 'campaign/images.html', {'campaign': campaign, 'images': images })
         else:
@@ -317,12 +322,13 @@ class CampaignImageUpload(View):
     def post(self, request, page_slug, campaign_pk, campaign_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        admin = request.user.userprofile in campaign.page.admins.all()
-        if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', campaign):
-            manager = True
-        else:
-            manager = False
-        if admin or manager:
+#        admin = request.user.userprofile in campaign.page.admins.all()
+#        if request.user.userprofile in campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', campaign):
+#            manager = True
+#        else:
+#            manager = False
+#        if admin or manager:
+        if utils.has_dashboard_access(request.user, campaign, 'manager_image_edit'):
             form = forms.CampaignImageForm(self.request.POST, self.request.FILES)
             data = image_is_valid(request, form, campaign)
             return JsonResponse(data)
@@ -333,12 +339,13 @@ class CampaignImageUpload(View):
 def campaign_image_delete(request, image_pk):
     image = get_object_or_404(CampaignImage, pk=image_pk)
     # write custom decorator for admin/manager check
-    admin = request.user.userprofile in image.campaign.campaign_admins.all()
-    if request.user.userprofile in image.campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', image.campaign):
-        manager = True
-    else:
-        manager = False
-    if admin or manager:
+#    admin = request.user.userprofile in image.campaign.campaign_admins.all()
+#    if request.user.userprofile in image.campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', image.campaign):
+#        manager = True
+#    else:
+#        manager = False
+#    if admin or manager:
+    if utils.has_dashboard_access(request.user, image.campaign, 'manager_image_edit'):
         image.delete()
         return HttpResponse('')
     else:
@@ -348,12 +355,13 @@ def campaign_image_delete(request, image_pk):
 def campaign_profile_update(request, image_pk):
     image = get_object_or_404(CampaignImage, pk=image_pk)
     # write custom decorator for admin/manager check
-    admin = request.user.userprofile in image.campaign.campaign_admins.all()
-    if request.user.userprofile in image.campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', image.campaign):
-        manager = True
-    else:
-        manager = False
-    if admin or manager:
+#    admin = request.user.userprofile in image.campaign.campaign_admins.all()
+#    if request.user.userprofile in image.campaign.campaign_managers.all() and request.user.has_perm('manager_image_edit', image.campaign):
+#        manager = True
+#    else:
+#        manager = False
+#    if admin or manager:
+    if utils.has_dashboard_access(request.user, image.campaign, 'manager_image_edit'):
         try:
             profile_picture = CampaignImage.objects.get(campaign=image.campaign, profile_picture=True)
         except CampaignImage.DoesNotExist:
@@ -470,12 +478,13 @@ class CampaignAjaxDonations(View):
 class CampaignDashboard(View):
     def get(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        admin = request.user.userprofile in campaign.campaign_admins.all()
-        if request.user.userprofile in campaign.campaign_managers.all():
-            manager = True
-        else:
-            manager = False
-        if admin or manager:
+#        admin = request.user.userprofile in campaign.campaign_admins.all()
+#        if request.user.userprofile in campaign.campaign_managers.all():
+#            manager = True
+#        else:
+#            manager = False
+#        if admin or manager:
+        if utils.has_dashboard_access(request.user, campaign, None):
             return render(self.request, 'campaign/dashboard.html', {
                 'campaign': campaign,
                 'donations': donation_statistics(campaign),
