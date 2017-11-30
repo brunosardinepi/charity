@@ -369,11 +369,8 @@ class PageAjaxDonations(View):
 
 class PageDashboard(View):
     def get(self, request, page_slug):
-        print("view accessed")
         page = get_object_or_404(Page, page_slug=page_slug)
-        print("got page in view")
         if utils.has_dashboard_access(request.user, page, None):
-            print("view is good")
             return render(self.request, 'page/dashboard.html', {
                 'page': page,
                 'donations': donation_statistics(page),

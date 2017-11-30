@@ -124,8 +124,6 @@ class CampaignCreate(View):
 class CampaignCreateVote(View):
     def get(self, request, campaign_pk):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        print("get, campaign = {}".format(campaign))
-        print("campaign name = {}, pk = {}".format(campaign.name, campaign.pk))
         formset = forms.VoteParticipantInlineFormSet(
             queryset=VoteParticipant.objects.none(),
         )
@@ -135,7 +133,6 @@ class CampaignCreateVote(View):
         })
     def post(self, request, campaign_pk):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        print("post, campaign = {}".format(campaign))
         formset = forms.VoteParticipantInlineFormSet(request.POST)
         if formset.is_valid():
             formset.save(commit=False)
@@ -157,7 +154,6 @@ class CampaignEditVote(View):
         })
     def post(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        print("post, campaign = {}".format(campaign))
         formset = forms.VoteParticipantInlineFormSet(request.POST)
         if formset.is_valid():
             formset.save(commit=False)
