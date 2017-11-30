@@ -170,12 +170,13 @@ def page_create(request):
 @login_required
 def page_edit(request, page_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
-    admin = request.user.userprofile in page.admins.all()
-    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_edit', page):
-        manager = True
-    else:
-        manager = False
-    if admin or manager:
+#    admin = request.user.userprofile in page.admins.all()
+#    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_edit', page):
+#        manager = True
+#    else:
+#        manager = False
+#    if admin or manager:
+    if utils.has_dashboard_access(request.user, page, 'manager_edit'):
         form = forms.PageForm(instance=page)
         if request.method == 'POST':
             form = forms.PageForm(instance=page, data=request.POST)
@@ -189,12 +190,13 @@ def page_edit(request, page_slug):
 @login_required
 def page_delete(request, page_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
-    admin = request.user.userprofile in page.admins.all()
-    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', page):
-        manager = True
-    else:
-        manager = False
-    if admin or manager:
+#    admin = request.user.userprofile in page.admins.all()
+#    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_delete', page):
+#        manager = True
+#    else:
+#        manager = False
+#    if admin or manager:
+    if utils.has_dashboard_access(request.user, page, 'manager_delete'):
         page.deleted = True
         page.deleted_by = request.user
         page.deleted_on = timezone.now()
@@ -238,14 +240,15 @@ def subscribe(request, page_pk, action=None):
 def page_invite(request, page_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
     # True if the user is an admin
-    admin = request.user.userprofile in page.admins.all()
+#    admin = request.user.userprofile in page.admins.all()
     # True if the user is a manager and has the 'invite' permission
-    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_invite', page):
-        manager = True
-    else:
-        manager = False
+#    if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_invite', page):
+#        manager = True
+#    else:
+#        manager = False
     # if the user is either an admin or a manager, so either must be True
-    if admin or manager:
+#    if admin or manager:
+    if utils.has_dashboard_access(request.user, page, 'manager_invite'):
         form = forms.ManagerInviteForm()
         if request.method == 'POST':
             form = forms.ManagerInviteForm(request.POST)
@@ -290,12 +293,13 @@ def remove_manager(request, page_slug, manager_pk):
 class PageImageUpload(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        admin = request.user.userprofile in page.admins.all()
-        if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_image_edit', page):
-            manager = True
-        else:
-            manager = False
-        if admin or manager:
+#        admin = request.user.userprofile in page.admins.all()
+#        if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_image_edit', page):
+#            manager = True
+#        else:
+#            manager = False
+#        if admin or manager:
+        if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
             images = PageImage.objects.filter(page=page)
             return render(self.request, 'page/images.html', {'page': page, 'images': images})
         else:
@@ -303,12 +307,13 @@ class PageImageUpload(View):
 
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        admin = request.user.userprofile in page.admins.all()
-        if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_image_edit', page):
-            manager = True
-        else:
-            manager = False
-        if admin or manager:
+#        admin = request.user.userprofile in page.admins.all()
+#        if request.user.userprofile in page.managers.all() and request.user.has_perm('manager_image_edit', page):
+#            manager = True
+#        else:
+#            manager = False
+#        if admin or manager:
+        if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
             form = forms.PageImageForm(self.request.POST, self.request.FILES)
             data = image_is_valid(request, form, page)
             return JsonResponse(data)
@@ -329,12 +334,13 @@ def page_donate(request, page_pk):
 @login_required
 def page_image_delete(request, image_pk):
     image = get_object_or_404(PageImage, pk=image_pk)
-    admin = request.user.userprofile in image.page.admins.all()
-    if request.user.userprofile in image.page.managers.all() and request.user.has_perm('manager_image_edit', image.page):
-        manager = True
-    else:
-        manager = False
-    if admin or manager:
+#    admin = request.user.userprofile in image.page.admins.all()
+#    if request.user.userprofile in image.page.managers.all() and request.user.has_perm('manager_image_edit', image.page):
+#        manager = True
+#    else:
+#        manager = False
+#    if admin or manager:
+    if utils.has_dashboard_access(request.user, image.page, 'manager_image_edit'):
         image.delete()
         return HttpResponse('')
     else:
@@ -343,12 +349,13 @@ def page_image_delete(request, image_pk):
 @login_required
 def page_profile_update(request, image_pk):
     image = get_object_or_404(PageImage, pk=image_pk)
-    admin = request.user.userprofile in image.page.admins.all()
-    if request.user.userprofile in image.page.managers.all() and request.user.has_perm('manager_image_edit', image.page):
-        manager = True
-    else:
-        manager = False
-    if admin or manager:
+#    admin = request.user.userprofile in image.page.admins.all()
+#    if request.user.userprofile in image.page.managers.all() and request.user.has_perm('manager_image_edit', image.page):
+#        manager = True
+#    else:
+#        manager = False
+#    if admin or manager:
+    if utils.has_dashboard_access(request.user, image.page, 'manager_image_edit'):
         try:
             profile_picture = PageImage.objects.get(page=image.page, profile_picture=True)
         except PageImage.DoesNotExist:
@@ -408,12 +415,13 @@ class PageAjaxDonations(View):
 class PageDashboard(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        admin = request.user.userprofile in page.admins.all()
-        if request.user.userprofile in page.managers.all():
-            manager = True
-        else:
-            manager = False
-        if admin or manager:
+#        admin = request.user.userprofile in page.admins.all()
+#        if request.user.userprofile in page.managers.all():
+#            manager = True
+#        else:
+#            manager = False
+#        if admin or manager:
+        if utils.has_dashboard_access(request.user, page, None):
             return render(self.request, 'page/dashboard.html', {
                 'page': page,
                 'donations': donation_statistics(page),
