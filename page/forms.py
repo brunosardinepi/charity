@@ -4,7 +4,6 @@ from . import models
 
 
 class PageForm(forms.ModelForm):
-    ssn = forms.CharField(max_length=4, label="Last 4 of SSN")
     ein = forms.CharField(required=False)
 
     class Meta:
@@ -52,5 +51,6 @@ class ManagerInviteForm(forms.Form):
 class PageBankForm(forms.Form):
     account_holder_first_name = forms.CharField(max_length=255)
     account_holder_last_name = forms.CharField(max_length=255)
+    ssn = forms.CharField(max_length=4, label="Last 4 of SSN")
     account_number = forms.CharField(max_length=12)
     routing_number = forms.CharField(max_length=9)

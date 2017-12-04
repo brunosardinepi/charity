@@ -129,7 +129,7 @@ def page_create(request):
                         "state": page.state
                     },
                     "business_tax_id": page.ein,
-                    "ssn_last_4": page_form.cleaned_data['ssn']
+                    "ssn_last_4": bank_form.cleaned_data['ssn']
                 }
 
                 if page_form.cleaned_data['tos_accepted'] == True:
