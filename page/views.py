@@ -132,7 +132,8 @@ def page_create(request):
                     "ssn_last_4": page_form.cleaned_data['ssn']
                 }
 
-                if page_form.cleaned_data['tos_acceptance'] == True:
+                if page_form.cleaned_data['tos_accepted'] == True:
+                    print("tos accepted")
                     user_ip = get_client_ip(request)
                     tos_acceptance = {
                         "date": timezone.now(),

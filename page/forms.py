@@ -5,7 +5,6 @@ from . import models
 
 class PageForm(forms.ModelForm):
     ssn = forms.CharField(max_length=4, label="Last 4 of SSN")
-    tos_acceptance = forms.BooleanField(required=True)
     ein = forms.CharField(required=False)
 
     class Meta:
@@ -25,6 +24,7 @@ class PageForm(forms.ModelForm):
             'contact_email',
             'contact_phone',
             'website',
+            'tos_accepted',
         ]
 
 class PageImageForm(forms.ModelForm):
