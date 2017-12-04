@@ -11,16 +11,19 @@ Release date: TBD
 
 * Campaign end dates
 * Campaign voting
+* Added "other" option to Page categories
 
 ### Changes
 
 * Campaigns can be created from the home page or from a specific Page
 * Campaign admins and managers get automatically subscribed to the Campaign when it is created or they accept a manager invitation
 * Users that are signing up only need their email instead of name, birthday, state, etc.
+* Removed "nonprofit number" from Pages
 
 ### Fixes
 
 * Filtered expired Campaigns off the home page
+* Linebreaks added to Page/Campaign descriptions
 
 
 ## Version 0.10.0

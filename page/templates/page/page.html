@@ -30,7 +30,7 @@
     <p>Trending score: {{ page.trending_score }}</p>
     <p>Type: {{ page.get_type_display }}</p>
     <p>Location: {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{{ page.state }}{% endif %}</p>
-    <p>Description: {{ page.description }}</p>
+    <p>Description: {{ page.description|linebreaks }}</p>
     <p>Category: {{ page.get_category_display }}</p>
     <p>Contact email: {{ page.contact_email }}</p>
     <p>Contact phone: {{ page.contact_phone }}</p>
