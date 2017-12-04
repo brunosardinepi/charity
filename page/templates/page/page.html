@@ -38,7 +38,10 @@
     <p>{{ page.donation_money|cents_to_dollars }} raised by {{ page.unique_donors }} donors</p>
 
     {% if request.user.is_authenticated %}
-        <button id="subscribe" name="{{ subscribe_attr.name }}" style="background-color:{{ subscribe_attr.color }}">{{ subscribe_attr.value  }}</button>
+        {% get_obj_perms request.user for page as "page_perms" %}
+        {% if request.user.userprofile not in page.admins.all and page_perms|length == 0 %}
+            <button id="subscribe" name="{{ subscribe_attr.name }}" style="background-color:{{ subscribe_attr.color }}">{{ subscribe_attr.value  }}</button>
+        {% endif %}
     {% else %}
         <button onclick="location.href='{% url 'login' %}?next=/page/subscribe/{{ page.pk }}/subscribe/'" style="background-color:green">Subscribe</button>
     {% endif %}
@@ -61,7 +64,6 @@
 
     {% include "comments/comments.html" with model="page" obj=page %}
 
-    {% get_obj_perms request.user for page as "page_perms" %}
     {% if request.user.userprofile in page.admins.all or page_perms %}
         <p><a href="{% url 'page_dashboard' page_slug=page.page_slug %}">Dashboard</a></p>
     {% endif %}

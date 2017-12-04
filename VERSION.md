@@ -19,11 +19,13 @@ Release date: TBD
 * Campaign admins and managers get automatically subscribed to the Campaign when it is created or they accept a manager invitation
 * Users that are signing up only need their email instead of name, birthday, state, etc.
 * Removed "nonprofit number" from Pages
+* Removed "subscribe" option from Pages/Campaigns if user is an admin or manager
 
 ### Fixes
 
 * Filtered expired Campaigns off the home page
 * Linebreaks added to Page/Campaign descriptions
+* Don't have to enter SSN or Terms of Service agreement when editing a Page
 
 
 ## Version 0.10.0

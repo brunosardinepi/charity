@@ -58,7 +58,6 @@ class PageTest(TestCase):
         self.page = models.Page.objects.create(
             name='Test Page',
             type='Nonprofit',
-            nonprofit_number='123456789',
             page_slug='testpage',
             city='Houston',
             state='Texas',
@@ -70,7 +69,8 @@ class PageTest(TestCase):
         )
 
         self.page.admins.add(self.user.userprofile)
-        self.page.subscribers.add(self.user.userprofile)
+#        self.page.subscribers.add(self.user.userprofile)
+        self.page.subscribers.add(self.user5.userprofile)
         self.page.managers.add(self.user3.userprofile)
         self.page.managers.add(self.user4.userprofile)
         assign_perm('manager_edit', self.user3, self.page)
@@ -278,7 +278,6 @@ class PageTest(TestCase):
             'name': self.page.name,
             'page_slug': self.page.page_slug,
             'type': 'nonprofit',
-            'nonprofit_number': '123456789',
             'category': 'animal',
             'state': 'DE',
             'description': 'New description here!',
@@ -316,10 +315,8 @@ class PageTest(TestCase):
         self.assertContains(response, 'name="subscribe"', status_code=200)
 
     def test_page_subscribed(self):
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.page(request, self.page.page_slug)
-
+        self.client.login(username='newguy', password='imnewhere')
+        response = self.client.get('/%s/' % self.page.page_slug)
         self.assertContains(response, 'name="unsubscribe"', status_code=200)
 
     def test_page_subscribe_redirect(self):

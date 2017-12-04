@@ -56,14 +56,16 @@
     {% endif %}
 
     {% if request.user.is_authenticated %}
-        <button id="subscribe" name="{{ subscribe_attr.name }}" style="background-color:{{ subscribe_attr.color }}">{{ subscribe_attr.value  }}</button>
+        {% get_obj_perms request.user for campaign as "campaign_perms" %}
+        {% if request.user.userprofile not in campaign.campaign_admins.all and campaign_perms|length == 0 %}
+            <button id="subscribe" name="{{ subscribe_attr.name }}" style="background-color:{{ subscribe_attr.color }}">{{ subscribe_attr.value  }}</button>
+        {% endif %}
     {% else %}
         <button onclick="location.href='{% url 'login' %}?next=/campaign/subscribe/{{ campaign.pk }}/subscribe/'" style="background-color:green">Subscribe</button>
     {% endif %}
 
     {% include "comments/comments.html" with model="campaign" obj=campaign %}
 
-    {% get_obj_perms request.user for campaign as "campaign_perms" %}
     {% if request.user.userprofile in campaign.campaign_admins.all or campaign_perms %}
         <p><a href="{% url 'campaign_dashboard' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Dashboard</a></p>
     {% endif %}
