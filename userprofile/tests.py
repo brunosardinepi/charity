@@ -136,13 +136,13 @@ class UserProfileTest(TestCase):
             'first_name': 'John',
             'last_name': 'Doe',
             'birthday': '1990-09-23',
-            'state': 'KS'
+            'state': 'KS',
         })
         self.assertTrue(form.is_valid())
 
     def test_userprofileform_blank(self):
         form = forms.UserProfileForm({})
-        self.assertFalse(form.is_valid())
+        self.assertTrue(form.is_valid())
 
     def test_sent_invitations(self):
         self.client.login(username='testuser', password='testpassword')

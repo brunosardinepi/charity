@@ -181,10 +181,6 @@ class HomeTest(TestCase):
         self.assertContains(response, "Sign up with Facebook", status_code=200)
 
         data = {
-            'first_name': 'Testing',
-            'last_name': 'Signup',
-            'birthday': '11/12/90',
-            'state': 'CO',
             'email': 'mytestemail@gmail.com',
             'email2': 'mytestemail@gmail.com',
             'password1': 'mytestpassword',
@@ -196,10 +192,10 @@ class HomeTest(TestCase):
         user = User.objects.filter(email='mytestemail@gmail.com')
         self.assertEqual(len(user), 1)
         user = user[0]
-        self.assertEqual(user.first_name, data['first_name'])
-        self.assertEqual(user.last_name, data['last_name'])
-        self.assertEqual(user.userprofile.birthday, datetime.date(1990, 11, 12))
-        self.assertEqual(user.userprofile.state, data['state'])
+        self.assertEqual(user.first_name, '')
+        self.assertEqual(user.last_name, '')
+        self.assertEqual(user.userprofile.birthday, None)
+        self.assertEqual(user.userprofile.state, '')
         self.assertEqual(user.email, data['email'])
 
     def test_invite_logged_out(self):

@@ -4,10 +4,11 @@ from . import models
 
 
 class UserProfileForm(forms.Form):
-    first_name = forms.CharField(max_length=100, label='First name')
-    last_name = forms.CharField(max_length=100, label='Last name')
-    birthday = forms.DateField()
+    first_name = forms.CharField(max_length=100, label='First name', required=False)
+    last_name = forms.CharField(max_length=100, label='Last name', required=False)
+    birthday = forms.DateField(required=False)
     STATE_CHOICES = (
+        ('', '-----'),
         ('AL', 'Alabama'),
         ('AK', 'Alaska'),
         ('AZ', 'Arizona'),
@@ -62,6 +63,7 @@ class UserProfileForm(forms.Form):
     state = forms.ChoiceField(
         choices=STATE_CHOICES,
         label='State',
+        required=False,
     )
 
     def signup(self, request, user):
