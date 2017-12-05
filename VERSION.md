@@ -26,6 +26,7 @@ Release date: TBD
 * Filtered expired Campaigns off the home page
 * Linebreaks added to Page/Campaign descriptions
 * Don't have to enter SSN or Terms of Service agreement when editing a Page
+* Donations can't be negative anymore
 
 
 ## Version 0.10.0
