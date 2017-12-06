@@ -26,7 +26,7 @@ Release date: TBD
 * Filtered expired Campaigns off the home page
 * Linebreaks added to Page/Campaign descriptions
 * Don't have to enter SSN or Terms of Service agreement when editing a Page
-* Donations can't be negative anymore
+* Donations can't be negative anymore, and have a maximum of $999,999 to accommodate Stripe's maximum
 
 
 ## Version 0.10.0
