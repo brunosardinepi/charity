@@ -6,6 +6,15 @@
 {% block head_extra %}
     <script src="{% static 'js/comment_csrf.js' %}"></script>
     <script src="{% static 'js/campaign_search_pages.js' %}"></script>
+
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <script>
+        $(function() {
+            $("#id_end_date").datepicker();
+        });
+    </script>
 {% endblock %}
 
 {% block breadcrumbs %}
