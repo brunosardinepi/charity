@@ -12,6 +12,7 @@ Release date: TBD
 * Campaign end dates
 * Campaign voting
 * Added "other" option to Page categories
+* Preset donation amounts ($5, $10, $25, $50, $100)
 
 ### Changes
 
