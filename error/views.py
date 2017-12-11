@@ -16,3 +16,6 @@ def error_invite_user_exists(request):
 def error_image_type(request):
     return render(request, 'error/error_image_type.html')
 
+def error_amount_is_none(request):
+    print("error_amount_is_none accessed")
+    return render(request, 'error/error_amount_is_none.html')

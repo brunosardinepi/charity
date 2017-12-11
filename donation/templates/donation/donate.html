@@ -14,9 +14,18 @@
         {% csrf_token %}
         <div class="form-row">
             {{ donate_form.as_p  }}
+            
+            <input type="checkbox" name="amount" class="preset-amount" value=5 />$5<br />
+            <input type="checkbox" name="amount" class="preset-amount" value=10 />$10<br />
+            <input type="checkbox" name="amount" class="preset-amount" value=25 />$25<br />
+            <input type="checkbox" name="amount" class="preset-amount" value=50 />$50<br />
+            <input type="checkbox" name="amount" class="preset-amount" value=100 />$100<br />
+
+            <div id="amount-errors"></div>
+
             {% if cards %}
                 {% for x, c in cards.items %}
-                    <input type="radio" name="saved_card" value="{{ c.id }}" {% if c.default == True %}checked="checked" {% endif %}/>{{ c.name }} ({{ c.last4 }})<br />
+                    <input type="radio" name="saved_card" class="saved-card" value="{{ c.id }}" {% if c.default == True %}checked="checked" {% endif %}/>{{ c.name }} ({{ c.last4 }})<br />
                 {% endfor %}
             {% elif cards_error_authentication %}
             {% endif %}
@@ -34,6 +43,11 @@
     </form>
 
     <script>
+
+        $("input.preset-amount").on("change", function() {
+            $("input.preset-amount").not(this).prop("checked", false);  
+        });
+
         var stripe = Stripe('{{ api_pk }}');
         var elements = stripe.elements();
         var card = elements.create('card');
@@ -75,7 +89,8 @@
             if ($("#hide-new-card").length > 0) {
                 console.log("hide-new-card length");
                 console.log($("#hide-new-card").length);
-                $("input[type='radio']").removeAttr("checked");
+//                $("input.saved-card").removeAttr("checked");
+                $("input.saved-card").prop("checked", false);
                 stripe.createToken(card, extraDetails).then(function(result) {
                     if (result.error) {
                         var errorElement = document.getElementById('card-errors');
@@ -86,8 +101,19 @@
                 });
             } else if ($("#new-card").length > 0) {
                 console.log("new-card length");
-                var form = document.getElementById("payment-form");
-                form.submit();
+
+                if (($("input.preset-amount:checked").length == 0) && ($("#id_amount").val().length == 0)) {
+                    console.log("nothing is checked and amount is empty");
+                    $("#amount-errors").html("Please select an amount to donate.");
+                } else {
+                    console.log("something is either checked or the amount is not empty");
+                    $("#amount-errors").html("");
+                    var form = document.getElementById("payment-form");
+                    form.submit();
+                };
+
+//                var form = document.getElementById("payment-form");
+//                form.submit();
             };
         });
 
