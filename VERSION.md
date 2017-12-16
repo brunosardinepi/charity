@@ -28,6 +28,7 @@ Release date: TBD
 * Linebreaks added to Page/Campaign descriptions
 * Don't have to enter SSN or Terms of Service agreement when editing a Page
 * Donations can't be negative anymore, and have a maximum of $999,999 to accommodate Stripe's maximum
+* Redirect issue when subscribing to a Page/Campaign while logged out
 
 
 ## Version 0.10.0

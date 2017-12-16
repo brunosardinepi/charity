@@ -368,8 +368,13 @@ def subscribe(request, campaign_pk, action=None):
         new_subscribe_attr = {"name": "subscribe", "value": "Subscribe", "color": "green"}
     else:
         print("something went wrong")
-    new_subscribe_attr = json.dumps(new_subscribe_attr)
-    return HttpResponse(new_subscribe_attr)
+    previous_page = request.META.get('HTTP_REFERER')
+    expected_url = "/accounts/login/?next=/campaign/subscribe/"
+    if expected_url in previous_page:
+        return HttpResponseRedirect(campaign.get_absolute_url())
+    else:
+        new_subscribe_attr = json.dumps(new_subscribe_attr)
+        return HttpResponse(new_subscribe_attr)
 
 class CampaignAjaxDonations(View):
     def post(self, request):

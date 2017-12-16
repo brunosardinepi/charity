@@ -69,7 +69,6 @@ class PageTest(TestCase):
         )
 
         self.page.admins.add(self.user.userprofile)
-#        self.page.subscribers.add(self.user.userprofile)
         self.page.subscribers.add(self.user5.userprofile)
         self.page.managers.add(self.user3.userprofile)
         self.page.managers.add(self.user4.userprofile)
