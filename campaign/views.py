@@ -251,7 +251,8 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
 def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
     campaign = get_object_or_404(Campaign, pk=campaign_pk)
     manager = get_object_or_404(User, pk=manager_pk)
-    if utils.has_dashboard_access(request.user, campaign, None):
+    if request.user.userprofile in campaign.campaign_admins.all() or manager == request.user:
+#    if utils.has_dashboard_access(request.user, campaign, None):
         # remove the manager
         campaign.campaign_managers.remove(manager.userprofile)
         # revoke the permissions

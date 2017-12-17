@@ -260,7 +260,7 @@ def remove_manager(request, page_slug, manager_pk):
     page = get_object_or_404(Page, page_slug=page_slug)
     manager = get_object_or_404(User, pk=manager_pk)
     # only page admins can remove managers
-    if request.user.userprofile in page.admins.all():
+    if request.user.userprofile in page.admins.all() or manager == request.user:
         # remove the manager
         page.managers.remove(manager.userprofile)
         # revoke the permissions

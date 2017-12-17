@@ -107,6 +107,7 @@
             </form>
         {% endif %}
     {% else %}
+        <p><a href="{% url 'remove_manager' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug manager_pk=request.user.pk %}">Remove self as manager<a/></p>
         {% get_obj_perms request.user for campaign as "campaign_perms" %}
         {% if campaign_perms %}
             <h4>Manager</h4>

@@ -246,11 +246,20 @@ class CampaignTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_campaign_manager_logged_in(self):
-        request = self.factory.get('home')
-        request.user = self.user2
-        response = views.campaign(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
+        self.client.login(username='pizza', password='mehungry')
+        response = self.client.get('/{}/{}/{}/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Dashboard", status_code=200)
+
+        response = self.client.get('/{}/{}/{}/dashboard/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Edit Campaign")
+        self.assertContains(response, "Delete Campaign")
+        self.assertContains(response, "Invite others to manage Campaign")
+        self.assertContains(response, "Upload and Edit images")
+        self.assertContains(response, "Remove self as manager")
+        self.assertNotContains(response, "/%s/%s/%s/managers/%s/remove/".format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug, self.user4.pk))
 
     def test_campaign_edit_not_admin(self):
         self.client.login(username='ineedfood', password='stomachwantsit')

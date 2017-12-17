@@ -256,11 +256,11 @@ class PageTest(TestCase):
 
         response = self.client.get('/%s/dashboard/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Edit Page", status_code=200)
-        self.assertContains(response, "Delete Page", status_code=200)
-        self.assertContains(response, "Invite others to manage Page", status_code=200)
-        self.assertContains(response, "Upload and Edit images", status_code=200)
-        self.assertNotContains(response, "/%s/managers/%s/remove/" % (self.page.page_slug, self.user3.pk), status_code=200)
+        self.assertContains(response, "Edit Page")
+        self.assertContains(response, "Delete Page")
+        self.assertContains(response, "Invite others to manage Page")
+        self.assertContains(response, "Upload and Edit images")
+        self.assertContains(response, "Remove self as manager")
         self.assertNotContains(response, "/%s/managers/%s/remove/" % (self.page.page_slug, self.user4.pk), status_code=200)
 
     def test_page_edit_logged_out(self):
