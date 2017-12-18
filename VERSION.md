@@ -31,6 +31,7 @@ Release date: TBD
 * Don't have to enter SSN or Terms of Service agreement when editing a Page
 * Donations can't be negative anymore, and have a maximum of $999,999 to accommodate Stripe's maximum
 * Redirect issue when subscribing to a Page/Campaign while logged out
+* Forms weren't taking into consideration what users chose for their Page/Campaign slugs and was instead being automatically created on the back-end
 
 
 ## Version 0.10.0

@@ -51,12 +51,15 @@ class CampaignTest(TestCase):
             password='foodcoma'
         )
 
-        self.page = Page.objects.create(name='Test Page',)
+        self.page = Page.objects.create(
+            name='Test Page',
+            page_slug='testpage',
+        )
         self.page.admins.add(self.user.userprofile)
 
         self.campaign = models.Campaign.objects.create(
             name='Test Campaign',
-            campaign_slug='campaignslug',
+            campaign_slug='testcampaign',
             page=self.page,
             type='Vote',
             city='Dallas',
@@ -75,7 +78,7 @@ class CampaignTest(TestCase):
 
         self.campaign2 = models.Campaign.objects.create(
             name='Captain',
-            campaign_slug='thecaptain',
+            campaign_slug='captain',
             page=self.page,
             type='Event',
             city='Austin',
@@ -336,6 +339,7 @@ class CampaignTest(TestCase):
 
         data = {
             'name': "MyCampaign",
+            'campaign_slug': "mycampaign",
             'page': self.page.pk,
             'type': "event",
             'goal': 1000,
@@ -351,6 +355,7 @@ class CampaignTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
         data = {
             'name': "MyCampaign",
+            'campaign_slug': "mycampaign",
             'page': self.page.pk,
             'type': "vote",
             'goal': 1000,

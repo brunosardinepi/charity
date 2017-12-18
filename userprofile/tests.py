@@ -27,15 +27,25 @@ class UserProfileTest(TestCase):
         )
         self.user.userprofile.state = 'Kansas'
 
-        self.page = Page.objects.create(name="Buffalo")
-        self.page2 = Page.objects.create(name="Remote")
-        self.page3 = Page.objects.create(name="Foot")
+        self.page = Page.objects.create(
+            name="Buffalo",
+            page_slug="buffalo",
+        )
+        self.page2 = Page.objects.create(
+            name="Remote",
+            page_slug="remote",
+        )
+        self.page3 = Page.objects.create(
+            name="Foot",
+            page_slug="foot",
+        )
         self.page.subscribers.add(self.user.userprofile)
         self.page.managers.add(self.user.userprofile)
         self.page2.admins.add(self.user.userprofile)
 
         self.campaign = Campaign.objects.create(
             name='Test Campaign',
+            campaign_slug='testcampaign',
             page=self.page,
             type='Event',
             description='This is a description for Test Campaign.',
@@ -46,6 +56,7 @@ class UserProfileTest(TestCase):
 
         self.campaign2 = Campaign.objects.create(
             name='Mousepad',
+            campaign_slug='mousepad',
             page=self.page2,
             type='Event',
             description='I use a mousepad.',
@@ -56,6 +67,7 @@ class UserProfileTest(TestCase):
 
         self.campaign3 = Campaign.objects.create(
             name='Pencil',
+            campaign_slug='pencil',
             page=self.page,
             type='Event',
             description='I write with a pencil.',

@@ -84,7 +84,7 @@ class PageTest(TestCase):
         self.page2 = models.Page.objects.create(
             name='Office',
             type='Personal',
-            page_slug='officedesk',
+            page_slug='office',
             city='Chicago',
             state='IL',
             description='Im in the office.',
@@ -94,6 +94,7 @@ class PageTest(TestCase):
 
         self.campaign = CampaignModels.Campaign.objects.create(
             name='Test Campaign',
+            campaign_slug='testcampaign',
             page=self.page,
             type='event',
             description='This is a description for Test Campaign.',
@@ -102,6 +103,7 @@ class PageTest(TestCase):
 
         self.campaign2 = CampaignModels.Campaign.objects.create(
             name='Another One',
+            campaign_slug='anotherone',
             page=self.page,
             type='event',
             description='My cat died yesterday',
@@ -336,7 +338,7 @@ class PageTest(TestCase):
             'city': "Houston",
             'state': "TX",
             'zipcode': "77008",
-            'page_slug': "doesntmatter",
+            'page_slug': "mytestpage",
             'type': "nonprofit",
             'category': "other",
             'website': "test.com",
@@ -369,6 +371,7 @@ class PageTest(TestCase):
 
         data['name'] = "My Other Test Page"
         data['type'] = "personal"
+        data['page_slug'] = "myothertestpage"
         response = self.client.post('/create/', data)
         self.assertRedirects(response, '/create/myothertestpage/bank/', 302, 200)
 
