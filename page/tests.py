@@ -36,6 +36,11 @@ class PageTest(TestCase):
             email='harry@potter.com',
             password='imawizard',
         )
+        self.user2.first_name = "Harry"
+        self.user2.last_name = "Potter"
+        self.user2.userprofile.birthday = "1976-09-12"
+        self.user2.save()
+        self.user2.userprofile.save()
 
         self.user3 = User.objects.create_user(
             username='bobdole',
@@ -321,11 +326,54 @@ class PageTest(TestCase):
         self.assertRedirects(response, '/accounts/signup/?next=/create/', 302, 200)
 
     def test_page_create_logged_in(self):
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.page_create(request)
-
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/create/')
         self.assertEqual(response.status_code, 200)
+
+        data = {
+            'name': "My Test Page",
+            'address_line1': "123 Main St.",
+            'city': "Houston",
+            'state': "TX",
+            'zipcode': "77008",
+            'page_slug': "doesntmatter",
+            'type': "nonprofit",
+            'category': "other",
+            'website': "test.com",
+            'tos_accepted': True,
+        }
+        response = self.client.post('/create/', data)
+        self.assertRedirects(response, '/create/mytestpage/additional/', 302, 200)
+
+        data_additional = {
+            'first_name': "Tester",
+            'last_name': "McGee",
+            'birthday': "1988-10-18",
+        }
+        response = self.client.post('/create/mytestpage/additional/', data_additional)
+        self.assertRedirects(response, '/create/mytestpage/bank/', 302, 200)
+
+        data_bank = {
+            'account_holder_first_name': "Tester",
+            'account_holder_last_name': "McGee",
+            'ssn': "0000",
+            'account_number': "000123456789",
+            'routing_number': "110000000",
+        }
+        response = self.client.post('/create/mytestpage/bank/', data_bank)
+        self.assertRedirects(response, '/mytestpage/', 302, 200)
+
+        self.client.login(username='harrypotter', password='imawizard')
+        response = self.client.get('/create/')
+        self.assertEqual(response.status_code, 200)
+
+        data['name'] = "My Other Test Page"
+        data['type'] = "personal"
+        response = self.client.post('/create/', data)
+        self.assertRedirects(response, '/create/myothertestpage/bank/', 302, 200)
+
+        response = self.client.post('/create/myothertestpage/bank/', data_bank)
+        self.assertRedirects(response, '/myothertestpage/', 302, 200)
 
     def test_pageform(self):
         form = forms.PageForm({
