@@ -22,6 +22,7 @@ Release date: TBD
 * Users that are signing up only need their email instead of name, birthday, state, etc.
 * Removed "nonprofit number" from Pages
 * Removed "subscribe" option from Pages/Campaigns if user is an admin or manager
+* Page creation process happens in multiple steps
 
 ### Fixes
 
