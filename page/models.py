@@ -11,7 +11,6 @@ from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.text import slugify
 
 from campaign.models import Campaign
 from comments.models import Comment
@@ -23,8 +22,6 @@ class Page(models.Model):
     address_line2 = models.CharField(max_length=255, blank=True)
     admins = models.ManyToManyField('userprofile.UserProfile', related_name='page_admins', blank=True)
     city = models.CharField(max_length=255)
-#    contact_email = models.EmailField(max_length=128, blank=True)
-#    contact_phone = models.CharField(max_length=20, blank=True)
     created_on = models.DateTimeField(default=timezone.now)
     deleted = models.BooleanField(default=False)
     deleted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
@@ -142,14 +139,6 @@ class Page(models.Model):
         return reverse('page', kwargs={
             'page_slug': self.page_slug
             })
-
-    def save(self, *args, **kwargs):
-        if self.id:
-            self.page_slug = slugify(self.page_slug).replace('-', '')
-            super(Page, self).save(*args, **kwargs)
-        elif not self.id:
-            self.page_slug = slugify(self.name).replace('-', '')
-            super(Page, self).save(*args, **kwargs)
 
     def top_donors(self):
         donors = Donation.objects.filter(page=self).values_list('user', flat=True).distinct()
