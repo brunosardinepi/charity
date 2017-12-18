@@ -20,8 +20,6 @@ class PageForm(forms.ModelForm):
             'type',
             'category',
             'description',
-#            'contact_email',
-#            'contact_phone',
             'website',
             'tos_accepted',
         ]

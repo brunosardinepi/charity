@@ -31,7 +31,7 @@ class Page(models.Model):
     is_sponsored = models.BooleanField(default=False)
     managers = models.ManyToManyField('userprofile.UserProfile', related_name='page_managers', blank=True)
     name = models.CharField(max_length=255, db_index=True)
-    page_slug = models.SlugField(max_length=100, unique=True)
+    page_slug = models.SlugField(max_length=255, unique=True)
     subscribers = models.ManyToManyField('userprofile.UserProfile', related_name='subscribers', blank=True)
     stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
     stripe_bank_account_id = models.CharField(max_length=255, blank=True, null=True)

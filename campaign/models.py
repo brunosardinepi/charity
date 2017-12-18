@@ -128,10 +128,6 @@ class Campaign(models.Model):
             })
 
     def save(self, *args, **kwargs):
-        if self.id:
-            self.campaign_slug = slugify(self.campaign_slug)
-        elif not self.id:
-            self.campaign_slug = slugify(self.name)
         self.category = self.page.category
         super(Campaign, self).save(*args, **kwargs)
 

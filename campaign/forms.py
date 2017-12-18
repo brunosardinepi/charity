@@ -8,7 +8,7 @@ class CampaignForm(forms.ModelForm):
         model = models.Campaign
         fields = [
             'name',
-#            'campaign_slug',
+            'campaign_slug',
             'type',
             'goal',
             'end_date',
