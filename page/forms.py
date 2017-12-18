@@ -20,8 +20,8 @@ class PageForm(forms.ModelForm):
             'type',
             'category',
             'description',
-            'contact_email',
-            'contact_phone',
+#            'contact_email',
+#            'contact_phone',
             'website',
             'tos_accepted',
         ]
@@ -54,3 +54,8 @@ class PageBankForm(forms.Form):
     ssn = forms.CharField(max_length=4, label="Last 4 of SSN")
     account_number = forms.CharField(max_length=12)
     routing_number = forms.CharField(max_length=9)
+
+class PageAdditionalInfoForm(forms.Form):
+    first_name = forms.CharField(max_length=255)
+    last_name = forms.CharField(max_length=255)
+    birthday = forms.DateField()

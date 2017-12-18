@@ -31,8 +31,8 @@ from donation.utils import donate, donation_graph, donation_history, donation_st
 from error.utils import error_email
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
+from userprofile.models import UserProfile
 from userprofile.utils import get_user_credit_cards
-from userprofile import models as UserProfileModels
 from pagefund import config, settings, utils
 from pagefund.image import image_is_valid
 from plans.models import StripePlan
@@ -67,7 +67,7 @@ def page(request, page_slug):
                 error_email(error)
         try:
             user_subscription_check = page.subscribers.get(user_id=request.user.pk)
-        except UserProfileModels.UserProfile.DoesNotExist:
+        except UserProfile.DoesNotExist:
             user_subscription_check = None
 
         if user_subscription_check:
@@ -95,17 +95,60 @@ def get_client_ip(request):
 
 @login_required(login_url='signup')
 def page_create(request):
-    page_form = forms.PageForm()
-    bank_form = forms.PageBankForm()
+    form = forms.PageForm()
     if request.method == 'POST':
-        page_form = forms.PageForm(request.POST)
-        bank_form = forms.PageBankForm(request.POST)
-        if page_form.is_valid() and bank_form.is_valid():
-            page = page_form.save()
+        form = forms.PageForm(request.POST)
+        if form.is_valid():
+            page = form.save()
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
+            if request.user.first_name and request.user.last_name and request.user.userprofile.birthday:
+                return redirect('page_create_bank_info', page_slug=page.page_slug)
+            else:
+                return redirect('page_create_additional_info', page_slug=page.page_slug)
+    return render(request, 'page/page_create.html', {'form': form})
 
+
+class PageCreateAdditionalInfo(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        userprofile = get_object_or_404(UserProfile, user=request.user)
+        initial = {
+            'first_name': userprofile.user.first_name,
+            'last_name': userprofile.user.last_name,
+            'birthday': userprofile.birthday,
+        }
+        form = forms.PageAdditionalInfoForm(initial=initial)
+        return render(request, 'page/page_create_additional_info.html', {'page': page, 'form': form})
+    def post(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        # need to get: EIN (if not personal), user's birthday/name/address
+        userprofile = get_object_or_404(UserProfile, user=request.user)
+        form = forms.PageAdditionalInfoForm(request.POST)
+        if form.is_valid():
+            userprofile.user.first_name = form.cleaned_data['first_name']
+            userprofile.user.last_name = form.cleaned_data['last_name']
+            userprofile.birthday = form.cleaned_data['birthday']
+            userprofile.save()
+            return redirect('page_create_bank_info', page_slug=page.page_slug)
+
+
+class PageCreateBankInfo(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        userprofile = get_object_or_404(UserProfile, user=request.user)
+        initial = {
+            'account_holder_first_name': userprofile.user.first_name,
+            'account_holder_last_name': userprofile.user.last_name,
+        }
+        form = forms.PageBankForm(initial=initial)
+        return render(request, 'page/page_create_bank_info.html', {'page': page, 'form': form})
+    def post(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        form = forms.PageBankForm(request.POST)
+        if form.is_valid():
             if not settings.TESTING:
+
                 if page.type == 'personal':
                     stripe_type = 'individual'
                 else:
@@ -129,33 +172,31 @@ def page_create(request):
                         "state": page.state
                     },
                     "business_tax_id": page.ein,
-                    "ssn_last_4": bank_form.cleaned_data['ssn']
+                    "ssn_last_4": form.cleaned_data['ssn']
                 }
 
-                if page_form.cleaned_data['tos_accepted'] == True:
-                    print("tos accepted")
-                    user_ip = get_client_ip(request)
-                    tos_acceptance = {
-                        "date": timezone.now(),
-                        "ip": user_ip
-                    }
+                user_ip = get_client_ip(request)
+                tos_acceptance = {
+                    "date": timezone.now(),
+                    "ip": user_ip
+                }
 
-                    acct = stripe.Account.create(
-                        business_name=page.name,
-                        country="US",
-                        email=request.user.email,
-                        legal_entity=legal_entity,
-                        type="custom",
-                        tos_acceptance=tos_acceptance
-                    )
+                acct = stripe.Account.create(
+                    business_name=page.name,
+                    country="US",
+                    email=request.user.email,
+                    legal_entity=legal_entity,
+                    type="custom",
+                    tos_acceptance=tos_acceptance
+                )
 
                 external_account = {
                     "object": "bank_account",
                     "country": "US",
-                    "account_number": bank_form.cleaned_data['account_number'],
+                    "account_number": form.cleaned_data['account_number'],
                     "account_holder_name": "%s %s" % (request.user.first_name, request.user.last_name),
                     "account_holder_type": stripe_type,
-                    "routing_number": bank_form.cleaned_data['routing_number']
+                    "routing_number": form.cleaned_data['routing_number']
                 }
                 ext_acct = acct.external_accounts.create(external_account=external_account)
                 page.stripe_account_id = acct.id
@@ -166,7 +207,7 @@ def page_create(request):
             body = "You just created a Page for: %s" % page.name
             utils.email(request.user.email, subject, body)
             return HttpResponseRedirect(page.get_absolute_url())
-    return render(request, 'page/page_create.html', {'page_form': page_form, 'bank_form': bank_form})
+
 
 @login_required
 def page_edit(request, page_slug):

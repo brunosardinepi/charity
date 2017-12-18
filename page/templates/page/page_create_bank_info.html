@@ -1,12 +1,12 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
 
-{% block title %} Create Page | {{ block.super }}{% endblock %}
+{% block title %} Create Page - Bank Info | {{ block.super }}{% endblock %}
 
 {% block body_content %}
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="submit" value="Continue" />
+        <input type="submit" value="Create Page" />
     </form>
 {% endblock %}
