@@ -1,0 +1,9 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} Privacy Policy | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+    <h1>Privacy Policy</h1>
+    {% include "snippets/privacy_policy.html" %}
+{% endblock %}
