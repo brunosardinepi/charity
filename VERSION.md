@@ -14,6 +14,7 @@ Release date: TBD
 * Added "other" option to Page categories
 * Preset donation amounts ($5, $10, $25, $50, $100)
 * Managers can remove themselves from Pages/Campaigns as managers
+* Content for Terms of Service and Privacy Policy
 
 ### Changes
 
