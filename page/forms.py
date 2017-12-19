@@ -10,7 +10,6 @@ class PageForm(forms.ModelForm):
         model = models.Page
         fields = [
             'name',
-            'ein',
             'address_line1',
             'address_line2',
             'city',
@@ -18,6 +17,7 @@ class PageForm(forms.ModelForm):
             'zipcode',
             'page_slug',
             'type',
+            'ein',
             'category',
             'description',
             'website',

@@ -3,6 +3,10 @@
 
 {% block title %} Create Page | {{ block.super }}{% endblock %}
 
+{% block head_extra %}
+    <script src="{% static 'js/ein.js' %}"></script>
+{% endblock %}
+
 {% block body_content %}
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
