@@ -282,7 +282,7 @@ class PageTest(TestCase):
             'state': 'DE',
             'description': 'New description here!',
             'ssn': '0000',
-            'tos_acceptance': True,
+            'tos_accepted': True,
             'ein': '000000001',
             'address_line1': '123 Main St.',
             'city': 'Houston',
@@ -388,7 +388,7 @@ class PageTest(TestCase):
             'category': 'animal',
             'description': 'I like flank steak.',
             'ssn': '0000',
-            'tos_acceptance': True,
+            'tos_accepted': True,
             'ein': '000000001',
             'address_line1': '123 Main St.',
             'zipcode': '12345'

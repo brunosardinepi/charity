@@ -4,7 +4,11 @@ from . import models
 
 
 class PageForm(forms.ModelForm):
-    ein = forms.CharField(required=False)
+    def __init__(self, *args, **kwargs):
+        super(PageForm, self).__init__(*args, **kwargs)
+        self.fields['tos_accepted'].required = True
+
+#    ein = forms.CharField(required=False)
 
     class Meta:
         model = models.Page
