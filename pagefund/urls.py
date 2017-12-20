@@ -37,6 +37,7 @@ urlpatterns = [
     url(r'^create/$', PageViews.page_create, name='page_create'),
     url(r'^create/(?P<page_slug>[\w-]+)/additional/$', login_required(PageViews.PageCreateAdditionalInfo.as_view()), name='page_create_additional_info'),
     url(r'^create/(?P<page_slug>[\w-]+)/bank/$', login_required(PageViews.PageCreateBankInfo.as_view()), name='page_create_bank_info'),
+    url(r'^(?P<page_slug>[\w-]+)/edit/bank/$', login_required(PageViews.PageEditBankInfo.as_view()), name='page_edit_bank_info'),
     url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),
     url(r'^(?P<page_slug>[\w-]+)/dashboard/$', login_required(PageViews.PageDashboard.as_view()), name='page_dashboard'),
     url(r'^page/dashboard/ajax/donations/', PageViews.PageAjaxDonations.as_view(), name='page_ajax_donations'),

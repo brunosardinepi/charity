@@ -143,6 +143,7 @@ class PageCreateBankInfo(View):
         }
         form = forms.PageBankForm(initial=initial)
         return render(request, 'page/page_create_bank_info.html', {'page': page, 'form': form})
+
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
         form = forms.PageBankForm(request.POST)
@@ -196,7 +197,8 @@ class PageCreateBankInfo(View):
                     "account_number": form.cleaned_data['account_number'],
                     "account_holder_name": "%s %s" % (request.user.first_name, request.user.last_name),
                     "account_holder_type": stripe_type,
-                    "routing_number": form.cleaned_data['routing_number']
+                    "routing_number": form.cleaned_data['routing_number'],
+                    "default_for_currency": "true",
                 }
                 ext_acct = acct.external_accounts.create(external_account=external_account)
                 page.stripe_account_id = acct.id
@@ -205,6 +207,52 @@ class PageCreateBankInfo(View):
 
             subject = "Page created!"
             body = "You just created a Page for: %s" % page.name
+            utils.email(request.user.email, subject, body)
+            return HttpResponseRedirect(page.get_absolute_url())
+
+
+class PageEditBankInfo(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        userprofile = get_object_or_404(UserProfile, user=request.user)
+        initial = {
+            'account_holder_first_name': userprofile.user.first_name,
+            'account_holder_last_name': userprofile.user.last_name,
+        }
+        form = forms.PageEditBankForm(initial=initial)
+        return render(request, 'page/page_edit_bank_info.html', {'page': page, 'form': form})
+
+    def post(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        form = forms.PageEditBankForm(request.POST)
+        if form.is_valid():
+            if not settings.TESTING:
+
+                if page.type == 'personal':
+                    stripe_type = 'individual'
+                else:
+                    stripe_type = 'company'
+
+                acct = stripe.Account.retrieve(page.stripe_account_id)
+
+                external_account = {
+                    "object": "bank_account",
+                    "country": "US",
+                    "account_number": form.cleaned_data['account_number'],
+                    "account_holder_name": "%s %s" % (request.user.first_name, request.user.last_name),
+                    "account_holder_type": stripe_type,
+                    "routing_number": form.cleaned_data['routing_number'],
+                    "default_for_currency": "true",
+                }
+                ext_acct = acct.external_accounts.create(external_account=external_account)
+                # delete the old account here
+                # so that we can set the new one as default first
+                acct.external_accounts.retrieve(page.stripe_bank_account_id).delete()
+                page.stripe_bank_account_id = ext_acct.id
+            page.save()
+
+            subject = "Page bank information updated!"
+            body = "You just updated the bank information for Page: {}".format(page.name)
             utils.email(request.user.email, subject, body)
             return HttpResponseRedirect(page.get_absolute_url())
 

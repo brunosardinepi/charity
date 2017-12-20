@@ -15,6 +15,7 @@ Release date: TBD
 * Preset donation amounts ($5, $10, $25, $50, $100)
 * Managers can remove themselves from Pages/Campaigns as managers
 * Content for Terms of Service and Privacy Policy
+* Users can add change the Page bank account
 
 ### Changes
 

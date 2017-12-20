@@ -61,3 +61,9 @@ class PageAdditionalInfoForm(forms.Form):
     first_name = forms.CharField(max_length=255)
     last_name = forms.CharField(max_length=255)
     birthday = forms.DateField()
+
+class PageEditBankForm(forms.Form):
+    account_holder_first_name = forms.CharField(max_length=255)
+    account_holder_last_name = forms.CharField(max_length=255)
+    account_number = forms.CharField(max_length=12)
+    routing_number = forms.CharField(max_length=9)
