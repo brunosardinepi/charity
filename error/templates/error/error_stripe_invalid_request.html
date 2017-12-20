@@ -1,0 +1,9 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} Error | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+    <p>Invalid parameters were supplied to Stripe's API.</p>
+{% endblock %}
+

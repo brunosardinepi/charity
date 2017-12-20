@@ -28,7 +28,7 @@ from comments.models import Comment
 from donation.forms import DonateForm, DonateUnauthenticatedForm
 from donation.models import Donation
 from donation.utils import donate, donation_graph, donation_history, donation_statistics
-from error.utils import error_email
+from error.utils import create_error, error_email
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
 from userprofile.models import UserProfile
@@ -182,14 +182,19 @@ class PageCreateBankInfo(View):
                     "ip": user_ip
                 }
 
-                acct = stripe.Account.create(
-                    business_name=page.name,
-                    country="US",
-                    email=request.user.email,
-                    legal_entity=legal_entity,
-                    type="custom",
-                    tos_acceptance=tos_acceptance
-                )
+                try:
+                    acct = stripe.Account.create(
+                        business_name=page.name,
+                        country="US",
+                        email=request.user.email,
+                        legal_entity=legal_entity,
+                        type="custom",
+                        tos_acceptance=tos_acceptance
+                    )
+                except stripe.error.InvalidRequestError as e:
+                    create_error(e, request, page)
+                    page.delete()
+                    return redirect('error:error_stripe_invalid_request')
 
                 external_account = {
                     "object": "bank_account",

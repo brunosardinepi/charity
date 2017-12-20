@@ -1,3 +1,11 @@
 from django.contrib import admin
 
-# Register your models here.
+from . import models
+
+
+class ErrorAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'user', 'date',)
+    ordering = ('pk', 'user', 'date',)
+    list_filter = ('user',)
+
+admin.site.register(models.Error, ErrorAdmin)

@@ -19,3 +19,6 @@ def error_image_type(request):
 def error_amount_is_none(request):
     print("error_amount_is_none accessed")
     return render(request, 'error/error_amount_is_none.html')
+
+def error_stripe_invalid_request(request):
+    return render(request, 'error/error_stripe_invalid_request.html')
