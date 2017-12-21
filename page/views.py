@@ -192,9 +192,9 @@ class PageCreateBankInfo(View):
                         tos_acceptance=tos_acceptance
                     )
                 except stripe.error.InvalidRequestError as e:
-                    create_error(e, request, page)
+                    error = create_error(e, request, page)
                     page.delete()
-                    return redirect('error:error_stripe_invalid_request')
+                    return redirect('error:error_stripe_invalid_request', error_pk=error.pk)
 
                 external_account = {
                     "object": "bank_account",

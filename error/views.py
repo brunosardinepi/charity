@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
+
+from .models import Error
 
 
 def error_forgotpasswordreset_expired(request):
@@ -20,5 +22,10 @@ def error_amount_is_none(request):
     print("error_amount_is_none accessed")
     return render(request, 'error/error_amount_is_none.html')
 
-def error_stripe_invalid_request(request):
-    return render(request, 'error/error_stripe_invalid_request.html')
+def error_stripe_invalid_request(request, error_pk):
+    error = get_object_or_404(Error, pk=error_pk)
+    msg = error.message
+    msg = msg.split(": ", 1)[1]
+    return render(request, 'error/error_stripe_invalid_request.html', {
+        'message': msg,
+    })

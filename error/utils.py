@@ -22,7 +22,7 @@ def error_email(error):
     email("gn9012@gmail.com", "ERROR: Stripe", body)
 
 def create_error(error, request, object):
-    details = "error = {};".format(str(error))
+    details = ""
     if isinstance(object, Page):
         details += "\naddress_line1 = {};".format(object.address_line1)
         details += "\naddress_line2 = {};".format(object.address_line2)
@@ -38,12 +38,21 @@ def create_error(error, request, object):
         details += "\nstate = {};".format(object.state)
         details += "\ntype = {};".format(object.type)
 
-    error = Error.objects.create(
+    err = Error.objects.create(
         date = timezone.now(),
         details = details,
+        message = str(error),
         user = request.user,
     )
 
     subject = "PageFund ERROR"
-    body = "Error {} occured at {} for user {}. Details: {}".format(error.pk, error.date, error.user.pk, error.details)
+    body = "Error {} occured at {} for user {}. Message: {}; Details: {}".format(
+        err.pk,
+        err.date,
+        err.user.email,
+        err.message,
+        err.details
+    )
     email("gn9012@gmail.com", subject, body)
+
+    return err

@@ -10,5 +10,5 @@ urlpatterns = [
     url(r'^invite/user-exists/$', views.error_invite_user_exists, name='error_invite_user_exists'),
     url(r'^password/reset/expired/$', views.error_forgotpasswordreset_expired, name='error_forgotpasswordreset_expired'),
     url(r'^password/reset/completed/$', views.error_forgotpasswordreset_completed, name='error_forgotpasswordreset_completed'),
-    url(r'^stripe/invalid-request/$', views.error_stripe_invalid_request, name='error_stripe_invalid_request'),
+    url(r'^invalid-request/(?P<error_pk>\d+)/$', views.error_stripe_invalid_request, name='error_stripe_invalid_request'),
 ]

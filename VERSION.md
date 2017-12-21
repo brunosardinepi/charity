@@ -16,6 +16,7 @@ Release date: TBD
 * Managers can remove themselves from Pages/Campaigns as managers
 * Content for Terms of Service and Privacy Policy
 * Users can add change the Page bank account
+* Integration with Stripe errors
 
 ### Changes
 
