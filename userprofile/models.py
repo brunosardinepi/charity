@@ -239,11 +239,12 @@ def create_random_string(length=30):
 def upload_to(instance, filename):
     ext = filename.split('.')[-1]
     filename = "media/user/images/%s.%s" % (create_random_string(), ext)
+#    filename = "/mnt/media01/users/{}.{}".format(create_random_string(), ext)
     return filename
 
 class UserImage(models.Model):
     user = models.ForeignKey('userprofile.UserProfile', on_delete=models.CASCADE)
-    image = models.FileField(upload_to=upload_to, blank=True, null=True)
+    image = models.FileField(upload_to=upload_to, max_length=255, blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)
     profile_picture = models.BooleanField(default=False)
 
