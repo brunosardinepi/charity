@@ -122,7 +122,6 @@ class PageCreateAdditionalInfo(View):
         return render(request, 'page/page_create_additional_info.html', {'page': page, 'form': form})
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        # need to get: EIN (if not personal), user's birthday/name/address
         userprofile = get_object_or_404(UserProfile, user=request.user)
         form = forms.PageAdditionalInfoForm(request.POST)
         if form.is_valid():
@@ -191,21 +190,22 @@ class PageCreateBankInfo(View):
                         type="custom",
                         tos_acceptance=tos_acceptance
                     )
+
+                    external_account = {
+                        "object": "bank_account",
+                        "country": "US",
+                        "account_number": form.cleaned_data['account_number'],
+                        "account_holder_name": "%s %s" % (request.user.first_name, request.user.last_name),
+                        "account_holder_type": stripe_type,
+                        "routing_number": form.cleaned_data['routing_number'],
+                        "default_for_currency": "true",
+                    }
+                    ext_acct = acct.external_accounts.create(external_account=external_account)
                 except stripe.error.InvalidRequestError as e:
                     error = create_error(e, request, page)
                     page.delete()
                     return redirect('error:error_stripe_invalid_request', error_pk=error.pk)
 
-                external_account = {
-                    "object": "bank_account",
-                    "country": "US",
-                    "account_number": form.cleaned_data['account_number'],
-                    "account_holder_name": "%s %s" % (request.user.first_name, request.user.last_name),
-                    "account_holder_type": stripe_type,
-                    "routing_number": form.cleaned_data['routing_number'],
-                    "default_for_currency": "true",
-                }
-                ext_acct = acct.external_accounts.create(external_account=external_account)
                 page.stripe_account_id = acct.id
                 page.stripe_bank_account_id = ext_acct.id
             page.save()
