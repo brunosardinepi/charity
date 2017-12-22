@@ -49,7 +49,7 @@ def invite(request):
             try:
                 user = User.objects.get(email=form.cleaned_data['email'])
                 if user.userprofile:
-                    return redirect('error:error_invite_user_exists')
+                    return redirect('notes:error_invite_user_exists')
             except User.DoesNotExist:
                 print("no user found, good!")
 

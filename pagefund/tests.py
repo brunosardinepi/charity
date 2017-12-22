@@ -262,7 +262,7 @@ class HomeTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
         response = self.client.post('/invite/', {'email': 'another@guy.me'})
 
-        self.assertRedirects(response, '/error/invite/user-exists/', 302, 200)
+        self.assertRedirects(response, '/notes/error/invite/user-exists/', 302, 200)
 
     def test_forgot_password_request(self):
         response = self.client.get('/forgot/')

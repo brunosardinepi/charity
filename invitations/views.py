@@ -101,9 +101,9 @@ def forgot_password_reset(request, invitation_pk, key):
         if form.is_valid():
             invitation = get_object_or_404(models.ForgotPasswordRequest, pk=invitation_pk)
             if invitation.expired == True:
-                return redirect('error:error_forgotpasswordreset_expired')
+                return redirect('notes:error_forgotpasswordreset_expired')
             elif invitation.completed == True:
-                return redirect('error:error_forgotpasswordreset_completed')
+                return redirect('notes:error_forgotpasswordreset_completed')
             else:
                 if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key):
                     invitation.expired = True
