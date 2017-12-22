@@ -79,4 +79,4 @@ def create_note(request, obj, type):
         note.message,
         note.details
     )
-    email("gn9012@gmail.com", subject, body)
+    email("abuse@page.fund", subject, body)
