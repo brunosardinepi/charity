@@ -1,0 +1,8 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} Error | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+    <p>File is too large. Max is 4 MB.</p>
+{% endblock %}

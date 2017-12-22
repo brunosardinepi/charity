@@ -11,7 +11,7 @@ from . import forms
 from .models import StripeCard, UserImage, UserProfile
 from .utils import get_user_credit_cards
 from donation.models import Donation
-from error.utils import error_email
+from notes.utils import error_email
 from invitations.models import ManagerInvitation
 from page import models as PageModels
 from pagefund import config, settings

@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     'guardian',
     'invitations',
     'comments',
-    'error',
     'donation',
     'stripe',
     'plans',

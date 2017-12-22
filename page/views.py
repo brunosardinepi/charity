@@ -28,7 +28,7 @@ from comments.models import Comment
 from donation.forms import DonateForm, DonateUnauthenticatedForm
 from donation.models import Donation
 from donation.utils import donate, donation_graph, donation_history, donation_statistics
-from error.utils import create_error, error_email
+from notes.utils import create_error, error_email
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
 from userprofile.models import UserProfile
