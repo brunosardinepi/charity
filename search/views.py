@@ -21,7 +21,18 @@ def search(request):
         query_from_search = None
     categories = OrderedDict(Page._meta.get_field('category').choices)
     states = OrderedDict(Page._meta.get_field('state').choices)
-    return render(request, 'search/search.html', {'categories': categories, 'states': states, 'query_from_search': query_from_search})
+    sponsored = Page.objects.filter(is_sponsored=True, deleted=False)
+    trending_pages = Page.objects.filter(deleted=False).order_by('-trending_score')[:10]
+    trending_campaigns = Campaign.objects.filter(deleted=False, is_active=True).order_by('-trending_score')[:10]
+
+    return render(request, 'search/search.html', {
+        'categories': categories,
+        'states': states,
+        'query_from_search': query_from_search,
+        'sponsored': sponsored,
+        'trending_pages': trending_pages,
+        'trending_campaigns': trending_campaigns,
+    })
 
 def results(request):
     if request.method == "POST":
