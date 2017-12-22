@@ -1,8 +1,9 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 
 from . import forms
 from .models import Note
+from .utils import create_note
 from comments.models import Comment, Reply
 
 
@@ -54,9 +55,10 @@ class AbuseComment(View):
         obj = self.get_obj(type, obj_pk)
         form = forms.AbuseCommentForm(request.POST)
         if form.is_valid():
-            form.save()
+            create_note(request, obj, 'abuse')
         # idk where to redirect this to
-        return render(request, 'home.html')
+        return redirect('home')
+
 
 def error_stripe_invalid_request(request, error_pk):
     error = get_object_or_404(Note, pk=error_pk)

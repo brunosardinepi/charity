@@ -57,3 +57,26 @@ def create_error(error, request, object):
     email("gn9012@gmail.com", subject, body)
 
     return err
+
+def create_note(request, obj, type):
+    details = ""
+    for attr, val in obj.get_fields():
+        details += "{}: {};\n".format(attr, val)
+
+    note = Note.objects.create(
+        date = timezone.now(),
+        details = details,
+        message = request.POST.get('note'),
+        user = request.user,
+        type = type,
+    )
+
+    subject = "[{}] PageFund note".format(type.upper())
+    body = "Note {} from user {} at {}; Message: {}; Details: {}".format(
+        note.pk,
+        note.user.email,
+        note.date,
+        note.message,
+        note.details
+    )
+    email("gn9012@gmail.com", subject, body)
