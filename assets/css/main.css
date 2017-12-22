@@ -1,2 +1,6 @@
-h2 {
-  color: #0000ff; }
+nav {
+    background: #ffffff;
+}
+nav a {
+    color: #000000;
+}
