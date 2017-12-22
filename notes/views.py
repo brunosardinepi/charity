@@ -1,6 +1,9 @@
 from django.shortcuts import get_object_or_404, render
+from django.views import View
 
+from . import forms
 from .models import Note
+from comments.models import Comment, Reply
 
 
 def error_forgotpasswordreset_expired(request):
@@ -20,6 +23,40 @@ def error_image_type(request):
 
 def error_amount_is_none(request):
     return render(request, 'notes/error_amount_is_none.html')
+
+def error_stripe_invalid_request(request, error_pk):
+    error = get_object_or_404(Note, pk=error_pk)
+    msg = error.message
+    msg = msg.split(": ", 1)[1]
+    return render(request, 'notes/error_stripe_invalid_request.html', {
+        'message': msg,
+    })
+
+
+class AbuseComment(View):
+    def get_obj(self, type, obj_pk):
+        if type == 'comment':
+            obj = get_object_or_404(Comment, pk=obj_pk)
+        elif type == 'reply':
+            obj = get_object_or_404(Reply, pk=obj_pk)
+
+        return obj
+
+    def get(self, request, type, obj_pk):
+        obj = self.get_obj(type, obj_pk)
+        form = forms.AbuseCommentForm()
+        return render(request, 'notes/abuse_comment.html', {
+            'obj': obj,
+            'form': form,
+        })
+
+    def post(self, request, type, obj_pk):
+        obj = self.get_obj(type, obj_pk)
+        form = forms.AbuseCommentForm(request.POST)
+        if form.is_valid():
+            form.save()
+        # idk where to redirect this to
+        return render(request, 'home.html')
 
 def error_stripe_invalid_request(request, error_pk):
     error = get_object_or_404(Note, pk=error_pk)

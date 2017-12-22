@@ -21,6 +21,7 @@
                 <button id="upvotes-c-{{ c.pk }}" class="vote upvote{% if user_vote_was == 'upvote' %} user-vote{% endif %}">{{ c.upvotes }}</button>
                 <button id="downvotes-c-{{ c.pk }}" class="vote downvote{% if user_vote_was == 'downvote' %} user-vote{% endif %}">{{ c.downvotes }}</button> -
                 <a class="show-reply" id="{{ c.pk }}" href="">Reply</a>{% if c.user == request.user %} - <a id="delete-comment-{{ c.pk }}" class="delete-cr" href="">Delete</a>{% endif %}</a>
+                <a href="{% url 'notes:abuse_comment' type='comment' obj_pk=c.pk %}" class="report-comment">Report</a>
                 {% comment_replies c.pk as replies %}
                 {% if replies %}
                     <ul id="comment-{{ c.pk }}-replies" class="reply-list">
@@ -30,6 +31,7 @@
                                 <button id="upvotes-r-{{ r.pk }}" class="vote upvote{% if user_vote_was == 'upvote' %} user-vote{% endif %}">{{ r.upvotes }}</button>
                                 <button id="downvotes-r-{{ r.pk }}" class="vote downvote{% if user_vote_was == 'downvote' %} user-vote{% endif %}">{{ r.downvotes }}</button>
                                 {% if r.user == request.user %} - <a id="delete-reply-{{ r.pk }}" class="delete-cr" href="">Delete</a>{% endif %}
+                                <a href="{% url 'notes:abuse_comment' type='reply' obj_pk=r.pk %}" class="report-comment">Report</a>
                             </li>
                         {% endfor %}
                     </ul>

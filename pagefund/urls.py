@@ -22,7 +22,6 @@ urlpatterns = [
     url(r'^invite/', include('invitations.urls', namespace='invitations')),
     url(r'^comments/', include('comments.urls', namespace='comments')),
     url(r'^donation/', include('donation.urls', namespace='donation')),
-    url(r'^notes/', include('notes.urls', namespace='notes')),
     url(r'^forgot/$', InvitationsViews.forgot_password_request, name='forgot_password_request'),
     url(r'^password/reset/(?P<invitation_pk>\d+)/(?P<key>[\w-]+)/$', InvitationsViews.forgot_password_reset, name='forgot_password_reset'),
     url(r'^webhooks/', include('webhooks.urls', namespace='webhooks')),
@@ -32,6 +31,7 @@ urlpatterns = [
     url(r'^about/$', TemplateView.as_view(template_name="about.html")),
     url(r'^terms-of-service/$', TemplateView.as_view(template_name="terms_of_service.html")),
     url(r'^privacy-policy/$', TemplateView.as_view(template_name="privacy_policy.html")),
+    url(r'^notes/', include('notes.urls', namespace='notes')),
 
     url(r'^page/subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),
     url(r'^create/$', PageViews.page_create, name='page_create'),
