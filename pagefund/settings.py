@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'webhooks',
     'faqs',
     'votes',
+    'notes',
 ]
 
 MIDDLEWARE = [
