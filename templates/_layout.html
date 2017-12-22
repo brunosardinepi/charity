@@ -31,7 +31,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse">
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup"">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
                          <a class="nav-link" href="{% url 'search:search' %}">Search</a>
@@ -67,6 +67,14 @@
         <main role="main" class="container">
             {% block body_content %}{% endblock %}
         </main>
+
+        <footer class="footer">
+            <div class="container">
+                <span id="copyright">&copy; {% now "Y" %} PageFund, Inc.</span>
+                <a class="footer-link" href="/terms-of-service/">Terms of Service</a>
+                <a class="footer-link" href="/privacy-policy/">Privacy Policy</a>
+            </div>
+        </footer>
         
         {% block body_extra %}{% endblock %}
     </body>

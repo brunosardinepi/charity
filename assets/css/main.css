@@ -1,6 +1,31 @@
+html {
+    position: relative;
+    min-height: 100%;
+}
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+}
 nav {
     background: #ffffff;
 }
 nav a {
     color: #000000;
+}
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 60px;
+    line-height: 60px; /* Vertically center the text there */
+    background-color: #ffffff;
+}
+.footer #copyright {
+    margin-right: 1rem;
+}
+.footer .footer-link {
+    display: inline-block;
+    padding-right: .5rem;
+    padding-left: .5rem;
 }
