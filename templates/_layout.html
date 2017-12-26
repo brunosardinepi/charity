@@ -69,16 +69,22 @@
         </main>
 
         <footer class="footer">
-            <div id="footer-container" class="container">
-                <span>
-                    <span id="copyright">&copy; {% now "Y" %} PageFund, Inc.</span>
-                    <a class="footer-link" href="/terms-of-service/">Terms of Service</a>
-                    <a class="footer-link" href="/privacy-policy/">Privacy Policy</a>
-                </span>
-                <div id="social-container">
-                    <span class="social-links ml-auto">
-                        Social media
-                    </span>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-auto">
+                        <span>&copy; {% now "Y" %} PageFund, Inc.</span>
+                    </div>
+                    <div class="col">
+                        <ul class="list-inline">
+                            <li class="list-inline-item"><a href="/terms-of-service/">Terms of Service</a></li>
+                            <li class="list-inline-item"><a href="/privacy-policy/">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-auto">
+                        <span>
+                            Social media
+                        </span>
+                    </div>
                 </div>
             </div>
         </footer>
