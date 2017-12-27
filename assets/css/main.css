@@ -6,6 +6,16 @@ body {
     /* Margin bottom by footer height */
     margin-bottom: 60px;
 }
+#logo-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+#logo {
+    height: 300px;
+    background: red;
+}
 nav {
     background: #ffffff;
 }
