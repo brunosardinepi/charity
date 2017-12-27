@@ -416,7 +416,6 @@ class CampaignTest(TestCase):
         response = views.campaign_edit(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
 
     def test_campaign_invite_not_admin_not_manager(self):
