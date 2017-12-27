@@ -50,47 +50,10 @@
 
         <main role="main" class="container">
             <h2>Total raised: {{ donations|cents_to_dollars }}</h2>
-            <p><a href="{% url 'page_create' %}">Create Page</a></p>
-            <p><a href="{% url 'campaign_create' %}">Create Campaign</a></p>
-
-            {% if user.is_authenticated %}
-                <p><a href="{% url 'invite' %}">Invite</a></p>
-            {% else %}
-                <p><a href="{% url 'forgot_password_request' %}">Forgot password?</a></p>
-            {% endif %}
-
-            <form action="{% url 'search:search' %}" method="POST">
-                {% csrf_token %}
-                <input id="q" name="q" type="text" />
-                <input type="submit" value="Search" />
-            </form>
-            {% include "test.html" %}
+            {% include "home_content.html" %}
         </main>
 
-        <footer class="footer">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-auto">
-                        <span>&copy; {% now "Y" %} PageFund, Inc.</span>
-                    </div>
-                    <div class="col">
-                        <ul class="list-inline">
-                            <li class="list-inline-item"><a href="/terms-of-service/">Terms of Service</a></li>
-                            <li class="list-inline-item"><a href="/privacy-policy/">Privacy Policy</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-md-auto">
-                        <ul class="list-inline">
-                            <li class="list-inline-item"><a href=""><i class="fab fa-facebook-f fa-lg"></i></a></li>
-                            <li class="list-inline-item"><a href=""><i class="fab fa-instagram fa-lg"></i></a></li>
-                            <li class="list-inline-item"><a href=""><i class="fab fa-twitter fa-lg"></i></a></li>
-                            <li class="list-inline-item"><a href=""><i class="fab fa-linkedin-in fa-lg"></i></a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </footer>
-
+            {% include "footer.html" %}
     </body>
 </html>
 
