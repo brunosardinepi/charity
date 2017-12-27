@@ -3,10 +3,6 @@
 
 {% block title %} Create Campaign - Vote | {{ block.super }}{% endblock %}
 
-{% block breadcrumbs %}
-    <a href="{% url 'page' page_slug=campaign.page.page_slug %}">{{ campaign.page.name }}</a> / {{ campaign.name }} / Create vote participants
-{% endblock %}
-
 {% block body_content %}
     <h1>Create Campaign - Vote</h1>
     

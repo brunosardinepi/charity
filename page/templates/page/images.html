@@ -31,7 +31,6 @@
             event.preventDefault();
             var arr = $(this).closest("span").attr("id").split('-');
             var url = "{% url 'page_profile_update' image_pk=0 %}".replace(0, arr[1]);
-//            var id = $(this).closest("span").attr("id");
             $.get(url, function() {
                 $(".profile").html("<a class='set-profile-picture' href=''>Make profile picture</a> - ");
                 $("#profile-" + arr[1]).text("Profile picture - ");
@@ -39,10 +38,6 @@
         });
     </script>
 
-{% endblock %}
-
-{% block breadcrumbs %}
-    <a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a> / Upload
 {% endblock %}
 
 {% block body_content %}
