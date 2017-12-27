@@ -19,6 +19,10 @@ $(document).on('scroll', window, function() {
         $('#login').addClass('nav-item');
         $('#signup').removeClass('list-inline-item');
         $('#signup').addClass('nav-item');
+        $('#logout').removeClass('list-inline-item');
+        $('#logout').addClass('nav-item');
+        $('#profile').removeClass('list-inline-item');
+        $('#profile').addClass('nav-item');
     }
     if ($(window).scrollTop() < 507) {
         $('#nav-container').removeClass('fixed-nav navbar navbar-expand-lg');
@@ -40,5 +44,9 @@ $(document).on('scroll', window, function() {
         $('#login').addClass('list-inline-item');
         $('#signup').removeClass('nav-item');
         $('#signup').addClass('list-inline-item');
+        $('#logout').removeClass('nav-item');
+        $('#logout').addClass('list-inline-item');
+        $('#profile').removeClass('nav-item');
+        $('#profile').addClass('list-inline-item');
     }
 });
