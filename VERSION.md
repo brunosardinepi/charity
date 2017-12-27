@@ -10,6 +10,7 @@ Release date: TBD
 ### Additions
 
 * Notes system for communication between PageFund and users
+* Home page design
 
 ### Changes
 
