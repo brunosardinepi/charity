@@ -19,7 +19,7 @@ Release date: TBD
 
 ### Fixes
 
-* None
+* Donation amount rendered wrong in templates for past Campaigns
 
 
 ## Version 0.11.0
