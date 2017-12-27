@@ -6,6 +6,9 @@ body {
     /* Margin bottom by footer height */
     margin-bottom: 60px;
 }
+.btn {
+    border-radius: 0 !important;
+}
 #logo-container {
     height: 100vh;
     display: flex;
@@ -30,6 +33,9 @@ nav a {
 }
 #login, #signup {
     padding: 0 8px;
+}
+#login {
+    margin-bottom: 8px;
 }
 .home-picture {
     height: 300px;
