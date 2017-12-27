@@ -15,10 +15,10 @@
                 </li>
                 {% if not user.is_authenticated %}
                     <li id="login" class="list-inline-item">
-                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        <a class="btn btn-outline-success nav-link" href="{% url 'login' %}" role="button">Login</a>
                     </li>
                     <li id="signup" class="list-inline-item">
-                        <a class="nav-link" href="{% url 'signup' %}">Sign up</a>
+                        <a class="btn btn-outline-info nav-link" href="{% url 'signup' %}" role="button">Sign up</a>
                     </li>
                 {% endif %}
             </ul>

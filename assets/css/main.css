@@ -28,6 +28,9 @@ nav {
 nav a {
     color: #000000;
 }
+#login, #signup {
+    padding: 0 8px;
+}
 .footer {
     position: absolute;
     bottom: 0;
