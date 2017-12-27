@@ -3,7 +3,7 @@ $(document).on('scroll', window, function() {
         $('#nav-container').addClass('fixed-nav navbar navbar-expand-lg');
         $('.navbar-brand').show();
         if (!$(".navbar-toggler").length) {
-            $('.navbar-brand').after('<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>');
+            $('.navbar-brand').after('<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation"><i class="far fa-bars"></i></button>');
         }
         $('#navbarNavAltMarkup').removeClass('col text-center');
         $('#navbarNavAltMarkup').addClass('collapse navbar-collapse');
