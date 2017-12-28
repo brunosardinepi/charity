@@ -6,6 +6,7 @@
 {% block title %} {{ page.name }} | {{ block.super }}{% endblock %}
 
 {% block head_extra %}
+    <link href="{% static 'css/lightbox.css' %}" rel="stylesheet">
     <script>
         var model = "page";
         var model_pk = {{ page.pk }};
@@ -28,7 +29,9 @@
     <div class="container">
         <div class="row">
             <div class="col-md">
-                <img src="{{ page.profile_picture.image.url }}" class="img-fluid" />
+                <a href="{{ page.profile_picture.image.url }}" data-lightbox="page-gallery" data-title="My caption">
+                    <img src="{{ page.profile_picture.image.url }}" class="img-fluid" />
+                </a>
             </div>
             <div class="col-md">
                 <h1>{{ page.name }}</h1>
@@ -113,3 +116,6 @@
 
 {% endblock %}
 
+{% block body_extra %}
+    <script src="{% static 'js/lightbox.js' %}"></script>
+{% endblock %}
