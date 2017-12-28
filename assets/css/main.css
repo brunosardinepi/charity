@@ -60,6 +60,11 @@ a.nav-link:hover {
 .reply {
     margin-bottom: 1rem;
 }
+@media (max-width: 767px) {
+    .comment-profile-picture-container {
+        display: none !important;
+    }
+}
 .comment-profile-picture {
     border-radius: 50%;
     height: 75px;

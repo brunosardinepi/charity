@@ -19,7 +19,7 @@
     {% for c in obj.comments %}
         {% user_vote_was user=request.user obj="comment" pk=c.pk as user_vote_was %}
         <div class="row comment" id="comment-{{ c.pk }}">
-            <div class="col-md-auto">
+            <div class="col-md-auto comment-profile-picture-container">
                 <img class="comment-profile-picture" src="{{ c.user.userprofile.profile_picture.image.url }}" />
             </div>
             <div class="col comment-main">
@@ -46,7 +46,7 @@
             <div id="comment-{{ c.pk }}-replies" class="col reply-list">
             {% for r in replies %}
                 <div class="row reply" id="reply-{{ r.pk }}">
-                    <div class="col-md-auto">
+                    <div class="col-md-auto comment-profile-picture-container">
                         <img class="comment-profile-picture" src="{{ r.user.userprofile.profile_picture.image.url }}" />
                     </div>
                     <div class="col comment-main">
