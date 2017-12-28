@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'faqs',
     'votes',
     'notes',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

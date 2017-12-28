@@ -1,13 +1,15 @@
 {% load comment_extras %}
 {% load votes_extras %}
-
+{% load widget_tweaks %}
 
 <h2>Comments</h2>
 {% if request.user.is_authenticated %}
     <form id="comment" action="{% url 'comments:comment' model=model pk=obj.pk %}" method="POST">
         {% csrf_token %}
-        {{ form.content }}
-        <input type="submit" value="Comment" />
+        <div class="form-group">
+            {% render_field form.content class+="form-control" %}
+        </div>
+        <input type="submit" class="btn btn-primary" value="Comment" />
     </form>
 {% else %}
     <p>You must be logged in to comment!</p>
