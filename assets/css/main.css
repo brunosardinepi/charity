@@ -54,8 +54,11 @@ a.nav-link:hover {
 #comment-list {
     margin-top: 2rem;
 }
-.comment, .reply {
+.comment {
     margin-bottom: 2rem;
+}
+.reply {
+    margin-bottom: 1rem;
 }
 .comment-profile-picture {
     border-radius: 50%;
