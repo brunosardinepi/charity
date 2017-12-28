@@ -40,10 +40,10 @@
                 <hr>
                 {{ c.content }}
             </div>
-        </div>
         {% comment_replies c.pk as replies %}
         {% if replies %}
-            <div id="comment-{{ c.pk }}-replies" class="reply-list">
+            <div class="w-100"></div>
+            <div id="comment-{{ c.pk }}-replies" class="col reply-list">
             {% for r in replies %}
                 <div class="row reply" id="reply-{{ r.pk }}">
                     <div class="col-md-auto">
@@ -71,6 +71,7 @@
             {% endfor %}
             </div>
         {% endif %}
+        </div>
     {% endfor %}
     </div>
 {% else %}
