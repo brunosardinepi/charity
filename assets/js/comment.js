@@ -10,9 +10,9 @@ function comment() {
             $("#comment-text").val('');
             if (!$("#comment_list").length) {
                 $("#no-comments").remove();
-                $("#comment").after("<ul id='comment_list'></ul>");
+                $("#comment").after("<div id='comment_list'></div>");
             }
-            $("#comment_list").prepend("<li id='comment-" + json.id + "' class='comment'>" + json.content + " - " + json.user + " @ " + json.date + " - <button id='upvotes-c-" + json.id + "' class='vote upvote user-vote'>1</button> <button id='downvotes-c-" + json.id + "' class='vote downvote'>0</button> - <a class='show-reply' id='" + json.id + "' href=''>Reply</a> - <a id='delete-comment-" + json.id + "' class='delete-cr' href=''>Delete</a></li>");
+            $("#comment_list").prepend("<div class='row comment' id='comment-" + json.id + "'><div class='col'><img src='" + json.user_image_url + "' /><br />" + json.user + "</div><div class='col'>" + json.content + "<hr>" + json.date + "<button id='upvotes-c-" + json.id + "' class='vote upvote user-vote'>1</button> <button id='downvotes-c-" + json.id + "' class='vote downvote'>0</button> - <a class='show-reply' id='" + json.id + "' href=''>Reply</a> - <a id='delete-comment-" + json.id + "' class='delete-cr' href=''>Delete</a>");
         }
     });
 };
@@ -31,19 +31,14 @@ function show_reply_textarea(event) {
 function reply(id) {
     $.ajax({
         url : "/comments/" + id + "/reply/",
-//        url : "{% url 'comments:reply' comment_pk=0 %}".replace(0, id),
         type : "POST",
         data : { reply_text : $("#reply-text").val() },
         success : function(json) {
             $("#reply").remove();
             if (!$("#comment-" + id + "-replies").length) {
-                if ($("#delete-comment-" + id).length) {
-                    $("#delete-comment-" + id).after("<ul id='comment-" + id + "-replies' class='reply-list'></ul>");
-                } else if ("#" + id.length) {
-                    $("#" + id).after("<ul id='comment-" + id + "-replies' class='reply-list'></ul>");
-                }
+                $("#comment-" + id).after("<div id='comment-" + id + "-replies' class='reply-list'></div>");
             }
-            $("#comment-" + id + "-replies").append("<li id='reply-" + json.id + "'>" + json.content + " - " + json.user + " @ " + json.date + " - <button id='upvotes-r-" + json.id + "' class='vote upvote user-vote'>1</button> <button id='downvotes-r-" + json.id + "' class='vote downvote'>0</button> - <a id='delete-reply-" + json.id + "' class='delete-cr' href=''>Delete</a></li>");
+            $("#comment-" + id + "-replies").append("<div class='row reply' id='reply-" + json.id + "'><div class='col'><img src='" + json.user_image_url + "' /><br />REPLY: " + json.user + "</div><div class='col'>" + json.content + "<hr>" + json.date + "<button id='upvotes-r-" + json.id + "' class='vote upvote user-vote'>1</button> <button id='downvotes-r-" + json.id + "' class='vote downvote'>0</button> - <a id='delete-reply-" + json.id + "' class='delete-cr' href=''>Delete</a>");
         }
     });
 };
