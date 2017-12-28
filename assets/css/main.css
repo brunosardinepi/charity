@@ -18,6 +18,9 @@ body {
 #logo {
     height: 300px;
 }
+#logo-nav {
+    height: 40px;
+}
 .fixed-nav {
     position: fixed;
     top: 0;

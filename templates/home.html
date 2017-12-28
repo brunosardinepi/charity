@@ -9,6 +9,13 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/favicon-16x16.png' %}">
+        <link rel="manifest" href="{% static 'manifest.json' %}">
+        <link rel="mask-icon" href="{% static 'img/safari-pinned-tab.svg' %}" color="#33CC99">
+        <meta name="theme-color" content="#ffffff">
+
         <title>PageFund</title>
 
         <!-- css -->
@@ -40,7 +47,7 @@
         <div id="logo-container">
             <div id="logo">
                 <div style="margin-top: 60px; font-size: 1.25rem;" class="text-center">
-                    <p>PageFund</p>
+                    <p style="font-size: 3rem;"><img id="logo-home" src="{% static 'img/logo.svg' %}" /> PageFund</p>
                     <p>Raise Extra</p>
                     <a href="" role="button" class="btn btn-primary">Get started</a>
                 </div>

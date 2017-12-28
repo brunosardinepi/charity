@@ -1,6 +1,8 @@
+{% load staticfiles %}
+
 <nav id="nav-container">
     <div id="nav-content-container" class="container">
-        <a class="navbar-brand" href="{% url 'home' %}" style="display:none;">PageFund</a>
+        <a class="navbar-brand" href="{% url 'home' %}" style="display:none;"><img id="logo-nav" src="{% static 'img/logo.svg' %}" /> PageFund</a>
 
         <div id="navbarNavAltMarkup" class="col text-center">
             <ul id="nav-ul" class="list-inline">
