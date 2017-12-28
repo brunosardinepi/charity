@@ -46,9 +46,14 @@ def comment(request, model, pk):
 
 @login_required
 def reply(request, comment_pk):
+    print("comment_pk = {}".format(comment_pk))
     comment = get_object_or_404(models.Comment, pk=comment_pk)
+    print("comment = {}".format(comment))
+    print("comment content = {}".format(comment.content))
     if request.method == 'POST':
+        print("form = {}".format(request.POST))
         reply_text = request.POST.get('reply_text')
+        print("reply_text = {}".format(reply_text))
 
         reply = models.Reply.objects.create(
             user=request.user,

@@ -22,10 +22,25 @@ $(document).on("submit", "#comment", function(event) {
     comment();
 });
 
-function show_reply_textarea(event) {
-    var url = "/comments/" + event.target.id + "/reply/";
-    $(event.target).parent().after("<form id='reply' action=" + url + " method='POST'><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "' /><textarea id='reply-text' autofocus></textarea><input type='submit' value='Reply' /></form>");
-};
+$(document).on('click', ".show-reply", function(event) {
+    event.preventDefault();
+
+    var id = $(this).attr('id');
+    console.log("id = " + id);
+    var url = "/comments/" + id + "/reply/";
+    console.log("url = " + url);
+
+    $('.modal-body').html("<form id='replyForm' action=" + url + " method='POST'><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "' /><div class='form-group'><textarea class='form-control' id='reply-text' autofocus></textarea></div></form>");
+    $('.modal-footer').html("<button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button><button id=" + id + " type='button' class='btn btn-primary submit-reply' data-dismiss='modal'>Reply</button>");
+});
+
+$(document).on("click", ".submit-reply", function(event) {
+//    event.preventDefault();
+    var id = $(this).attr("id");
+    console.log("id to pass to reply() = " + id);
+    reply(id);
+//    $('form#replyForm').submit();
+});
 
 function reply(id) {
     $.ajax({
@@ -41,17 +56,6 @@ function reply(id) {
         }
     });
 };
-
-$(document).on('click', ".show-reply", function(event) {
-    event.preventDefault();
-    show_reply_textarea(event);
-});
-
-$(document).on('submit', "#reply", function(event) {
-    event.preventDefault();
-    var id = $("#reply").prev().find(".show-reply").attr("id");
-    reply(id);
-});
 
 function delete_obj(event) {
     var arr = $(event.target).parent('a').attr('id');

@@ -33,7 +33,7 @@
                             <a id="upvotes-c-{{ c.pk }}" class="vote upvote{% if user_vote_was == 'upvote' %} user-vote{% endif %}" href=""><i class="fal fa-chevron-circle-up"></i></a> <label id="upvote-count-c-{{ c.pk }}">{{ c.upvotes }}</label>
                             <a id="downvotes-c-{{ c.pk }}" class="vote downvote{% if user_vote_was == 'downvote' %} user-vote{% endif %}" href=""><i class="fal fa-chevron-circle-down"></i></a> <label id="downvote-count-c-{{ c.pk }}">{{ c.downvotes }}</label>
                         </span>
-                        <a class="show-reply" id="{{ c.pk }}" href=""><i class="fal fa-reply"></i></a>{% if c.user == request.user %} <a id="delete-comment-{{ c.pk }}" class="delete-cr" href=""><i class="fal fa-trash-alt"></i></a>{% endif %}</a>
+                        <a class="show-reply" id="{{ c.pk }}" href="" data-toggle="modal" data-target="#replyModal"><i class="fal fa-reply"></i></a>{% if c.user == request.user %} <a id="delete-comment-{{ c.pk }}" class="delete-cr" href=""><i class="fal fa-trash-alt"></i></a>{% endif %}</a>
                         <a href="{% url 'notes:abuse_comment' type='comment' obj_pk=c.pk %}" class="report-comment"><i class="fal fa-flag"></i></a>
                     </div>
                 </div>
@@ -77,3 +77,21 @@
 {% else %}
     <p id="no-comments">No comments</p>
 {% endif %}
+
+<div class="modal fade" id="replyModal" tabindex="-1" role="dialog" aria-labelledby="replyModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="replyModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
