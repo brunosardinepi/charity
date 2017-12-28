@@ -31,6 +31,7 @@ body {
 }
 nav {
     background: #ffffff;
+    margin-bottom: 1rem;
 }
 a.nav-link {
     color: rgba(0,0,0,.75);
@@ -70,6 +71,10 @@ a.nav-link:hover {
 }
 .comment-user-name {
     padding-right: 1rem;
+    font-weight: bold;
+}
+.comment-date {
+    color: #666666;
 }
 .votes {
     margin-right: 1rem;
