@@ -29,23 +29,14 @@ body {
 nav {
     background: #ffffff;
 }
-nav a {
-    color: #000000;
-}
-nav #nav-ul {
+a.nav-link {
+    color: rgba(0,0,0,.75);
+    padding-right: 2rem !important;
     font-size: 0.875rem;
     text-transform: uppercase;
 }
-nav #nav-ul li a.nav-link {
-    color: rgba(0,0,0,.75);
-}
-nav #nav-ul li a.nav-link:hover {
+a.nav-link:hover {
     color: rgba(0,0,0,1);
-}
-.navbar-expand-lg .navbar-nav .nav-link {
-/*    padding-right: 1rem;
-    padding-left: 1rem; */
-    padding-right: 2rem;
 }
 #login, #signup {
     padding: 0 8px;
@@ -55,6 +46,36 @@ nav #nav-ul li a.nav-link:hover {
 }
 .home-picture {
     height: 300px;
+}
+#comment-list {
+    margin-top: 2rem;
+}
+.comment, .reply {
+    margin-bottom: 2rem;
+}
+.comment-profile-picture {
+    border-radius: 50%;
+    height: 75px;
+    width: 75px;
+}
+.comment-main hr {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.comment-info {
+    font-size: 0.875rem;
+}
+.comment-user-name {
+    padding-right: 1rem;
+}
+.votes {
+    margin-right: 1rem;
+}
+.show-reply, .delete-cr {
+    margin-right: 0.5rem;
+}
+.reply .col-md-auto {
+    margin-left: 105px;
 }
 .footer {
     position: absolute;
