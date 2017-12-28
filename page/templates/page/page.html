@@ -37,6 +37,18 @@
                 <p>Category: {{ page.get_category_display }}</p>
                 <p>Website: {{ page.website }}</p>
                 <p>{{ page.donation_money|cents_to_dollars }} raised by {{ page.unique_donors }} donors</p>
+                <p><a href="{% url 'campaign_create' page_slug=page.page_slug %}">Create Campaign</a></p>
+                {% if request.user.userprofile in page.admins.all or page_perms %}
+                    <p><a href="{% url 'page_dashboard' page_slug=page.page_slug %}">Dashboard</a></p>
+                {% endif %}
+                {% if request.user.is_authenticated %}
+                    {% get_obj_perms request.user for page as "page_perms" %}
+                    {% if request.user.userprofile not in page.admins.all and page_perms|length == 0 %}
+                        <button id="subscribe" name="{{ subscribe_attr.name }}" style="background-color:{{ subscribe_attr.color }}">{{ subscribe_attr.value  }}</button>
+                    {% endif %}
+                {% else %}
+                    <button onclick="location.href='{% url 'login' %}?next=/page/subscribe/{{ page.pk }}/subscribe/'" style="background-color:green">Subscribe</button>
+                {% endif %}
             </div>
         </div>
         <div class="row">
@@ -45,39 +57,46 @@
                 {{ page.description|linebreaks }}
             </div>
         </div>
+        <div class="row">
+            <div class="col">
+                <h3>Campaigns</h3>
+                <ul>
+                    {% for campaign in page.active_campaigns %}
+                        <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> ({{ campaign.donation_money|cents_to_dollars }} of ${{ campaign.goal }} goal)</li>
+                    {% endfor %}
+                </ul>
+                <p><a href="">See all active Campaigns</a></p>
+                <p><a href="">See past Campaigns</a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h2>Donations</h2>
+                <ul>
+                    {% for d in page.donations_recent %}
+                        <li>{% if d.anonymous_amount and d.anonymous_donor %}Anonymous donation{% endif %}{% if not d.anonymous_amount %}{{ d.amount|cents_to_dollars }}{% endif %}{% if not d.anonymous_amount and not d.anonymous_donor %} - {% endif %}{% if not d.anonymous_donor %}{% if d.user %}{{ d.user.first_name }} {{ d.user.last_name }}{% else %}{{ d.donor_first_name }} {{ d.donor_last_name }}{% endif %}{% endif %} @ {{ d.date }}{% if d.campaign %} via <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign.name }}</a>{% endif %}
+                            {% if d.comment %}
+                                <ul>
+                                    <li>{{ d.comment }}</li>
+                                </ul>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <p><a href="">See all donations</a></p>
+            </div>
+            <div class="col">
+                <h2>Top Donors</h2>
+                <ul>
+                    {% for a, b in page.top_donors %}
+                        <li>{{ b.amount|cents_to_dollars }} - {{ b.first_name }} {{ b.last_name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
     </div>
 
-
-    {% if request.user.is_authenticated %}
-        {% get_obj_perms request.user for page as "page_perms" %}
-        {% if request.user.userprofile not in page.admins.all and page_perms|length == 0 %}
-            <button id="subscribe" name="{{ subscribe_attr.name }}" style="background-color:{{ subscribe_attr.color }}">{{ subscribe_attr.value  }}</button>
-        {% endif %}
-    {% else %}
-        <button onclick="location.href='{% url 'login' %}?next=/page/subscribe/{{ page.pk }}/subscribe/'" style="background-color:green">Subscribe</button>
-    {% endif %}
-
-    <h3>Active Campaigns</h3>
-    <ul>
-        {% for campaign in page.active_campaigns %}
-            <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> ({{ campaign.donation_money|cents_to_dollars }} of ${{ campaign.goal }} goal)</li>
-        {% endfor %}
-    </ul>
-
-    <h3>Past Campaigns</h3>
-    <ul>
-        {% for campaign in page.inactive_campaigns %}
-            <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> ({{ campaign.donation_money|cents_to_dollars }} of ${{ campaign.goal }} goal)</li>
-        {% endfor %}
-    </ul>
-
-    <p><a href="{% url 'campaign_create' page_slug=page.page_slug %}">Create Campaign</a></p>
-
     {% include "comments/comments.html" with model="page" obj=page %}
-
-    {% if request.user.userprofile in page.admins.all or page_perms %}
-        <p><a href="{% url 'page_dashboard' page_slug=page.page_slug %}">Dashboard</a></p>
-    {% endif %}
 
     <h3>Page Images</h3>
     <ul>
@@ -85,31 +104,6 @@
             <li><img src="{{ image.image.url }}" width="200" />{{ image.caption }}</li>
         {% endfor %}
     </ul>
-
-    <h3>Donations</h3>
-    {% if page.donations %}
-        <h4>Top Donors</h4>
-        <ul>
-            {% for a, b in page.top_donors %}
-                <li>{{ b.amount|cents_to_dollars }} - {{ b.first_name }} {{ b.last_name }}</li>
-            {% endfor %}
-        </ul>
-
-        <h4>All Donations</h4>
-        <ul>
-            {% for d in page.donations %}
-                <li>{% if d.anonymous_amount and d.anonymous_donor %}Anonymous donation{% endif %}{% if not d.anonymous_amount %}{{ d.amount|cents_to_dollars }}{% endif %}{% if not d.anonymous_amount and not d.anonymous_donor %} - {% endif %}{% if not d.anonymous_donor %}{% if d.user %}{{ d.user.first_name }} {{ d.user.last_name }}{% else %}{{ d.donor_first_name }} {{ d.donor_last_name }}{% endif %}{% endif %} @ {{ d.date }}{% if d.campaign %} via <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign.name }}</a>{% endif %}
-                    {% if d.comment %}
-                        <ul>
-                            <li>{{ d.comment }}</li>
-                        </ul>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No donations!</p>
-    {% endif %}
 
     {% if request.user.is_authenticated %}
         {% include "donation/donate.html" with page=page donate_form=donate_form api_key=api_key%}

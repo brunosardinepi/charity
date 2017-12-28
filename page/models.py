@@ -182,6 +182,9 @@ class Page(models.Model):
     def donations(self):
         return Donation.objects.filter(page=self).order_by('-date')
 
+    def donations_recent(self):
+        return Donation.objects.filter(page=self).order_by('-date')[:10]
+
     def donation_count(self):
         return Donation.objects.filter(page=self).count()
 
