@@ -1,6 +1,7 @@
-function vote(event) {
-    var obj = $(event.target).parent('a').attr("id");
-    var vote = $(event.target).parent('a').attr("class");
+$(document).on("click", "a[class^=vote]", function(event) {
+    event.preventDefault();
+    var obj = $(this).attr("id");
+    var vote = $(this).attr("class");
 
     $.ajax({
         url : "/votes/vote/",
@@ -22,9 +23,4 @@ function vote(event) {
             }
         }
     });
-};
-
-$(document).on("click", "a[class^=vote]", function(event) {
-   event.preventDefault();
-   vote(event);
 });
