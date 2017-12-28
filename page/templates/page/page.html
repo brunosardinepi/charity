@@ -27,10 +27,10 @@
 {% block body_content %}
     <div class="container">
         <div class="row">
-            <div class="col">
+            <div class="col-md">
                 <img src="{{ page.profile_picture.image.url }}" class="img-fluid" />
             </div>
-            <div class="col">
+            <div class="col-md">
                 <h1>{{ page.name }}</h1>
                 <p>Type: {{ page.get_type_display }}</p>
                 <p>Location: {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{{ page.state }}{% endif %}</p>
@@ -70,7 +70,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col">
+            <div class="col-lg">
                 <h2>Donations</h2>
                 <ul>
                     {% for d in page.donations_recent %}
@@ -85,7 +85,7 @@
                 </ul>
                 <p><a href="">See all donations</a></p>
             </div>
-            <div class="col">
+            <div class="col-lg">
                 <h2>Top Donors</h2>
                 <ul>
                     {% for a, b in page.top_donors %}
