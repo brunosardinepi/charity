@@ -54,7 +54,9 @@ $(document).on('submit', "#reply", function(event) {
 });
 
 function delete_obj(event) {
-    var arr = event.target.id.split('-');
+    var arr = $(event.target).parent('a').attr('id');
+    console.log("arr = " + arr);
+    var arr = arr.split('-');
     var url = "/comments/delete/" + arr[1] + "/" + arr[2] + "/";
     $.get(url, function () {
         $("#" + arr[1] + "-" + arr[2]).remove();
