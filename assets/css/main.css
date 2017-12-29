@@ -18,6 +18,34 @@ a:hover {
 }
 
 /* Buttons - Purple */
+.btn-purple {
+    color:#fff;
+    background-color:#990099;
+    border-color:#990099;
+}
+.btn-purple:hover {
+    color:#fff;
+    background-color:#660066;
+    border-color:#600066;
+}
+.btn-purple.focus,
+.btn-purple:focus {
+    box-shadow:0 0 0 .2rem rgba(153,0,153,.5);
+}
+.btn-purple.disabled,
+.btn-purple:disabled {
+    background-color:#990099;
+    border-color:#990099;
+}
+.btn-purple:not([disabled]):not(.disabled).active,
+.btn-purple:not([disabled]):not(.disabled):active,
+.show> .btn-purple.dropdown-toggle {
+    color:#fff;
+    background-color:#660066;
+    border-color:#600066;
+    box-shadow:0 0 0 .2rem rgba(153,0,153,.5);
+}
+
 .btn-outline-purple {
     color:#990099;
     background-color:transparent;
@@ -29,10 +57,12 @@ a:hover {
     background-color:#990099;
     border-color:#990099;
 }
-.btn-outline-purple.focus, .btn-outline-purple:focus {
+.btn-outline-purple.focus,
+.btn-outline-purple:focus {
     box-shadow:0 0 0 .2rem rgba(153,0,153,.5);
 }
-.btn-outline-purple.disabled, .btn-outline-purple:disabled {
+.btn-outline-purple.disabled,
+.btn-outline-purple:disabled {
     color:#990099;
     background-color:transparent;
 }
@@ -134,6 +164,10 @@ a.nav-link:hover {
 .pc-thumbnail img.portrait {
   width: 100%;
   height: auto;
+}
+.page-info svg {
+    margin-right: 0.5rem;
+    color: rgba(0,0,0,.75);
 }
 #comment-list {
     margin-top: 2rem;

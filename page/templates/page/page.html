@@ -33,13 +33,23 @@
                     <img src="{{ page.profile_picture.image.url }}" class="img-fluid" />
                 </a>
             </div>
-            <div class="col-md">
+            <div class="col-md page-info">
                 <h1>{{ page.name }}</h1>
-                <p>Type: {{ page.get_type_display }}</p>
-                <p>Location: {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{{ page.state }}{% endif %}</p>
-                <p>Category: {{ page.get_category_display }}</p>
-                <p>Website: {{ page.website }}</p>
-                <p>{{ page.donation_money|cents_to_dollars }} raised by {{ page.unique_donors }} donors</p>
+                <p><i class="fal fa-compass"></i> {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{{ page.state }}{% endif %}</p>
+                <p><i class="fal fa-briefcase"></i> {{ page.get_type_display }}</p>
+                <p><i class="fal fa-tag"></i> {{ page.get_category_display }}</p>
+                <p><i class="fal fa-desktop"></i> {{ page.website }}</p>
+                <p><i class="fal fa-usd-circle"></i> {{ page.donation_money|cents_to_dollars }} raised by {{ page.unique_donors }} donors</p>
+
+                <div class="row">
+                    <div class="col">
+                        <button type="button" class="btn btn-purple btn-block">Donate</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-outline-teal btn-block">Create campaign</button>
+                    </div>
+                </div>
+
                 <p><a href="{% url 'campaign_create' page_slug=page.page_slug %}">Create Campaign</a></p>
                 {% if request.user.userprofile in page.admins.all or page_perms %}
                     <p><a href="{% url 'page_dashboard' page_slug=page.page_slug %}">Dashboard</a></p>
