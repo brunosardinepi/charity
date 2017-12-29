@@ -37,9 +37,10 @@
                 <h1>{{ page.name }}</h1>
                 <div class="row mt-3 mb-1">
                     <div class="col">
-                        <h5>{{ page.donation_money|cents_to_dollars }} raised by {{ page.unique_donors }} donors</h5>
+                        <h5 style="font-weight: normal;">{{ page.donation_money|cents_to_dollars }} raised by {{ page.unique_donors }} donors</h5>
                     </div>
                 </div>
+
                 <div class="row mb-3">
                     <div class="col-12 mb-3">
                         <button type="button" class="btn btn-purple btn-block btn-lg">Donate</button>
@@ -51,16 +52,15 @@
 
                 <div class="row">
                     <div class="col-6">
-                        <p><i class="fal fa-compass"></i> {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{{ page.state }}{% endif %}</p>
+                        <p><i class="fal fa-fw fa-compass"></i> {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{{ page.state }}{% endif %}</p>
+                        <p><i class="fal fa-fw fa-briefcase"></i> {{ page.get_type_display }}</p>
+                        <p><i class="fal fa-fw fa-desktop"></i> {{ page.website }}</p>
+                        <p><i class="fal fa-fw fa-tag"></i> {{ page.get_category_display }}</p>
                     </div>
                     <div class="col-6">
-                        <p><i class="fal fa-briefcase"></i> {{ page.get_type_display }}</p>
-                    </div>
-                    <div class="col-6">
-                        <p><i class="fal fa-desktop"></i> {{ page.website }}</p>
-                    </div>
-                    <div class="col-6">
-                        <p><i class="fal fa-tag"></i> {{ page.get_category_display }}</p>
+                        <p><i class="fal fa-fw fa-check-circle"></i> <a href="">Subscribe</a></p>
+                        <p><i class="fab fa-fw fa-facebook-f"></i> <a href="">Share on Facebook</a></p>
+                        <p><i class="fab fa-fw fa-twitter"></i> <a href="">Tweet it</a></p>
                     </div>
                 </div>
 
