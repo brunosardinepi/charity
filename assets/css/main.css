@@ -110,7 +110,7 @@ a:hover {
     justify-content: center;
 }
 #logo {
-    height: 300px;
+    height: 400px;
 }
 #logo-nav {
     height: 40px;
@@ -130,7 +130,7 @@ nav {
 a.nav-link {
     color: rgba(0,0,0,.75);
     padding-right: 2rem !important;
-    font-size: 0.875rem;
+    font-size: 1rem;
     text-transform: uppercase;
 }
 a.nav-link:hover {
