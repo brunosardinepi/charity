@@ -76,6 +76,34 @@ a:hover {
 }
 
 /* Buttons - Teal */
+.btn-teal {
+    color:#fff;
+    background-color:#33cc99;
+    border-color:#33cc99;
+}
+.btn-teal:hover {
+    color:#fff;
+    background-color:#336666;
+    border-color:#325e5b;
+}
+.btn-teal.focus,
+.btn-teal:focus {
+    box-shadow:0 0 0 .2rem rgba(51,204,153,.5);
+}
+.btn-teal.disabled,
+.btn-teal:disabled {
+    background-color:#33cc99;
+    border-color:#33cc99;
+}
+.btn-teal:not([disabled]):not(.disabled).active,
+.btn-teal:not([disabled]):not(.disabled):active,
+.show> .btn-teal.dropdown-toggle {
+    color:#fff;
+    background-color:#336666;
+    border-color:#325e5b;
+    box-shadow:0 0 0 .2rem rgba(51,204,153,.5);
+}
+
 .btn-outline-teal {
     color:#33cc99;
     background-color:transparent;
