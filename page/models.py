@@ -4,6 +4,7 @@ import string
 from collections import OrderedDict
 
 from django.contrib.auth.models import User
+from django.core.files.images import get_image_dimensions
 from django.db import models
 from django.db.models.signals import post_delete
 from django.db.models import Sum
@@ -213,6 +214,14 @@ class PageImage(models.Model):
     profile_picture = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(default=timezone.now)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    width = models.IntegerField()
+    height = models.IntegerField()
+
+    def save(self, *args, **kwargs):
+        width, height = get_image_dimensions(self.image)
+        self.width = width
+        self.height = height
+        super(PageImage, self).save(*args, **kwargs)
 
 @receiver(post_delete, sender=PageImage)
 def auto_delete_file_on_delete(sender, instance, **kwargs):

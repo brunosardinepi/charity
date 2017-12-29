@@ -115,6 +115,26 @@ a.nav-link:hover {
 .home-picture {
     height: 300px;
 }
+.pc-thumbnail {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+}
+.pc-thumbnail img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 100%;
+  width: auto;
+  -webkit-transform: translate(-50%,-50%);
+      -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+}
+.pc-thumbnail img.portrait {
+  width: 100%;
+  height: auto;
+}
 #comment-list {
     margin-top: 2rem;
 }
