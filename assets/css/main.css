@@ -227,6 +227,8 @@ a.nav-link:hover {
     border-radius: 50%;
     height: 75px;
     width: 75px;
+    border: 1px solid #ddd;
+    padding: .25rem;
 }
 .comment-main {
     margin-bottom: 2rem;
