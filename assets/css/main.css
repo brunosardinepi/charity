@@ -230,9 +230,16 @@ a.nav-link:hover {
     border: 1px solid #ddd;
     padding: .25rem;
 }
+.donation-amount {
+    font-weight: bold;
+    color: #990099;
+}
 .comment-main {
     margin-bottom: 2rem;
 }
+/*.comment-main p {
+    font-size: 0.875rem;
+}*/
 .comment-main hr {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
