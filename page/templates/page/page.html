@@ -49,10 +49,20 @@
                     </div>
                 </div>
 
-                <p><i class="fal fa-compass"></i> {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{{ page.state }}{% endif %}</p>
-                <p><i class="fal fa-briefcase"></i> {{ page.get_type_display }}</p>
-                <p><i class="fal fa-tag"></i> {{ page.get_category_display }}</p>
-                <p><i class="fal fa-desktop"></i> {{ page.website }}</p>
+                <div class="row">
+                    <div class="col-6">
+                        <p><i class="fal fa-compass"></i> {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{{ page.state }}{% endif %}</p>
+                    </div>
+                    <div class="col-6">
+                        <p><i class="fal fa-briefcase"></i> {{ page.get_type_display }}</p>
+                    </div>
+                    <div class="col-6">
+                        <p><i class="fal fa-desktop"></i> {{ page.website }}</p>
+                    </div>
+                    <div class="col-6">
+                        <p><i class="fal fa-tag"></i> {{ page.get_category_display }}</p>
+                    </div>
+                </div>
 
                 {% if request.user.userprofile in page.admins.all or page_perms %}
                     <p><a href="{% url 'page_dashboard' page_slug=page.page_slug %}">Dashboard</a></p>
