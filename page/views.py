@@ -71,9 +71,9 @@ def page(request, page_slug):
             user_subscription_check = None
 
         if user_subscription_check:
-            subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe", "color": "red"}
+            subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe"}
         else:
-            subscribe_attr = {"name": "subscribe", "value": "Subscribe", "color": "green"}
+            subscribe_attr = {"name": "subscribe", "value": "Subscribe"}
 
         if request.method == "POST":
              utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
@@ -310,10 +310,10 @@ def subscribe(request, page_pk, action=None):
     page = get_object_or_404(Page, pk=page_pk)
     if action == "subscribe":
         page.subscribers.add(request.user.userprofile)
-        new_subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe", "color": "red"}
+        new_subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe"}
     elif action == "unsubscribe":
         page.subscribers.remove(request.user.userprofile)
-        new_subscribe_attr = {"name": "subscribe", "value": "Subscribe", "color": "green"}
+        new_subscribe_attr = {"name": "subscribe", "value": "Subscribe"}
     else:
         print("something went wrong")
     previous_page = request.META.get('HTTP_REFERER')
