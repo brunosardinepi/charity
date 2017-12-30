@@ -94,8 +94,8 @@
                 <p><a href="">See past Campaigns</a></p>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-8">
+        <div class="row justify-content-between">
+            <div class="col-lg-6">
                 <h2 class="mb-3">Donations</h2>
                 {% for d in page.donations_recent %}
                 <div class="row">
@@ -120,7 +120,7 @@
                 {% endfor %}
                 <p><a href="">See all donations</a></p>
             </div>
-            <div class="col-lg">
+            <div class="col-lg-4">
                 <h2 class="mb-3">Top Donors</h2>
                 {% for a, b in page.top_donors %}
                     <div class="row">
