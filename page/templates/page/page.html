@@ -100,7 +100,7 @@
                 {% for d in page.donations_recent %}
                 <div class="row">
                     <div class="col-md-auto comment-profile-picture-container">
-                        <img class="comment-profile-picture" src="{{ d.user.userprofile.profile_picture.image.url }}" />
+                        {% if d.user.userprofile.profile_picture %}<img class="comment-profile-picture" src="{{ d.user.userprofile.profile_picture.image.url }}" />{% else %}<img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />{% endif %}
                     </div>
                     <div class="col comment-main">
                         <div class="row comment-info">
@@ -134,7 +134,7 @@
                                 </div>
                             </div>
                             <hr>
-                            <p>{{ b.amount|cents_to_dollars }}</p>
+                            <span class="top-donation-amount">{{ b.amount|cents_to_dollars }}</span>
                         </div>
                     </div>
                 {% endfor %}

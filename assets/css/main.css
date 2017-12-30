@@ -234,9 +234,12 @@ a.nav-link:hover {
 .comment-profile-picture:hover {
     border: 1px solid #990099;
 }
-.donation-amount {
+.donation-amount, .top-donation-amount {
     font-weight: bold;
     color: #990099;
+}
+.top-donation-amount {
+    font-size: 1.25rem;
 }
 .comment-main {
     margin-bottom: 2rem;

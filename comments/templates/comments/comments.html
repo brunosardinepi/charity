@@ -1,3 +1,4 @@
+{% load staticfiles %}
 {% load comment_extras %}
 {% load votes_extras %}
 {% load widget_tweaks %}
@@ -20,7 +21,7 @@
         {% user_vote_was user=request.user obj="comment" pk=c.pk as user_vote_was %}
         <div class="row comment" id="comment-{{ c.pk }}">
             <div class="col-md-auto comment-profile-picture-container">
-                <img class="comment-profile-picture" src="{{ c.user.userprofile.profile_picture.image.url }}" />
+                {% if c.user.userprofile.profile_picture %}<img class="comment-profile-picture" src="{{ c.user.userprofile.profile_picture.image.url }}" />{% else %}<img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />{% endif %}
             </div>
             <div class="col comment-main">
                 <div class="row comment-info">
@@ -47,7 +48,7 @@
             {% for r in replies %}
                 <div class="row reply" id="reply-{{ r.pk }}">
                     <div class="col-md-auto comment-profile-picture-container">
-                        <img class="comment-profile-picture" src="{{ r.user.userprofile.profile_picture.image.url }}" />
+                        {% if r.user.userprofile.profile_picture %}<img class="comment-profile-picture" src="{{ r.user.userprofile.profile_picture.image.url }}" />{% else %}<img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />{% endif %}
                     </div>
                     <div class="col comment-main">
                         <div class="row comment-info">
