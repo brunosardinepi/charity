@@ -1,11 +1,40 @@
-function comment() {
-    console.log($("#comment-text").val());
+$(document).ready(function() {
+    $('#newComment').on('shown.bs.modal', function () {
+        $('#comment-text').trigger('focus');
+    });
+
+    $('#replyModal').on('shown.bs.modal', function () {
+        $('#reply-text').trigger('focus');
+    });
+});
+
+$(document).on('click', "[id^='show-comment']", function(event) {
+    event.preventDefault();
+
+    var arr = $(this).attr('id');
+    var arr = arr.split("-");
+    var model = arr[2];
+    var pk = arr[3];
+    var url = "/comments/" + model + "/" + pk + "/comment/";
+
+    $('#newComment .modal-body').html("<form id='comment' action=" + url + " method='POST'><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "' /><div class='form-group'><textarea class='form-control' placeholder='Type your comment here.' id='comment-text' required></textarea></div></form>");
+    $('#newComment .modal-footer').html("<button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button><button id='comment-" + model + "-" + pk + "' type='button' class='btn btn-primary submit-comment' data-dismiss='modal'>Comment</button>");
+});
+
+$(document).on("click", ".submit-comment", function(event) {
+    var arr = $(this).attr("id");
+    comment(arr);
+});
+
+function comment(arr) {
+    var arr = arr.split("-");
+    var model = arr[1];
+    var model_pk = arr[2];
+
     $.ajax({
         url : "/comments/" +  model + "/" + model_pk + "/comment/",
         type : "POST",
-        data : {
-            comment_text : $("#comment-text").val(),
-        },
+        data : { comment_text : $("#comment-text").val() },
         success : function(json) {
             $("#comment-text").val('');
             if (!$("#comment-list").length) {
@@ -17,19 +46,14 @@ function comment() {
     });
 };
 
-$(document).on("submit", "#comment", function(event) {
-    event.preventDefault();
-    comment();
-});
-
 $(document).on('click', ".show-reply", function(event) {
     event.preventDefault();
 
     var id = $(this).attr('id');
     var url = "/comments/" + id + "/reply/";
 
-    $('.modal-body').html("<form id='replyForm' action=" + url + " method='POST'><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "' /><div class='form-group'><textarea class='form-control' id='reply-text' autofocus></textarea></div></form>");
-    $('.modal-footer').html("<button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button><button id=" + id + " type='button' class='btn btn-primary submit-reply' data-dismiss='modal'>Reply</button>");
+    $('#replyModal .modal-body').html("<form id='replyForm' action=" + url + " method='POST'><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "' /><div class='form-group'><textarea class='form-control' placeholder='Type your reply here.' id='reply-text' required></textarea></div></form>");
+    $('#replyModal .modal-footer').html("<button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button><button id=" + id + " type='button' class='btn btn-primary submit-reply' data-dismiss='modal'>Reply</button>");
 });
 
 $(document).on("click", ".submit-reply", function(event) {
@@ -43,7 +67,6 @@ function reply(id) {
         type : "POST",
         data : { reply_text : $("#reply-text").val() },
         success : function(json) {
-            $("#reply").remove();
             if (!$("#comment-" + id + "-replies").length) {
                 $("#comment-" + id).after("<div id='comment-" + id + "-replies' class='reply-list'></div>");
             }
