@@ -1,0 +1,13 @@
+{% load donation_extras %}
+
+
+<h3>Campaigns</h3>
+
+<ul>
+    {% for campaign in page.active_campaigns %}
+        <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> ({{ campaign.donation_money|cents_to_dollars }} of ${{ campaign.goal }} goal)</li>
+    {% endfor %}
+</ul>
+
+<p><a href="">See all active Campaigns</a></p>
+<p><a href="">See past Campaigns</a></p>

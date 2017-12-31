@@ -1,0 +1,59 @@
+{% load staticfiles %}
+{% load donation_extras %}
+
+
+<h2 class="mb-3">Donations</h2>
+
+{% for d in page.donations_recent %}
+    <div class="row">
+        <div class="col-md-auto comment-profile-picture-container">
+            {% if d.user.userprofile.profile_picture %}
+                <img class="comment-profile-picture" src="{{ d.user.userprofile.profile_picture.image.url }}" />
+            {% else %}
+                <img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />
+            {% endif %}
+        </div>
+        <div class="col comment-main">
+            <div class="row comment-info">
+                <div class="col">
+                    <span class="comment-user-name">
+                        {% if not d.anonymous_donor %}
+                            {% if d.user %}
+                                {{ d.user.first_name }} {{ d.user.last_name }}
+                            {% else %}
+                                {{ d.donor_first_name }} {{ d.donor_last_name }}
+                            {% endif %}
+                        {% endif %}
+                    </span>
+                    <span class="comment-date">
+                        <i class="fal fa-clock"></i> {{ d.date|date:"m/d/y g:i A" }}
+                    </span>
+                </div>
+                <div class="col-md-auto text-right">
+                    <span class="donation-amount">
+                        {% if not d.anonymous_amount %}
+                            {{ d.amount|cents_to_dollars }}
+                        {% else %}
+                            Anonymous amount
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <hr>
+
+            {% if d.campaign %}
+                <p class="small">Donated via the <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign.name }}</a> Campaign.</p>
+            {% endif %}
+
+            {% if d.comment %}
+                <p>{{ d.comment }}</p>
+            {% elif not d.campaign and not d.comment %}
+                <p class="small">Donated directly to this Page.</p>
+            {% endif %}
+
+        </div>
+    </div>
+{% endfor %}
+
+<p><a href="">See all donations</a></p>

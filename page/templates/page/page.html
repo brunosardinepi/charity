@@ -29,115 +29,39 @@
     <div class="container">
         <div class="row mb-3">
             <div class="col-md-7">
-                <a href="{{ page.profile_picture.image.url }}" data-lightbox="profile-picture">
-                    <img src="{{ page.profile_picture.image.url }}" class="img-fluid img-thumbnail" />
-                </a>
+                {% include "page/page_image.html" %}
             </div>
             <div class="col-md-5 page-info">
-                <h1>{{ page.name }}</h1>
-                <div class="row mt-3 mb-1">
-                    <div class="col">
-                        <h5 style="font-weight: normal;">{{ page.donation_money|cents_to_dollars }} raised by {{ page.unique_donors }} donors</h5>
-                    </div>
-                </div>
 
-                <div class="row mb-3">
-                    <div class="col-12 mb-3">
-                        <button type="button" class="btn btn-purple btn-block btn-lg">Donate</button>
-                    </div>
-                    <div class="col-12">
-                        <a href="{% url 'campaign_create' page_slug=page.page_slug %}" role="button" class="btn btn-outline-teal btn-block btn-lg">Create campaign</a>
-                    </div>
-                </div>
+                {% include "page/page_actions.html" %}
 
                 <div class="row">
                     <div class="col-6">
-                        <p><i class="fal fa-fw fa-compass"></i> {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{{ page.state }}{% endif %}</p>
-                        <p><i class="fal fa-fw fa-briefcase"></i> {{ page.get_type_display }}</p>
-                        {% if page.website %}<p><i class="fal fa-fw fa-desktop"></i> {{ page.website }}</p>{% endif %}
-                        <p><i class="fal fa-fw fa-tag"></i> {{ page.get_category_display }}</p>
+                        {% include "page/page_info.html" %}
                     </div>
                     <div class="col-6">
-                        {% if request.user.userprofile in page.admins.all or page_perms %}
-                            <p><i class="fal fa-fw fa-chart-bar"></i> <a href="{% url 'page_dashboard' page_slug=page.page_slug %}">Dashboard</a></p>
-                        {% endif %}
-                        {% if request.user.is_authenticated %}
-                            {% get_obj_perms request.user for page as "page_perms" %}
-                            {% if request.user.userprofile not in page.admins.all and page_perms|length == 0 %}
-                                <p>{% if subscribe_attr.name == "subscribe" %}<i class="fal fa-fw fa-check-circle"></i>{% elif subscribe_attr.name == "unsubscribe" %}<i class="fal fa-fw fa-times-circle"></i>{% endif %} <a href="" id="subscribe" name="{{ subscribe_attr.name }}">{{ subscribe_attr.value  }}</a></p>
-                            {% endif %}
-                        {% else %}
-                            <p><i class="fal fa-fw fa-check-circle"></i> <a href="" onclick="location.href='{% url 'login' %}?next=/page/subscribe/{{ page.pk }}/subscribe/'">Subscribe</a></p>
-                        {% endif %}
-                        <p><i class="fab fa-fw fa-facebook-f"></i> <a href="">Share on Facebook</a></p>
-                        <p><i class="fab fa-fw fa-twitter"></i> <a href="">Tweet it</a></p>
-                        <p><i class="fab fa-fw fa-instagram"></i> <a href="">Instagram it?</a></p>
+                        {% include "page/page_subactions.html" %}
                     </div>
                 </div>
+
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <h2>About</h2>
-                {{ page.description|linebreaks }}
+                {% include "page/page_about.html" %}
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <h3>Campaigns</h3>
-                <ul>
-                    {% for campaign in page.active_campaigns %}
-                        <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> ({{ campaign.donation_money|cents_to_dollars }} of ${{ campaign.goal }} goal)</li>
-                    {% endfor %}
-                </ul>
-                <p><a href="">See all active Campaigns</a></p>
-                <p><a href="">See past Campaigns</a></p>
+                {% include "page/page_campaigns.html" %}
             </div>
         </div>
         <div class="row justify-content-between">
             <div class="col-lg-6">
-                <h2 class="mb-3">Donations</h2>
-                {% for d in page.donations_recent %}
-                <div class="row">
-                    <div class="col-md-auto comment-profile-picture-container">
-                        {% if d.user.userprofile.profile_picture %}<img class="comment-profile-picture" src="{{ d.user.userprofile.profile_picture.image.url }}" />{% else %}<img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />{% endif %}
-                    </div>
-                    <div class="col comment-main">
-                        <div class="row comment-info">
-                            <div class="col">
-                                <span class="comment-user-name">{% if not d.anonymous_donor %}{% if d.user %}{{ d.user.first_name }} {{ d.user.last_name }}{% else %}{{ d.donor_first_name }} {{ d.donor_last_name }}{% endif %}{% endif %}</span>
-                                <span class="comment-date"><i class="fal fa-clock"></i> {{ d.date|date:"m/d/y g:i A" }}</span>
-                            </div>
-                            <div class="col-md-auto text-right">
-                                <span class="donation-amount">{% if not d.anonymous_amount %}{{ d.amount|cents_to_dollars }}{% else %}Anonymous amount{% endif %}</span>
-                            </div>
-                        </div>
-                        <hr>
-                        {% if d.campaign %}<p class="small">Donated via the <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign.name }}</a> Campaign.</p>{% endif %}
-                        {% if d.comment %}<p>{{ d.comment }}</p>{% elif not d.campaign and not d.comment %}<p class="small">Donated directly to this Page.</p>{% endif %}
-                    </div>
-                </div>
-                {% endfor %}
-                <p><a href="">See all donations</a></p>
+                {% include "page/page_donations.html" %}
             </div>
             <div class="col-lg-4">
-                <h2 class="mb-3">Top Donors</h2>
-                {% for a, b in page.top_donors %}
-                    <div class="row">
-                        <div class="col-md-auto comment-profile-picture-container">
-                            <img class="comment-profile-picture" src="{{ b.image_url }}" />
-                        </div>
-                        <div class="col comment-main">
-                            <div class="row comment-info">
-                                <div class="col">
-                                    <span class="comment-user-name">{{ b.first_name }} {{ b.last_name }}</span>
-                                </div>
-                            </div>
-                            <hr>
-                            <span class="top-donation-amount">{{ b.amount|cents_to_dollars }}</span>
-                        </div>
-                    </div>
-                {% endfor %}
+                {% include "page/page_top_donors.html" %}
             </div>
         </div>
     </div>
