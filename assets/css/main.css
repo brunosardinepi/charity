@@ -246,7 +246,7 @@ span.comment-content {
 .top-donation-amount {
     font-size: 1.25rem;
 }
-#comment-list hr {
+#comment-list hr, .top-donor hr, .donation hr {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
 }

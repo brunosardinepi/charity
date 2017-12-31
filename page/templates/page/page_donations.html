@@ -5,7 +5,7 @@
 <h2 class="mb-3">Donations</h2>
 
 {% for d in page.donations_recent %}
-    <div class="row">
+    <div class="row donation mb-3">
         <div class="col-md-auto comment-profile-picture-container">
             {% if d.user.userprofile.profile_picture %}
                 <img class="comment-profile-picture" src="{{ d.user.userprofile.profile_picture.image.url }}" />
@@ -13,7 +13,7 @@
                 <img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />
             {% endif %}
         </div>
-        <div class="col comment-main">
+        <div class="col">
             <div class="row comment-info">
                 <div class="col">
                     <span class="comment-user-name">

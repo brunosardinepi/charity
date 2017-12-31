@@ -4,12 +4,12 @@
 <h2 class="mb-3">Top Donors</h2>
 
 {% for a, b in page.top_donors %}
-    <div class="row">
+    <div class="row top-donor">
         <div class="col-md-auto comment-profile-picture-container">
             <img class="comment-profile-picture" src="{{ b.image_url }}" />
         </div>
 
-        <div class="col comment-main">
+        <div class="col">
             <div class="row comment-info">
                 <div class="col">
                     <span class="comment-user-name">{{ b.first_name }} {{ b.last_name }}</span>
