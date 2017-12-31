@@ -1,3 +1,4 @@
+{% load humanize %}
 {% load staticfiles %}
 {% load donation_extras %}
 
@@ -26,7 +27,7 @@
                         {% endif %}
                     </span>
                     <span class="comment-date">
-                        <i class="fal fa-clock"></i> {{ d.date|date:"m/d/y g:i A" }}
+                        <i class="fal fa-clock"></i> {{ d.date|naturaltime }}
                     </span>
                 </div>
                 <div class="col-md-auto text-right">
