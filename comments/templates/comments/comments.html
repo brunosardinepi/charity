@@ -1,27 +1,8 @@
 {% load staticfiles %}
 {% load comment_extras %}
 {% load votes_extras %}
-{% load widget_tweaks %}
 
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <h2>Comments</h2>
-        {% if request.user.is_authenticated %}
-        <form id="comment" action="{% url 'comments:comment' model=model pk=obj.pk %}" method="POST">
-            {% csrf_token %}
-            <div class="form-group">
-                {% render_field form.content class+="form-control" %}
-            </div>
-            <input type="submit" class="btn btn-purple btn-block mb-3" value="Comment" />
-        </form>
-        {% else %}
-        <p>You must be logged in to comment!</p>
-        {% endif %}
-    </div>
-</div>
 {% if obj.comments %}
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
             <div id="comment-list">
             {% for c in obj.comments %}
                 {% user_vote_was user=request.user obj="comment" pk=c.pk as user_vote_was %}
@@ -81,8 +62,6 @@
                 </div>
             {% endfor %}
         </div>
-    </div>
-</div>
 {% else %}
     <p id="no-comments">No comments</p>
 {% endif %}

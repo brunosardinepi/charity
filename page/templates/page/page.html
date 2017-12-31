@@ -142,7 +142,16 @@
         </div>
     </div>
 
-    {% include "comments/comments.html" with model="page" obj=page %}
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {% include "comments/comment_form.html" with model="page" obj=page %}
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {% include "comments/comments.html" with model="page" obj=page %}
+        </div>
+    </div>
 
     {% if request.user.is_authenticated %}
         {% include "donation/donate.html" with page=page donate_form=donate_form api_key=api_key%}

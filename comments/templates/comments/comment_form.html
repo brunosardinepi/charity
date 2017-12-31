@@ -1,0 +1,14 @@
+{% load widget_tweaks %}
+
+<h2>Comments</h2>
+{% if request.user.is_authenticated %}
+    <form id="comment" action="{% url 'comments:comment' model=model pk=obj.pk %}" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            {% render_field form.content class+="form-control" %}
+        </div>
+        <input type="submit" class="btn btn-purple btn-block mb-3" value="Comment" />
+    </form>
+{% else %}
+    <p>You must be logged in to comment!</p>
+{% endif %}
