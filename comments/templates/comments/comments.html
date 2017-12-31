@@ -32,10 +32,10 @@
             {% for c in obj.comments %}
                 {% user_vote_was user=request.user obj="comment" pk=c.pk as user_vote_was %}
                 <div class="row comment" id="comment-{{ c.pk }}">
-                    <div class="col-md-auto comment-profile-picture-container">
+                    <div class="col-md-2 comment-profile-picture-container">
                         {% if c.user.userprofile.profile_picture %}<img class="comment-profile-picture" src="{{ c.user.userprofile.profile_picture.image.url }}" />{% else %}<img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />{% endif %}
                     </div>
-                    <div class="col comment-main">
+                    <div class="col-md-10 mb-4">
                         <div class="row comment-info">
                             <div class="col">
                                 <span class="comment-user-name">{{ c.user.first_name }} {{ c.user.last_name }}</span>
@@ -51,18 +51,18 @@
                             </div>
                         </div>
                         <hr>
-                        {{ c.content }}
+                        <span class="comment-content">{{ c.content }}</span>
                     </div>
                 {% comment_replies c.pk as replies %}
                 {% if replies %}
                     <div class="w-100"></div>
                     <div id="comment-{{ c.pk }}-replies" class="col reply-list">
                     {% for r in replies %}
-                        <div class="row reply" id="reply-{{ r.pk }}">
-                            <div class="col-md-auto comment-profile-picture-container">
+                        <div class="row reply offset-md-1" id="reply-{{ r.pk }}">
+                            <div class="col-md-2 comment-profile-picture-container">
                                 {% if r.user.userprofile.profile_picture %}<img class="comment-profile-picture" src="{{ r.user.userprofile.profile_picture.image.url }}" />{% else %}<img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />{% endif %}
                             </div>
-                            <div class="col comment-main">
+                            <div class="col-md-10 mb-4">
                                 <div class="row comment-info">
                                     <div class="col">
                                         <span class="comment-user-name">{{ r.user.first_name }} {{ r.user.last_name }}</span>
@@ -78,7 +78,7 @@
                                     </div>
                                 </div>
                                 <hr>
-                                {{ r.content }}
+                                <span class="comment-content">{{ r.content }}</span>
                             </div>
                         </div>
                     {% endfor %}

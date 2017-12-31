@@ -209,6 +209,8 @@ a.nav-link:hover {
     margin-right: 0.5rem;
     color: rgba(0,0,0,.75);
 }
+
+/* Comments */
 #comment-list {
     margin-top: 2rem;
 }
@@ -234,6 +236,9 @@ a.nav-link:hover {
 .comment-profile-picture:hover {
     border: 1px solid #990099;
 }
+span.comment-content {
+    word-wrap: break-word;
+}
 .donation-amount, .top-donation-amount {
     font-weight: bold;
     color: #990099;
@@ -241,13 +246,7 @@ a.nav-link:hover {
 .top-donation-amount {
     font-size: 1.25rem;
 }
-.comment-main {
-    margin-bottom: 2rem;
-}
-/*.comment-main p {
-    font-size: 0.875rem;
-}*/
-.comment-main hr {
+#comment-list hr {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
 }
@@ -266,9 +265,6 @@ a.nav-link:hover {
 }
 .show-reply, .delete-cr {
     margin-right: 0.5rem;
-}
-.reply .col-md-auto {
-    margin-left: 105px;
 }
 .footer {
     position: absolute;
