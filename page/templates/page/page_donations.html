@@ -7,7 +7,7 @@
 
 {% for d in page.donations_recent %}
     <div class="row donation mb-3">
-        <div class="col-md-2 comment-profile-picture-container">
+        <div class="col-md-auto comment-profile-picture-container">
             {% if d.user.userprofile.profile_picture %}
                 <img class="comment-profile-picture" src="{{ d.user.userprofile.profile_picture.image.url }}" />
             {% else %}
@@ -15,48 +15,43 @@
             {% endif %}
         </div>
         <div class="col-md-10 {% if not d.comment %}d-flex align-items-center h100{% endif %}">
-
             <div class="row">
                 <div class="col-12">
-            <span class="font-weight-bold">
-               {% if not d.anonymous_donor %}
-                   {% if d.user %}
-                       {{ d.user.first_name }} {{ d.user.last_name }}
-                   {% else %}
-                       {{ d.donor_first_name }} {{ d.donor_last_name }}
-                   {% endif %}
-               {% endif %}
-            </span>
+                    <span class="font-weight-bold">
+                       {% if not d.anonymous_donor %}
+                           {% if d.user %}
+                               {{ d.user.first_name }} {{ d.user.last_name }}
+                           {% else %}
+                               {{ d.donor_first_name }} {{ d.donor_last_name }}
+                           {% endif %}
+                       {% endif %}
+                    </span>
 
-            donated
+                    donated
 
-            <span class="donation-amount">
-                {% if not d.anonymous_amount %}
-                    {{ d.amount|cents_to_dollars }}
-                {% else %}
-                    an anonymous amount
-                {% endif %}
-            </span>
+                    <span class="donation-amount">
+                        {% if not d.anonymous_amount %}
+                            {{ d.amount|cents_to_dollars }}
+                        {% else %}
+                            an anonymous amount
+                        {% endif %}
+                    </span>
 
-            {% if d.campaign %}
-                via the <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign.name }}</a> Campaign
-            {% endif %}
+                    {% if d.campaign %}
+                        via the <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign.name }}</a> Campaign
+                    {% endif %}
 
+                    <p class="comment-date small">
+                        <i class="fal fa-clock"></i> {{ d.date|naturaltime }}
+                    </p>
+                </div>
 
-            <p class="comment-date small">
-                <i class="fal fa-clock"></i> {{ d.date|naturaltime }}
-            </p>
+                <div class="col-12">
+                    {% if d.comment %}
+                        <p class="comment-content">{{ d.comment }}</p>
+                    {% endif %}
+                </div>
             </div>
-
-            <div class="col-12">
-
-            {% if d.comment %}
-                <p class="comment-content">{{ d.comment }}</p>
-            {% endif %}
-
-            </div>
-            </div>
-
         </div>
     </div>
 {% endfor %}
