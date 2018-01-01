@@ -152,9 +152,10 @@ class Page(models.Model):
                     top_donors[d] = {
                         'first_name': user.first_name,
                         'last_name': user.last_name,
-                        'image_url': user.userprofile.profile_picture().image.url,
                         'amount': total_amount,
                     }
+                    if user.userprofile.profile_picture():
+                        top_donors[d]['image_url'] = user.userprofile.profile_picture().image.url
         top_donors = OrderedDict(sorted(top_donors.items(), key=lambda t: t[1]['amount'], reverse=True))
         top_donors = list(top_donors.items())[:10]
         return top_donors

@@ -199,7 +199,10 @@ class UserProfile(models.Model):
         return StripePlan.objects.filter(user=self.user)
 
     def profile_picture(self):
-        return UserImage.objects.get(user=self, profile_picture=True)
+        try:
+            return UserImage.objects.get(user=self, profile_picture=True)
+        except UserImage.DoesNotExist:
+            return None
 
     def saved_cards(self):
         return StripeCard.objects.filter(user=self.user.userprofile)
@@ -239,7 +242,6 @@ def create_random_string(length=30):
 def upload_to(instance, filename):
     ext = filename.split('.')[-1]
     filename = "media/user/images/%s.%s" % (create_random_string(), ext)
-#    filename = "/mnt/media01/users/{}.{}".format(create_random_string(), ext)
     return filename
 
 class UserImage(models.Model):

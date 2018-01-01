@@ -1,0 +1,7 @@
+{% for a in page.activity %}
+    {% if a.amount %}
+        {% include "page/page_donation.html" with d=a %}
+    {% else %}
+        {% include "page/page_comment.html" with c=a %}
+    {% endif %}
+{% endfor %}

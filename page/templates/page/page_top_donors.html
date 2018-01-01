@@ -1,12 +1,17 @@
 {% load donation_extras %}
+{% load staticfiles %}
 
 
 <h2 class="mb-3">Top Donors</h2>
 
 {% for a, b in page.top_donors %}
-    <div class="row top-donor">
+    <div class="row top-donor mb-3">
         <div class="col-md-auto comment-profile-picture-container">
-            <img class="comment-profile-picture" src="{{ b.image_url }}" />
+            {% if b.image_url %}
+                <img class="comment-profile-picture" src="{{ b.image_url }}" />
+            {% else %}
+                <img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />
+            {% endif %}
         </div>
 
         <div class="col">

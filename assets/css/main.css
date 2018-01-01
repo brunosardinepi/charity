@@ -246,9 +246,12 @@ a.nav-link:hover {
 .top-donation-amount {
     font-size: 1.25rem;
 }
-#comment-list hr, .top-donor hr, .donation hr {
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+#comment-list hr,
+.comment hr,
+.top-donor hr,
+.donation hr {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
 }
 .comment-info {
     font-size: 0.875rem;

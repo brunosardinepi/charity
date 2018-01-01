@@ -14,7 +14,7 @@
                 <img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />
             {% endif %}
         </div>
-        <div class="col-md-10 d-flex align-items-center h100">
+        <div class="col-md-10 {% if not d.comment %}d-flex align-items-center h100{% endif %}">
 
             <div class="row">
                 <div class="col-12">
@@ -43,9 +43,9 @@
             {% endif %}
 
 
-            <span class="comment-date ml-3">
+            <p class="comment-date small">
                 <i class="fal fa-clock"></i> {{ d.date|naturaltime }}
-            </span>
+            </p>
             </div>
 
             <div class="col-12">
