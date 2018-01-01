@@ -228,15 +228,15 @@ a.nav-link:hover {
 .comment-profile-picture {
     transition: border 0.5s ease;
     border-radius: 50%;
-    height: 75px;
-    width: 75px;
+    height: 4rem;
+    width: 4rem;
     border: 1px solid #ddd;
     padding: .25rem;
 }
 .comment-profile-picture:hover {
     border: 1px solid #990099;
 }
-span.comment-content {
+.comment-content {
     word-wrap: break-word;
 }
 .donation-amount, .top-donation-amount {
