@@ -3,7 +3,16 @@
 {% load donation_extras %}
 
 
-<h2 class="mb-3">Donations</h2>
+<div class="row mb-3">
+    <div class="col-md-auto">
+        <h2>Donations</h2>
+    </div>
+    <div class="col d-flex align-items-center h100">
+        <a href="" role="button" class="btn btn-outline-purple">
+            See all
+        </a>
+    </div>
+</div>
 
 {% for d in page.donations_recent %}
     <div class="row donation mb-3">
@@ -55,9 +64,3 @@
         </div>
     </div>
 {% endfor %}
-
-<div class="row justify-content-center">
-    <div class="col-md-4 mt-3">
-        <a href="" role="button" class="btn btn-block btn-outline-purple">See all donations</a>
-    </div>
-</div>

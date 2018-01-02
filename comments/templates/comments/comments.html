@@ -4,7 +4,16 @@
 {% load votes_extras %}
 
 
-<h2 class="mb-3">Comments</h2>
+<div class="row">
+    <div class="col-md-auto">
+        <h2>Comments</h2>
+    </div>
+    <div class="col d-flex align-items-center h100">
+        <button id="show-comment-{{ model }}-{{ obj.pk }}" type="button" class="btn btn-outline-purple" data-toggle="modal" data-target="#newComment">
+            <i class="fal fa-plus"></i> New comment
+        </button>
+    </div>
+</div>
 
 {% if obj.comments %}
     <div id="comment-list">
@@ -87,14 +96,6 @@
 {% else %}
     <p id="no-comments">No comments</p>
 {% endif %}
-
-<div class="row justify-content-center">
-    <div class="col-md-4">
-        <button id="show-comment-{{ model }}-{{ obj.pk }}" type="button" class="btn btn-block btn-outline-purple" data-toggle="modal" data-target="#newComment">
-            New comment
-        </button>
-    </div>
-</div>
 
 <div class="modal fade" id="newComment" tabindex="-1" role="dialog" aria-labelledby="newCommentLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
