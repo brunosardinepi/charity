@@ -166,7 +166,11 @@ class Campaign(models.Model):
         return Donation.objects.filter(campaign=self).count()
 
     def donation_money(self):
-        return Donation.objects.filter(campaign=self).aggregate(Sum('amount')).get('amount__sum')
+        d = Donation.objects.filter(campaign=self).aggregate(Sum('amount')).get('amount__sum')
+        if d is None:
+            return 0
+        else:
+            return d
 
     def managers_list(self):
         return self.campaign_managers.all()

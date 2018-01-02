@@ -284,3 +284,18 @@ a.nav-link:hover {
 .footer .list-inline-item {
     margin-right: 15px;
 }
+
+/* Progress bar */
+.progress-bar-gray,
+.progress-bar-teal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+.progress-bar-gray {
+  background-color: #666666;
+}
+.progress-bar-teal {
+  background-color: #33cc99;
+}
