@@ -156,6 +156,8 @@ class Campaign(models.Model):
         except CampaignImage.MultipleObjectsReturned:
             # create an exception for future use
             print("multiple profile images returned")
+        except CampaignImage.DoesNotExist:
+            return None
 
     def donations(self):
         return Donation.objects.filter(campaign=self).order_by('-date')

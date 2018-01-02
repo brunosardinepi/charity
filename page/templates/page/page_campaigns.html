@@ -1,13 +1,40 @@
 {% load donation_extras %}
+{% load humanize %}
+{% load staticfiles %}
 
 
-<h3>Campaigns</h3>
+<div class="row mb-3">
+    <div class="col-md-auto">
+        <h2>Campaigns</h2>
+    </div>
+    <div class="col d-flex align-items-center h100">
+        <a href="" role="button" class="btn btn-outline-purple">
+            See all
+        </a>
+    </div>
+</div>
 
-<ul>
-    {% for campaign in page.active_campaigns %}
-        <li><a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a> ({{ campaign.donation_money|cents_to_dollars }} of ${{ campaign.goal }} goal)</li>
-    {% endfor %}
-</ul>
+{% for c in page.active_campaigns %}
+    <div class="row">
+        <div class="col-md-auto">
+            {% if c.profile_picture %}
+                <img class="comment-profile-picture" src="{{ c.profile_picture.image.url }}" />
+            {% else %}
+                <img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />
+            {% endif %}
+        </div>
+        <div class="col-md-auto">
+            <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a>
+        </div>
+        <div class="col-md-auto">
+            <span>progress bar</span<
+            <span>{{ c.donation_money|cents_to_dollars }} of ${{ c.goal }} goal</span>
+        </div>
+        <div class="col-md-auto ml-auto">
+            Ends {{ c.end_date|naturaltime }}
+        </div>
+    </div>
+{% endfor %}
 
 <p><a href="">See all active Campaigns</a></p>
 <p><a href="">See past Campaigns</a></p>
