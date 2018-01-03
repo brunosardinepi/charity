@@ -12,6 +12,7 @@ Release date: TBD
 * Notes system for communication between PageFund and users
 * Home page design
 * Tooltips
+* Page design
 
 ### Changes
 
