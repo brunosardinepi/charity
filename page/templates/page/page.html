@@ -74,12 +74,6 @@
         </div>
     </div>
 
-    {% if request.user.is_authenticated %}
-        {% include "donation/donate.html" with page=page donate_form=donate_form api_key=api_key%}
-    {% else %}
-        {% include "donation/donate_unauthenticated.html" with page=page donate_form=donate_form api_key=api_key%}
-    {% endif %}
-
 {% endblock %}
 
 {% block body_extra %}

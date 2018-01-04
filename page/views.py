@@ -392,6 +392,7 @@ def page_donate(request, page_pk):
     if request.method == "POST":
         if request.user.is_authenticated():
             form = DonateForm(request.POST)
+            print("form = {}".format(form))
         else:
             form = DonateUnauthenticatedForm(request.POST)
         if form.is_valid():
