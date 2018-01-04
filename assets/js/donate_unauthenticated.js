@@ -5,7 +5,6 @@ $(document).ready(function() {
 });
 
 $(document).on('change', "input.preset-amount", function() {
-    console.log("input.preset-amount changed");
     $("input.preset-amount").not(this).prop("checked", false);
 });
 
@@ -56,33 +55,30 @@ $(document).on("click", ".submit-donate", function(event) {
 });
 
 function donate() {
+    if (document.getElementById("id_anonymous_donor").checked) {
+        var extraDetails = {};
+    } else {
+        var extraDetails = {
+            name: "{{ request.user.first_name }} {{ request.user.last_name }}",
+        };
+    };
 
-            if (document.getElementById("id_anonymous_donor").checked) {
-                var extraDetails = {};
-            } else {
-                var extraDetails = {
-                    name: "{{ request.user.first_name }} {{ request.user.last_name }}",
-                };
-            };
+    stripe.createToken(card, extraDetails).then(function(result) {
+        if (result.error) {
+            var errorElement = document.getElementById('card-errors');
+            errorElement.textContent = result.error.message;
+        } else {
+            stripeTokenHandler(result.token);
+        }
+    });
 
-                stripe.createToken(card, extraDetails).then(function(result) {
-                    if (result.error) {
-                        var errorElement = document.getElementById('card-errors');
-                        errorElement.textContent = result.error.message;
-                    } else {
-                        stripeTokenHandler(result.token);
-                    }
-                });
-
-                if (($("input.preset-amount:checked").length == 0) && ($("#id_amount").val().length == 0)) {
-                    console.log("bad, nothing is checked and amount is empty");
-                    $("#amount-errors").html("Please select an amount to donate.");
-                } else {
-                    console.log("good, something is either checked or the amount is not empty");
-                    $("#amount-errors").html("");
-                    var form = document.getElementById("payment-form");
-                    form.submit();
-                };
+    if (($("input.preset-amount:checked").length == 0) && ($("#id_amount").val().length == 0)) {
+        $("#amount-errors").html("Please select an amount to donate.");
+    } else {
+        $("#amount-errors").html("");
+        var form = document.getElementById("payment-form");
+        form.submit();
+    };
 };
 
 function stripeTokenHandler(token) {
