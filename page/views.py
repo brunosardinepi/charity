@@ -392,10 +392,12 @@ def page_donate(request, page_pk):
     if request.method == "POST":
         if request.user.is_authenticated():
             form = DonateForm(request.POST)
-            print("form = {}".format(form))
         else:
             form = DonateUnauthenticatedForm(request.POST)
         if form.is_valid():
+            print("form in page_donate() = {}".format(form))
+            print("request.POST.get('amount') = {}".format(request.POST.get('amount')))
+            print("request.POST.get('preset-amount') = {}".format(request.POST.get('preset-amount')))
             donate(request=request, form=form, page=page, campaign=None)
             return HttpResponseRedirect(page.get_absolute_url())
 
