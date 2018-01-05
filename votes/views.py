@@ -13,8 +13,8 @@ from faqs.models import FAQ
 class VoteView(View):
     def post(self, request):
         obj_original = request.POST.get('obj')
-        obj = obj_original.split("-")[0]
-        pk = obj_original.split("-")[1]
+        obj = obj_original.split("-")[1]
+        pk = obj_original.split("-")[2]
 
         vote_original = request.POST.get('vote')
         vote_original = vote_original.split(" ")[1]
@@ -24,15 +24,15 @@ class VoteView(View):
             score = -1
 
         # check if a vote already exists on this object for this user
-        if obj == 'comment':
+        if obj == 'c':
             comment = get_object_or_404(Comment, pk=pk)
             existing_vote = Vote.objects.filter(user=request.user, comment=comment)
             type = 'c'
-        elif obj == 'reply':
+        elif obj == 'r':
             reply = get_object_or_404(Reply, pk=pk)
             existing_vote = Vote.objects.filter(user=request.user, reply=reply)
             type = 'r'
-        elif obj == 'faq':
+        elif obj == 'f':
             faq = get_object_or_404(FAQ, pk=pk)
             existing_vote = Vote.objects.filter(user=request.user, faq=faq)
             type = 'f'
@@ -41,7 +41,7 @@ class VoteView(View):
             # vote already exists, so delete it
             existing_vote.delete()
         # create a vote for this user
-        if obj == 'comment':
+        if obj == 'c':
             vote = Vote.objects.create(
                 user=request.user,
                 score=score,
@@ -49,7 +49,7 @@ class VoteView(View):
             )
             upvotes = comment.upvotes()
             downvotes = comment.downvotes()
-        elif obj == 'reply':
+        elif obj == 'r':
             vote = Vote.objects.create(
                 user=request.user,
                 score=score,
@@ -57,7 +57,7 @@ class VoteView(View):
             )
             upvotes = reply.upvotes()
             downvotes = reply.downvotes()
-        elif obj == 'faq':
+        elif obj == 'f':
             vote = Vote.objects.create(
                 user=request.user,
                 score=score,

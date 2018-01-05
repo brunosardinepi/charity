@@ -137,36 +137,14 @@ class HomeTest(TestCase):
     def test_home_logged_out(self):
         response = self.client.get('/')
 
-        donations = int(Donation.objects.all().aggregate(Sum('amount')).get('amount__sum') / 100)
-
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, donations, status_code=200)
-        self.assertContains(response, self.page.name, status_code=200)
-        self.assertContains(response, "Forgot password?", status_code=200)
-        self.assertNotContains(response, self.page11.name, status_code=200)
-        self.assertNotContains(response, self.campaign6.name, status_code=200)
-        self.assertNotContains(response, self.campaign12.name, status_code=200)
-        self.assertNotContains(response, '/invite/', status_code=200)
 
     def test_home_logged_in(self):
         self.client.login(username='testuser', password='testpassword')
         response = self.client.get('/')
 
-        page = self.user.userprofile.subscribers.get(id=self.page.pk)
-        campaigns = page.campaigns.all()
-
         self.assertEqual(response.status_code, 200)
-        for c in campaigns:
-            if c.is_active == True:
-                self.assertContains(response, c.name, status_code=200)
-        self.assertContains(response, self.page.name, status_code=200)
-        self.assertContains(response, self.user.first_name, status_code=200)
-        self.assertContains(response, self.user.last_name, status_code=200)
         self.assertContains(response, '/invite/', status_code=200)
-        self.assertNotContains(response, self.page11.name, status_code=200)
-        self.assertNotContains(response, self.campaign6.name, status_code=200)
-        self.assertNotContains(response, self.campaign12.name, status_code=200)
-        self.assertNotContains(response, "Forgot password?", status_code=200)
 
     def test_login(self):
         response = self.client.get('/accounts/login/')
@@ -262,7 +240,7 @@ class HomeTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
         response = self.client.post('/invite/', {'email': 'another@guy.me'})
 
-        self.assertRedirects(response, '/error/invite/user-exists/', 302, 200)
+        self.assertRedirects(response, '/notes/error/invite/user-exists/', 302, 200)
 
     def test_forgot_password_request(self):
         response = self.client.get('/forgot/')

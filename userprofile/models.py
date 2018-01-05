@@ -199,7 +199,10 @@ class UserProfile(models.Model):
         return StripePlan.objects.filter(user=self.user)
 
     def profile_picture(self):
-        return UserImage.objects.get(user=self, profile_picture=True)
+        try:
+            return UserImage.objects.get(user=self, profile_picture=True)
+        except UserImage.DoesNotExist:
+            return None
 
     def saved_cards(self):
         return StripeCard.objects.filter(user=self.user.userprofile)
@@ -243,7 +246,7 @@ def upload_to(instance, filename):
 
 class UserImage(models.Model):
     user = models.ForeignKey('userprofile.UserProfile', on_delete=models.CASCADE)
-    image = models.FileField(upload_to=upload_to, blank=True, null=True)
+    image = models.FileField(upload_to=upload_to, max_length=255, blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)
     profile_picture = models.BooleanField(default=False)
 

@@ -1,0 +1,301 @@
+html {
+    position: relative;
+    min-height: 100%;
+}
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+}
+a {
+    color: #990099;
+}
+a:hover {
+    color: #660066;
+}
+/* Buttons - All */
+.btn {
+    border-radius: 0 !important;
+}
+
+/* Buttons - Purple */
+.btn-purple {
+    color:#fff;
+    background-color:#990099;
+    border-color:#990099;
+}
+.btn-purple:hover {
+    color:#fff;
+    background-color:#660066;
+    border-color:#600066;
+}
+.btn-purple.focus,
+.btn-purple:focus {
+    box-shadow:0 0 0 .2rem rgba(153,0,153,.5);
+}
+.btn-purple.disabled,
+.btn-purple:disabled {
+    background-color:#990099;
+    border-color:#990099;
+}
+.btn-purple:not([disabled]):not(.disabled).active,
+.btn-purple:not([disabled]):not(.disabled):active,
+.show> .btn-purple.dropdown-toggle {
+    color:#fff;
+    background-color:#660066;
+    border-color:#600066;
+    box-shadow:0 0 0 .2rem rgba(153,0,153,.5);
+}
+
+.btn-outline-purple {
+    color:#990099;
+    background-color:transparent;
+    background-image:none;
+    border-color:#990099;
+}
+.btn-outline-purple:hover {
+    color:#fff;
+    background-color:#990099;
+    border-color:#990099;
+}
+.btn-outline-purple.focus,
+.btn-outline-purple:focus {
+    box-shadow:0 0 0 .2rem rgba(153,0,153,.5);
+}
+.btn-outline-purple.disabled,
+.btn-outline-purple:disabled {
+    color:#990099;
+    background-color:transparent;
+}
+.btn-outline-purple:not([disabled]):not(.disabled).active,
+.btn-outline-purple:not([disabled]):not(.disabled):active,
+.show> .btn-outline-purple .dropdown-toggle {
+    color:#fff;
+    background-color:#990099;
+    border-color:#990099;
+    box-shadow:0 0 0 .2rem rgba(153,0,153,.5);
+}
+
+/* Buttons - Teal */
+.btn-teal {
+    color:#fff;
+    background-color:#33cc99;
+    border-color:#33cc99;
+}
+.btn-teal:hover {
+    color:#fff;
+    background-color:#336666;
+    border-color:#325e5b;
+}
+.btn-teal.focus,
+.btn-teal:focus {
+    box-shadow:0 0 0 .2rem rgba(51,204,153,.5);
+}
+.btn-teal.disabled,
+.btn-teal:disabled {
+    background-color:#33cc99;
+    border-color:#33cc99;
+}
+.btn-teal:not([disabled]):not(.disabled).active,
+.btn-teal:not([disabled]):not(.disabled):active,
+.show> .btn-teal.dropdown-toggle {
+    color:#fff;
+    background-color:#336666;
+    border-color:#325e5b;
+    box-shadow:0 0 0 .2rem rgba(51,204,153,.5);
+}
+
+.btn-outline-teal {
+    color:#33cc99;
+    background-color:transparent;
+    background-image:none;
+    border-color:#33cc99;
+}
+.btn-outline-teal:hover {
+    color:#fff;
+    background-color:#33cc99;
+    border-color:#33cc99;
+}
+.btn-outline-teal.focus, .btn-outline-teal:focus {
+    box-shadow:0 0 0 .2rem rgba(51,204,153,.5);
+}
+.btn-outline-teal.disabled, .btn-outline-teal:disabled {
+    color:#33cc99;
+    background-color:transparent;
+}
+.btn-outline-teal:not([disabled]):not(.disabled).active,
+.btn-outline-teal:not([disabled]):not(.disabled):active,
+.show> .btn-outline-teal .dropdown-toggle {
+    color:#fff;
+    background-color:#33cc99;
+    border-color:#33cc99;
+    box-shadow:0 0 0 .2rem rgba(51,204,153,.5);
+}
+
+#logo-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+#logo {
+    height: 400px;
+}
+#get-started {
+    margin-top: 30px;
+}
+#logo-nav {
+    height: 40px;
+}
+.fixed-nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1030;
+    box-shadow: 0 2px 2px -2px rgba(0,0,0,.15);
+}
+nav {
+    background: #ffffff;
+    margin-bottom: 1rem;
+}
+.navbar {
+    box-shadow: 0 2px 2px -2px rgba(0,0,0,.15);
+}
+a.nav-link {
+/*    color: rgba(0,0,0,.75); */
+    color: #333333;
+    padding-right: 2rem !important;
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+a.nav-link:hover {
+    color: rgba(153,0,153,1);
+}
+#login, #signup {
+    padding: 0 8px;
+}
+/*#login {
+    margin-bottom: 8px;
+}*/
+@media (max-width: 991.99px) {
+    .home-picture {
+        order: 1;
+    }
+}
+.home-picture {
+    height: 300px;
+}
+.pc-thumbnail {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+}
+.pc-thumbnail img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 100%;
+  width: auto;
+  -webkit-transform: translate(-50%,-50%);
+      -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+}
+.pc-thumbnail img.portrait {
+  width: 100%;
+  height: auto;
+}
+.page-info svg {
+    margin-right: 0.5rem;
+    color: rgba(0,0,0,.75);
+}
+
+/* Comments */
+#comment-list {
+    margin-top: 2rem;
+}
+.comment {
+    margin-bottom: 2rem;
+}
+.reply {
+    margin-bottom: 1rem;
+}
+@media (max-width: 767.99px) {
+    .comment-profile-picture-container {
+        display: none !important;
+    }
+}
+.comment-profile-picture {
+    transition: border 0.5s ease;
+    border-radius: 50%;
+    height: 4rem;
+    width: 4rem;
+    border: 1px solid #ddd;
+    padding: .25rem;
+}
+.comment-profile-picture:hover {
+    border: 1px solid #990099;
+}
+.comment-content {
+    word-wrap: break-word;
+}
+.donation-amount, .top-donation-amount {
+    font-weight: bold;
+    color: #990099;
+}
+.top-donation-amount {
+    font-size: 1.25rem;
+}
+#comment-list hr,
+.comment hr,
+.top-donor hr,
+.donation hr {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+.comment-info {
+    font-size: 0.875rem;
+}
+.comment-user-name {
+    padding-right: 1rem;
+    font-weight: bold;
+}
+.comment-date {
+    color: #666666;
+}
+.votes {
+    margin-right: 1rem;
+}
+.show-reply, .delete-cr {
+    margin-right: 0.5rem;
+}
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 60px;
+    line-height: 60px; /* Vertically center the text there */
+    background-color: #ffffff;
+}
+.footer .list-inline {
+    margin: 0;
+}
+.footer .list-inline-item {
+    margin-right: 15px;
+}
+
+/* Progress bar */
+.progress-bar-gray,
+.progress-bar-teal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+.progress-bar-gray {
+  background-color: #666666;
+}
+.progress-bar-teal {
+  background-color: #33cc99;
+}

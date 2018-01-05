@@ -3,10 +3,6 @@
 
 {% block title %} Invite to {{ page.name }} | {{ block.super }}{% endblock %}
 
-{% block breadcrumbs %}
-    <a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a> / Invite
-{% endblock %}
-
 {% block body_content %}
     <form action="" method="post">
         {% csrf_token %}

@@ -1,0 +1,17 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+{% load guardian_tags %}
+{% load donation_extras %}
+
+{% block title %} {{ page.name }} | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+    {% if request.user.is_authenticated %}
+        {% include "donation/donate.html" %}
+    {% else %}
+        {% include "donation/donate_unauthenticated.html" %}
+    {% endif %}
+{% endblock %}
+
+{% block body_extra %}
+{% endblock %}

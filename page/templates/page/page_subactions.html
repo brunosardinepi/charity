@@ -1,0 +1,19 @@
+{% load guardian_tags %}
+
+
+{% get_obj_perms request.user for page as "page_perms" %}
+{% if request.user.userprofile in page.admins.all or page_perms %}
+    <p><i class="fal fa-fw fa-chart-bar"></i> <a href="{% url 'page_dashboard' page_slug=page.page_slug %}">Dashboard</a></p>
+{% endif %}
+
+{% if request.user.is_authenticated %}
+    {% if request.user.userprofile not in page.admins.all and page_perms|length == 0 %}
+        <p>{% if subscribe_attr.name == "subscribe" %}<i class="fal fa-fw fa-check-circle"></i>{% elif subscribe_attr.name == "unsubscribe" %}<i class="fal fa-fw fa-times-circle"></i>{% endif %} <a href="" id="subscribe" name="{{ subscribe_attr.name }}">{{ subscribe_attr.value  }}</a></p>
+    {% endif %}
+{% else %}
+    <p><i class="fal fa-fw fa-check-circle"></i> <a href="" onclick="location.href='{% url 'login' %}?next=/page/subscribe/{{ page.pk }}/subscribe/'">Subscribe</a></p>
+{% endif %}
+
+<p><i class="fab fa-fw fa-facebook-f"></i> <a href="">Share on Facebook</a></p>
+<p><i class="fab fa-fw fa-twitter"></i> <a href="">Tweet it</a></p>
+<p><i class="fab fa-fw fa-instagram"></i> <a href="">Instagram it?</a></p>

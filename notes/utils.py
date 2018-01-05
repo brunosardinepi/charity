@@ -3,7 +3,7 @@ from django.utils import timezone
 import sendgrid
 from sendgrid.helpers.mail import *
 
-from .models import Error
+from .models import Note
 from page.models import Page
 from pagefund.utils import email
 
@@ -38,11 +38,12 @@ def create_error(error, request, object):
         details += "\nstate = {};".format(object.state)
         details += "\ntype = {};".format(object.type)
 
-    err = Error.objects.create(
+    err = Note.objects.create(
         date = timezone.now(),
         details = details,
         message = str(error),
         user = request.user,
+        type = 'error',
     )
 
     subject = "PageFund ERROR"
@@ -56,3 +57,26 @@ def create_error(error, request, object):
     email("gn9012@gmail.com", subject, body)
 
     return err
+
+def create_note(request, obj, type):
+    details = ""
+    for attr, val in obj.get_fields():
+        details += "{}: {};\n".format(attr, val)
+
+    note = Note.objects.create(
+        date = timezone.now(),
+        details = details,
+        message = request.POST.get('note'),
+        user = request.user,
+        type = type,
+    )
+
+    subject = "[{}] PageFund note".format(type.upper())
+    body = "Note {} from user {} at {}; Message: {}; Details: {}".format(
+        note.pk,
+        note.user.email,
+        note.date,
+        note.message,
+        note.details
+    )
+    email("abuse@page.fund", subject, body)

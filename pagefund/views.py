@@ -15,17 +15,8 @@ from page.models import Page
 
 
 def home(request):
-    sponsored = Page.objects.filter(is_sponsored=True, deleted=False)
-    trending_pages = Page.objects.filter(deleted=False).order_by('-trending_score')[:10]
-    trending_campaigns = Campaign.objects.filter(deleted=False, is_active=True).order_by('-trending_score')[:10]
     donations = Donation.objects.all().aggregate(Sum('amount')).get('amount__sum')
-    attr = {
-        'donations': donations,
-        'sponsored': sponsored,
-        'trending_pages': trending_pages,
-        'trending_campaigns': trending_campaigns
-    }
-    return render(request, 'home.html', attr)
+    return render(request, 'home.html', {'donations': donations})
 
 
 class LoginView(views.LoginView):
@@ -49,7 +40,7 @@ def invite(request):
             try:
                 user = User.objects.get(email=form.cleaned_data['email'])
                 if user.userprofile:
-                    return redirect('error:error_invite_user_exists')
+                    return redirect('notes:error_invite_user_exists')
             except User.DoesNotExist:
                 print("no user found, good!")
 

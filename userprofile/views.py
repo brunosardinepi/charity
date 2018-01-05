@@ -1,3 +1,5 @@
+import json
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
@@ -11,7 +13,7 @@ from . import forms
 from .models import StripeCard, UserImage, UserProfile
 from .utils import get_user_credit_cards
 from donation.models import Donation
-from error.utils import error_email
+from notes.utils import error_email
 from invitations.models import ManagerInvitation
 from page import models as PageModels
 from pagefund import config, settings
@@ -166,3 +168,9 @@ def update_notification_preferences(request):
         userprofile.save()
         return HttpResponseRedirect(request.user.userprofile.get_absolute_url())
 
+def card_list(request):
+    cards = get_user_credit_cards(request.user.userprofile)
+    return HttpResponse(
+        json.dumps(cards),
+        content_type="application/json"
+    )

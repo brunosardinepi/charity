@@ -23,7 +23,7 @@ from comments.forms import CommentForm
 from donation.forms import BaseDonate, DonateForm, DonateUnauthenticatedForm
 from donation.models import Donation
 from donation.utils import donate, donation_graph, donation_statistics
-from error.utils import error_email
+from notes.utils import error_email
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
 from page.models import Page

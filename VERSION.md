@@ -3,6 +3,26 @@
 This is the version history for PageFund development.
 
 
+## Version 0.12.0
+
+Release date: 01/04/2018
+
+### Additions
+
+* Notes system for communication between PageFund and users
+* Home page design
+* Tooltips
+* Page design
+
+### Changes
+
+* None
+
+### Fixes
+
+* Donation amount rendered wrong in templates for past Campaigns
+
+
 ## Version 0.11.0
 
 Release date: 12/20/2017

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -55,13 +56,14 @@ INSTALLED_APPS = [
     'guardian',
     'invitations',
     'comments',
-    'error',
     'donation',
     'stripe',
     'plans',
     'webhooks',
     'faqs',
     'votes',
+    'notes',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

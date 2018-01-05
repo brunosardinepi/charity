@@ -17,12 +17,6 @@
     </script>
 {% endblock %}
 
-{% block breadcrumbs %}
-    {% if page %}
-        <a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a> / Create
-    {% endif %}
-{% endblock %}
-
 {% block body_content %}
     <h1>Create Campaign</h1>
 

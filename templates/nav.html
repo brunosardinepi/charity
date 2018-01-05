@@ -1,0 +1,38 @@
+<nav id="nav-container" class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">PageFund</a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="far fa-bars"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <ul id="nav-ul" class="navbar-nav ml-auto">
+                <li id="search" class="nav-item">
+                     <a class="nav-link" href="{% url 'search:search' %}">Search</a>
+                </li>
+                <li id="about" class="nav-item">
+                    <a class="nav-link" href="/about/">About</a>
+                </li>
+                <li id="faqs" class="nav-item">
+                    <a class="nav-link" href="{% url 'faqs:faq_list' %}">FAQs</a>
+                </li>
+                {% if user.is_authenticated %}
+                    <li id="profile" class="nav-item">
+                        <a class="nav-link" href="{% url 'userprofile:userprofile' %}">Profile</a>
+                    </li>
+                    <li id="logout" class="nav-item">
+                        <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
+                    </li>
+                {% else %}
+                    <li id="login" class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    </li>
+                    <li id="signup" class="nav-item">
+                        <a class="nav-link" href="{% url 'signup' %}">Sign up</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+ </nav>

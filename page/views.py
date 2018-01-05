@@ -28,7 +28,7 @@ from comments.models import Comment
 from donation.forms import DonateForm, DonateUnauthenticatedForm
 from donation.models import Donation
 from donation.utils import donate, donation_graph, donation_history, donation_statistics
-from error.utils import create_error, error_email
+from notes.utils import create_error, error_email
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
 from userprofile.models import UserProfile
@@ -52,28 +52,15 @@ def page(request, page_slug):
             donate_form = DonateUnauthenticatedForm()
         template_params = {}
 
-        if request.user.is_authenticated:
-            try:
-                cards = get_user_credit_cards(request.user.userprofile)
-                template_params["cards"] = cards
-            except Exception as e:
-                template_params["stripe_error"] = True
-                error = {
-                    "e": e,
-                    "user": request.user.pk,
-                    "page": page.pk,
-                    "campaign": None,
-                }
-                error_email(error)
         try:
             user_subscription_check = page.subscribers.get(user_id=request.user.pk)
         except UserProfile.DoesNotExist:
             user_subscription_check = None
 
         if user_subscription_check:
-            subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe", "color": "red"}
+            subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe"}
         else:
-            subscribe_attr = {"name": "subscribe", "value": "Subscribe", "color": "green"}
+            subscribe_attr = {"name": "subscribe", "value": "Subscribe"}
 
         if request.method == "POST":
              utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
@@ -310,10 +297,10 @@ def subscribe(request, page_pk, action=None):
     page = get_object_or_404(Page, pk=page_pk)
     if action == "subscribe":
         page.subscribers.add(request.user.userprofile)
-        new_subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe", "color": "red"}
+        new_subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe"}
     elif action == "unsubscribe":
         page.subscribers.remove(request.user.userprofile)
-        new_subscribe_attr = {"name": "subscribe", "value": "Subscribe", "color": "green"}
+        new_subscribe_attr = {"name": "subscribe", "value": "Subscribe"}
     else:
         print("something went wrong")
     previous_page = request.META.get('HTTP_REFERER')
@@ -387,9 +374,37 @@ class PageImageUpload(View):
         else:
             raise Http404
 
-def page_donate(request, page_pk):
-    page = get_object_or_404(Page, pk=page_pk)
-    if request.method == "POST":
+class PageDonate(View):
+    def get(self, request, page_slug):
+        template_params = {}
+        page = get_object_or_404(Page, page_slug=page_slug)
+
+        if request.user.is_authenticated():
+            form = DonateForm()
+            try:
+                cards = get_user_credit_cards(request.user.userprofile)
+                template_params["cards"] = cards
+            except Exception as e:
+                template_params["stripe_error"] = True
+                error = {
+                    "e": e,
+                    "user": request.user.pk,
+                    "page": page.pk,
+                    "campaign": None,
+                }
+                error_email(error)
+        else:
+            form = DonateUnauthenticatedForm()
+
+        template_params["page"] = page
+        template_params["form"] = form
+        template_params["api_pk"] = config.settings['stripe_api_pk']
+
+        return render(self.request, 'page/page_donate.html', template_params)
+
+    def post(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+
         if request.user.is_authenticated():
             form = DonateForm(request.POST)
         else:

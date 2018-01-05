@@ -189,7 +189,7 @@ class ManagerInvitationTest(TestCase):
             'password2': 'newpassword'
         }
         response = self.client.post('/password/reset/%s/%s/' % (self.forgotpasswordrequest.pk, self.forgotpasswordrequest.key), data)
-        self.assertRedirects(response, '/error/password/reset/expired/', 302, 200)
+        self.assertRedirects(response, '/notes/error/password/reset/expired/', 302, 200)
 
     def test_forgot_password_reset_completed(self):
         data = {
@@ -197,4 +197,4 @@ class ManagerInvitationTest(TestCase):
             'password2': 'newpassword'
         }
         response = self.client.post('/password/reset/%s/%s/' % (self.forgotpasswordrequest2.pk, self.forgotpasswordrequest2.key), data)
-        self.assertRedirects(response, '/error/password/reset/completed/', 302, 200)
+        self.assertRedirects(response, '/notes/error/password/reset/completed/', 302, 200)

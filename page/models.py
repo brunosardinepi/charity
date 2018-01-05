@@ -4,6 +4,7 @@ import string
 from collections import OrderedDict
 
 from django.contrib.auth.models import User
+from django.core.files.images import get_image_dimensions
 from django.db import models
 from django.db.models.signals import post_delete
 from django.db.models import Sum
@@ -151,8 +152,10 @@ class Page(models.Model):
                     top_donors[d] = {
                         'first_name': user.first_name,
                         'last_name': user.last_name,
-                        'amount': total_amount
+                        'amount': total_amount,
                     }
+                    if user.userprofile.profile_picture():
+                        top_donors[d]['image_url'] = user.userprofile.profile_picture().image.url
         top_donors = OrderedDict(sorted(top_donors.items(), key=lambda t: t[1]['amount'], reverse=True))
         top_donors = list(top_donors.items())[:10]
         return top_donors
@@ -182,6 +185,9 @@ class Page(models.Model):
     def donations(self):
         return Donation.objects.filter(page=self).order_by('-date')
 
+    def donations_recent(self):
+        return Donation.objects.filter(page=self).order_by('-date')[:10]
+
     def donation_count(self):
         return Donation.objects.filter(page=self).count()
 
@@ -210,6 +216,14 @@ class PageImage(models.Model):
     profile_picture = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(default=timezone.now)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
+
+    def save(self, *args, **kwargs):
+        width, height = get_image_dimensions(self.image)
+        self.width = width
+        self.height = height
+        super(PageImage, self).save(*args, **kwargs)
 
 @receiver(post_delete, sender=PageImage)
 def auto_delete_file_on_delete(sender, instance, **kwargs):

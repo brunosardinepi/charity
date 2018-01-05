@@ -24,10 +24,6 @@
     </script>
 {% endblock %}
 
-{% block breadcrumbs %}
-    <a href="{% url 'page' page_slug=campaign.page.page_slug %}">{{ campaign.page.name }}</a> / {{ campaign.name }}
-{% endblock %}
-
 {% block body_content %}
     <h1>{{ campaign.name }}</h1>
     <img src="{{ campaign.profile_picture.image.url }}" width="200" />

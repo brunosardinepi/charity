@@ -36,6 +36,9 @@ class Comment(CommentTemplate):
                 'campaign_slug': self.campaign.campaign_slug
             })
 
+    def get_fields(self):
+        return [(field.name, field.value_to_string(self)) for field in Comment._meta.fields]
+
     def upvotes(self):
         return Vote.objects.filter(comment=self, score=1).count()
 

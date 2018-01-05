@@ -123,7 +123,15 @@ def charge_source(c, page=None, campaign=None):
     return charge
 
 def donate(request, form, page=None, campaign=None):
-    amount = form.cleaned_data['amount'] * 100
+#    amount = form.cleaned_data['amount'] * 100
+    amount = form.cleaned_data['amount']
+    preset_amount = request.POST.get('preset-amount')
+    if amount:
+        amount *= 100
+    elif preset_amount:
+        amount = int(preset_amount) * 100
+    else:
+        print("error, no amount chosen")
     stripe_fee = Decimal(amount * 0.029) + 30
     pagefund_fee = Decimal(amount * config.settings['pagefund_fee'])
     final_amount = amount - stripe_fee - pagefund_fee

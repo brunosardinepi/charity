@@ -131,13 +131,40 @@ $(document).ready(function() {
 
     <p><a href="" id="allPages">List all Pages</a> <a href="" id="allCampaigns">List all Campaigns</a></p>
 
+    {% if sponsored %}
+        <h3>Sponsored Pages</h3>
+        <ul>
+            {% for page in sponsored %}
+                <li><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if trending_pages %}
+        <h3>Trending Pages</h3>
+        <ul>
+            {% for page in trending_pages %}
+                <li><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if trending_campaigns %}
+        <h3>Trending Campaigns</h3>
+        <ul>
+            {% for campaign in trending_campaigns %}
+                <li><a href="{% url 'campaign' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
     <div id="sponsored">
-        <p>Sponsored Results:</p>
+        <h3>Sponsored Results:</h3>
         <ul id="sponsored-list"></ul>
     </div>
 
     <div id="results">
-        <p>Search Results:</p>
+        <h3>Search Results:</h3>
         <ul id="results-list"></ul>
     </div>
 {% endblock %}

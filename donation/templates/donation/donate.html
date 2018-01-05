@@ -1,9 +1,10 @@
+<div class="container">
 <h3>Donate</h3>
 {% if stripe_error %}
     <p>We're having trouble communicating with our payment processor. This error generated an email and sent it to our dev team. We're looking into the issue now, thanks!</p>
 {% else %}
     {% if page %}
-        <form action="{% url 'page_donate' page_pk=page.pk %}" method="post" id="payment-form">
+        <form action="{% url 'page_donate' page_slug=page.page_slug %}" method="post" id="payment-form">
     {% elif campaign %}
         {% if campaign.type == "vote" %}
             <form action="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug vote_participant_pk=vote_participant.pk %}" method="post" id="payment-form">
@@ -12,14 +13,13 @@
         {% endif %}
     {% endif %}
         {% csrf_token %}
-        <div class="form-row">
-            {{ donate_form.as_p  }}
+            {{ form.as_p  }}
             
-            <input type="checkbox" name="amount" class="preset-amount" value=5 />$5<br />
-            <input type="checkbox" name="amount" class="preset-amount" value=10 />$10<br />
-            <input type="checkbox" name="amount" class="preset-amount" value=25 />$25<br />
-            <input type="checkbox" name="amount" class="preset-amount" value=50 />$50<br />
-            <input type="checkbox" name="amount" class="preset-amount" value=100 />$100<br />
+            <input type="checkbox" name="preset-amount" class="preset-amount" value=5 />$5<br />
+            <input type="checkbox" name="preset-amount" class="preset-amount" value=10 />$10<br />
+            <input type="checkbox" name="preset-amount" class="preset-amount" value=25 />$25<br />
+            <input type="checkbox" name="preset-amount" class="preset-amount" value=50 />$50<br />
+            <input type="checkbox" name="preset-amount" class="preset-amount" value=100 />$100<br />
 
             <div id="amount-errors"></div>
 
@@ -35,13 +35,12 @@
                 <div id="card-element"></div>
                 <div id="card-errors" role="alert"></div>
             </div>
-        </div>
         {% if vote_participant %}
             <input type="hidden" name="vote_participant" value="{{ vote_participant.pk }}">
         {% endif %}
         <button>Donate</button>
     </form>
-
+</div>
     <script>
 
         $("input.preset-amount").on("change", function() {
@@ -89,7 +88,6 @@
             if ($("#hide-new-card").length > 0) {
                 console.log("hide-new-card length");
                 console.log($("#hide-new-card").length);
-//                $("input.saved-card").removeAttr("checked");
                 $("input.saved-card").prop("checked", false);
                 stripe.createToken(card, extraDetails).then(function(result) {
                     if (result.error) {
@@ -101,19 +99,7 @@
                 });
             } else if ($("#new-card").length > 0) {
                 console.log("new-card length");
-
-                if (($("input.preset-amount:checked").length == 0) && ($("#id_amount").val().length == 0)) {
-                    console.log("nothing is checked and amount is empty");
-                    $("#amount-errors").html("Please select an amount to donate.");
-                } else {
-                    console.log("something is either checked or the amount is not empty");
-                    $("#amount-errors").html("");
-                    var form = document.getElementById("payment-form");
-                    form.submit();
-                };
-
-//                var form = document.getElementById("payment-form");
-//                form.submit();
+                submitCheck();
             };
         });
 
@@ -124,7 +110,20 @@
             hiddenInput.setAttribute("name", "stripeToken");
             hiddenInput.setAttribute("value", token.id);
             form.appendChild(hiddenInput);
-            form.submit();
+//            form.submit();
+            submitCheck();
+        }
+
+        function submitCheck() {
+                if (($("input.preset-amount:checked").length == 0) && ($("#id_amount").val().length == 0)) {
+                    console.log("nothing is checked and amount is empty");
+                    $("#amount-errors").html("Please select an amount to donate.");
+                } else {
+                    console.log("something is either checked or the amount is not empty");
+                    $("#amount-errors").html("");
+                    var form = document.getElementById("payment-form");
+                    form.submit();
+                };
         }
     </script>
 {% endif %}

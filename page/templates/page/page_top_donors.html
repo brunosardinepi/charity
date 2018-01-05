@@ -1,0 +1,30 @@
+{% load donation_extras %}
+{% load staticfiles %}
+
+
+<h2 class="mb-3">Top Donors</h2>
+
+{% for a, b in page.top_donors %}
+    <div class="row top-donor mb-3">
+        <div class="col-md-auto comment-profile-picture-container">
+            {% if b.image_url %}
+                <img class="comment-profile-picture" src="{{ b.image_url }}" />
+            {% else %}
+                <img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />
+            {% endif %}
+        </div>
+
+        <div class="col">
+            <div class="row comment-info">
+                <div class="col">
+                    <span class="comment-user-name">{{ b.first_name }} {{ b.last_name }}</span>
+                </div>
+            </div>
+
+            <hr>
+
+            <span class="top-donation-amount">{{ b.amount|cents_to_dollars }}</span>
+
+        </div>
+    </div>
+{% endfor %}

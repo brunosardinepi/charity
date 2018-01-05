@@ -68,10 +68,6 @@
     </script>
 {% endblock %}
 
-{% block breadcrumbs %}
-    <a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a> / Dashboard
-{% endblock %}
-
 {% block body_content %}
     <h1>{{ page.name }}</h1>
     {% if request.user.userprofile in page.admins.all %}

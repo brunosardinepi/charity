@@ -10,7 +10,9 @@
 {% block body_content %}
     <form action="" method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        <a href="#" data-toggle="tooltip" data-placement="top" title="some helpful info for the user"><i class="fal fa-question-circle"></i></a>
+        {{ form.email.label_tag }}
+        {{ form.email }}
         <input type="submit" value="Invite" />
     </form>
 {% endblock %}
