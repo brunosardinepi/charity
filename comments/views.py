@@ -9,7 +9,6 @@ from . import models
 from .utils import comment_attributes
 from campaign.models import Campaign
 from page.models import Page
-from votes.models import Vote
 
 import json
 
@@ -32,12 +31,6 @@ def comment(request, model, pk):
                 content=comment_text,
                 campaign=campaign
             )
-        # create a vote for this user
-        vote = Vote.objects.create(
-            user=request.user,
-            score=1,
-            comment=comment,
-        )
         response_data = comment_attributes(comment)
         return HttpResponse(
             json.dumps(response_data),
@@ -55,13 +48,6 @@ def reply(request, comment_pk):
             content=reply_text,
             comment=comment
         )
-        # create a vote for this user
-        vote = Vote.objects.create(
-            user=request.user,
-            score=1,
-            reply=reply,
-        )
-
         response_data = comment_attributes(reply)
         return HttpResponse(
             json.dumps(response_data),

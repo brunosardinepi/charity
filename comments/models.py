@@ -2,8 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from votes.models import Vote
-
 
 class CommentTemplate(models.Model):
     content = models.TextField(blank=True)
@@ -39,27 +37,9 @@ class Comment(CommentTemplate):
     def get_fields(self):
         return [(field.name, field.value_to_string(self)) for field in Comment._meta.fields]
 
-    def upvotes(self):
-        return Vote.objects.filter(comment=self, score=1).count()
-
-    def downvotes(self):
-        return Vote.objects.filter(comment=self, score=-1).count()
-
-    def score(self):
-        return Vote.objects.filter(comment=self).aggregate(models.Sum('score')).get('score__sum')
-
 
 class Reply(CommentTemplate):
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = "replies"
-
-    def upvotes(self):
-        return Vote.objects.filter(reply=self, score=1).count()
-
-    def downvotes(self):
-        return Vote.objects.filter(reply=self, score=-1).count()
-
-    def score(self):
-        return Vote.objects.filter(reply=self).aggregate(models.Sum('score')).get('score__sum')

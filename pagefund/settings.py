@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     'plans',
     'webhooks',
     'faqs',
-    'votes',
     'notes',
     'widget_tweaks',
 ]

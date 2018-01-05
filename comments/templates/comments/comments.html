@@ -1,7 +1,6 @@
 {% load humanize %}
 {% load staticfiles %}
 {% load comment_extras %}
-{% load votes_extras %}
 
 
 <div class="row">
@@ -18,7 +17,6 @@
 {% if obj.comments %}
     <div id="comment-list">
         {% for c in obj.comments %}
-            {% user_vote_was user=request.user obj="comment" pk=c.pk as user_vote_was %}
             <div class="row comment" id="comment-{{ c.pk }}">
                 <div class="col">
                     <div class="row">
@@ -36,10 +34,6 @@
                                             <span class="comment-date"><i class="fal fa-clock"></i> {{ c.date|naturaltime }}</span>
                                         </div>
                                         <div class="col-sm-auto ml-auto">
-                                            <span class="votes">
-                                                <a id="upvotes-c-{{ c.pk }}" class="vote upvote{% if user_vote_was == 'upvote' %} user-vote{% endif %}" href=""><i class="fal fa-chevron-circle-up"></i></a> <label id="upvote-count-c-{{ c.pk }}">{{ c.upvotes }}</label>
-                                                <a id="downvotes-c-{{ c.pk }}" class="vote downvote{% if user_vote_was == 'downvote' %} user-vote{% endif %}" href=""><i class="fal fa-chevron-circle-down"></i></a> <label id="downvote-count-c-{{ c.pk }}">{{ c.downvotes }}</label>
-                                            </span>
                                             <a class="show-reply" id="{{ c.pk }}" href="" data-toggle="modal" data-target="#replyModal"><i class="fal fa-reply"></i></a>{% if c.user == request.user %} <a id="delete-comment-{{ c.pk }}" class="delete-cr" href=""><i class="fal fa-trash-alt"></i></a>{% endif %}</a>
                                             <a href="{% url 'notes:abuse_comment' type='comment' obj_pk=c.pk %}" class="report-comment"><i class="fal fa-flag"></i></a>
                                         </div>
@@ -71,10 +65,6 @@
                                                             <span class="comment-date"><i class="fal fa-clock"></i> {{ r.date|naturaltime }}</span>
                                                         </div>
                                                         <div class="col-sm-auto ml-auto">
-                                                            <span class="votes">
-                                                                <a id="upvotes-r-{{ r.pk }}" class="vote upvote{% if user_vote_was == 'upvote' %} user-vote{% endif %}" href=""><i class="fal fa-chevron-circle-up"></i></a> <label id="upvote-count-r-{{ r.pk }}">{{ r.upvotes }}</label>
-                                                                <a id="downvotes-r-{{ r.pk }}" class="vote downvote{% if user_vote_was == 'downvote' %} user-vote{% endif %}" href=""><i class="fal fa-chevron-circle-down"></i></a> <label id="downvote-count-r-{{ r.pk }}">{{ r.downvotes }}</label>
-                                                            </span>
                                                             {% if r.user == request.user %} <a id="delete-reply-{{ r.pk }}" class="delete-cr" href=""><i class="fal fa-trash-alt"></i></a>{% endif %}
                                                             <a href="{% url 'notes:abuse_comment' type='reply' obj_pk=r.pk %}" class="report-comment"><i class="fal fa-flag"></i></a>
                                                         </div>

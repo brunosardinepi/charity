@@ -7,7 +7,6 @@ from django.utils import timezone
 from . import models
 from . import views
 from faqs.models import FAQ
-from votes.models import Vote
 
 
 class FAQTest(TestCase):
@@ -40,30 +39,6 @@ class FAQTest(TestCase):
             answer="Instain mother.",
         )
 
-        self.vote = Vote.objects.create(
-            user=self.user,
-            score=1,
-            faq=self.faq,
-        )
-
-        self.vote2 = Vote.objects.create(
-            user=self.user,
-            score=-1,
-            faq=self.faq2,
-        )
-
-        self.vote3 = Vote.objects.create(
-            user=self.user2,
-            score=1,
-            faq=self.faq,
-        )
-
-        self.vote4 = Vote.objects.create(
-            user=self.user2,
-            score=1,
-            faq=self.faq2,
-        )
-
     def test_faq_exists(self):
         faqs = FAQ.objects.all()
 
@@ -80,28 +55,12 @@ class FAQTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.faq.question)
         self.assertContains(response, self.faq.answer)
-        self.assertContains(response, '<button id="upvotes-f-{}" class="vote upvote'.format(self.faq.pk))
-        self.assertContains(response, '">{}</button>'.format(self.faq.upvotes()))
-        self.assertContains(response, '<button id="downvotes-f-{}" class="vote downvote'.format(self.faq.pk))
-        self.assertContains(response, '">{}</button>'.format(self.faq.downvotes()))
         self.assertContains(response, self.faq2.question)
         self.assertContains(response, self.faq2.answer)
-        self.assertContains(response, '<button id="upvotes-f-{}" class="vote upvote'.format(self.faq2.pk))
-        self.assertContains(response, '">{}</button>'.format(self.faq2.upvotes()))
-        self.assertContains(response, '<button id="downvotes-f-{}" class="vote downvote'.format(self.faq2.pk))
-        self.assertContains(response, '">{}</button>'.format(self.faq2.downvotes()))
 
         self.client.login(username='testuser', password='testpassword')
         response = self.client.get('/faq/')
         self.assertContains(response, self.faq.question)
         self.assertContains(response, self.faq.answer)
-        self.assertContains(response, '<button id="upvotes-f-{}" class="vote upvote'.format(self.faq.pk))
-        self.assertContains(response, '">{}</button>'.format(self.faq.upvotes()))
-        self.assertContains(response, '<button id="downvotes-f-{}" class="vote downvote'.format(self.faq.pk))
-        self.assertContains(response, '">{}</button>'.format(self.faq.downvotes()))
         self.assertContains(response, self.faq2.question)
         self.assertContains(response, self.faq2.answer)
-        self.assertContains(response, '<button id="upvotes-f-{}" class="vote upvote'.format(self.faq2.pk))
-        self.assertContains(response, '">{}</button>'.format(self.faq2.upvotes()))
-        self.assertContains(response, '<button id="downvotes-f-{}" class="vote downvote'.format(self.faq2.pk))
-        self.assertContains(response, '">{}</button>'.format(self.faq2.downvotes()))

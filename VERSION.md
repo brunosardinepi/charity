@@ -3,6 +3,23 @@
 This is the version history for PageFund development.
 
 
+## Version 0.11.2
+
+Release date: TBD
+
+### Additions
+
+* None
+
+### Changes
+
+* Removed voting system on comments and FAQs
+
+### Fixes
+
+* None
+
+
 ## Version 0.11.1
 
 Release date: 01/04/2018

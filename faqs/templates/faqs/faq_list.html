@@ -1,12 +1,10 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
-{% load votes_extras %}
 
 {% block title %} FAQs | {{ block.super }}{% endblock %}
 
 {% block head_extra %}
     <script src="{% static 'js/comment_csrf.js' %}"></script>
-    <script src="{% static 'js/vote.js' %}"></script>
 {% endblock %}
 
 {% block body_content %}
@@ -17,10 +15,7 @@
             {{ faq.question }}
             <ul>
                 <li>{{ faq.answer|safe }}</li>
-                {% user_vote_was user=request.user obj="faq" pk=faq.pk as user_vote_was %}
                 <li id="faq-{{ faq.pk }}" class="faq">
-                    <button id="upvotes-f-{{ faq.pk }}" class="vote upvote{% if user_vote_was == 'upvote' %} user-vote{% endif %}">{{ faq.upvotes }}</button>
-                    <button id="downvotes-f-{{ faq.pk }}" class="vote downvote{% if user_vote_was == 'downvote' %} user-vote{% endif %}">{{ faq.downvotes }}</button>
                 </li>
             </ul>
         </li>

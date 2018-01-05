@@ -27,7 +27,6 @@ urlpatterns = [
     url(r'^webhooks/', include('webhooks.urls', namespace='webhooks')),
     url(r'^plans/', include('plans.urls', namespace='plans')),
     url(r'^faq/', include('faqs.urls', namespace='faqs')),
-    url(r'^votes/', include('votes.urls', namespace='votes')),
     url(r'^about/$', TemplateView.as_view(template_name="about.html")),
     url(r'^terms-of-service/$', TemplateView.as_view(template_name="terms_of_service.html")),
     url(r'^privacy-policy/$', TemplateView.as_view(template_name="privacy_policy.html")),
