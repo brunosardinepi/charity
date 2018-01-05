@@ -8,7 +8,21 @@
     
     <form method="POST" action="">
         {% csrf_token %}
-        {{ formset.as_p }}
+
+        {{ formset.management_form }}
+
+        <ul>
+        {% for form in formset %}
+            <li>
+                {{ form.id }}
+                {{ form.name }}
+                {{ form.description }}
+                {% if form.instance.pk %}
+                    {{ form.DELETE }}
+                {% endif %}
+            </li>
+        {% endfor %}
+        </ul>
         <input type="submit" class="button" value="Save">
     </form>
 {% endblock %}
