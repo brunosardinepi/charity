@@ -113,7 +113,6 @@ class CommentTest(TestCase):
         self.assertRedirects(response, '/accounts/login/?next=/comments/page/%s/comment/' % self.page.pk, 302, 200)
         response = self.client.get('/testpage/')
         self.assertNotContains(response, "I am anonymous!", status_code=200)
-        self.assertContains(response, "You must be logged in to comment!", status_code=200)
 
         self.client.login(username='testuser', password='testpassword')
         self.assertEqual(models.Comment.objects.all().count(), 2)
@@ -140,7 +139,6 @@ class CommentTest(TestCase):
         self.assertRedirects(response, '/accounts/login/?next=/comments/campaign/%s/comment/' % self.campaign.pk, 302, 200)
         response = self.client.get('/%s/%s/%s/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertNotContains(response, "Oi mate!", status_code=200)
-        self.assertContains(response, "You must be logged in to comment!", status_code=200)
 
         self.client.login(username='testuser', password='testpassword')
         self.assertEqual(models.Comment.objects.all().count(), 2)

@@ -216,8 +216,8 @@ class PageImage(models.Model):
     profile_picture = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(default=timezone.now)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    width = models.IntegerField()
-    height = models.IntegerField()
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
 
     def save(self, *args, **kwargs):
         width, height = get_image_dimensions(self.image)

@@ -27,13 +27,15 @@
             <div class="row">
                 <div class="col-12">
                     <span class="font-weight-bold">
-                       {% if not d.anonymous_donor %}
-                           {% if d.user %}
-                               {{ d.user.first_name }} {{ d.user.last_name }}
-                           {% else %}
-                               {{ d.donor_first_name }} {{ d.donor_last_name }}
-                           {% endif %}
-                       {% endif %}
+                        {% if not d.anonymous_donor %}
+                            {% if d.user %}
+                                {{ d.user.first_name }} {{ d.user.last_name }}
+                            {% else %}
+                                {{ d.donor_first_name }} {{ d.donor_last_name }}
+                            {% endif %}
+                        {% else %}
+                            An anonymous donor
+                        {% endif %}
                     </span>
 
                     donated

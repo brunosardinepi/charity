@@ -137,11 +137,7 @@ class HomeTest(TestCase):
     def test_home_logged_out(self):
         response = self.client.get('/')
 
-        donations = int(Donation.objects.all().aggregate(Sum('amount')).get('amount__sum') / 100)
-
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, donations, status_code=200)
-        self.assertContains(response, '/invite/', status_code=200)
 
     def test_home_logged_in(self):
         self.client.login(username='testuser', password='testpassword')
