@@ -10,7 +10,6 @@
     <script>
         var model = "page";
         var model_pk = {{ page.pk }};
-        var stripe = Stripe('{{ api_pk }}');
     </script>
     <script src="{% static 'js/comment_csrf.js' %}"></script>
     <script src="{% static 'js/comment.js' %}"></script>

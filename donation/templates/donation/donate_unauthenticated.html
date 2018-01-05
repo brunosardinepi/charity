@@ -1,6 +1,6 @@
 <h3>Donate</h3>
 {% if page %}
-    <form action="{% url 'page_donate' page_pk=page.pk %}" method="post" id="payment-form">
+    <form action="{% url 'page_donate' page_slug=page.page_slug %}" method="post" id="payment-form">
 {% elif campaign %}
     <form action="{% url 'campaign_donate' campaign_pk=campaign.pk %}" method="post" id="payment-form">
 {% endif %}

@@ -52,19 +52,6 @@ def page(request, page_slug):
             donate_form = DonateUnauthenticatedForm()
         template_params = {}
 
-        if request.user.is_authenticated:
-            try:
-                cards = get_user_credit_cards(request.user.userprofile)
-                template_params["cards"] = cards
-            except Exception as e:
-                template_params["stripe_error"] = True
-                error = {
-                    "e": e,
-                    "user": request.user.pk,
-                    "page": page.pk,
-                    "campaign": None,
-                }
-                error_email(error)
         try:
             user_subscription_check = page.subscribers.get(user_id=request.user.pk)
         except UserProfile.DoesNotExist:
@@ -389,17 +376,32 @@ class PageImageUpload(View):
 
 class PageDonate(View):
     def get(self, request, page_slug):
+        template_params = {}
         page = get_object_or_404(Page, page_slug=page_slug)
 
         if request.user.is_authenticated():
             form = DonateForm()
+            try:
+                cards = get_user_credit_cards(request.user.userprofile)
+                print("cards = {}".format(cards))
+                template_params["cards"] = cards
+            except Exception as e:
+                template_params["stripe_error"] = True
+                error = {
+                    "e": e,
+                    "user": request.user.pk,
+                    "page": page.pk,
+                    "campaign": None,
+                }
+                error_email(error)
         else:
             form = DonateUnauthenticatedForm()
 
-        return render(self.request, 'page/page_donate.html', {
-            'page': page,
-            'form': form,
-        })
+        template_params["page"] = page
+        template_params["form"] = form
+        template_params["api_pk"] = config.settings['stripe_api_pk']
+
+        return render(self.request, 'page/page_donate.html', template_params)
 
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)

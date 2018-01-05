@@ -7,17 +7,15 @@
 
 {% block head_extra %}
     <link href="{% static 'css/lightbox.css' %}" rel="stylesheet">
-    <script>
-        var model = "page";
-        var model_pk = {{ page.pk }};
-        var stripe = Stripe('{{ api_pk }}');
-    </script>
     <script src="{% static 'js/comment_csrf.js' %}"></script>
-    <script src="{% static 'js/donate.js' %}"></script>
 {% endblock %}
 
 {% block body_content %}
-    <p>Donating to {{ page.name }}.</p>
+    {% if request.user.is_authenticated %}
+        {% include "donation/donate.html" with page=page donate_form=donate_form api_key=api_key %}
+    {% else %}
+        {% include "donation/donate_unauthenticated.html" with page=page donate_form=donate_form api_key=api_key %}
+    {% endif %}
 {% endblock %}
 
 {% block body_extra %}
