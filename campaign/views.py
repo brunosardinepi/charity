@@ -147,6 +147,8 @@ class CampaignVote(View):
                 print("this form is valid and not empty")
                 vote_participant.campaign = campaign
                 vote_participant.save()
+            for d in formset.deleted_objects:
+                d.delete()
 #                    vote_participant = f.save(commit=False)
 #                    vote_participant.campaign = campaign
 #                    vote_participant.save()
