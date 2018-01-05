@@ -387,9 +387,23 @@ class PageImageUpload(View):
         else:
             raise Http404
 
-def page_donate(request, page_pk):
-    page = get_object_or_404(Page, pk=page_pk)
-    if request.method == "POST":
+class PageDonate(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+
+        if request.user.is_authenticated():
+            form = DonateForm()
+        else:
+            form = DonateUnauthenticatedForm()
+
+        return render(self.request, 'page/page_donate.html', {
+            'page': page,
+            'form': form,
+        })
+
+    def post(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+
         if request.user.is_authenticated():
             form = DonateForm(request.POST)
         else:

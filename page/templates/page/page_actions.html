@@ -11,7 +11,7 @@
 
 <div class="row mb-3">
     <div class="col-12 mb-3">
-        <button id="show-donate-page-{{ page.pk }}" type="button" class="btn btn-purple btn-block btn-lg" data-toggle="modal" data-target="#donateModal">Donate</button>
+        <a href="{% url 'page_donate' page_slug=page.page_slug %}" role="button" class="btn btn-purple btn-block btn-lg">Donate</a>
     </div>
     <div class="col-12">
         <a href="{% url 'campaign_create' page_slug=page.page_slug %}" role="button" class="btn btn-outline-teal btn-block btn-lg">Create campaign</a>
