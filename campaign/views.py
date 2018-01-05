@@ -114,7 +114,6 @@ class CampaignCreate(View):
 
                 if campaign.type == 'vote':
                     return redirect('campaign_edit_vote', campaign_pk=campaign.pk)
-#                    return redirect('campaign_create_vote', campaign_pk=campaign.pk)
                 else:
                     return HttpResponseRedirect(campaign.get_absolute_url())
             else:
@@ -122,14 +121,13 @@ class CampaignCreate(View):
                 print("no page selected")
 
 
-class CampaignVote(View):
+class CampaignEditVote(View):
     def get(self, request, campaign_pk):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
         formset = forms.VoteParticipantInlineFormSet(
             queryset=campaign.voteparticipant_set.all(),
-#            queryset=VoteParticipant.objects.none(),
         )
-        return render(request, 'campaign/campaign_create_vote.html', {
+        return render(request, 'campaign/campaign_edit_vote.html', {
             'campaign': campaign,
             'formset': formset,
         })
@@ -138,56 +136,16 @@ class CampaignVote(View):
         formset = forms.VoteParticipantInlineFormSet(
             request.POST,
             queryset=campaign.voteparticipant_set.all(),
-#            queryset=VoteParticipant.objects.none()
         )
         if formset.is_valid():
             vote_participants = formset.save(commit=False)
             for vote_participant in vote_participants:
-#                if f.is_valid() and not f.empty_permitted:
-                print("this form is valid and not empty")
                 vote_participant.campaign = campaign
                 vote_participant.save()
             for d in formset.deleted_objects:
                 d.delete()
-#                    vote_participant = f.save(commit=False)
-#                    vote_participant.campaign = campaign
-#                    vote_participant.save()
-#                else:
-#                    print("this form is NOT valid or EMPTY")
             return HttpResponseRedirect(campaign.get_absolute_url())
 
-class CampaignEditVote(View):
-    def get(self, request, page_slug, campaign_pk, campaign_slug):
-        campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        q = VoteParticipant.objects.filter(campaign=campaign)
-        formset = forms.VoteParticipantInlineFormSet(queryset=q)
-        return render(request, 'campaign/campaign_edit_vote.html', {
-            'campaign': campaign,
-            'formset': formset,
-        })
-    def post(self, request, page_slug, campaign_pk, campaign_slug):
-        campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        formset = forms.VoteParticipantInlineFormSet(request.POST)
-        if formset.is_valid():
-            formset.save(commit=False)
-            for f in formset:
-                print("f = {}".format(f))
-                if f.is_valid() and not f.empty_permitted:
-                    print("GOOD, this form is valid and not empty")
-                    vote_participant = f.save(commit=False)
-                    vote_participant.campaign = campaign
-                    vote_participant.save()
-                else:
-                    if not f.is_valid():
-                        print("BAD, form is NOT valid")
-                    elif f.empty_permitted:
-                        print("BAD, form is EMPTY")
-            for d in formset.deleted_objects:
-                print("deleting  = {}".format(d))
-                d.delete()
-            return HttpResponseRedirect(campaign.get_absolute_url())
-        else:
-            print("invalid")
 
 def campaign_search_pages(request):
     if request.method == "POST":
