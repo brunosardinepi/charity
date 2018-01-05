@@ -113,7 +113,7 @@ class CampaignCreate(View):
                     email_new_campaign(manager.user.email, campaign)
 
                 if campaign.type == 'vote':
-                    return redirect('campaign_edit_vote', campaign_pk=campaign.pk)
+                    return redirect('campaign_edit_vote', page_slug=page.page_slug, campaign_pk=campaign.pk, campaign_slug=campaign.campaign_slug)
                 else:
                     return HttpResponseRedirect(campaign.get_absolute_url())
             else:
@@ -122,7 +122,7 @@ class CampaignCreate(View):
 
 
 class CampaignEditVote(View):
-    def get(self, request, campaign_pk):
+    def get(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
         formset = forms.VoteParticipantInlineFormSet(
             queryset=campaign.voteparticipant_set.all(),
@@ -131,7 +131,7 @@ class CampaignEditVote(View):
             'campaign': campaign,
             'formset': formset,
         })
-    def post(self, request, campaign_pk):
+    def post(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
         formset = forms.VoteParticipantInlineFormSet(
             request.POST,
