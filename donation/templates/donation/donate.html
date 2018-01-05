@@ -1,3 +1,4 @@
+<div class="container">
 <h3>Donate</h3>
 {% if stripe_error %}
     <p>We're having trouble communicating with our payment processor. This error generated an email and sent it to our dev team. We're looking into the issue now, thanks!</p>
@@ -12,14 +13,13 @@
         {% endif %}
     {% endif %}
         {% csrf_token %}
-        <div class="form-row">
             {{ form.as_p  }}
             
-            <input type="checkbox" name="amount" class="preset-amount" value=5 />$5<br />
-            <input type="checkbox" name="amount" class="preset-amount" value=10 />$10<br />
-            <input type="checkbox" name="amount" class="preset-amount" value=25 />$25<br />
-            <input type="checkbox" name="amount" class="preset-amount" value=50 />$50<br />
-            <input type="checkbox" name="amount" class="preset-amount" value=100 />$100<br />
+            <input type="checkbox" name="preset-amount" class="preset-amount" value=5 />$5<br />
+            <input type="checkbox" name="preset-amount" class="preset-amount" value=10 />$10<br />
+            <input type="checkbox" name="preset-amount" class="preset-amount" value=25 />$25<br />
+            <input type="checkbox" name="preset-amount" class="preset-amount" value=50 />$50<br />
+            <input type="checkbox" name="preset-amount" class="preset-amount" value=100 />$100<br />
 
             <div id="amount-errors"></div>
 
@@ -35,13 +35,12 @@
                 <div id="card-element"></div>
                 <div id="card-errors" role="alert"></div>
             </div>
-        </div>
         {% if vote_participant %}
             <input type="hidden" name="vote_participant" value="{{ vote_participant.pk }}">
         {% endif %}
         <button>Donate</button>
     </form>
-
+</div>
     <script>
 
         $("input.preset-amount").on("change", function() {

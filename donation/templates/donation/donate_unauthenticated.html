@@ -5,26 +5,26 @@
     <form action="{% url 'campaign_donate' campaign_pk=campaign.pk %}" method="post" id="payment-form">
 {% endif %}
     {% csrf_token %}
-    <div class="form-row">
-        {{ donate_form.as_p  }}
-        <label for="card-element">
+        {{ form.as_p }}
+
+        <input type="checkbox" name="preset-amount" class="preset-amount" value=5 />$5<br />
+        <input type="checkbox" name="preset-amount" class="preset-amount" value=10 />$10<br />
+        <input type="checkbox" name="preset-amount" class="preset-amount" value=25 />$25<br />
+        <input type="checkbox" name="preset-amount" class="preset-amount" value=50 />$50<br />
+        <input type="checkbox" name="preset-amount" class="preset-amount" value=100 />$100<br />
+
+        <div id="amount-errors"></div>
+
         <div id="card-element"></div>
         <div id="card-errors" role="alert"></div>
-    </div>
     <button>Donate</button>
 </form>
 
 <script>
     var stripe = Stripe('{{ api_pk }}');
     var elements = stripe.elements();
-    var style = {
-        base: {
-            fontSize: '16px',
-            lineHeight: '24px'
-        }
-    };
 
-    var card = elements.create('card', {style: style});
+    var card = elements.create('card');
     card.mount("#card-element");
 
     card.addEventListener('change', function(event) {
@@ -57,6 +57,20 @@
         hiddenInput.setAttribute("name", "stripeToken");
         hiddenInput.setAttribute("value", token.id);
         form.appendChild(hiddenInput);
-        form.submit();
+//        form.submit();
+        submitCheck();
     }
+
+        function submitCheck() {
+                if (($("input.preset-amount:checked").length == 0) && ($("#id_amount").val().length == 0)) {
+                    console.log("nothing is checked and amount is empty");
+                    $("#amount-errors").html("Please select an amount to donate.");
+                } else {
+                    console.log("something is either checked or the amount is not empty");
+                    $("#amount-errors").html("");
+                    var form = document.getElementById("payment-form");
+                    form.submit();
+                };
+        }
+
 </script>

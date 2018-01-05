@@ -5,16 +5,11 @@
 
 {% block title %} {{ page.name }} | {{ block.super }}{% endblock %}
 
-{% block head_extra %}
-    <link href="{% static 'css/lightbox.css' %}" rel="stylesheet">
-    <script src="{% static 'js/comment_csrf.js' %}"></script>
-{% endblock %}
-
 {% block body_content %}
     {% if request.user.is_authenticated %}
-        {% include "donation/donate.html" with page=page donate_form=donate_form api_key=api_key %}
+        {% include "donation/donate.html" %}
     {% else %}
-        {% include "donation/donate_unauthenticated.html" with page=page donate_form=donate_form api_key=api_key %}
+        {% include "donation/donate_unauthenticated.html" %}
     {% endif %}
 {% endblock %}
 
