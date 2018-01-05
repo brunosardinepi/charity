@@ -383,7 +383,6 @@ class PageDonate(View):
             form = DonateForm()
             try:
                 cards = get_user_credit_cards(request.user.userprofile)
-                print("cards = {}".format(cards))
                 template_params["cards"] = cards
             except Exception as e:
                 template_params["stripe_error"] = True
@@ -411,9 +410,6 @@ class PageDonate(View):
         else:
             form = DonateUnauthenticatedForm(request.POST)
         if form.is_valid():
-            print("form in page_donate() = {}".format(form))
-            print("request.POST.get('amount') = {}".format(request.POST.get('amount')))
-            print("request.POST.get('preset-amount') = {}".format(request.POST.get('preset-amount')))
             donate(request=request, form=form, page=page, campaign=None)
             return HttpResponseRedirect(page.get_absolute_url())
 

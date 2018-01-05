@@ -174,9 +174,9 @@ a.nav-link:hover {
 #login, #signup {
     padding: 0 8px;
 }
-#login {
+/*#login {
     margin-bottom: 8px;
-}
+}*/
 @media (max-width: 991.99px) {
     .home-picture {
         order: 1;

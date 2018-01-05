@@ -125,20 +125,13 @@ def charge_source(c, page=None, campaign=None):
 def donate(request, form, page=None, campaign=None):
 #    amount = form.cleaned_data['amount'] * 100
     amount = form.cleaned_data['amount']
-    print("amount from form.cleaned_data = {}".format(amount))
     preset_amount = request.POST.get('preset-amount')
-    print("preset_amount from request.POST = {}".format(preset_amount))
     if amount:
-        print("there is a typed amount")
         amount *= 100
-        print("new amount after *100 = {}".format(amount))
     elif preset_amount:
-        print("there was no typed amount, but there was a preset_amount = {}".format(preset_amount))
         amount = int(preset_amount) * 100
-        print("new preset_amount after *100 = {}".format(amount))
     else:
         print("error, no amount chosen")
-    print("final amount that we're going with = {}".format(amount))
     stripe_fee = Decimal(amount * 0.029) + 30
     pagefund_fee = Decimal(amount * config.settings['pagefund_fee'])
     final_amount = amount - stripe_fee - pagefund_fee
