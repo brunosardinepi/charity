@@ -19,6 +19,7 @@ Release date: TBD
 
 * Vote participant forms allow you to add more than two choices
 * Campaign creation form prevents semicolons and other unwanted characters in the Campaign slug
+* Force user to pick a Page when creating a Campaign, prevent otherwise
 
 
 ## Version 0.11.1
