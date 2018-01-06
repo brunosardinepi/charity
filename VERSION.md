@@ -9,7 +9,7 @@ Release date: TBD
 
 ### Additions
 
-* None
+* Dynamically add/remove vote participants for Campaign
 
 ### Changes
 
@@ -17,7 +17,7 @@ Release date: TBD
 
 ### Fixes
 
-* None
+* Vote participant forms allow you to add more than two choices
 
 
 ## Version 0.11.1
