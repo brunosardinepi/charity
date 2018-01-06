@@ -18,6 +18,7 @@ Release date: TBD
 ### Fixes
 
 * Vote participant forms allow you to add more than two choices
+* Campaign creation form prevents semicolons and other unwanted characters in the Campaign slug
 
 
 ## Version 0.11.1

@@ -119,6 +119,7 @@ class CampaignCreate(View):
             else:
                 # redirect to error page
                 print("no page selected")
+        return render(request, 'campaign/campaign_create.html', {'form': form})
 
 
 class CampaignEditVote(View):
