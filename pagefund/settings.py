@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.postgres',
-    'threadedcomments',
     'django_comments',
     'django.contrib.sites',
     'django.contrib.contenttypes',
