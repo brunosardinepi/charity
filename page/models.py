@@ -14,7 +14,6 @@ from django.urls import reverse
 from django.utils import timezone
 
 from campaign.models import Campaign
-from comments.models import Comment
 from donation.models import Donation
 
 
@@ -178,9 +177,6 @@ class Page(models.Model):
 
     def inactive_campaigns(self):
         return Campaign.objects.filter(page=self, is_active=False, deleted=False)
-
-    def comments(self):
-        return Comment.objects.filter(page=self, deleted=False).order_by('-date')
 
     def donations(self):
         return Donation.objects.filter(page=self).order_by('-date')

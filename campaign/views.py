@@ -19,7 +19,6 @@ import stripe
 from . import forms
 from .models import Campaign, CampaignImage, VoteParticipant
 from .utils import email_new_campaign
-from comments.forms import CommentForm
 from donation.forms import BaseDonate, DonateForm, DonateUnauthenticatedForm
 from donation.models import Donation
 from donation.utils import donate, donation_graph, donation_statistics
@@ -38,7 +37,6 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
     if campaign.deleted == True:
         raise Http404
     else:
-        form = CommentForm
         template_params = {}
 
         if not campaign.type == "vote":
@@ -75,7 +73,6 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
             utils.update_manager_permissions(request.POST.getlist('permissions[]'), campaign)
 
         template_params["campaign"] = campaign
-        template_params["form"] = form
         template_params["donate_form"] = donate_form
         template_params["api_pk"] = config.settings['stripe_api_pk']
         template_params["subscribe_attr"] = subscribe_attr

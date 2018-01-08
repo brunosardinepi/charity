@@ -4,7 +4,6 @@ from django.views import View
 from . import forms
 from .models import Note
 from .utils import create_note
-from comments.models import Comment, Reply
 
 
 def error_forgotpasswordreset_expired(request):
@@ -35,13 +34,13 @@ def error_stripe_invalid_request(request, error_pk):
 
 
 class AbuseComment(View):
-    def get_obj(self, type, obj_pk):
-        if type == 'comment':
-            obj = get_object_or_404(Comment, pk=obj_pk)
-        elif type == 'reply':
-            obj = get_object_or_404(Reply, pk=obj_pk)
+#    def get_obj(self, type, obj_pk):
+#        if type == 'comment':
+#            obj = get_object_or_404(Comment, pk=obj_pk)
+#        elif type == 'reply':
+#            obj = get_object_or_404(Reply, pk=obj_pk)
 
-        return obj
+#        return obj
 
     def get(self, request, type, obj_pk):
         obj = self.get_obj(type, obj_pk)

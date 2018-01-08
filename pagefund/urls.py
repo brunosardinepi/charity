@@ -20,7 +20,7 @@ urlpatterns = [
     url(r'^search/', include('search.urls', namespace='search')),
     url(r'^invite/$', views.invite, name='invite'),
     url(r'^invite/', include('invitations.urls', namespace='invitations')),
-    url(r'^comments/', include('comments.urls', namespace='comments')),
+    url(r'^comments/', include('django_comments.urls')),
     url(r'^donation/', include('donation.urls', namespace='donation')),
     url(r'^forgot/$', InvitationsViews.forgot_password_request, name='forgot_password_request'),
     url(r'^password/reset/(?P<invitation_pk>\d+)/(?P<key>[\w-]+)/$', InvitationsViews.forgot_password_reset, name='forgot_password_reset'),

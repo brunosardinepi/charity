@@ -12,7 +12,6 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 
-from comments.models import Comment
 from donation.models import Donation
 from pagefund import config
 
@@ -174,9 +173,6 @@ class Campaign(models.Model):
 
     def managers_list(self):
         return self.campaign_managers.all()
-
-    def comments(self):
-        return Comment.objects.filter(campaign=self, deleted=False).order_by('-date')
 
     def vote_participants(self):
         return VoteParticipant.objects.filter(campaign=self).order_by('name')

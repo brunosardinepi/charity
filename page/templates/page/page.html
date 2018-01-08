@@ -12,7 +12,6 @@
         var model_pk = {{ page.pk }};
     </script>
     <script src="{% static 'js/comment_csrf.js' %}"></script>
-    <script src="{% static 'js/comment.js' %}"></script>
     <script src="{% static 'js/subscribe.js' %}"></script>
     <script src="{% static 'js/vote.js' %}"></script>
     <script>
@@ -63,12 +62,6 @@
             </div>
             <div class="col-lg-4">
                 {% include "page/page_top_donors.html" %}
-            </div>
-        </div>
-
-        <div class="row justify-content-center mb-5">
-            <div class="col">
-                {% include "comments/comments.html" with model="page" obj=page %}
             </div>
         </div>
     </div>
