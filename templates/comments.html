@@ -1,0 +1,93 @@
+{% load comments %}
+{% load humanize %}
+{% load staticfiles %}
+
+
+
+<div class="row">
+    <div class="col-md-auto">
+        <h2>Comments</h2>
+    </div>
+    <div class="col d-flex align-items-center h100">
+        <button id="show-comment-{{ model }}-{{ obj.pk }}" type="button" class="btn btn-outline-purple" data-toggle="modal" data-target="#newComment">
+            <i class="fal fa-plus"></i> New comment
+        </button>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="newComment" tabindex="-1" role="dialog" aria-labelledby="newCommentLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newCommentLabel">New comment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% get_comment_form for obj as form %}
+                <form action="{% comment_form_target %}" method="post">
+                    {% csrf_token %}
+                    {{ form.content_type }}
+                    {{ form.object_pk }}
+                    {{ form.timestamp }}
+                    {{ form.security_hash }}
+                    {{ form.comment }}
+                    <p style='display:none;'>{{ form.honeypot }}</p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Comment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% get_comment_list for obj as comment_list %}
+{% if comment_list %}
+    {% for c in comment_list %}
+        <div class="row comment" id="comment-{{ c.pk }}">
+            <div class="col-md-auto comment-profile-picture-container">
+                {% if c.user.userprofile.profile_picture %}
+                    <img class="comment-profile-picture" src="{{ c.user.userprofile.profile_picture.image.url }}" />
+                {% else %}
+                    <img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />
+                {% endif %}
+            </div>
+            <div class="col-md-10 mb-4">
+                <div class="row comment-info">
+                    <div class="col-md-auto">
+                        <span class="comment-user-name">
+                            {% if c.user.first_name %}
+                                {{ c.user.first_name }} {{ c.user.last_name }}
+                            {% else %}
+                                {{ c.user.email }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="col">
+                        <div class="row">
+                            <div class="col-sm-auto">
+                                <span class="comment-date"><i class="fal fa-clock"></i> {{ c.date|naturaltime }}</span>
+                            </div>
+                            <div class="col-sm-auto ml-auto">
+                                <a class="show-reply" id="{{ c.pk }}" href="" data-toggle="modal" data-target="#replyModal"><i class="fal fa-reply"></i></a>{% if c.user == request.user %} <a id="delete-comment-{{ c.pk }}" class="delete-cr" href=""><i class="fal fa-trash-alt"></i></a>{% endif %}</a>
+                                <a href="{% url 'notes:abuse_comment' type='comment' obj_pk=c.pk %}" class="report-comment"><i class="fal fa-flag"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <span class="comment-content">{{ c.comment }}</span>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No comments!</p>
+{% endif %}
