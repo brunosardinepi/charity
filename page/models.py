@@ -140,6 +140,9 @@ class Page(models.Model):
             'page_slug': self.page_slug
             })
 
+    def get_model(self):
+        return self.__class__.__name__
+
     def top_donors(self):
         donors = Donation.objects.filter(page=self).values_list('user', flat=True).distinct()
         top_donors = {}

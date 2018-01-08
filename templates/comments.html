@@ -3,8 +3,13 @@
 {% load staticfiles %}
 
 
+{% block head_extra %}
+    <script src="{% static 'js/comment_csrf.js' %}"></script>
+    <script src="{% static 'js/comment.js' %}"></script>
+{% endblock %}
 
-<div class="row">
+
+<div class="row mb-3">
     <div class="col-md-auto">
         <h2>Comments</h2>
     </div>
@@ -28,19 +33,24 @@
             </div>
             <div class="modal-body">
                 {% get_comment_form for obj as form %}
-                <form action="{% comment_form_target %}" method="post">
+                <form id="comment-form" action="{% comment_form_target %}" method="post">
                     {% csrf_token %}
                     {{ form.content_type }}
                     {{ form.object_pk }}
                     {{ form.timestamp }}
                     {{ form.security_hash }}
                     {{ form.comment }}
+                    {% if obj.get_model == "Page" %}
+<!--                        <input type="hidden" name="next" value="{% url 'page' page_slug=obj.page_slug %}" /> -->
+                    {% elif obj.get_model == "Campaign" %}
+<!--                        <input type="hidden" name="next" value="{% url 'campaign' page_slug=obj.page.page_slug campaign_pk=obj.pk campaign_slug=obj.campaign_slug %}" /> -->
+                    {% endif %}
                     <p style='display:none;'>{{ form.honeypot }}</p>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary">Comment</button>
+                <button id="submit-comment" type="button" class="btn btn-primary">Comment</button>
             </div>
         </div>
     </div>
@@ -51,7 +61,7 @@
 
 {% get_comment_list for obj as comment_list %}
 {% if comment_list %}
-    {% for c in comment_list %}
+    {% for c in comment_list reversed %}
         <div class="row comment" id="comment-{{ c.pk }}">
             <div class="col-md-auto comment-profile-picture-container">
                 {% if c.user.userprofile.profile_picture %}
@@ -74,17 +84,24 @@
                     <div class="col">
                         <div class="row">
                             <div class="col-sm-auto">
-                                <span class="comment-date"><i class="fal fa-clock"></i> {{ c.date|naturaltime }}</span>
+                                <span class="comment-date"><i class="fal fa-clock"></i> {{ c.submit_date|naturaltime }}</span>
                             </div>
                             <div class="col-sm-auto ml-auto">
                                 <a class="show-reply" id="{{ c.pk }}" href="" data-toggle="modal" data-target="#replyModal"><i class="fal fa-reply"></i></a>{% if c.user == request.user %} <a id="delete-comment-{{ c.pk }}" class="delete-cr" href=""><i class="fal fa-trash-alt"></i></a>{% endif %}</a>
                                 <a href="{% url 'notes:abuse_comment' type='comment' obj_pk=c.pk %}" class="report-comment"><i class="fal fa-flag"></i></a>
+                                {% if obj.get_model == "Page" %}
+                                    <a href="{% url 'page' page_slug=obj.page_slug %}#c{{ c.pk }}"><i class="fal fa-link"></i></a>
+                                {% elif obj.get_model == "Campaign" %}
+                                    <a href="{% url 'campaign' page_slug=obj.page.page_slug campaign_pk=obj.pk campaign_slug=obj.campaign_slug %}#c{{ c.pk }}"><i class="fal fa-link"></i></a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
                 </div>
                 <hr>
-                <span class="comment-content">{{ c.comment }}</span>
+                <a name="c{{ c.id }}">
+                    <span class="comment-content">{{ c.comment }}</span>
+                </a>
             </div>
         </div>
     {% endfor %}
