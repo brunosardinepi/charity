@@ -11,7 +11,7 @@
 
 <div class="row mb-3">
     <div class="col-md-auto">
-        <h2>Comments</h2>
+        <h2><a name="comments">Comments</a></h2>
     </div>
     <div class="col d-flex align-items-center h100">
         <button id="show-comment-{{ model }}-{{ obj.pk }}" type="button" class="btn btn-outline-purple" data-toggle="modal" data-target="#newComment">
@@ -40,11 +40,7 @@
                     {{ form.timestamp }}
                     {{ form.security_hash }}
                     {{ form.comment }}
-                    {% if obj.get_model == "Page" %}
-<!--                        <input type="hidden" name="next" value="{% url 'page' page_slug=obj.page_slug %}" /> -->
-                    {% elif obj.get_model == "Campaign" %}
-<!--                        <input type="hidden" name="next" value="{% url 'campaign' page_slug=obj.page.page_slug campaign_pk=obj.pk campaign_slug=obj.campaign_slug %}" /> -->
-                    {% endif %}
+                    <input type="hidden" name="next" value="{% url 'comment_posted' %}" />
                     <p style='display:none;'>{{ form.honeypot }}</p>
                 </form>
             </div>
@@ -63,6 +59,7 @@
 {% if comment_list %}
     {% for c in comment_list reversed %}
         <div class="row comment" id="comment-{{ c.pk }}">
+            <a name="c{{ c.pk }}"></a>
             <div class="col-md-auto comment-profile-picture-container">
                 {% if c.user.userprofile.profile_picture %}
                     <img class="comment-profile-picture" src="{{ c.user.userprofile.profile_picture.image.url }}" />
@@ -88,20 +85,18 @@
                             </div>
                             <div class="col-sm-auto ml-auto">
                                 <a class="show-reply" id="{{ c.pk }}" href="" data-toggle="modal" data-target="#replyModal"><i class="fal fa-reply"></i></a>{% if c.user == request.user %} <a id="delete-comment-{{ c.pk }}" class="delete-cr" href=""><i class="fal fa-trash-alt"></i></a>{% endif %}</a>
-                                <a href="{% url 'notes:abuse_comment' type='comment' obj_pk=c.pk %}" class="report-comment"><i class="fal fa-flag"></i></a>
                                 {% if obj.get_model == "Page" %}
-                                    <a href="{% url 'page' page_slug=obj.page_slug %}#c{{ c.pk }}"><i class="fal fa-link"></i></a>
+                                    <a href="{% url 'page' page_slug=obj.page_slug %}#c{{ c.pk }}" class="comment-permalink"><i class="fal fa-link"></i></a>
                                 {% elif obj.get_model == "Campaign" %}
-                                    <a href="{% url 'campaign' page_slug=obj.page.page_slug campaign_pk=obj.pk campaign_slug=obj.campaign_slug %}#c{{ c.pk }}"><i class="fal fa-link"></i></a>
+                                    <a href="{% url 'campaign' page_slug=obj.page.page_slug campaign_pk=obj.pk campaign_slug=obj.campaign_slug %}#c{{ c.pk }}" class="comment-permalink"><i class="fal fa-link"></i></a>
                                 {% endif %}
+                                <a href="{% url 'notes:abuse_comment' type='comment' obj_pk=c.pk %}" class="report-comment"><i class="fal fa-flag"></i></a>
                             </div>
                         </div>
                     </div>
                 </div>
                 <hr>
-                <a name="c{{ c.id }}">
-                    <span class="comment-content">{{ c.comment }}</span>
-                </a>
+                <span class="comment-content">{{ c.comment }}</span>
             </div>
         </div>
     {% endfor %}

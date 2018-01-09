@@ -266,7 +266,9 @@ a.nav-link:hover {
 .votes {
     margin-right: 1rem;
 }
-.show-reply, .delete-cr {
+.show-reply,
+.delete-cr,
+.comment-permalink {
     margin-right: 0.5rem;
 }
 .footer {

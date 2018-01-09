@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^search/', include('search.urls', namespace='search')),
     url(r'^invite/$', views.invite, name='invite'),
     url(r'^invite/', include('invitations.urls', namespace='invitations')),
+    url(r'^comments/posted/', views.CommentPosted.as_view(), name='comment_posted'),
     url(r'^comments/', include('django_comments.urls')),
     url(r'^donation/', include('donation.urls', namespace='donation')),
     url(r'^forgot/$', InvitationsViews.forgot_password_request, name='forgot_password_request'),

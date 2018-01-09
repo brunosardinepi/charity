@@ -129,6 +129,9 @@ class Campaign(models.Model):
         self.category = self.page.category
         super(Campaign, self).save(*args, **kwargs)
 
+    def get_model(self):
+        return self.__class__.__name__
+
     def top_donors(self):
         donors = Donation.objects.filter(campaign=self).values_list('user', flat=True).distinct()
         top_donors = {}

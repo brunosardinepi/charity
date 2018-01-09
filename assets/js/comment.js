@@ -5,7 +5,6 @@ $(document).ready(function() {
 });
 
 $(document).on("click", "#submit-comment", function(event) {
-    console.log("clicked #submit-comment");
     $("#comment-form").submit();
 });
 
