@@ -3,7 +3,26 @@
 This is the version history for PageFund development.
 
 
-## Version 0.11.2
+## Version 0.12.1
+
+Release date: 01/09/2018
+
+31 files changed, 335 insertions(+), 43 deletions(-)
+
+### Additions
+
+* None
+
+### Changes
+
+* None
+
+### Fixes
+
+* Removed django-contrib-comments due to bug and created custom Comments app
+
+
+## Version 0.12.0
 
 Release date: 01/08/2018
 
