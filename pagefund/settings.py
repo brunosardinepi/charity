@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.twitter',
     'lib',
     'userprofile',
     'page',
@@ -166,18 +167,13 @@ LOGIN_REDIRECT_URL = 'home'
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_EMAIL_SUBJECT_PREFIX = ''
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_LOGOUT_REDIRECT_URL = 'home'
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE= True
 ACCOUNT_USERNAME_REQUIRED = False
-#ACCOUNT_SIGNUP_FORM_CLASS = 'userprofile.forms.UserProfileForm'
 
-#email
-#EMAIL_HOST = config.settings['email_host']
-#EMAIL_USE_TLS = True
-#EMAIL_HOST_USER = config.settings['email_user']
-#EMAIL_HOST_PASSWORD = config.settings['email_password']
-
+# testing
 TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
