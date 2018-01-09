@@ -8,8 +8,6 @@ class CommentForm(forms.ModelForm):
         model = models.Comment
         fields = [
             'comment',
-            'content_type',
-            'object_id',
         ]
         widgets = {
             'comment': forms.Textarea(
@@ -19,6 +17,4 @@ class CommentForm(forms.ModelForm):
                     'placeholder': 'Comment here'
                 }
             ),
-            'content_type': forms.HiddenInput,
-            'object_id': forms.HiddenInput,
         }

@@ -1,3 +1,4 @@
+{% load lib_extras %}
 {% load humanize %}
 {% load staticfiles %}
 {% load widget_tweaks %}
@@ -32,10 +33,10 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="comment-form" action="{% url 'comments:comment_post' %}" method="post">
+                <form id="comment-form" action="{% url 'comments:comment_post' content_type=obj|content_type object_id=obj.pk %}" method="post">
                     {% csrf_token %}
                     {{ form.content_type }}
-                    {{ form.object_pk }}
+                    {{ form.object_id }}
                     <div class="form-group">
                         {{ form.comment|add_class:"form-control" }}
                     </div>
@@ -53,7 +54,7 @@
 
 
 {% if obj.comments %}
-    {% for c in obj.comments.all %}
+    {% for c in obj.comments.all reversed %}
         <div class="row comment" id="comment-{{ c.pk }}">
             <a name="c{{ c.pk }}"></a>
             <div class="col-md-auto comment-profile-picture-container">

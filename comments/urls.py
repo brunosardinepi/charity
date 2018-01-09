@@ -5,5 +5,7 @@ from . import views
 
 app_name = 'comments'
 urlpatterns = [
-    url(r'^post/', login_required(views.CommentPost.as_view()), name='comment_post'),
+    url(r'^post/(?P<content_type>\d+)/(?P<object_id>\d+)/',
+        login_required(views.CommentPost.as_view()),
+        name='comment_post'),
 ]

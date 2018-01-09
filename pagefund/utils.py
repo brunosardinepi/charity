@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, redirect
 
 from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
@@ -77,3 +78,6 @@ def has_dashboard_access(user, obj, permission):
             return True
     else:
         return False
+
+def get_content_type(pk):
+    return ContentType.objects.get(pk=pk)
