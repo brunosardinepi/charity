@@ -14,6 +14,7 @@ Release date: TBD
 ### Changes
 
 * Removed voting system on comments and FAQs
+* Removed comment system and implemented django-contrib-comments
 
 ### Fixes
 

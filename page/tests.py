@@ -810,4 +810,3 @@ class PageTest(TestCase):
 
         images = models.PageImage.objects.filter(page=self.page)
         self.assertEqual(len(images), 0)
-
