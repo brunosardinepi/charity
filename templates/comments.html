@@ -87,7 +87,6 @@
                                 <span class="comment-date"><i class="fal fa-clock"></i> {{ c.submit_date|naturaltime }}</span>
                             </div>
                             <div class="col-sm-auto ml-auto">
-                                <a class="show-reply" id="{{ c.pk }}" href="" data-toggle="modal" data-target="#replyModal"><i class="fal fa-reply"></i></a>{% if c.user == request.user %} <a id="delete-comment-{{ c.pk }}" class="delete-cr" href=""><i class="fal fa-trash-alt"></i></a>{% endif %}</a>
                                 {% if obj.get_model == "Page" %}
                                     <a href="{% url 'page' page_slug=obj.page_slug %}#c{{ c.pk }}" class="comment-permalink"><i class="fal fa-link"></i></a>
                                 {% elif obj.get_model == "Campaign" %}

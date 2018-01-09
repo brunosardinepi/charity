@@ -7,13 +7,3 @@ $(document).ready(function() {
 $(document).on("click", "#submit-comment", function(event) {
     $("#comment-form").submit();
 });
-
-$(document).on('click', ".delete-cr", function(event) {
-    event.preventDefault();
-    var arr = $(this).attr('id');
-    var arr = arr.split('-');
-    var url = "/comments/delete/" + arr[1] + "/" + arr[2] + "/";
-    $.get(url, function () {
-        $("#" + arr[1] + "-" + arr[2]).remove();
-    });
-});
