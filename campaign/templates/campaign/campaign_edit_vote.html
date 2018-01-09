@@ -1,14 +1,44 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
 
-{% block title %} Edit Campaign - Vote | {{ block.super }}{% endblock %}
+{% block title %} Create Campaign - Vote | {{ block.super }}{% endblock %}
+
+{% block head_extra %}
+    <script src="{% static 'js/formset.js' %}"></script>    
+{% endblock %}
 
 {% block body_content %}
-    <h1>Edit Campaign - Vote</h1>
+    <h1>Create Campaign - Vote</h1>
     
-    <form method="POST" action="">
+    <form id="vote-participant-form" method="POST" action="">
         {% csrf_token %}
-        {{ formset.as_p }}
+
+        {{ formset.management_form }}
+
+        <table>
+            <tbody>
+                {% for form in formset %}
+                    <tr class="form-container">
+                        <td>{{ form.id}}{{ form.name }}</td>
+                        <td>{{ form.description }}</td>
+                        {% if form.instance.pk %}
+                            <td>delete: {{ form.DELETE }}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
         <input type="submit" class="button" value="Save">
     </form>
+{% endblock %}
+
+{% block body_extra %}
+<script type="text/javascript">
+    $(function() {
+        $(".form-container").formset({
+            prefix: "{{ formset.prefix }}",
+        });
+    })
+</script>
 {% endblock %}

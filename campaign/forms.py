@@ -53,14 +53,16 @@ class VoteParticipantForm(forms.ModelForm):
 VoteParticipantFormSet = forms.modelformset_factory(
     models.VoteParticipant,
     form=VoteParticipantForm,
-    extra=1,
+    extra=0,
+    can_delete=True,
 )
 
 VoteParticipantInlineFormSet = forms.inlineformset_factory(
     models.Campaign,
     models.VoteParticipant,
-    extra=1,
+    extra=0,
     fields=('name', 'description',),
     formset=VoteParticipantFormSet,
     min_num=2,
+    can_delete=True,
 )

@@ -3,9 +3,31 @@
 This is the version history for PageFund development.
 
 
-## Version 0.12.0
+## Version 0.11.2
+
+Release date: TBD
+
+### Additions
+
+* Dynamically add/remove vote participants for Campaign
+
+### Changes
+
+* Removed voting system on comments and FAQs
+* Removed comment system and implemented django-contrib-comments
+
+### Fixes
+
+* Vote participant forms allow you to add more than two choices
+* Campaign creation form prevents semicolons and other unwanted characters in the Campaign slug
+* Force user to pick a Page when creating a Campaign, prevent otherwise
+
+
+## Version 0.11.1
 
 Release date: 01/04/2018
+
+120 files changed, 3008 insertions(+), 586 deletions(-)
 
 ### Additions
 

@@ -365,7 +365,7 @@ class CampaignTest(TestCase):
         response = self.client.post('/campaign/create/', data)
         self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 2)
         campaign = models.Campaign.objects.get(campaign_slug="mycampaign")
-        self.assertRedirects(response, '/campaign/create/{}/vote/'.format(campaign.pk), 302, 200)
+        self.assertRedirects(response, '/{}/{}/{}/vote/edit/'.format(campaign.page.page_slug, campaign.pk, campaign.campaign_slug), 302, 200)
 
     def test_campaignform(self):
         form = forms.CampaignForm({

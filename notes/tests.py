@@ -7,7 +7,6 @@ from . import views
 from .forms import AbuseCommentForm
 from .models import Note
 from campaign.models import Campaign
-from comments.models import Comment, Reply
 from page.models import Page
 
 import unittest
@@ -54,30 +53,6 @@ class NoteTest(TestCase):
             goal='11',
         )
 
-        self.comment = Comment.objects.create(
-            user=self.user,
-            content="This is a comment.",
-            page=self.page
-        )
-
-        self.comment2 = Comment.objects.create(
-            user=self.user,
-            content="This is another comment.",
-            campaign=self.campaign
-        )
-
-        self.reply = Reply.objects.create(
-            user=self.user2,
-            content="This is a reply.",
-            comment=self.comment
-        )
-
-        self.reply2 = Reply.objects.create(
-            user=self.user3,
-            content="This is another reply.",
-            comment=self.comment2
-        )
-
         self.note = Note.objects.create(
             details="these are test details for this note",
             message="i don't like this comment",
@@ -106,23 +81,6 @@ class NoteTest(TestCase):
         )
         now = timezone.now()
         self.assertLess(note.date, now)
-
-    def test_note_comment(self):
-        response = self.client.get('/notes/abuse/comment/comment/{}/'.format(
-            self.comment.pk))
-        self.assertRedirects(response,
-            '/accounts/login/?next=/notes/abuse/comment/comment/{}/'.format(
-                self.comment.pk), 302, 200)
-
-        self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/notes/abuse/comment/comment/{}/'.format(
-            self.comment.pk))
-        self.assertEquals(response.status_code, 200)
-
-        data = {'note': "This is my note."}
-        response = self.client.post('/notes/abuse/comment/comment/{}/'.format(
-            self.comment.pk), data)
-        self.assertRedirects(response, '/', 302, 200)
 
     def test_note_form(self):
         data = {}

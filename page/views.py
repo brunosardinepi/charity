@@ -23,8 +23,6 @@ from . import forms
 from .models import Page, PageImage
 from .utils import campaign_average_duration, campaign_success_pct, campaign_types
 from campaign.models import Campaign
-from comments.forms import CommentForm
-from comments.models import Comment
 from donation.forms import DonateForm, DonateUnauthenticatedForm
 from donation.models import Donation
 from donation.utils import donate, donation_graph, donation_history, donation_statistics
@@ -45,7 +43,6 @@ def page(request, page_slug):
     if page.deleted == True:
         raise Http404
     else:
-        form = CommentForm
         if request.user.is_authenticated():
             donate_form = DonateForm()
         else:
@@ -66,7 +63,6 @@ def page(request, page_slug):
              utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
 
         template_params["page"] = page
-        template_params["form"] = form
         template_params["donate_form"] = donate_form
         template_params["subscribe_attr"] = subscribe_attr
         template_params["api_pk"] = config.settings['stripe_api_pk']
