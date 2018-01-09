@@ -1,3 +1,11 @@
 from django.contrib import admin
 
-# Register your models here.
+from . import models
+
+
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'date', 'content_type', 'comment', 'deleted',)
+    ordering = list_display
+    list_filter = ('user', 'content_type', 'deleted',)
+
+admin.site.register(models.Comment, CommentAdmin)

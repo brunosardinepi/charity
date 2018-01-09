@@ -4,6 +4,7 @@ import string
 from collections import OrderedDict
 
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.files.images import get_image_dimensions
 from django.db import models
 from django.db.models.signals import post_delete
@@ -14,6 +15,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from campaign.models import Campaign
+from comments.models import Comment
 from donation.models import Donation
 
 
@@ -22,6 +24,7 @@ class Page(models.Model):
     address_line2 = models.CharField(max_length=255, blank=True)
     admins = models.ManyToManyField('userprofile.UserProfile', related_name='page_admins', blank=True)
     city = models.CharField(max_length=255)
+    comments = GenericRelation(Comment)
     created_on = models.DateTimeField(default=timezone.now)
     deleted = models.BooleanField(default=False)
     deleted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)

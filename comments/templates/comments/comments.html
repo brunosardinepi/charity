@@ -1,4 +1,3 @@
-{% load comments %}
 {% load humanize %}
 {% load staticfiles %}
 {% load widget_tweaks %}
@@ -33,18 +32,13 @@
                 </button>
             </div>
             <div class="modal-body">
-                {% get_comment_form for obj as form %}
-                <form id="comment-form" action="{% comment_form_target %}" method="post">
+                <form id="comment-form" action="{% url 'comments:comment_post' %}" method="post">
                     {% csrf_token %}
                     {{ form.content_type }}
                     {{ form.object_pk }}
-                    {{ form.timestamp }}
-                    {{ form.security_hash }}
                     <div class="form-group">
                         {{ form.comment|add_class:"form-control" }}
                     </div>
-                    <input type="hidden" name="next" value="{% url 'comment_posted' %}" />
-                    <p style='display:none;'>{{ form.honeypot }}</p>
                 </form>
             </div>
             <div class="modal-footer">
@@ -58,9 +52,8 @@
 
 
 
-{% get_comment_list for obj as comment_list %}
-{% if comment_list %}
-    {% for c in comment_list reversed %}
+{% if obj.comments %}
+    {% for c in obj.comments.all %}
         <div class="row comment" id="comment-{{ c.pk }}">
             <a name="c{{ c.pk }}"></a>
             <div class="col-md-auto comment-profile-picture-container">
@@ -84,7 +77,7 @@
                     <div class="col">
                         <div class="row">
                             <div class="col-sm-auto">
-                                <span class="comment-date"><i class="fal fa-clock"></i> {{ c.submit_date|naturaltime }}</span>
+                                <span class="comment-date"><i class="fal fa-clock"></i> {{ c.date|naturaltime }}</span>
                             </div>
                             <div class="col-sm-auto ml-auto">
                                 {% if obj.get_model == "Page" %}

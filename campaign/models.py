@@ -4,6 +4,7 @@ import string
 from collections import OrderedDict
 
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.db.models.signals import post_delete
 from django.db.models import Sum
@@ -12,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 
+from comments.models import Comment
 from donation.models import Donation
 from pagefund import config
 
@@ -23,6 +25,7 @@ class Campaign(models.Model):
     campaign_subscribers = models.ManyToManyField('userprofile.UserProfile', related_name='campaign_subscribers', blank=True)
     category = models.CharField(max_length=255)
     city = models.CharField(max_length=255, blank=True)
+    comments = GenericRelation(Comment)
     created_on = models.DateTimeField(default=timezone.now)
     deleted = models.BooleanField(default=False)
     deleted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)

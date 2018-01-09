@@ -23,6 +23,7 @@ from . import forms
 from .models import Page, PageImage
 from .utils import campaign_average_duration, campaign_success_pct, campaign_types
 from campaign.models import Campaign
+from comments.forms import CommentForm
 from donation.forms import DonateForm, DonateUnauthenticatedForm
 from donation.models import Donation
 from donation.utils import donate, donation_graph, donation_history, donation_statistics
@@ -40,14 +41,16 @@ stripe.api_key = config.settings['stripe_api_sk']
 
 def page(request, page_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
+    template_params = {}
+
     if page.deleted == True:
         raise Http404
     else:
         if request.user.is_authenticated():
             donate_form = DonateForm()
+            template_params["form"] = CommentForm
         else:
             donate_form = DonateUnauthenticatedForm()
-        template_params = {}
 
         try:
             user_subscription_check = page.subscribers.get(user_id=request.user.pk)
