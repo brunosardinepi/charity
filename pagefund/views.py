@@ -10,7 +10,7 @@ from . import config
 from . import forms
 from .utils import email
 from campaign.models import Campaign
-from django_comments.models import Comment
+#from django_comments.models import Comment
 from donation.models import Donation
 from invitations.models import GeneralInvitation
 from page.models import Page
@@ -89,19 +89,19 @@ def invite(request):
     return render(request, 'invite.html', {'form': form})
 
 
-class CommentPosted(View):
-    def get(self, request):
-        c = request.GET.get('c')
-        if c:
-            comment = Comment.objects.get(pk=c)
-            if comment:
-                obj = comment.content_object
-                if obj.get_model() == "Page":
-                    return HttpResponseRedirect("/{}/#c{}".format(obj.page_slug, comment.pk))
-                elif obj.get_model() == "Campaign":
-                    return HttpResponseRedirect("/{}/{}/{}/#c{}".format(
-                        obj.page.page_slug,
-                        obj.pk,
-                        obj.campaign_slug,
-                        comment.pk,
-                    ))
+#class CommentPosted(View):
+#    def get(self, request):
+#        c = request.GET.get('c')
+#        if c:
+#            comment = Comment.objects.get(pk=c)
+#            if comment:
+#                obj = comment.content_object
+#                if obj.get_model() == "Page":
+#                    return HttpResponseRedirect("/{}/#c{}".format(obj.page_slug, comment.pk))
+#                elif obj.get_model() == "Campaign":
+#                    return HttpResponseRedirect("/{}/{}/{}/#c{}".format(
+#                        obj.page.page_slug,
+#                        obj.pk,
+#                        obj.campaign_slug,
+#                        comment.pk,
+#                    ))
