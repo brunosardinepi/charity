@@ -1,6 +1,7 @@
 {% load comments %}
 {% load humanize %}
 {% load staticfiles %}
+{% load widget_tweaks %}
 
 
 {% block head_extra %}
@@ -39,7 +40,9 @@
                     {{ form.object_pk }}
                     {{ form.timestamp }}
                     {{ form.security_hash }}
-                    {{ form.comment }}
+                    <div class="form-group">
+                        {{ form.comment|add_class:"form-control" }}
+                    </div>
                     <input type="hidden" name="next" value="{% url 'comment_posted' %}" />
                     <p style='display:none;'>{{ form.honeypot }}</p>
                 </form>
