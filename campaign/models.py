@@ -186,16 +186,6 @@ class Campaign(models.Model):
     def unique_donors(self):
         return Donation.objects.filter(campaign=self).distinct('donor_first_name').distinct('donor_last_name').count()
 
-class VoteParticipant(models.Model):
-    name = models.CharField(max_length=255)
-    campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE)
-    description = models.TextField(blank=True)
-
-    def __str__(self):
-        return self.name
-
-    def vote_amount(self):
-        return Donation.objects.filter(campaign_participant=self).aggregate(Sum('amount')).get('amount__sum')
 
 def create_random_string(length=30):
     if length <= 0:
@@ -206,8 +196,20 @@ def create_random_string(length=30):
 
 def upload_to(instance, filename):
     ext = filename.split('.')[-1]
-    filename = "media/campaigns/images/%s.%s" % (create_random_string(), ext)
+    filename = "media/images/%s.%s" % (create_random_string(), ext)
     return filename
+
+class VoteParticipant(models.Model):
+    name = models.CharField(max_length=255)
+    campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE)
+    description = models.TextField(blank=True)
+    image = models.ImageField(upload_to=upload_to, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+    def vote_amount(self):
+        return Donation.objects.filter(campaign_participant=self).aggregate(Sum('amount')).get('amount__sum')
 
 class CampaignImage(models.Model):
     campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE)

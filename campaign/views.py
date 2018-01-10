@@ -133,6 +133,7 @@ class CampaignEditVote(View):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
         formset = forms.VoteParticipantInlineFormSet(
             request.POST,
+            request.FILES,
             queryset=campaign.voteparticipant_set.all(),
         )
         if formset.is_valid():

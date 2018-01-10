@@ -10,7 +10,7 @@
 {% block body_content %}
     <h1>Create Campaign - Vote</h1>
     
-    <form id="vote-participant-form" method="POST" action="">
+    <form id="vote-participant-form" method="POST" action="" enctype="multipart/form-data">
         {% csrf_token %}
 
         {{ formset.management_form }}
@@ -21,6 +21,7 @@
                     <tr class="form-container">
                         <td>{{ form.id}}{{ form.name }}</td>
                         <td>{{ form.description }}</td>
+                        <td>{{ form.image }}</td>
                         {% if form.instance.pk %}
                             <td>delete: {{ form.DELETE }}</td>
                         {% endif %}
