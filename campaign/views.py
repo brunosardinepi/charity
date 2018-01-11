@@ -136,7 +136,6 @@ class CampaignEditVote(View):
             request.FILES,
             queryset=campaign.voteparticipant_set.all(),
         )
-        print(formset)
         if formset.is_valid():
             vote_participants = formset.save(commit=False)
             for vote_participant in vote_participants:
@@ -145,9 +144,6 @@ class CampaignEditVote(View):
             for d in formset.deleted_objects:
                 d.delete()
             return HttpResponseRedirect(campaign.get_absolute_url())
-        else:
-            print(formset.errors)
-
 
 def campaign_search_pages(request):
     if request.method == "POST":
