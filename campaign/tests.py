@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import Sum
+from django.forms import formset_factory
 from django.test import Client, RequestFactory, TestCase
 from django.utils import timezone
 from guardian.shortcuts import assign_perm
@@ -792,3 +793,50 @@ class CampaignTest(TestCase):
         response = self.client.get('/{}/{}/{}/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "This campaign has ended.")
+
+    def test_vote_participant_formset(self):
+        vp_formset = formset_factory(forms.VoteParticipantForm, formset=forms.VoteParticipantFormSet)
+        data = {
+            'form-TOTAL_FORMS': '2',
+            'form-INITIAL_FORMS': '0',
+            'form-MAX_NUM_FORMS': '1000',
+            'form-0-name': 'person1',
+            'form-0-description': 'description1',
+            'form-1-name': 'person2',
+            'form-1-description': 'description2',
+        }
+        formset = vp_formset(data)
+        self.assertTrue(formset.is_valid())
+
+    def test_vote_participants(self):
+        self.client.login(username='testuser', password='testpassword')
+#        content = b"a" * 1024
+#        image1 = SimpleUploadedFile("image1.png", content, content_type="image/png")
+#        image2 = SimpleUploadedFile("image2.png", content, content_type="image/png")
+        data = {
+            'form-TOTAL_FORMS': '2',
+            'form-INITIAL_FORMS': '0',
+            'form-MIN_NUM_FORMS': '2',
+            'form-MAX_NUM_FORMS': '1000',
+            'form-0-name': 'person1',
+            'form-0-description': 'description1',
+#            'form-0-image': image1,
+#            'form-0-id': '1',
+            'form-1-name': 'person2',
+#            'form-1-image': image2,
+#            'form-1-id': '2',
+        }
+        response = self.client.post('/{}/{}/{}/vote/edit/'.format(
+            self.campaign.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug), data)
+        self.assertRedirects(response, '/{}/{}/{}/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug), 302, 200)
+
+        vote_participants = models.VoteParticipant.objects.filter(campaign=self.campaign)
+        self.assertEqual(len(vote_participants), 4)
+
+        for vote_participant in vote_participants:
+#            image = vote_participant.image
+            response = self.client.get('/{}/{}/{}/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+#            self.assertContains(response, image.image.url, status_code=200)
+            self.assertContains(response, vote_participant.name, status_code=200)
