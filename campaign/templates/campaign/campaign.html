@@ -42,7 +42,8 @@
                 <li>
                     <a href="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug vote_participant_pk=p.pk %}">{{ p.name }}</a> - {{ p.vote_amount|cents_to_dollars }}
                     <ul>
-                        <li>{{ p.description }}</li>
+                        <li>image: {{ p.image }}</li>
+                        <li>description: {{ p.description }}</li>
                     </ul>
                 </li>
             {% endfor %}
