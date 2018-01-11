@@ -3,6 +3,25 @@
 This is the version history for PageFund development.
 
 
+## Version 0.13.0
+
+Release date: 01/10/2018
+
+8 files changed, 92 insertions(+), 18 deletions(-)
+
+### Additions
+
+* Vote participant images
+
+### Changes
+
+* None
+
+### Fixes
+
+* None
+
+
 ## Version 0.12.1
 
 Release date: 01/09/2018
