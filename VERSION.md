@@ -3,6 +3,23 @@
 This is the version history for PageFund development.
 
 
+## Version 0.14.0
+
+Release date: TBD
+
+### Additions
+
+* None
+
+### Changes
+
+* Removed Instagram share and replaced with full-row Page website
+
+### Fixes
+
+* None
+
+
 ## Version 0.13.0
 
 Release date: 01/10/2018

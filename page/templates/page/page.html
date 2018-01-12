@@ -41,6 +41,11 @@
                     <div class="col-6">
                         {% include "page/page_subactions.html" %}
                     </div>
+                    {% if page.website %}
+                        <div class="col-12">
+                            <p><i class="fal fa-fw fa-desktop"></i> {{ page.website }}</p>
+                        </div>
+                    {% endif %}
                 </div>
 
             </div>
