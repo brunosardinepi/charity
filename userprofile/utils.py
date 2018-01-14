@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 import stripe
 
 from . import models
+from donation.models import Donation
 from pagefund import settings
 
 
@@ -32,3 +33,10 @@ def get_user_credit_cards(userprofile):
             userprofile.save()
     return cards
 
+def get_last4_donation(donation):
+    if not settings.TESTING:
+        try:
+            charge = stripe.Charge.retrieve(donation.stripe_charge_id)
+            return charge["source"]["last4"]
+        except:
+            pass

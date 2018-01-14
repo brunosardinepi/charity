@@ -11,7 +11,7 @@ import stripe
 
 from . import forms
 from .models import StripeCard, UserImage, UserProfile
-from .utils import get_user_credit_cards
+from .utils import get_last4_donation, get_user_credit_cards
 from donation.models import Donation
 from notes.utils import error_email
 from invitations.models import ManagerInvitation
@@ -174,3 +174,16 @@ def card_list(request):
         json.dumps(cards),
         content_type="application/json"
     )
+
+class UserProfileTaxes(View):
+    def get(self, request):
+        donations = {}
+        donation_queryset = Donation.objects.filter(user=request.user)
+        for donation in donation_queryset:
+            donations[donation.pk] = {
+                "page": donation.page,
+                "date": donation.date,
+                "amount": donation.amount,
+                "last4": get_last4_donation(donation),
+            }
+        return render(request, 'userprofile/taxes.html', {"donations": donations})

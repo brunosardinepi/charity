@@ -88,6 +88,8 @@
 
     <p><a href="{% url 'userprofile:user_image_upload' %}">Upload and Edit images</a></p>
 
+    <p><a href="{% url 'userprofile:userprofile_taxes' %}" target="_blank">Print donation history for taxes</a></p>
+
     <h3>Saved Credit Cards</h3>
     {% if stripe_error %}
         <p>We're having trouble communicating with our payment processor. This error generated an email and sent it to our dev team. We're looking into the issue now, thanks!</p>

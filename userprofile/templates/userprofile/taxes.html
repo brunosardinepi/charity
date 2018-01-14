@@ -1,0 +1,34 @@
+{% load staticfiles %}
+{% load donation_extras %}
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/favicon-16x16.png' %}">
+        <link rel="manifest" href="{% static 'manifest.json' %}">
+        <link rel="mask-icon" href="{% static 'img/safari-pinned-tab.svg' %}" color="#33CC99">
+        <meta name="theme-color" content="#ffffff">
+
+        <title>Taxes | PageFund</title>
+    </head>
+
+    <body>
+        <h2>Taxes - Donation History</h2>
+        {% if donations %}
+            {% for pk, d in donations.items %}
+                <p>
+                    Donated {{ d.amount|cents_to_dollars }}
+                    to {{ d.page }}{% if d.page.type == 'nonprofit' %} (501c){% endif %}
+                    on {{ d.date }}
+                    with credit card ending in "{{ d.last4 }}".
+                </p>
+            {% endfor %}
+        {% endif %}
+    </body>
+</html>
