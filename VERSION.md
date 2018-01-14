@@ -9,7 +9,7 @@ Release date: TBD
 
 ### Additions
 
-* None
+* Print donation history for taxes
 
 ### Changes
 

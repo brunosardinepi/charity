@@ -22,12 +22,7 @@
         <h2>Taxes - Donation History</h2>
         {% if donations %}
             {% for pk, d in donations.items %}
-                <p>
-                    Donated {{ d.amount|cents_to_dollars }}
-                    to {{ d.page }}{% if d.page.type == 'nonprofit' %} (501c){% endif %}
-                    on {{ d.date }}
-                    with credit card ending in "{{ d.last4 }}".
-                </p>
+                <p>Donated {{ d.amount|cents_to_dollars }} to {{ d.page }}{% if d.page.type == 'nonprofit' %} (501c){% endif %} on {{ d.date }} with credit card ending in "{{ d.last4 }}".</p>
             {% endfor %}
         {% endif %}
     </body>

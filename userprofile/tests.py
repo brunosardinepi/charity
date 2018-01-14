@@ -30,6 +30,7 @@ class UserProfileTest(TestCase):
         self.page = Page.objects.create(
             name="Buffalo",
             page_slug="buffalo",
+            type="nonprofit",
         )
         self.page2 = Page.objects.create(
             name="Remote",
@@ -245,3 +246,9 @@ class UserProfileTest(TestCase):
         response = self.client.get('/profile/')
         response = response.content.decode("utf-8")
         self.assertEqual(response.count("checked"), 2)
+
+    def test_taxes(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/profile/taxes/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Donated ${} to {} (501c) on".format(int(self.donation.amount / 100), self.page.name))
