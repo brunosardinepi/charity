@@ -6,14 +6,11 @@
 
         <div id="navbarNavAltMarkup" class="col text-center">
             <ul id="nav-ul" class="list-inline">
+                <li id="create" class="list-inline-item">
+                    <a class="nav-link" href="{% url 'page_create' %}">Create</a>
+                </li>
                 <li id="search" class="list-inline-item">
                      <a class="nav-link" href="{% url 'search:search' %}">Search</a>
-                </li>
-                <li id="about" class="list-inline-item">
-                    <a class="nav-link" href="/about/">About</a>
-                </li>
-                <li id="faqs" class="list-inline-item">
-                    <a class="nav-link" href="{% url 'faqs:faq_list' %}">FAQs</a>
                 </li>
                 {% if user.is_authenticated %}
                     <li id="profile" class="list-inline-item">

@@ -15,6 +15,7 @@ Release date: TBD
 
 * Removed Instagram share and replaced with full-row Page website
 * Replaced manual emails with SendGrid templates
+* Added a "create" link to nav and moved the "About" and "FAQ" links to the footer
 
 ### Fixes
 
