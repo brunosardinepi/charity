@@ -775,13 +775,13 @@ class PageTest(TestCase):
         images = models.PageImage.objects.filter(page=self.page)
         self.assertEqual(len(images), 1)
 
-#        image = images[0]
-#        response = self.client.get('/{}/'.format(self.page.page_slug))
-#        self.assertContains(response, image.image.url, status_code=200)
+        image = images[0]
+        response = self.client.get('/{}/'.format(self.page.page_slug))
+        self.assertContains(response, image.image.url, status_code=200)
 
-#        image.delete()
-#        images = models.PageImage.objects.filter(page=self.page)
-#        self.assertEqual(len(images), 0)
+        image.delete()
+        images = models.PageImage.objects.filter(page=self.page)
+        self.assertEqual(len(images), 0)
 
     def test_image_upload_error_size(self):
         self.client.login(username='testuser', password='testpassword')
