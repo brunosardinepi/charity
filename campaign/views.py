@@ -125,28 +125,36 @@ class CampaignCreate(View):
 class CampaignEditVote(View):
     def get(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        formset = forms.VoteParticipantInlineFormSet(
-            queryset=campaign.voteparticipant_set.all(),
-        )
-        return render(request, 'campaign/campaign_edit_vote.html', {
-            'campaign': campaign,
-            'formset': formset,
-        })
+        if campaign.type == "vote":
+            formset = forms.VoteParticipantInlineFormSet(
+                queryset=campaign.voteparticipant_set.all(),
+            )
+            return render(request, 'campaign/campaign_edit_vote.html', {
+                'campaign': campaign,
+                'formset': formset,
+            })
+        else:
+            raise Http404
+
     def post(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        formset = forms.VoteParticipantInlineFormSet(
-            request.POST,
-            request.FILES,
-            queryset=campaign.voteparticipant_set.all(),
-        )
-        if formset.is_valid():
-            vote_participants = formset.save(commit=False)
-            for vote_participant in vote_participants:
-                vote_participant.campaign = campaign
-                vote_participant.save()
-            for d in formset.deleted_objects:
-                d.delete()
-            return HttpResponseRedirect(campaign.get_absolute_url())
+        if campaign.type == "vote":
+            formset = forms.VoteParticipantInlineFormSet(
+                request.POST,
+                request.FILES,
+                queryset=campaign.voteparticipant_set.all(),
+            )
+            if formset.is_valid():
+                vote_participants = formset.save(commit=False)
+                for vote_participant in vote_participants:
+                    vote_participant.campaign = campaign
+                    vote_participant.save()
+                for d in formset.deleted_objects:
+                    d.delete()
+                return HttpResponseRedirect(campaign.get_absolute_url())
+        else:
+            raise Http404
+
 
 def campaign_search_pages(request):
     if request.method == "POST":

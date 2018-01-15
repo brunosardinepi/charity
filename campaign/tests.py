@@ -62,7 +62,7 @@ class CampaignTest(TestCase):
             name='Test Campaign',
             campaign_slug='testcampaign',
             page=self.page,
-            type='Vote',
+            type='vote',
             city='Dallas',
             state='Texas',
             description='This is a description for Test Campaign.',
@@ -81,7 +81,7 @@ class CampaignTest(TestCase):
             name='Captain',
             campaign_slug='captain',
             page=self.page,
-            type='Event',
+            type='event',
             city='Austin',
             state='Texas',
             description='Im the captain',
@@ -840,3 +840,12 @@ class CampaignTest(TestCase):
             response = self.client.get('/{}/{}/{}/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 #            self.assertContains(response, image.image.url, status_code=200)
             self.assertContains(response, vote_participant.name, status_code=200)
+
+    def test_vote_general(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/{}/{}/vote/edit/'.format(
+            self.campaign2.page.page_slug,
+            self.campaign2.pk,
+            self.campaign2.campaign_slug,
+        ))
+        self.assertEqual(response.status_code, 404)

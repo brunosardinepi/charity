@@ -21,6 +21,7 @@ Release date: TBD
 
 * Hide user profile picture in Page donation history if user chose "anonymous donation"
 * Breakpoints on Page allow for less clutter for Page information
+* Can only add/edit vote participants if the Campaign is type "vote"
 
 
 ## Version 0.13.0
