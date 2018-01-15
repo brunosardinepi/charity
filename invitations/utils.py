@@ -57,6 +57,7 @@ def invite(data):
 #        return HttpResponseRedirect(page.get_absolute_url())
     # if the user hasn't been invited already, create the invite and send it to them
     else:
+        substitutions = {}
         # create the invitation object and set the permissions
         if page:
             invitation = ManagerInvitation.objects.create(
@@ -71,18 +72,7 @@ def invite(data):
             )
 
             # create the email
-            subject = "Page invitation!"
-            body = "%s %s has invited you to become an admin of the '%s' Page. <a href='%s/invite/manager/accept/%s/%s/'>Click here to accept.</a> <a href='%s/invite/manager/decline/%s/%s/'>Click here to decline.</a>" % (
-                request.user.first_name,
-                request.user.last_name,
-                page.name,
-                config.settings['site'],
-                invitation.pk,
-                invitation.key,
-                config.settings['site'],
-                invitation.pk,
-                invitation.key
-            )
+            template = "page_manager_invitation"
         elif campaign:
             invitation = ManagerInvitation.objects.create(
                 invite_to=form.cleaned_data['email'],
@@ -108,7 +98,8 @@ def invite(data):
                 invitation.pk,
                 invitation.key
             )
-        email(form.cleaned_data['email'], subject, body)
+            template = "campaign_manager_invitation"
+        email(form.cleaned_data['email'], "blank", "blank", template)
         # redirect the admin/manager to the Page
         status = True
     return status

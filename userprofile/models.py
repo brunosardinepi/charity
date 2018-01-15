@@ -228,9 +228,7 @@ def user_signed_up_(request, user, **kwargs):
         user.userprofile.stripe_customer_id = customer.id
         user.save()
 
-    subject = "Welcome to PageFund!"
-    body = "This is a test email for a user that has just signed up with PageFund."
-    email(user.email, subject, body)
+    email(request.user.email, "blank", "blank", "new_user_sign_up")
 
 def create_random_string(length=30):
     if length <= 0:

@@ -196,9 +196,7 @@ class PageCreateBankInfo(View):
                 page.stripe_bank_account_id = ext_acct.id
             page.save()
 
-            subject = "Page created!"
-            body = "You just created a Page for: %s" % page.name
-            utils.email(request.user.email, subject, body)
+            utils.email(request.user.email, "blank", "blank", "new_page_created")
             return HttpResponseRedirect(page.get_absolute_url())
 
 
@@ -241,10 +239,7 @@ class PageEditBankInfo(View):
                 acct.external_accounts.retrieve(page.stripe_bank_account_id).delete()
                 page.stripe_bank_account_id = ext_acct.id
             page.save()
-
-            subject = "Page bank information updated!"
-            body = "You just updated the bank information for Page: {}".format(page.name)
-            utils.email(request.user.email, subject, body)
+            utils.email(request.user.email, "blank", "blank", "page_bank_information_updated")
             return HttpResponseRedirect(page.get_absolute_url())
 
 
@@ -328,6 +323,7 @@ def page_invite(request, page_slug):
                 status = invite(data)
                 if status == True:
                     # redirect the admin/manager to the Page
+#                    utils.email(form.cleaned_data["email"], "", "", "new_page_created")
                     return HttpResponseRedirect(page.get_absolute_url())
         return render(request, 'page/page_invite.html', {'form': form, 'page': page})
     # the user isn't an admin or a manager, so they can't invite someone

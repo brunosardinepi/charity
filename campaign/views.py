@@ -27,9 +27,10 @@ from invitations.models import ManagerInvitation
 from invitations.utils import invite
 from page.models import Page
 from pagefund import config, utils
+from pagefund.image import image_is_valid
+from pagefund.utils import email
 from userprofile import models as UserProfileModels
 from userprofile.utils import get_user_credit_cards
-from pagefund.image import image_is_valid
 
 
 def campaign(request, page_slug, campaign_pk, campaign_slug):
@@ -104,10 +105,12 @@ class CampaignCreate(View):
 
                 admins = page.admins.all()
                 for admin in admins:
-                    email_new_campaign(admin.user.email, campaign)
+#                    email_new_campaign(admin.user.email, campaign)
+                    email(admin.user.email, "blank", "blank", "new_campaign_created")
                 managers = page.managers.all()
                 for manager in managers:
-                    email_new_campaign(manager.user.email, campaign)
+#                    email_new_campaign(manager.user.email, campaign)
+                    email(admin.user.email, "blank", "blank", "new_campaign_created")
 
                 if campaign.type == 'vote':
                     return redirect('campaign_edit_vote', page_slug=page.page_slug, campaign_pk=campaign.pk, campaign_slug=campaign.campaign_slug)
