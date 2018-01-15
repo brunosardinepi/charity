@@ -138,6 +138,8 @@ class HomeTest(TestCase):
         response = self.client.get('/')
 
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Create Page")
+        self.assertContains(response, "Create Campaign")
 
     def test_home_logged_in(self):
         self.client.login(username='testuser', password='testpassword')
@@ -145,6 +147,8 @@ class HomeTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '/invite/', status_code=200)
+        self.assertContains(response, "Create Page")
+        self.assertContains(response, "Create Campaign")
 
     def test_login(self):
         response = self.client.get('/accounts/login/')
