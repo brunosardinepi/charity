@@ -13,7 +13,7 @@ Release date: TBD
 
 ### Changes
 
-* None
+* Force user into mm/dd/yyyy inputs for birthday
 
 ### Fixes
 
