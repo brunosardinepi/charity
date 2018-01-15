@@ -18,7 +18,11 @@
     <div class="row donation mb-3">
         <div class="col-md-auto comment-profile-picture-container">
             {% if d.user.userprofile.profile_picture %}
-                <img class="comment-profile-picture" src="{{ d.user.userprofile.profile_picture.image.url }}" />
+                {% if d.anonymous_donor %}
+                    <img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />
+                {% else %}
+                    <img class="comment-profile-picture" src="{{ d.user.userprofile.profile_picture.image.url }}" />
+                {% endif %}
             {% else %}
                 <img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />
             {% endif %}

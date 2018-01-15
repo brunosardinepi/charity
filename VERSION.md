@@ -18,7 +18,7 @@ Release date: TBD
 
 ### Fixes
 
-* None
+* Hide user profile picture in Page donation history if user chose "anonymous donation"
 
 
 ## Version 0.13.0
