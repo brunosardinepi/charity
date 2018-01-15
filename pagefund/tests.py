@@ -225,7 +225,10 @@ class HomeTest(TestCase):
         response = self.client.get('/invite/')
 
         self.assertEqual(response.status_code, 200)
-        response = self.client.post('/invite/', {'email': 'myother@best.friend'})
+        response = self.client.post('/invite/', {
+            'email': 'myother@best.friend',
+            'template': 'pagefund_invitation',
+        })
         self.assertRedirects(response, '/', 302, 200)
         self.client.logout()
         invitation = GeneralInvitation.objects.get(invite_to='myother@best.friend')

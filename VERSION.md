@@ -14,6 +14,7 @@ Release date: TBD
 ### Changes
 
 * Removed Instagram share and replaced with full-row Page website
+* Replaced manual emails with SendGrid templates
 
 ### Fixes
 

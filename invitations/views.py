@@ -84,13 +84,14 @@ def forgot_password_request(request):
         form = forms.ForgotPasswordRequestForm(request.POST)
         if form.is_valid():
             invitation = models.ForgotPasswordRequest.objects.create(email=form.cleaned_data['email'])
-            subject = "Forgot password"
-            body = "You submitted a request to reset your password. <a href='%s/password/reset/%s/%s/'>Click here to reset your password.</a>" % (
-                config.settings['site'],
-                invitation.pk,
-                invitation.key
-            )
-            email(form.cleaned_data['email'], subject, body)
+#            subject = "Forgot password"
+#            body = "You submitted a request to reset your password. <a href='%s/password/reset/%s/%s/'>Click here to reset your password.</a>" % (
+#                config.settings['site'],
+#                invitation.pk,
+#                invitation.key
+#            )
+            email(form.cleaned_data['email'], "blank", "blank", "forgot_password")
+#            email(form.cleaned_data['email'], subject, body)
             return HttpResponseRedirect(reverse('home'))
     return render(request, 'forgot_password_request.html', {'form': form})
 

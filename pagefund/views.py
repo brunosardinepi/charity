@@ -72,18 +72,19 @@ def invite(request):
                 )
 
                 # create the email
-                subject = "PageFund invitation!"
-                body = "%s %s has invited you to join PageFund! <a href='%s/invite/accept/%s/%s/'>Click here to accept.</a> <a href='%s/invite/general/decline/%s/%s/'>Click here to decline.</a>" % (
-                    request.user.first_name,
-                    request.user.last_name,
-                    config.settings['site'],
-                    invitation.pk,
-                    invitation.key,
-                    config.settings['site'],
-                    invitation.pk,
-                    invitation.key
-                )
-                email(form.cleaned_data['email'], subject, body)
+#                subject = "PageFund invitation!"
+#                body = "%s %s has invited you to join PageFund! <a href='%s/invite/accept/%s/%s/'>Click here to accept.</a> <a href='%s/invite/general/decline/%s/%s/'>Click here to decline.</a>" % (
+#                    request.user.first_name,
+#                    request.user.last_name,
+#                    config.settings['site'],
+#                    invitation.pk,
+#                    invitation.key,
+#                    config.settings['site'],
+#                    invitation.pk,
+#                    invitation.key
+#                )
+                email(form.cleaned_data['email'], "blank", "blank", "pagefund_invitation")
+#                email(form.cleaned_data['email'], subject, body, "pagefund_invitation")
                 # redirect the inviting person
                 return HttpResponseRedirect(reverse('home'))
     return render(request, 'invite.html', {'form': form})

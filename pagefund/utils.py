@@ -19,6 +19,8 @@ def email(user_email, subject, body, template):
             "new_page_created": "0ba093a3-5628-4da9-b3e5-267f9f0313c4",
             "new_user_signup": "0f0ff154-4a0e-48eb-b073-d59447ac67e8",
             "page_bank_information_updated": "c988f1b2-ded9-476b-85a1-a7b1ec3a55e7",
+            "pagefund_invitation": "09db718c-d1bb-446c-9cf5-67cd0adf0c97",
+            "forgot_password": "3fcbedb0-d54b-49b3-885e-856bbbaf21c8",
         }
         sg = sendgrid.SendGridAPIClient(apikey=config.settings["sendgrid_api_key"])
         from_email = Email("no-reply@page.fund")
