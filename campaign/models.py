@@ -198,7 +198,10 @@ class Campaign(models.Model):
         return self.campaign_managers.all()
 
     def vote_participants(self):
-        return VoteParticipant.objects.filter(campaign=self).order_by('name')
+        p = list(VoteParticipant.objects.filter(campaign=self))
+        random.shuffle(p)
+        p.sort(key= lambda t: t.vote_amount(), reverse=True)
+        return p
 
     def unique_donors(self):
         return Donation.objects.filter(campaign=self).distinct('donor_first_name').distinct('donor_last_name').count()
@@ -226,7 +229,11 @@ class VoteParticipant(models.Model):
         return self.name
 
     def vote_amount(self):
-        return Donation.objects.filter(campaign=self.campaign, campaign_participant=self).aggregate(Sum('amount')).get('amount__sum')
+        d = Donation.objects.filter(campaign=self.campaign, campaign_participant=self).aggregate(Sum('amount')).get('amount__sum')
+        if d is None:
+            return 0
+        else:
+            return d
 
 class CampaignImage(models.Model):
     campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE)

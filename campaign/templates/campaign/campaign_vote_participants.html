@@ -21,7 +21,11 @@
             <div class="col-md-10 mb-4">
                 <div class="row justify-content-between">
                     <div class="col-md-auto">
-                        <h3 class="comment-user-name">{{ p.name }}</h3>
+                        <h3>
+                            <a class="teal" href="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug vote_participant_pk=p.pk %}">
+                                {{ p.name }}
+                            </a>
+                        </h3>
                     </div>
                     <div class="col-md-3 text-right">
                         <span class="teal font-weight-bold font-size-175">{{ p.vote_amount|cents_to_dollars }}</span>
