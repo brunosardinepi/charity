@@ -58,6 +58,11 @@ class CampaignTest(TestCase):
         )
         self.page.admins.add(self.user.userprofile)
 
+        self.page2 = Page.objects.create(
+            name='uihasdlkjahsd',
+            page_slug='uhaslduhaskjd',
+        )
+
         self.campaign = models.Campaign.objects.create(
             name='Test Campaign',
             campaign_slug='testcampaign',
@@ -87,6 +92,19 @@ class CampaignTest(TestCase):
             description='Im the captain',
             goal='334',
             deleted=True
+        )
+
+        self.campaign3 = models.Campaign.objects.create(
+            name='haisdufhasdlkfnasdlkjfnsd',
+            campaign_slug='uhilwuaenflaknjndsaf',
+            page=self.page2,
+            type='general',
+            city='New York City',
+            state='New York',
+            description='aoiefj;asfn eafjsafj dsa;lfkjaeio;fj asdklf',
+            goal='1999',
+            end_date='2018-01-14 06:00:00+00',
+            is_active=False,
         )
 
         self.invitation = ManagerInvitation.objects.create(
@@ -175,12 +193,12 @@ class CampaignTest(TestCase):
 
     def test_page_delete_cascade(self):
         campaigns = models.Campaign.objects.filter(deleted=False)
-        self.assertEqual(campaigns.count(), 1)
+        self.assertEqual(campaigns.count(), 2)
 
         self.client.login(username='testuser', password='testpassword')
         response = self.client.get('/%s/delete/' % self.page.page_slug)
         campaigns = models.Campaign.objects.filter(deleted=False)
-        self.assertEqual(campaigns.count(), 0)
+        self.assertEqual(campaigns.count(), 1)
 
     def test_duplicate_campaign_slug(self):
         self.client.login(username='testuser', password='testpassword')
@@ -194,7 +212,7 @@ class CampaignTest(TestCase):
             'state': "HI",
         }
         response = self.client.post('/campaign/create/', data)
-        self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 2)
+        self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 3)
 
         campaign = models.Campaign.objects.get(name="MyCampaign")
         self.assertIn(self.user.userprofile, campaign.campaign_subscribers.all())
@@ -348,7 +366,7 @@ class CampaignTest(TestCase):
             'state': "HI",
         }
         response = self.client.post('/campaign/create/', data)
-        self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 2)
+        self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 3)
         campaign = models.Campaign.objects.get(campaign_slug="mycampaign")
         self.assertRedirects(response, '/{}/{}/{}/'.format(campaign.page.page_slug, campaign.pk, campaign.campaign_slug), 302, 200)
 
@@ -364,7 +382,7 @@ class CampaignTest(TestCase):
             'state': "HI",
         }
         response = self.client.post('/campaign/create/', data)
-        self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 2)
+        self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 3)
         campaign = models.Campaign.objects.get(campaign_slug="mycampaign")
         self.assertRedirects(response, '/{}/{}/{}/vote/edit/'.format(campaign.page.page_slug, campaign.pk, campaign.campaign_slug), 302, 200)
 
@@ -849,3 +867,12 @@ class CampaignTest(TestCase):
             self.campaign2.campaign_slug,
         ))
         self.assertEqual(response.status_code, 404)
+
+    def test_campaign_ended(self):
+        response = self.client.get('/{}/{}/{}/'.format(
+            self.campaign3.page.page_slug,
+            self.campaign3.pk,
+            self.campaign3.campaign_slug,
+        ))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Donate")

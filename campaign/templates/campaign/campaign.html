@@ -96,7 +96,7 @@
         <p>No donations!</p>
     {% endif %}
 
-    {% if not campaign.type == "vote" %}
+    {% if not campaign.type == "vote" and campaign.is_active %}
         {% include "donation/donate.html" with campaign=campaign donate_form=donate_form api_key=api_key %}
     {% endif %}
 

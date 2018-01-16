@@ -18,7 +18,7 @@ Release date: TBD
 
 ### Fixes
 
-* None
+* Can't donate to a Campaign if it has ended
 
 
 ## Version 0.14.0
