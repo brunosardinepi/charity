@@ -15,7 +15,7 @@
         <h2><a name="comments">Comments</a></h2>
     </div>
     <div class="col d-flex align-items-center h100">
-        <button id="show-comment-{{ model }}-{{ obj.pk }}" type="button" class="btn btn-outline-purple" data-toggle="modal" data-target="#newComment">
+        <button type="button" class="btn {% if obj|content_type == 'page' %}btn-outline-purple{% elif obj|content_type == 'campaign' %}btn-outline-teal{% endif %}" data-toggle="modal" data-target="#newComment">
             <i class="fal fa-plus"></i> New comment
         </button>
     </div>
@@ -33,7 +33,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="comment-form" action="{% url 'comments:comment_post' content_type=obj|content_type object_id=obj.pk %}" method="post">
+                <form id="comment-form" action="{% url 'comments:comment_post' content_type=obj|content_type_pk object_id=obj.pk %}" method="post">
                     {% csrf_token %}
                     {{ form.content_type }}
                     {{ form.object_id }}

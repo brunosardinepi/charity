@@ -23,7 +23,6 @@ class Campaign(models.Model):
     campaign_managers = models.ManyToManyField('userprofile.UserProfile', related_name='campaign_managers', blank=True)
     campaign_slug = models.SlugField(max_length=255)
     campaign_subscribers = models.ManyToManyField('userprofile.UserProfile', related_name='campaign_subscribers', blank=True)
-    category = models.CharField(max_length=255)
     city = models.CharField(max_length=255, blank=True)
     comments = GenericRelation(Comment)
     created_on = models.DateTimeField(default=timezone.now)
@@ -38,7 +37,20 @@ class Campaign(models.Model):
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE, related_name='campaigns')
     trending_score = models.DecimalField(default=0, max_digits=10, decimal_places=1)
     event_location = models.TextField(blank=True)
+    website = models.CharField(max_length=128, blank=True)
 
+    CATEGORY_CHOICES = (
+        ('animal', 'Animal'),
+        ('environment', 'Environment'),
+        ('education', 'Education'),
+        ('other', 'Other'),
+        ('religious', 'Religious'),
+    )
+    category = models.CharField(
+        max_length=255,
+        choices=CATEGORY_CHOICES,
+        default='other',
+    )
 
     TYPE_CHOICES = (
         ('event', 'Event'),
@@ -148,6 +160,8 @@ class Campaign(models.Model):
                         'last_name': user.last_name,
                         'amount': total_amount
                     }
+                    if user.userprofile.profile_picture():
+                        top_donors[d]['image_url'] = user.userprofile.profile_picture().image.url
         top_donors = OrderedDict(sorted(top_donors.items(), key=lambda t: t[1]['amount'], reverse=True))
         top_donors = list(top_donors.items())[:10]
         return top_donors
@@ -166,6 +180,9 @@ class Campaign(models.Model):
 
     def donations(self):
         return Donation.objects.filter(campaign=self).order_by('-date')
+
+    def donations_recent(self):
+        return Donation.objects.filter(campaign=self).order_by('-date')[:10]
 
     def donation_count(self):
         return Donation.objects.filter(campaign=self).count()

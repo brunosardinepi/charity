@@ -6,98 +6,64 @@
 {% block title %} {{ campaign.name }} | {{ block.super }}{% endblock %}
 
 {% block head_extra %}
+    <link href="{% static 'css/lightbox.css' %}" rel="stylesheet">
     <script>
         var model = "campaign";
         var model_pk = {{ campaign.pk }};
     </script>
     <script src="{% static 'js/comment_csrf.js' %}"></script>
-    <script src="{% static 'js/vote.js' %}"></script>
     <script src="{% static 'js/subscribe.js' %}"></script>
-    <script>
-        $(document).ready(function() {
-            $(".delete-campaign").click(function () {
-                return confirm("Are you sure you want to delete this Campaign?");
-            });
-        });
-    </script>
 {% endblock %}
 
 {% block body_content %}
-    <h1>{{ campaign.name }}</h1>
-    <img src="{{ campaign.profile_picture.image.url }}" width="200" />
-    <p>This campaign {% if campaign.is_active == True %}is active{% else %}has ended{% endif %}.</p>
-    <p>Trending score: {{ campaign.trending_score }}</p>
-    <p>End date: {{ campaign.end_date }}</p>
-    <p>Type: {{ campaign.get_type_display }}</p>
-    <p>Category: {{ campaign.category|title }}</p>
-    <p>Location: {% if campaign.city %}{{ campaign.city }}{% endif %}{% if campaign.city and campaign.state %}, {% endif %}{% if campaign.state %}{{ campaign.state }}{% endif %}</p>
-    <p>Description: {{ campaign.description|linebreaks }}</p>
-    <p>Goal: ${{ campaign.goal }}</p>
-    <p>{{ campaign.donation_money|cents_to_dollars }} raised by {{ campaign.unique_donors }} donors</p>
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-md-7">
+                {% include "campaign/campaign_image.html" %}
+            </div>
+            <div class="col-md-5 page-info">
 
-    {% if campaign.vote_participants %}
-        <h2>Vote</h2>
-        <ul>
-            {% for p in campaign.vote_participants %}
-                <li>
-                    <a href="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug vote_participant_pk=p.pk %}">{{ p.name }}</a> - {{ p.vote_amount|cents_to_dollars }}
-                    <ul>
-                        <li>image: {{ p.image }}</li>
-                        <li>description: {{ p.description }}</li>
-                    </ul>
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+                {% include "campaign/campaign_actions.html" %}
 
-    {% if request.user.is_authenticated %}
-        {% get_obj_perms request.user for campaign as "campaign_perms" %}
-        {% if request.user.userprofile not in campaign.campaign_admins.all and campaign_perms|length == 0 %}
-            <button id="subscribe" name="{{ subscribe_attr.name }}" style="background-color:{{ subscribe_attr.color }}">{{ subscribe_attr.value  }}</button>
-        {% endif %}
-    {% else %}
-        <button onclick="location.href='{% url 'login' %}?next=/campaign/subscribe/{{ campaign.pk }}/subscribe/'" style="background-color:green">Subscribe</button>
-    {% endif %}
-
-    {% if request.user.userprofile in campaign.campaign_admins.all or campaign_perms %}
-        <p><a href="{% url 'campaign_dashboard' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Dashboard</a></p>
-    {% endif %}
-
-    <h3>Campaign Images</h3>
-    <ul>
-        {% for image in campaign.images %}
-            <li><img src="{{ image.image.url }}" width="200" />{{ image.caption }}</li>
-        {% endfor %}
-    </ul>
-
-    <h3>Donations</h3>
-    {% if campaign.donations %}
-
-        <h4>Top Donors</h4>
-        <ul>
-            {% for a, b in campaign.top_donors %}
-                <li>{{ b.amount|cents_to_dollars }} - {{ b.first_name }} {{ b.last_name }}</li>
-            {% endfor %}
-        </ul>
-
-        <h4>All Donations</h4>
-        <ul>
-            {% for d in campaign.donations %}
-                <li>{% if d.anonymous_amount and d.anonymous_donor %}Anonymous donation{% endif %}{% if not d.anonymous_amount %}{{ d.amount|cents_to_dollars }}{% endif %}{% if not d.anonymous_amount and not d.anonymous_donor %} - {% endif %}{% if not d.anonymous_donor %}{{ d.donor_first_name }} {{ d.donor_last_name }}{% endif %} @ {{ d.date }}
-                    {% if d.comment %}
-                        <ul>
-                            <li>{{ d.comment }}</li>
-                        </ul>
+                <div class="row">
+                    <div class="col-xl-6">
+                        {% include "campaign/campaign_info.html" %}
+                    </div>
+                    <div class="col-xl-6">
+                        {% include "campaign/campaign_subactions.html" %}
+                    </div>
+                    {% if campaign.website %}
+                        <div class="col-12">
+                            <p><i class="fal fa-fw fa-desktop"></i> {{ campaign.website }}</p>
+                        </div>
                     {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No donations!</p>
-    {% endif %}
+                </div>
 
-    {% if not campaign.type == "vote" and campaign.is_active %}
-        {% include "donation/donate.html" with campaign=campaign donate_form=donate_form api_key=api_key %}
-    {% endif %}
+            </div>
+        </div>
+        <div class="row mb-5">
+            <div class="col">
+                {% include "campaign/campaign_about.html" %}
+            </div>
+        </div>
 
+        <div class="row justify-content-between mb-5">
+            <div class="col-lg-8">
+                {% include "campaign/campaign_donations.html" %}
+            </div>
+            <div class="col-lg-4">
+                {% include "campaign/campaign_top_donors.html" %}
+            </div>
+        </div>
+        <div class="row justify-content-center mb-5">
+            <div class="col">
+                {% include "comments/comments.html" with obj=campaign %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block body_extra %}
+    <script src="{% static 'js/lightbox.js' %}"></script>
 {% endblock %}

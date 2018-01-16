@@ -19,6 +19,7 @@ import stripe
 from . import forms
 from .models import Campaign, CampaignImage, VoteParticipant
 from .utils import email_new_campaign
+from comments.forms import CommentForm
 from donation.forms import BaseDonate, DonateForm, DonateUnauthenticatedForm
 from donation.models import Donation
 from donation.utils import donate, donation_graph, donation_statistics
@@ -39,6 +40,9 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
         raise Http404
     else:
         template_params = {}
+
+        if request.user.is_authenticated():
+            template_params["form"] = CommentForm
 
         if not campaign.type == "vote":
             donate_form = BaseDonate()

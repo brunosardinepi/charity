@@ -14,7 +14,9 @@ class CampaignForm(forms.ModelForm):
             'end_date',
             'city',
             'state',
+            'category',
             'description',
+            'website',
         ]
 
 class DeleteCampaignForm(forms.ModelForm):
