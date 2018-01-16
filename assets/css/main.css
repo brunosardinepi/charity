@@ -241,6 +241,14 @@ a.nav-link:hover {
     .vote-participant-picture-container {
         display: none !important;
     }
+    .vote-amount {
+        text-align: left;
+    }
+}
+@media (min-width: 768px) {
+    .vote-amount {
+        text-align: right;
+    }
 }
 .comment-profile-picture,
 .vote-participant-picture {
