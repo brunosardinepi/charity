@@ -1,4 +1,4 @@
-<p><i class="fal fa-fw fa-compass"></i> {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{{ page.state }}{% endif %}</p>
+<p><i class="fal fa-fw fa-compass"></i> {% if page.city %}{{ page.city }}{% endif %}{% if page.city and page.state %}, {% endif %}{% if page.state %}{% if page.city %}{{ page.state }}{% else %}{{ page.get_state_display }}{% endif %}{% endif %}</p>
 <p><i class="fal fa-fw fa-briefcase"></i> {{ page.get_type_display }}</p>
 <p><i class="fal fa-fw fa-tag"></i> {{ page.get_category_display }}</p>
 

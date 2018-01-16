@@ -1,4 +1,4 @@
-<p><i class="fal fa-fw fa-compass"></i> {% if campaign.city %}{{ campaign.city }}{% endif %}{% if campaign.city and campaign.state %}, {% endif %}{% if campaign.state %}{{ campaign.state }}{% endif %}</p>
+<p><i class="fal fa-fw fa-compass"></i> {% if campaign.city %}{{ campaign.city }}{% endif %}{% if campaign.city and campaign.state %}, {% endif %}{% if campaign.state %}{% if campaign.city %}{{ campaign.state }}{% else %}{{ campaign.get_state_display }}{% endif %}{% endif %}</p>
 <p><i class="fal fa-fw fa-briefcase"></i> {{ campaign.get_type_display }}</p>
 <p><i class="fal fa-fw fa-tag"></i> {{ campaign.get_category_display }}</p>
 
