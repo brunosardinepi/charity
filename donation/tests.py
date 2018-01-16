@@ -184,10 +184,10 @@ class DonationTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "$%s" % int(self.donation4.amount / 100), status_code=200)
         self.assertContains(response, self.donation4.comment, status_code=200)
-        self.assertContains(response, "$%s - %s %s" % (int(self.donation4.amount / 100), self.user.first_name, self.user.last_name), status_code=200)
-        self.assertContains(response, "$%s @" % int(self.donation8.amount / 100), status_code=200)
-        self.assertNotContains(response, "$%s - %s %s" % (int(self.donation9.amount / 100), self.user.first_name, self.user.last_name), status_code=200)
-        self.assertContains(response, "Anonymous donation @", status_code=200)
+        self.assertContains(response, "{} {}".format(self.donation4.user.first_name, self.donation4.user.last_name))
+        self.assertContains(response, "${}".format(int(self.donation8.amount / 100)))
+        self.assertContains(response, "An anonymous donor")
+        self.assertContains(response, "an anonymous amount")
 
     def test_donate_campaign(self):
         response = self.client.get('/{}/{}/{}/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))

@@ -207,6 +207,7 @@ class CampaignTest(TestCase):
             'campaign_slug': self.campaign.campaign_slug,
             'page': self.page.pk,
             'type': "event",
+            'category': "other",
             'goal': 1000,
             'city': "Honolulu",
             'state': "HI",
@@ -222,7 +223,7 @@ class CampaignTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.campaign.name, status_code=200)
-        self.assertContains(response, self.campaign.type, status_code=200)
+        self.assertContains(response, self.campaign.get_type_display(), status_code=200)
         self.assertContains(response, self.campaign.city, status_code=200)
         self.assertContains(response, self.campaign.state, status_code=200)
         self.assertContains(response, self.campaign.description, status_code=200)
@@ -239,7 +240,7 @@ class CampaignTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.campaign.name, status_code=200)
-        self.assertContains(response, self.campaign.type, status_code=200)
+        self.assertContains(response, self.campaign.get_type_display(), status_code=200)
         self.assertContains(response, self.campaign.city, status_code=200)
         self.assertContains(response, self.campaign.state, status_code=200)
         self.assertContains(response, self.campaign.description, status_code=200)
@@ -361,6 +362,7 @@ class CampaignTest(TestCase):
             'campaign_slug': "mycampaign",
             'page': self.page.pk,
             'type': "event",
+            'category': "other",
             'goal': 1000,
             'city': "Honolulu",
             'state': "HI",
@@ -377,6 +379,7 @@ class CampaignTest(TestCase):
             'campaign_slug': "mycampaign",
             'page': self.page.pk,
             'type': "vote",
+            'category': "other",
             'goal': 1000,
             'city': "Honolulu",
             'state': "HI",
@@ -394,6 +397,7 @@ class CampaignTest(TestCase):
             'campaign_slug': 'headphones',
             'goal': '234',
             'type': 'event',
+            'category': 'other',
             'description': 'I wear headphones.'
         })
         self.assertTrue(form.is_valid())
@@ -804,7 +808,7 @@ class CampaignTest(TestCase):
     def test_campaign_active(self):
         response = self.client.get('/{}/{}/{}/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "This campaign is active.")
+        self.assertContains(response, "Donate")
 
         self.campaign.is_active = False
         self.campaign.save()
