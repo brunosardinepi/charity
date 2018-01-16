@@ -27,6 +27,26 @@ a.teal:hover {
     font-size: 1.75rem;
 }
 
+/* Media Queries */
+@media (max-width: 767.99px) {
+    .comment-profile-picture-container,
+    .vote-participant-picture-container {
+        display: none !important;
+    }
+    .vote-amount {
+        text-align: left;
+    }
+    .btn {
+        display: block;
+        width: 100%;
+    }
+}
+@media (min-width: 768px) {
+    .vote-amount {
+        text-align: right;
+    }
+}
+
 
 /* Buttons - All */
 .btn {
@@ -235,20 +255,6 @@ a.nav-link:hover {
 }
 .reply {
     margin-bottom: 1rem;
-}
-@media (max-width: 767.99px) {
-    .comment-profile-picture-container,
-    .vote-participant-picture-container {
-        display: none !important;
-    }
-    .vote-amount {
-        text-align: left;
-    }
-}
-@media (min-width: 768px) {
-    .vote-amount {
-        text-align: right;
-    }
 }
 .comment-profile-picture,
 .vote-participant-picture {
