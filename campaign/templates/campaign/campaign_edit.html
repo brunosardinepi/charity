@@ -3,6 +3,19 @@
 
 {% block title %} Edit {{ page.name }} | {{ block.super }}{% endblock %}
 
+{% block head_extra %}
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <script>
+        $(function() {
+            $("#id_end_date").datepicker({
+                minDate: 0,
+            });
+        });
+    </script>
+{% endblock %}
+
 {% block body_content %}
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}

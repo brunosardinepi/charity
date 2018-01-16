@@ -14,6 +14,7 @@ Release date: TBD
 ### Changes
 
 * Force user into mm/dd/yyyy inputs for birthday
+* Prevent user from setting Campaign end date as date prior to today
 
 ### Fixes
 
