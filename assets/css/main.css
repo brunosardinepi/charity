@@ -6,12 +6,25 @@ body {
     /* Margin bottom by footer height */
     margin-bottom: 60px;
 }
-a {
+a,
+.purple {
     color: #990099;
 }
-a:hover {
+a:hover,
+a.purple:hover {
     color: #660066;
 }
+.teal {
+    color: #2db386;
+}
+a.teal:hover {
+    color: #336666;
+}
+.font-size-125 {
+    font-size: 1.25rem;
+}
+
+
 /* Buttons - All */
 .btn {
     border-radius: 0 !important;
@@ -239,13 +252,10 @@ a.nav-link:hover {
 .comment-content {
     word-wrap: break-word;
 }
-.donation-amount, .top-donation-amount {
+/*.donation-amount, .top-donation-amount {
     font-weight: bold;
     color: #990099;
-}
-.top-donation-amount {
-    font-size: 1.25rem;
-}
+}*/
 #comment-list hr,
 .comment hr,
 .top-donor hr,

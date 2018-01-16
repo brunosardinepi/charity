@@ -84,9 +84,9 @@
                                 {% if obj.get_model == "Page" %}
                                     <a href="{% url 'page' page_slug=obj.page_slug %}#c{{ c.pk }}" class="comment-permalink"><i class="fal fa-link"></i></a>
                                 {% elif obj.get_model == "Campaign" %}
-                                    <a href="{% url 'campaign' page_slug=obj.page.page_slug campaign_pk=obj.pk campaign_slug=obj.campaign_slug %}#c{{ c.pk }}" class="comment-permalink"><i class="fal fa-link"></i></a>
+                                    <a href="{% url 'campaign' page_slug=obj.page.page_slug campaign_pk=obj.pk campaign_slug=obj.campaign_slug %}#c{{ c.pk }}" class="teal comment-permalink"><i class="fal fa-link"></i></a>
                                 {% endif %}
-                                <a href="{% url 'notes:abuse_comment' type='comment' obj_pk=c.pk %}" class="report-comment"><i class="fal fa-flag"></i></a>
+                                <a href="{% url 'notes:abuse_comment' type='comment' obj_pk=c.pk %}" class="{% if obj.get_model == 'Campaign' %}teal {% endif %}report-comment"><i class="fal fa-flag"></i></a>
                             </div>
                         </div>
                     </div>
