@@ -21,12 +21,14 @@
     </div>
 </div>
 
-<div class="row mb-3">
-    <div class="col-12">
-        {% if campaign.is_active %}
-            <a href="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}" role="button" class="btn btn-teal btn-block btn-lg">Donate</a>
-        {% else %}
-            <p>This campaign has ended.</p>
-        {% endif %}
+{% if not campaign.type == "vote" %}
+    <div class="row mb-3">
+        <div class="col-12">
+            {% if campaign.is_active %}
+                <a href="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}" role="button" class="btn btn-teal btn-block btn-lg">Donate</a>
+            {% else %}
+                <p>This campaign has ended.</p>
+            {% endif %}
+        </div>
     </div>
-</div>
+{% endif %}
