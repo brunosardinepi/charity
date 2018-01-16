@@ -83,8 +83,8 @@ a:hover {
 }
 .btn-teal:hover {
     color:#fff;
-    background-color:#336666;
-    border-color:#325e5b;
+    background-color:#2db386;
+    border-color:#2db386;
 }
 .btn-teal.focus,
 .btn-teal:focus {
@@ -99,16 +99,16 @@ a:hover {
 .btn-teal:not([disabled]):not(.disabled):active,
 .show> .btn-teal.dropdown-toggle {
     color:#fff;
-    background-color:#336666;
-    border-color:#325e5b;
-    box-shadow:0 0 0 .2rem rgba(51,204,153,.5);
+    background-color:#2db386;
+    border-color:#2db386;
+    box-shadow:0 0 0 .2rem rgba(45,179,134,.5);
 }
 
 .btn-outline-teal {
-    color:#33cc99;
+    color:#2db386;
     background-color:transparent;
     background-image:none;
-    border-color:#33cc99;
+    border-color:#2db386;
 }
 .btn-outline-teal:hover {
     color:#fff;
