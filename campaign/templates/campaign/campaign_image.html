@@ -1,6 +1,15 @@
-<a href="{{ campaign.profile_picture.image.url }}" data-lightbox="profile-picture">
-    <img src="{{ campaign.profile_picture.image.url }}" class="img-fluid img-thumbnail" />
-</a>
+{% load staticfiles %}
+
+
+{% if campaign.profile_picture %}
+    <a href="{{ campaign.profile_picture.image.url }}" data-lightbox="profile-picture">
+        <img src="{{ campaign.profile_picture.image.url }}" class="img-fluid img-thumbnail" />
+    </a>
+{% else %}
+    <a href="{% static 'img/page_default.svg' %}" data-lightbox="profile-picture">
+        <img src="{% static 'img/page_default.svg' %}" class="img-fluid img-thumbnail" />
+    </a>
+{% endif %}
 
 <div hidden>
     {% for image in campaign.images %}
