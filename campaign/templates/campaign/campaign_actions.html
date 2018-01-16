@@ -2,11 +2,22 @@
 
 
 <h1>{{ campaign.name }}</h1>
+<p class="small">A Campaign for <a href="{% url 'page' page_slug=campaign.page.page_slug %}">{{ campaign.page.name }}</a>.</p>
 
 <div class="row mt-3 mb-1">
     <div class="col">
-        <p>Goal: ${{ campaign.goal }}</p>
-        <h5 style="font-weight: normal;">{{ campaign.donation_money|cents_to_dollars }} raised by {{ campaign.unique_donors }} donors</h5>
+        <div class="progress" style="height: 20px;">
+            <div {% if campaign.donation_money|progress_value < campaign.goal%}class="progress-bar-gray"{% else %}class="progress-bar-teal"{% endif%} role="progressbar" style="width: {{ campaign|progress_width }}%" aria-valuenow="{{ campaign.donation_money|progress_value }}" aria-valuemin="0" aria-valuemax="{{ campaign.goal }}"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-auto pr-0">
+        <h4>{{ campaign.donation_money|cents_to_dollars }} of ${{ campaign.goal }} goal</h4>
+    </div>
+    <div class="col my-auto">
+        <span class="small">raised by {{ campaign.unique_donors }} donor{{ campaign.unique_donors|pluralize }}</span>
     </div>
 </div>
 
