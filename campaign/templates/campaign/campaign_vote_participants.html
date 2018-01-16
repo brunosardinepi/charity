@@ -1,15 +1,43 @@
 {% load donation_extras %}
+{% load staticfiles %}
 
 
-<h2>Vote</h2>
-<ul>
-    {% for p in campaign.vote_participants %}
-        <li>
-            <a href="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug vote_participant_pk=p.pk %}">{{ p.name }}</a> - {{ p.vote_amount|cents_to_dollars }}
-            <ul>
-                <li>image: {{ p.image }}</li>
-                <li>description: {{ p.description }}</li>
-            </ul>
-        </li>
-    {% endfor %}
-</ul>
+{% for p in campaign.vote_participants %}
+    <div class="row mb-3">
+        <div class="col-md-auto vote-participant-picture-container">
+            {% if p.image %}
+                <img class="vote-participant-picture" src="{{ p.image.url }}" />
+            {% else %}
+                <img class="vote-participant-picture" src="{% static 'img/user_default.svg' %}" />
+            {% endif %}
+<!--            <a href="" role="button" class="btn btn-block btn-teal">Vote</a> -->
+        </div>
+
+
+
+
+
+
+            <div class="col-md-10 mb-4">
+                <div class="row justify-content-between">
+                    <div class="col-md-auto">
+                        <h3 class="comment-user-name">{{ p.name }}</h3>
+                    </div>
+                    <div class="col-md-3 text-right">
+                        <span class="teal font-weight-bold font-size-175">{{ p.vote_amount|cents_to_dollars }}</span>
+                    </div>
+                </div>
+                <span class="comment-content">{{ p.description|linebreaks }}</span>
+            </div>
+
+
+
+
+<!--
+        <div class="col">
+            <a href="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug vote_participant_pk=p.pk %}">{{ p.name }}</a>
+             - {{ p.vote_amount|cents_to_dollars }}
+            <p>description: {{ p.description }}</p>
+        </div> -->
+    </div>
+{% endfor %}

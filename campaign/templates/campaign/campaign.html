@@ -46,9 +46,15 @@
                 </div>
             </div>
         {% endif %}
+
         {% if campaign.vote_participants %}
-            {% include "campaign/campaign_vote_participants.html" %}
+            <div class="row">
+                <div class="col">
+                    {% include "campaign/campaign_vote_participants.html" %}
+                </div>
+            </div>
         {% endif %}
+
         <div class="row justify-content-between mb-5">
             <div class="col-lg-8">
                 {% include "campaign/campaign_donations.html" %}

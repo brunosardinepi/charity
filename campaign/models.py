@@ -226,7 +226,7 @@ class VoteParticipant(models.Model):
         return self.name
 
     def vote_amount(self):
-        return Donation.objects.filter(campaign_participant=self).aggregate(Sum('amount')).get('amount__sum')
+        return Donation.objects.filter(campaign=self.campaign, campaign_participant=self).aggregate(Sum('amount')).get('amount__sum')
 
 class CampaignImage(models.Model):
     campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE)
