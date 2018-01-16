@@ -50,11 +50,13 @@
 
             </div>
         </div>
-        <div class="row mb-5">
-            <div class="col">
-                {% include "page/page_about.html" %}
+        {% if page.description %}
+            <div class="row mb-5">
+                <div class="col">
+                    {% include "page/page_about.html" %}
+                </div>
             </div>
-        </div>
+        {% endif %}
         <div class="row mb-5">
             <div class="col-lg-12">
                 {% include "page/page_campaigns.html" %}
