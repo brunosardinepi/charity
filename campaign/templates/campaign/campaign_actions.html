@@ -2,7 +2,7 @@
 
 
 <h1>{{ campaign.name }}</h1>
-<p class="small">A Campaign for <a class="teal" href="{% url 'page' page_slug=campaign.page.page_slug %}">{{ campaign.page.name }}</a>.</p>
+<p class="small">A Campaign for <a href="{% url 'page' page_slug=campaign.page.page_slug %}">{{ campaign.page.name }}</a>.</p>
 
 <div class="row mt-3 mb-1">
     <div class="col">
