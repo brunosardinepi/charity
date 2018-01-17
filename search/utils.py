@@ -23,12 +23,14 @@ def filter_list(f, s=''):
                     sponsored.append(object)
                 else:
                     results.append(object)
-                campaigns = Campaign.objects.filter(page=object, deleted=False).order_by('name')
+                campaigns = Campaign.objects.filter(page=object, deleted=False, is_active=True).order_by('name')
                 for c in campaigns:
                     if c.page.is_sponsored == True:
                         sponsored.append(c)
                     else:
                         results.append(c)
+    results.sort(key=lambda x: x.name.lower())
+    sponsored.sort(key=lambda x: x.name.lower())
     return (results, sponsored)
 
 def query_list(q, s=''):
