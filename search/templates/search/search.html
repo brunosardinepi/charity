@@ -112,24 +112,52 @@ $(document).ready(function() {
 
 {% block body_content %}
     <form>
-    {% csrf_token %}
-    <input id="q" type="text" placeholder="Search" />
+        <div class="row">
+            <div class="col-12">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input id="q" type="text" class="form-control form-control-lg" placeholder="Search" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <div class="row">
+                    <div class="col-12">
+                        <a href="" id="checkall">Select all</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <a href="" id="allPages">List all Pages</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <a href="" id="allCampaigns">List all Campaigns</a>
+                    </div>
+                </div>
 
-    <a href="" id="checkall">Select all</a>
+                {% for k, v in categories.items %}
+                    <div class="form-check">
+                        <input class="form-check-input" name="filters[]" type="checkbox" value="{{ k }}">{{ v }}</input>
+                    </div>
+                {% endfor %}
 
-    {% for k, v in categories.items %}
-        <input name="filters[]" type="checkbox" value="{{ k }}">{{ v }}</input>
-    {% endfor %}
-
-    <select id="s">
-        <option value=''>Select...</option>
-        {% for k, v in states.items %}
-            <option value={{ k }}>{{ v }}</option>
-        {% endfor %}
-    </select>
+                <div class="form-group">
+                    <select id="s" class="form-control">
+                        <option value=''>Select...</option>
+                        {% for k, v in states.items %}
+                            <option value={{ k }}>{{ v }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col" style="background: red;">
+            </div>
+        </div>
     </form>
 
-    <p><a href="" id="allPages">List all Pages</a> <a href="" id="allCampaigns">List all Campaigns</a></p>
 
     {% if sponsored %}
         <h3>Sponsored Pages</h3>
