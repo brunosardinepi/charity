@@ -18,13 +18,21 @@
             <div class="row justify-content-between">
                 <div class="col-md-auto">
                     <h3>
-                        <a class="teal" href="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug vote_participant_pk=p.pk %}">
-                            {{ p.name }}
-                        </a>
+                        {% if campaign.is_active %}
+                            <a class="teal" href="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug vote_participant_pk=p.pk %}">
+                                {{ p.name }}
+                            </a>
+                        {% else %}
+                            <span class="teal">
+                                {{ p.name }}
+                            </span>
+                        {% endif %}
                     </h3>
                 </div>
                 <div class="col d-flex align-items-center h100">
-                    <a href="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug vote_participant_pk=p.pk %}" role="button" class="btn btn-teal">Vote</a>
+                    {% if campaign.is_active %}
+                        <a href="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug vote_participant_pk=p.pk %}" role="button" class="btn btn-teal">Vote</a>
+                    {% endif %}
                 </div>
                 <div class="col-md-3 vote-amount">
                     <span class="teal font-weight-bold font-size-175">{{ p.vote_amount|cents_to_dollars }}</span>

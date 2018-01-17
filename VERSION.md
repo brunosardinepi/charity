@@ -10,6 +10,7 @@ Release date: TBD
 ### Additions
 
 * Image gallery for Pages
+* Campaign design
 
 ### Changes
 

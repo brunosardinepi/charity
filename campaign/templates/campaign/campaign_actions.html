@@ -1,8 +1,9 @@
 {% load donation_extras %}
+{% load humanize %}
 
 
 <h1>{{ campaign.name }}</h1>
-<p class="small">A Campaign for <a href="{% url 'page' page_slug=campaign.page.page_slug %}">{{ campaign.page.name }}</a>.</p>
+<p class="small">This Campaign for <a href="{% url 'page' page_slug=campaign.page.page_slug %}">{{ campaign.page.name }}</a> ends {{ campaign.end_date|naturaltime }}.</p>
 
 <div class="row mt-3 mb-1">
     <div class="col">
@@ -34,7 +35,7 @@
 {% elif campaign.type == "vote" and not campaign.is_active %}
     <div class="row mb-3">
         <div class="col-12">
-            <p>This campaign has ended.</p>
+            <h4>This campaign has ended.</h4>
         </div>
     </div>
 {% endif %}
