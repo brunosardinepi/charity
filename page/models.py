@@ -177,6 +177,8 @@ class Page(models.Model):
         except PageImage.MultipleObjectsReturned:
             # create an exception for future use
             print("multiple profile images returned")
+        except PageImage.DoesNotExist:
+            return None
 
     def active_campaigns(self):
         return Campaign.objects.filter(page=self, is_active=True, deleted=False).order_by('name')
@@ -198,6 +200,12 @@ class Page(models.Model):
 
     def unique_donors(self):
         return Donation.objects.filter(page=self).distinct('donor_first_name').distinct('donor_last_name').count()
+
+    def search_description(self):
+        if len(self.description) > 400:
+            return self.description[:400] + "..."
+        else:
+            return self.description
 
 def create_random_string(length=30):
     if length <= 0:

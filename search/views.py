@@ -80,17 +80,42 @@ def results(request):
             results = Campaign.objects.filter(page__is_sponsored=False, deleted=False).order_by('name')
             sponsored = Campaign.objects.filter(page__is_sponsored=True, deleted=False).order_by('name')
 
-        response_data = OrderedDict()
+        response_data = []
         if results:
             for r in results:
                 if isinstance(r, Page):
-                    response_data[r.page_slug] = {
-                        'name': r.name,
-                        'city': r.city,
-                        'state': r.state,
-                        'sponsored': 'f',
-                        'model': 'page'
-                    }
+                    html = (
+                        "<div class='row mb-4'>"
+                        "<div class='col-md-auto vote-participant-picture-container'>"
+                    )
+
+                    if r.profile_picture():
+                        html += "<img class='search-result-picture' src='{}' />".format(r.profile_picture().image.url)
+                    else:
+                        html += "<img class='search-result-picture' src='/static/img/user_default.svg' />"
+
+                    html += (
+                        "</div>"
+                        "<div class='col-md-10 mb-4'>"
+                        "<div class='row justify-content-between'>"
+                        "<div class='col-md-auto'>"
+                        "<h3><a class='purple' href='/{}/'>{}</a></h3>"
+                        "</div>"
+                        "<div class='col d-flex align-items-center h100'>"
+                        "{}, {}"
+                        "</div>"
+                        "<div class='col-md-3 vote-amount'>"
+                        "<span class='purple font-weight-bold font-size-175'>${}</span>"
+                        "</div>"
+                        "</div>"
+                        "<span class='comment-content'><p>{}</p></span>"
+                        "</div>"
+                        "</div>"
+                    ).format(r.page_slug, r.name, r.city, r.state, int(r.donation_money() / 100), r.search_description())
+
+                    response_data.append(html)
+
+
                 elif isinstance(r, Campaign):
                     response_data[r.campaign_slug] = {
                         'name': r.name,

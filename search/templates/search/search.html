@@ -43,27 +43,9 @@ function search(a) {
         success : function(json) {
             $("#sponsored-list").empty();
             $("#results-list").empty();
+            console.log(json);
             for (var key in json) {
-                if (json[key]["city"]) {
-                    var location = json[key]["city"] + ", " + json[key]["state"];
-                } else if (json[key]["state"]) {
-                    var location = json[key]["state"];
-                } else {
-                    var location = "";
-                }
-                if (json[key]["sponsored"] == "t") {
-                    if (json[key]["model"] == "page") {
-                        $("#sponsored-list").append("<li><a href='/" + key +  "/'>" + json[key]['name'] + "</a> " + location + "</li>");
-                    } else if (json[key]["model"] == "campaign") {
-                        $("#sponsored-list").append("<li><a href='/" + json[key]['page_slug'] + "/" + json[key]['pk'] + "/" + key +  "/'>" + json[key]['name'] + "</a> " + location + "</li>");
-                    }
-                } else {
-                    if (json[key]["model"] == "page") {
-                        $("#results-list").append("<li><a href='/" + key +  "/'>" + json[key]['name'] + "</a> " + location + "</li>");
-                    } else if (json[key]["model"] == "campaign") {
-                        $("#results-list").append("<li><a href='/" + json[key]['page_slug'] + "/" + json[key]['pk'] + "/" + key +  "/'>" + json[key]['name'] + "</a> " + location + "</li>");
-                    }
-                }
+                $("#results-list").append(json[key]);
             }
         }
     });
@@ -111,6 +93,36 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block body_content %}
+
+    <div class="row mb-4">
+        <div class="col-md-auto vote-participant-picture-container">
+            <img class="search-result-picture" src="{% static 'img/user_default.svg' %}" />
+        </div>
+
+        <div class="col-md-10 mb-4">
+            <div class="row justify-content-between">
+                <div class="col-md-auto">
+                    <h3><a class="teal" href="">Page Name Goes Here</a></h3>
+                </div>
+                <div class="col d-flex align-items-center h100">
+                    City, ST
+                </div>
+                <div class="col-md-3 vote-amount">
+                    <span class="teal font-weight-bold font-size-175">$125</span>
+                </div>
+            </div>
+            <span class="comment-content"><p>Donec et lacinia est. Vestibulum et justo dui. Aliquam sodales rhoncus tellus, ut molestie neque vulputate sit amet. Curabitur quis convallis massa. Fusce a nulla metus. Proin laoreet iaculis lorem ac consequat. Sed eget tempus libero. Interdum et malesuada fames ac ante ipsum primis in faucibus.</p></span>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
     <form>
         <div class="row mt-4 mb-3">
             <div class="col-12 text-center">
@@ -190,12 +202,12 @@ $(document).ready(function() {
 
                 <div id="sponsored">
                     <h3>Sponsored Results:</h3>
-                    <ul id="sponsored-list"></ul>
+                    <div id="sponsored-list"></div>
                 </div>
 
                 <div id="results">
                     <h3>Search Results:</h3>
-                    <ul id="results-list"></ul>
+                    <div id="results-list"></div>
                 </div>
 
             </div>

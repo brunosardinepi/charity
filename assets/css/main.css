@@ -257,7 +257,8 @@ a.nav-link:hover {
     margin-bottom: 1rem;
 }
 .comment-profile-picture,
-.vote-participant-picture {
+.vote-participant-picture,
+.search-result-picture {
     transition: border 0.5s ease;
     border-radius: 50%;
     border: 1px solid #ddd;
@@ -267,12 +268,14 @@ a.nav-link:hover {
     height: 4rem;
     width: 4rem;
 }
-.vote-participant-picture {
+.vote-participant-picture,
+.search-result-picture {
     height: 8rem;
     width: 8rem;
     margin-bottom: 0.5rem;
 }
-.comment-profile-picture:hover {
+.comment-profile-picture:hover,
+.search-result-picture:hover {
     border: 1px solid #990099;
 }
 .vote-participant-picture:hover {
