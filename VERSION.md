@@ -3,6 +3,23 @@
 This is the version history for PageFund development.
 
 
+## Version 0.16.0
+
+Release date: TBD
+
+### Additions
+
+* None
+
+### Changes
+
+* None
+
+### Fixes
+
+* "Notes" reporting feature works again
+
+
 ## Version 0.15.0
 
 Release date: 01/16/2018
