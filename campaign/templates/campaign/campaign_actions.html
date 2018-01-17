@@ -31,4 +31,10 @@
             {% endif %}
         </div>
     </div>
+{% elif campaign.type == "vote" and not campaign.is_active %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <p>This campaign has ended.</p>
+        </div>
+    </div>
 {% endif %}

@@ -808,7 +808,8 @@ class CampaignTest(TestCase):
     def test_campaign_active(self):
         response = self.client.get('/{}/{}/{}/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Donate")
+        self.assertContains(response, "Vote")
+        self.assertNotContains(response, "Donate")
 
         self.campaign.is_active = False
         self.campaign.save()
