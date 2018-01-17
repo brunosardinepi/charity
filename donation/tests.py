@@ -45,7 +45,7 @@ class DonationTest(TestCase):
             name='Test Campaign',
             campaign_slug='campaignslug',
             page=self.page,
-            type='Event',
+            type='vote',
             city='Dallas',
             state='Texas',
             description='This is a description for Test Campaign.',

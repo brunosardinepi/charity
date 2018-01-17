@@ -3,7 +3,7 @@
 {% load guardian_tags %}
 {% load donation_extras %}
 
-{% block title %} {{ page.name }} | {{ block.super }}{% endblock %}
+{% block title %}Donate | {{ block.super }}{% endblock %}
 
 {% block body_content %}
     {% if request.user.is_authenticated %}

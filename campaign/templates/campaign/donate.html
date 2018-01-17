@@ -2,10 +2,18 @@
 {% load static from staticfiles %}
 {% load donation_extras %}
 
-{% block title %} {{ campaign.name }} | Donate | {{ block.super }}{% endblock %}
+{% block title %}
+    {% if campaign.type == "vote" %}
+        Vote | {{ block.super }}
+    {% else %}
+        Donate | {{ block.super }}
+    {% endif %}
+{% endblock %}
 
 {% block body_content %}
-    <h1>Voting for: {{ vote_participant.name }}</h1>
+    {% if campaign.type == "vote" %}
+        <h1>Voting for: {{ vote_participant.name }}</h1>
+    {% endif %}
     {% if request.user.is_authenticated %}
         {% include "donation/donate.html" %}
     {% else %}
