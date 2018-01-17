@@ -21,6 +21,7 @@ def email(user_email, subject, body, template):
             "page_bank_information_updated": "c988f1b2-ded9-476b-85a1-a7b1ec3a55e7",
             "pagefund_invitation": "09db718c-d1bb-446c-9cf5-67cd0adf0c97",
             "forgot_password": "3fcbedb0-d54b-49b3-885e-856bbbaf21c8",
+            "note": "",
         }
         sg = sendgrid.SendGridAPIClient(apikey=config.settings["sendgrid_api_key"])
         from_email = Email("no-reply@page.fund")
@@ -28,7 +29,8 @@ def email(user_email, subject, body, template):
         subject = subject
         content = Content("text/plain", body)
         mail = Mail(from_email, subject, to_email, content)
-        mail.template_id = templates[template]
+        if template:
+            mail.template_id = templates[template]
         try:
             response = sg.client.mail.send.post(request_body=mail.get())
         except urllib.HTTPError as e:

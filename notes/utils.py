@@ -60,8 +60,9 @@ def create_error(error, request, object):
 
 def create_note(request, obj, type):
     details = ""
-    for attr, val in obj.get_fields():
-        details += "{}: {};\n".format(attr, val)
+    fields = [f.name for f in obj._meta.get_fields()]
+    for field in fields:
+        details += "{}: {};\n".format(field, getattr(obj, field))
 
     note = Note.objects.create(
         date = timezone.now(),
@@ -79,4 +80,4 @@ def create_note(request, obj, type):
         note.message,
         note.details
     )
-    email("abuse@page.fund", subject, body)
+    email("abuse@page.fund", subject, body, None)
