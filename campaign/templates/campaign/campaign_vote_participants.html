@@ -6,7 +6,9 @@
     <div class="row mb-4">
         <div class="col-md-auto vote-participant-picture-container">
             {% if p.image %}
-                <img class="vote-participant-picture" src="{{ p.image.url }}" />
+                <a href="{{ p.image.url }}" data-lightbox="image-{{ p.pk }}">
+                    <img class="vote-participant-picture" src="{{ p.image.url }}" />
+                </a>
             {% else %}
                 <img class="vote-participant-picture" src="{% static 'img/user_default.svg' %}" />
             {% endif %}
