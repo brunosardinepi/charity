@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -7,6 +8,7 @@ from . import views
 from .forms import AbuseCommentForm
 from .models import Note
 from campaign.models import Campaign
+from comments.models import Comment
 from page.models import Page
 
 import unittest
@@ -67,6 +69,13 @@ class NoteTest(TestCase):
             type="abuse",
         )
 
+        self.comment = Comment.objects.create(
+            user=self.user,
+            comment="This is a comment.",
+            content_type=ContentType.objects.get_for_model(self.page),
+            object_id=self.page.pk,
+        )
+
     def test_note_exists(self):
         notes = Note.objects.all()
 
@@ -91,3 +100,13 @@ class NoteTest(TestCase):
         form = AbuseCommentForm(data)
         self.assertTrue(form.is_valid())
         self.assertTrue(form['note'], "A test note for you.")
+
+    def test_comments_abuse(self):
+        # notes/abuse/comment/16/
+        self.client.login(username='testuser', password='testpassword')
+        self.assertEqual(Note.objects.all().count(), 2)
+        data = {'note': "How rude!"}
+        response = self.client.post('/notes/abuse/comment/{}/'.format(self.comment.pk), data)
+
+        self.assertRedirects(response, '/', 302, 200)
+        self.assertEqual(Note.objects.all().count(), 3)
