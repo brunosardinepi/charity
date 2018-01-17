@@ -316,9 +316,9 @@ class CampaignDonate(View):
             raise Http404
         else:
             if request.user.is_authenticated():
-                donate_form = BaseDonate()
+                form = BaseDonate()
             else:
-                donate_form = DonateUnauthenticatedForm()
+                form = DonateUnauthenticatedForm()
             template_params = {}
 
             if request.user.is_authenticated:
@@ -335,7 +335,7 @@ class CampaignDonate(View):
                     }
                     error_email(error)
             template_params["campaign"] = campaign
-            template_params["donate_form"] = donate_form
+            template_params["form"] = form
             template_params["api_pk"] = config.settings['stripe_api_pk']
             template_params["vote_participant"] = vote_participant
             return render(request, 'campaign/donate.html', template_params)

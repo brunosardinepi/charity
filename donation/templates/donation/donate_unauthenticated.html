@@ -2,7 +2,11 @@
 {% if page %}
     <form action="{% url 'page_donate' page_slug=page.page_slug %}" method="post" id="payment-form">
 {% elif campaign %}
-    <form action="{% url 'campaign_donate' campaign_pk=campaign.pk %}" method="post" id="payment-form">
+    {% if campaign.type == "vote" %}
+        <form action="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug vote_participant_pk=vote_participant.pk %}" method="post" id="payment-form">
+    {% else %}
+        <form action="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}" method="post" id="payment-form">
+    {% endif %}
 {% endif %}
     {% csrf_token %}
         {{ form.as_p }}

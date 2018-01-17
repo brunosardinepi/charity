@@ -5,7 +5,10 @@
 {% block title %} {{ campaign.name }} | Donate | {{ block.super }}{% endblock %}
 
 {% block body_content %}
-    <h1>{{ campaign.name }} - Donate</h1>
-    <h2>Voting for: {{ vote_participant.name }}</h2>
-    {% include "donation/donate.html" with campaign=campaign donate_form=donate_form api_key=api_key%}
+    <h1>Voting for: {{ vote_participant.name }}</h1>
+    {% if request.user.is_authenticated %}
+        {% include "donation/donate.html" %}
+    {% else %}
+        {% include "donation/donate_unauthenticated.html" %}
+    {% endif %}
 {% endblock %}
