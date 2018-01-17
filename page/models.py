@@ -202,8 +202,8 @@ class Page(models.Model):
         return Donation.objects.filter(page=self).distinct('donor_first_name').distinct('donor_last_name').count()
 
     def search_description(self):
-        if len(self.description) > 400:
-            return self.description[:400] + "..."
+        if len(self.description) > 300:
+            return self.description[:300] + "..."
         else:
             return self.description
 

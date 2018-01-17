@@ -30,7 +30,8 @@ a.teal:hover {
 /* Media Queries */
 @media (max-width: 767.99px) {
     .comment-profile-picture-container,
-    .vote-participant-picture-container {
+    .vote-participant-picture-container,
+    .search-result-picture-container {
         display: none !important;
     }
     .vote-amount {
