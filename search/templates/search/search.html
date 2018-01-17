@@ -43,7 +43,6 @@ function search(a) {
         success : function(json) {
             $("#sponsored-list").empty();
             $("#results-list").empty();
-            console.log(json);
             for (var key in json) {
                 $("#results-list").append(json[key]);
             }
@@ -93,36 +92,6 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block body_content %}
-
-    <div class="row mb-4">
-        <div class="col-md-auto vote-participant-picture-container">
-            <img class="search-result-picture" src="{% static 'img/user_default.svg' %}" />
-        </div>
-
-        <div class="col-md-10 mb-4">
-            <div class="row justify-content-between">
-                <div class="col-md-auto">
-                    <h3><a class="teal" href="">Page Name Goes Here</a></h3>
-                </div>
-                <div class="col d-flex align-items-center h100">
-                    City, ST
-                </div>
-                <div class="col-md-3 vote-amount">
-                    <span class="teal font-weight-bold font-size-175">$125</span>
-                </div>
-            </div>
-            <span class="comment-content"><p>Donec et lacinia est. Vestibulum et justo dui. Aliquam sodales rhoncus tellus, ut molestie neque vulputate sit amet. Curabitur quis convallis massa. Fusce a nulla metus. Proin laoreet iaculis lorem ac consequat. Sed eget tempus libero. Interdum et malesuada fames ac ante ipsum primis in faucibus.</p></span>
-        </div>
-    </div>
-
-
-
-
-
-
-
-
-
     <form>
         <div class="row mt-4 mb-3">
             <div class="col-12 text-center">

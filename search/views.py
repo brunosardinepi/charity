@@ -34,6 +34,60 @@ def search(request):
         'trending_campaigns': trending_campaigns,
     })
 
+def create_search_result_html(r):
+    html = (
+        "<div class='row mb-4'>"
+        "<div class='col-md-auto search-result-picture-container'>"
+    )
+
+    if r.profile_picture():
+        html += "<img class='search-result-picture' src='{}' />".format(r.profile_picture().image.url)
+    else:
+        html += "<img class='search-result-picture' src='/static/img/user_default.svg' />"
+
+    html += (
+        "</div>"
+        "<div class='col-md-10 mb-4'>"
+        "<div class='row justify-content-between'>"
+        "<div class='col-md-auto'>"
+    )
+
+    if isinstance(r, Page):
+        html += "<h3><a class='purple' href='/{}/'>{}</a></h3>".format(r.page_slug, r.name)
+    elif isinstance(r, Campaign):
+        html += "<h3><a class='teal' href='/{}/{}/{}/'>{}</a></h3>".format(r.page.page_slug, r.pk, r.campaign_slug, r.name)
+
+    html += (
+        "</div>"
+        "<div class='col d-flex align-items-center h100'>"
+        "<i class='fal fa-compass mr-2'></i> "
+    )
+
+    if r.city:
+        html += "{}, {}".format(r.city, r.state)
+    elif r.state:
+        html += r.get_state_display()
+
+    html += (
+        "</div>"
+        "<div class='col-md-3 vote-amount'>"
+    )
+
+    if isinstance(r, Page):
+        html += "<span class='purple font-weight-bold font-size-175'>${}</span>".format(int(r.donation_money() / 100))
+    elif isinstance(r, Campaign):
+        html += "<span class='teal font-weight-bold font-size-175'>${}</span>".format(int(r.donation_money() / 100))
+
+    html += (
+        "</div>"
+        "</div>"
+        "<span class='comment-content'><p>{}</p></span>"
+        "</div>"
+        "</div>"
+    ).format(r.search_description())
+
+    return html
+
 def results(request):
     if request.method == "POST":
         q = request.POST.get('q')
@@ -81,80 +135,13 @@ def results(request):
             sponsored = Campaign.objects.filter(page__is_sponsored=True, deleted=False).order_by('name')
 
         response_data = []
-        if results:
-            for r in results:
-                html = (
-                    "<div class='row mb-4'>"
-                    "<div class='col-md-auto search-result-picture-container'>"
-                )
-
-                if r.profile_picture():
-                    html += "<img class='search-result-picture' src='{}' />".format(r.profile_picture().image.url)
-                else:
-                    html += "<img class='search-result-picture' src='/static/img/user_default.svg' />"
-
-                html += (
-                    "</div>"
-                    "<div class='col-md-10 mb-4'>"
-                    "<div class='row justify-content-between'>"
-                    "<div class='col-md-auto'>"
-                )
-
-                if isinstance(r, Page):
-                    html += "<h3><a class='purple' href='/{}/'>{}</a></h3>".format(r.page_slug, r.name)
-                elif isinstance(r, Campaign):
-                    html += "<h3><a class='teal' href='/{}/{}/{}/'>{}</a></h3>".format(r.page.page_slug, r.pk, r.campaign_slug, r.name)
-
-                html += (
-                    "</div>"
-                    "<div class='col d-flex align-items-center h100'>"
-                    "<i class='fal fa-compass mr-2'></i> "
-                )
-
-                if r.city:
-                    html += "{}, {}".format(r.city, r.state)
-                elif r.state:
-                    html += r.get_state_display()
-
-                html += (
-                    "</div>"
-                    "<div class='col-md-3 vote-amount'>"
-                )
-
-                if isinstance(r, Page):
-                    html += "<span class='purple font-weight-bold font-size-175'>${}</span>".format(int(r.donation_money() / 100))
-                elif isinstance(r, Campaign):
-                    html += "<span class='teal font-weight-bold font-size-175'>${}</span>".format(int(r.donation_money() / 100))
-
-                html += (
-                    "</div>"
-                    "</div>"
-                    "<span class='comment-content'><p>{}</p></span>"
-                    "</div>"
-                    "</div>"
-                ).format(r.search_description())
-                response_data.append(html)
-
         if sponsored:
             for s in sponsored:
-                if isinstance(s, Page):
-                    response_data[s.page_slug] = {
-                        'name': s.name,
-                        'city': s.city,
-                        'state': s.state,
-                        'sponsored': 't',
-                        'model': 'page'
-                    }
-                elif isinstance(s, Campaign):
-                    response_data[s.campaign_slug] = {
-                        'name': s.name,
-                        'city': s.city,
-                        'state': s.state,
-                        'sponsored': 't',
-                        'model': 'campaign',
-                        'page_slug': s.page.page_slug,
-                        'pk': s.pk
-                    }
+                response_data.append(create_search_result_html(r))
+
+        if results:
+            for r in results:
+                response_data.append(create_search_result_html(r))
 
         return HttpResponse(
             json.dumps(response_data),
