@@ -52,6 +52,10 @@
                         {% endif %}
                     </span>
 
+                    {% if d.campaign_participant %}
+                        for <span class="teal">{{ d.campaign_participant }}</span>
+                    {% endif %}
+
                     <p class="comment-date small">
                         <i class="fal fa-clock"></i> {{ d.date|naturaltime }}
                     </p>

@@ -10,7 +10,6 @@
             {% else %}
                 <img class="vote-participant-picture" src="{% static 'img/user_default.svg' %}" />
             {% endif %}
-<!--            <a href="" role="button" class="btn btn-block btn-teal">Vote</a>-->
         </div>
 
         <div class="col-md-10 mb-4">
@@ -22,15 +21,14 @@
                         </a>
                     </h3>
                 </div>
-<div class="col d-flex align-items-center h100">
-        <a href="" role="button" class="btn btn-teal">Vote</a>
-    </div>
+                <div class="col d-flex align-items-center h100">
+                    <a href="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug vote_participant_pk=p.pk %}" role="button" class="btn btn-teal">Vote</a>
+                </div>
                 <div class="col-md-3 vote-amount">
                     <span class="teal font-weight-bold font-size-175">{{ p.vote_amount|cents_to_dollars }}</span>
                 </div>
             </div>
             <span class="comment-content">{{ p.description|linebreaks }}</span>
-            <!--<a href="" role="button" class="btn btn-teal">Vote</a>-->
         </div>
     </div>
 {% endfor %}
