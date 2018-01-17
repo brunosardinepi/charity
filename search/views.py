@@ -21,20 +21,14 @@ def search(request):
         query_from_search = None
     categories = OrderedDict(Page._meta.get_field('category').choices)
     states = OrderedDict(Page._meta.get_field('state').choices)
-    sponsored = Page.objects.filter(is_sponsored=True, deleted=False)
-    trending_pages = Page.objects.filter(deleted=False).order_by('-trending_score')[:10]
-    trending_campaigns = Campaign.objects.filter(deleted=False, is_active=True).order_by('-trending_score')[:10]
 
     return render(request, 'search/search.html', {
         'categories': categories,
         'states': states,
         'query_from_search': query_from_search,
-        'sponsored': sponsored,
-        'trending_pages': trending_pages,
-        'trending_campaigns': trending_campaigns,
     })
 
-def create_search_result_html(r, sponsored):
+def create_search_result_html(r, sponsored, trending):
     html = (
         "<div class='row mb-4'>"
         "<div class='col-md-auto search-result-picture-container'>"
@@ -65,7 +59,13 @@ def create_search_result_html(r, sponsored):
     if sponsored == True:
         html += "<span class='badge badge-success mr-4'>Sponsored</span>"
 
-    html += "<i class='fal fa-compass mr-2'></i>"
+    if trending == True:
+        html += "<span class='badge badge-primary mr-4'>Trending</span>"
+
+    html += (
+        "<span class='small'>"
+        "<i class='fal fa-compass mr-2'></i>"
+    )
 
     if r.city:
         html += "{}, {}".format(r.city, r.state)
@@ -73,6 +73,7 @@ def create_search_result_html(r, sponsored):
         html += r.get_state_display()
 
     html += (
+        "</span>"
         "</div>"
         "<div class='col-md-3 vote-amount'>"
     )
@@ -135,17 +136,26 @@ def results(request):
             results = Page.objects.filter(is_sponsored=False, deleted=False).order_by('name')
             sponsored = Page.objects.filter(is_sponsored=True, deleted=False).order_by('name')
         elif a == "campaigns":
-            results = Campaign.objects.filter(page__is_sponsored=False, deleted=False).order_by('name')
-            sponsored = Campaign.objects.filter(page__is_sponsored=True, deleted=False).order_by('name')
+            results = Campaign.objects.filter(page__is_sponsored=False, deleted=False, is_active=True).order_by('name')
+            sponsored = Campaign.objects.filter(page__is_sponsored=True, deleted=False, is_active=True).order_by('name')
+
+        trending_pages = Page.objects.filter(deleted=False).order_by('-trending_score')[:10]
+        trending_campaigns = Campaign.objects.filter(deleted=False, is_active=True).order_by('-trending_score')[:10]
 
         response_data = []
         if sponsored:
             for s in sponsored:
-                response_data.append(create_search_result_html(s, True))
+                if s in trending_pages or s in trending_campaigns:
+                    response_data.append(create_search_result_html(s, True, True))
+                else:
+                    response_data.append(create_search_result_html(s, True, False))
 
         if results:
             for r in results:
-                response_data.append(create_search_result_html(r, False))
+                if r in trending_pages or r in trending_campaigns:
+                    response_data.append(create_search_result_html(r, False, True))
+                else:
+                    response_data.append(create_search_result_html(r, False, False))
 
         return HttpResponse(
             json.dumps(response_data),

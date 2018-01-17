@@ -41,9 +41,9 @@ function search(a) {
             a : a
         },
         success : function(json) {
-            $("#results-list").empty();
+            $("#results").empty();
             for (var key in json) {
-                $("#results-list").append(json[key]);
+                $("#results").append(json[key]);
             }
         }
     });
@@ -140,30 +140,7 @@ $(document).ready(function() {
                 </div>
             </div>
             <div class="col">
-
-                {% if trending_pages %}
-                    <h3>Trending Pages</h3>
-                    <ul>
-                        {% for page in trending_pages %}
-                            <li><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a></li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-
-                {% if trending_campaigns %}
-                    <h3>Trending Campaigns</h3>
-                    <ul>
-                        {% for campaign in trending_campaigns %}
-                            <li><a href="{% url 'campaign' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">{{ campaign.name }}</a></li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-
-                <div id="results">
-                    <h3>Search Results:</h3>
-                    <div id="results-list"></div>
-                </div>
-
+                <div id="results"></div>
             </div>
         </div>
     </form>
