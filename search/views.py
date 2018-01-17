@@ -34,7 +34,7 @@ def search(request):
         'trending_campaigns': trending_campaigns,
     })
 
-def create_search_result_html(r):
+def create_search_result_html(r, sponsored):
     html = (
         "<div class='row mb-4'>"
         "<div class='col-md-auto search-result-picture-container'>"
@@ -60,8 +60,12 @@ def create_search_result_html(r):
     html += (
         "</div>"
         "<div class='col d-flex align-items-center h100'>"
-        "<i class='fal fa-compass mr-2'></i> "
     )
+
+    if sponsored == True:
+        html += "<span class='badge badge-success mr-4'>Sponsored</span>"
+
+    html += "<i class='fal fa-compass mr-2'></i>"
 
     if r.city:
         html += "{}, {}".format(r.city, r.state)
@@ -137,11 +141,11 @@ def results(request):
         response_data = []
         if sponsored:
             for s in sponsored:
-                response_data.append(create_search_result_html(r))
+                response_data.append(create_search_result_html(s, True))
 
         if results:
             for r in results:
-                response_data.append(create_search_result_html(r))
+                response_data.append(create_search_result_html(r, False))
 
         return HttpResponse(
             json.dumps(response_data),

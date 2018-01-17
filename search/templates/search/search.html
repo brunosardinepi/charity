@@ -41,7 +41,6 @@ function search(a) {
             a : a
         },
         success : function(json) {
-            $("#sponsored-list").empty();
             $("#results-list").empty();
             for (var key in json) {
                 $("#results-list").append(json[key]);
@@ -142,15 +141,6 @@ $(document).ready(function() {
             </div>
             <div class="col">
 
-                {% if sponsored %}
-                    <h3>Sponsored Pages</h3>
-                    <ul>
-                        {% for page in sponsored %}
-                            <li><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a></li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-
                 {% if trending_pages %}
                     <h3>Trending Pages</h3>
                     <ul>
@@ -168,11 +158,6 @@ $(document).ready(function() {
                         {% endfor %}
                     </ul>
                 {% endif %}
-
-                <div id="sponsored">
-                    <h3>Sponsored Results:</h3>
-                    <div id="sponsored-list"></div>
-                </div>
 
                 <div id="results">
                     <h3>Search Results:</h3>
