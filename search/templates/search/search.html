@@ -137,7 +137,7 @@ $(document).ready(function() {
                         <a href="" id="allPages">List all Pages</a>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col-12">
                         <a href="" id="allCampaigns">List all Campaigns</a>
                     </div>
@@ -149,7 +149,8 @@ $(document).ready(function() {
                     </div>
                 {% endfor %}
 
-                <div class="form-group">
+                <div class="form-group mt-5">
+                    <label for="s">Filter by location</label>
                     <select id="s" class="form-control">
                         <option value=''>Select...</option>
                         {% for k, v in states.items %}
