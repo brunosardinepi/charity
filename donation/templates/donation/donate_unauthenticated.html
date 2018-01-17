@@ -1,33 +1,42 @@
 <h3>Donate</h3>
-{% if page %}
-    <form action="{% url 'page_donate' page_slug=page.page_slug %}" method="post" id="payment-form">
-{% elif campaign %}
-    {% if campaign.type == "vote" %}
-        <form action="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug vote_participant_pk=vote_participant.pk %}" method="post" id="payment-form">
-    {% else %}
-        <form action="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}" method="post" id="payment-form">
+{% if stripe_error %}
+    <p>We're having trouble communicating with our payment processor. This error generated an email and sent it to our dev team. We're looking into the issue now, thanks!</p>
+{% else %}
+    {% if page %}
+        <form action="{% url 'page_donate' page_slug=page.page_slug %}" method="post" id="payment-form">
+    {% elif campaign %}
+        {% if campaign.type == "vote" %}
+            <form action="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug vote_participant_pk=vote_participant.pk %}" method="post" id="payment-form">
+        {% else %}
+            <form action="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}" method="post" id="payment-form">
+        {% endif %}
     {% endif %}
-{% endif %}
     {% csrf_token %}
-        {{ form.as_p }}
+    {{ form.as_p }}
 
-        <input type="checkbox" name="preset-amount" class="preset-amount" value=5 />$5<br />
-        <input type="checkbox" name="preset-amount" class="preset-amount" value=10 />$10<br />
-        <input type="checkbox" name="preset-amount" class="preset-amount" value=25 />$25<br />
-        <input type="checkbox" name="preset-amount" class="preset-amount" value=50 />$50<br />
-        <input type="checkbox" name="preset-amount" class="preset-amount" value=100 />$100<br />
+    <input type="checkbox" name="preset-amount" class="preset-amount" value=5 />$5<br />
+    <input type="checkbox" name="preset-amount" class="preset-amount" value=10 />$10<br />
+    <input type="checkbox" name="preset-amount" class="preset-amount" value=25 />$25<br />
+    <input type="checkbox" name="preset-amount" class="preset-amount" value=50 />$50<br />
+    <input type="checkbox" name="preset-amount" class="preset-amount" value=100 />$100<br />
 
-        <div id="amount-errors"></div>
+    <div id="amount-errors"></div>
 
-        <div id="card-element"></div>
-        <div id="card-errors" role="alert"></div>
+    <div id="card-element"></div>
+    <div id="card-errors" role="alert"></div>
+    {% if vote_participant %}
+        <input type="hidden" name="vote_participant" value="{{ vote_participant.pk }}">
+    {% endif %}
     <button>Donate</button>
 </form>
 
 <script>
+    $("input.preset-amount").on("change", function() {
+        $("input.preset-amount").not(this).prop("checked", false);
+    });
+
     var stripe = Stripe('{{ api_pk }}');
     var elements = stripe.elements();
-
     var card = elements.create('card');
     card.mount("#card-element");
 
@@ -78,3 +87,4 @@
         }
 
 </script>
+{% endif %}
