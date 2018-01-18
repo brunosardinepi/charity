@@ -62,13 +62,13 @@ def create_search_result_html(r, sponsored, trending):
     )
 
     if sponsored == True:
-        html += "<i class='fal fa-star mr-3'></i>"
+        html += "<i class='fal fa-star mr-3' aria-hidden title='Sponsored'></i><span class='sr-only'>Sponsored</span>"
 
     if trending == True:
-        html += "<i class='fal fa-chart-line mr-3'></i>"
+        html += "<i class='fal fa-chart-line mr-3' aria-hidden title='Trending'></i><span class='sr-only'>Trending</span>"
 
     html += (
-        "<i class='fal fa-compass mr-1'></i>"
+        "<i class='fal fa-compass mr-1' aria-hidden title='Location'></i><span class='sr-only'>Location</span>"
         "<span class='small'>"
     )
 
