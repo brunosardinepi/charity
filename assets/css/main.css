@@ -336,14 +336,41 @@ a.nav-link:hover {
 /* Progress bar */
 .progress-bar-gray,
 .progress-bar-teal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
 }
 .progress-bar-gray {
-  background-color: #666666;
+    background-color: #666666;
 }
 .progress-bar-teal {
-  background-color: #33cc99;
+    background-color: #33cc99;
 }
+
+/* Testing */
+.circular-square {
+    border-radius: 50%;
+}
+.circular-landscape,
+.circular-portrait {
+    position: relative;
+    width: 8rem;
+    height: 8rem;
+    overflow: hidden;
+    border-radius: 50%;
+}
+.circular-landscape {
+    display: inline-block;
+}
+.circular-landscape img {
+    width: auto;
+    height: 100%;
+    margin-left: -2rem;
+}
+.circular-portrait img {
+    width: 100%;
+    height: auto;
+    margin-top: -2rem;
+}
+

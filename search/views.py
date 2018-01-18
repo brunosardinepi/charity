@@ -36,15 +36,25 @@ def create_search_result_html(r, sponsored, trending):
 
     if r.profile_picture():
         src = r.profile_picture().image.url
+        height = r.profile_picture().height
+        width = r.profile_picture().width
+        if height < width:
+            html += "<div class='circular-landscape'>"
+        elif height > width:
+            html += "<div class='circular-portrait'>"
+        else:
+            html += "<div class='circular-square'>"
+
     else:
         src = "/static/img/campaign_default.svg"
 
     if isinstance(r, Page):
-        html += "<img class='search-result-picture-page' src='{}' />".format(src)
+        html += "<img src='{}' />".format(src)
     elif isinstance(r, Campaign):
-        html += "<img class='search-result-picture-campaign' src='{}' />".format(src)
+        html += "<img src='{}' />".format(src)
 
     html += (
+        "</div>"
         "</div>"
         "<div class='col-md-10 mb-4'>"
         "<div class='row justify-content-between'>"
