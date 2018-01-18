@@ -161,6 +161,7 @@ class Page(models.Model):
                     }
                     if user.userprofile.profile_picture():
                         top_donors[d]['image_url'] = user.userprofile.profile_picture().image.url
+                        top_donors[d]['image_pk'] = user.userprofile.profile_picture().pk
         top_donors = OrderedDict(sorted(top_donors.items(), key=lambda t: t[1]['amount'], reverse=True))
         top_donors = list(top_donors.items())[:10]
         return top_donors

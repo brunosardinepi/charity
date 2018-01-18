@@ -1,6 +1,8 @@
 from django import template
 from django.contrib.contenttypes.models import ContentType
 
+from userprofile.models import UserImage
+
 
 register = template.Library()
 
@@ -32,3 +34,8 @@ def img_class(img, size):
         html += "-sm"
 
     return html
+
+@register.simple_tag
+def get_img_from_pk(pk, type):
+    if type == "user":
+        return UserImage.objects.get(pk=pk)
