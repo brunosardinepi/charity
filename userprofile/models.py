@@ -6,6 +6,7 @@ import string
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.files.images import get_image_dimensions
 from django.core.mail import send_mail
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
@@ -247,6 +248,14 @@ class UserImage(models.Model):
     image = models.FileField(upload_to=upload_to, max_length=255, blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)
     profile_picture = models.BooleanField(default=False)
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
+
+    def save(self, *args, **kwargs):
+        width, height = get_image_dimensions(self.image)
+        self.width = width
+        self.height = height
+        super(UserImage, self).save(*args, **kwargs)
 
 @receiver(post_delete, sender=UserImage)
 def auto_delete_file_on_delete(sender, instance, **kwargs):

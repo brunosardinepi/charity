@@ -1,6 +1,7 @@
 {% load humanize %}
 {% load staticfiles %}
 {% load donation_extras %}
+{% load lib_extras %}
 
 
 <div class="row mb-3">
@@ -19,12 +20,12 @@
         <div class="col-md-auto comment-profile-picture-container">
             {% if d.user.userprofile.profile_picture %}
                 {% if d.anonymous_donor %}
-                    <img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />
+                    <img class="circular-square-sm" src="{% static 'img/user_default.svg' %}" />
                 {% else %}
-                    <img class="comment-profile-picture" src="{{ d.user.userprofile.profile_picture.image.url }}" />
+                    <img class="{{ d.user.userprofile.profile_picture|img_class:'small' }}" src="{{ d.user.userprofile.profile_picture.image.url }}" />
                 {% endif %}
             {% else %}
-                <img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />
+                <img class="circular-square-sm" src="{% static 'img/user_default.svg' %}" />
             {% endif %}
         </div>
         <div class="col-md-9 {% if not d.comment %}d-flex align-items-center h100{% endif %}">
