@@ -5,11 +5,14 @@ This is the version history for PageFund development.
 
 ## Version 0.16.0
 
-Release date: TBD
+Release date: 01/17/2018
+
+32 files changed, 273 insertions(+), 172 deletions(-)
 
 ### Additions
 
-* None
+* Search design
+* Error logging on production server
 
 ### Changes
 
@@ -18,6 +21,7 @@ Release date: TBD
 ### Fixes
 
 * "Notes" reporting feature works again
+* Search results with Pages/Campaigns that have $0 donated
 
 
 ## Version 0.15.0

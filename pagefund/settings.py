@@ -26,7 +26,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '^-rmwm-x8z_8p5=9qu3p!27&=-u7#j!84$39-xvw3w=odz0xmy'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
+DEBUG = False
+
+SERVER_EMAIL = 'no-reply@page.fund'
+ADMINS = [('Garrett', 'gn9012@gmail.com')]
 
 ALLOWED_HOSTS = config.settings['allowed_hosts']
 
@@ -177,3 +181,9 @@ ACCOUNT_USERNAME_REQUIRED = False
 
 # testing
 TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
+
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = config.settings['sendgrid_username']
+EMAIL_HOST_PASSWORD = config.settings['sendgrid_password']
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

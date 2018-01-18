@@ -196,7 +196,11 @@ class Page(models.Model):
         return Donation.objects.filter(page=self).count()
 
     def donation_money(self):
-        return Donation.objects.filter(page=self).aggregate(Sum('amount')).get('amount__sum')
+        d = Donation.objects.filter(page=self).aggregate(Sum('amount')).get('amount__sum')
+        if d is None:
+            return 0
+        else:
+            return d
 
     def unique_donors(self):
         return Donation.objects.filter(page=self).distinct('donor_first_name').distinct('donor_last_name').count()
