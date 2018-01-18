@@ -59,9 +59,9 @@
             <a name="c{{ c.pk }}"></a>
             <div class="col-md-auto comment-profile-picture-container">
                 {% if c.user.userprofile.profile_picture %}
-                    <img class="comment-profile-picture" src="{{ c.user.userprofile.profile_picture.image.url }}" />
+                    <img class="{{ c.user.userprofile.profile_picture|img_class:'small' }}" src="{{ c.user.userprofile.profile_picture.image.url }}" />
                 {% else %}
-                    <img class="comment-profile-picture" src="{% static 'img/user_default.svg' %}" />
+                    <img class="circular-square-sm" src="{% static 'img/user_default.svg' %}" />
                 {% endif %}
             </div>
             <div class="col-md-10 mb-4">
