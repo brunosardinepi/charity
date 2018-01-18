@@ -62,14 +62,14 @@ def create_search_result_html(r, sponsored, trending):
     )
 
     if sponsored == True:
-        html += "<span class='badge badge-success mr-4'>Sponsored</span>"
+        html += "<i class='fal fa-star mr-3'></i>"
 
     if trending == True:
-        html += "<span class='badge badge-primary mr-4'>Trending</span>"
+        html += "<i class='fal fa-chart-line mr-3'></i>"
 
     html += (
+        "<i class='fal fa-compass mr-1'></i>"
         "<span class='small'>"
-        "<i class='fal fa-compass mr-2'></i>"
     )
 
     if r.city:
