@@ -44,8 +44,8 @@ def create_search_result_html(r, sponsored, trending):
             html += "<div class='circular-portrait'>"
         else:
             html += "<div class='circular-square'>"
-
     else:
+        html += "<div class='circular-square'>"
         src = "/static/img/campaign_default.svg"
 
     if isinstance(r, Page):

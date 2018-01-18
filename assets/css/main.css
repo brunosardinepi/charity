@@ -349,28 +349,56 @@ a.nav-link:hover {
 }
 
 /* Testing */
-.circular-square {
+.circular-landscape,
+.circular-portrait,
+.circular-landscape-sm,
+.circular-portrait-sm {
+    position: relative;
+    overflow: hidden;
     border-radius: 50%;
 }
 .circular-landscape,
-.circular-portrait {
-    position: relative;
+.circular-portrait,
+.circular-square {
     width: 8rem;
     height: 8rem;
-    overflow: hidden;
+}
+.circular-landscape-sm,
+.circular-portrait-sm,
+.circular-square-sm {
+    width: 4rem;
+    height: 4rem;
+}
+.circular-square {
     border-radius: 50%;
 }
 .circular-landscape {
     display: inline-block;
 }
-.circular-landscape img {
+.circular-square img,
+.circular-square-sm img {
+    height: 100%;
+    width: 100%;
+}
+.circular-landscape img,
+.circular-landscape-sm img {
     width: auto;
     height: 100%;
-    margin-left: -2rem;
 }
-.circular-portrait img {
+.circular-portrait img,
+.circular-portrait-sm img {
     width: 100%;
     height: auto;
+}
+.circular-landscape img {
+    margin-left: -2rem;
+}
+.circular-landscape-sm img {
+    margin-left: -1rem;
+}
+.circular-portrait img {
     margin-top: -2rem;
 }
-
+.circular-portrait-sm img {
+    margin-top: -1rem;
+}
