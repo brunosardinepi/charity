@@ -56,6 +56,23 @@ def query_list(q, s=''):
     return (results, sponsored)
 
 def state_list(s):
-    results = Page.objects.filter(is_sponsored=False, state=s, deleted=False).order_by('name')
-    sponsored = Page.objects.filter(is_sponsored=True, state=s, deleted=False).order_by('name')
+    results = []
+    sponsored = []
+
+    queryset_page = Page.objects.filter(state=s, deleted=False)
+    queryset_campaign = Campaign.objects.filter(state=s, deleted=False, is_active=True)
+    queryset = list(chain(queryset_page, queryset_campaign))
+
+    if queryset:
+        for object in queryset:
+            if isinstance(object, Page):
+                if object.is_sponsored == True:
+                    sponsored.append(object)
+                else:
+                    results.append(object)
+            else:
+                results.append(object)
+
+    results.sort(key=lambda x: x.name.lower())
+    sponsored.sort(key=lambda x: x.name.lower())
     return (results, sponsored)
