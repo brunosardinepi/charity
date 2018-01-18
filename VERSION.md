@@ -3,6 +3,25 @@
 This is the version history for PageFund development.
 
 
+## Version 0.16.1
+
+Release date: 01/18/2018
+
+14 files changed, 217 insertions(+), 22 deletions(-)
+
+### Additions
+
+* None
+
+### Changes
+
+* None
+
+### Fixes
+
+* Images are no longer warped when placed in a circle on the site
+
+
 ## Version 0.16.0
 
 Release date: 01/17/2018
