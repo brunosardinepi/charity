@@ -10,9 +10,13 @@
         <div class="col-md-auto comment-profile-picture-container">
             {% if b.image_url %}
                 {% get_img_from_pk b.image_pk "user" as img %}
-                <img class="{{ img|img_class:'small' }}" src="{{ b.image_url }}" />
+                <div class="{{ img|img_class:'small' }}">
+                    <img src="{{ b.image_url }}" />
+                </div>
             {% else %}
-                <img class="circular-square-sm" src="{% static 'img/user_default.svg' %}" />
+                <div class="circular-square-sm">
+                    <img src="{% static 'img/user_default.svg' %}" />
+                </div>
             {% endif %}
         </div>
 

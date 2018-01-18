@@ -372,7 +372,8 @@ a.nav-link:hover {
 .circular-square {
     border-radius: 50%;
 }
-.circular-landscape {
+.circular-landscape,
+.circular-landscape-sm {
     display: inline-block;
 }
 .circular-square img,

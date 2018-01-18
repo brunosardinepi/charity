@@ -20,12 +20,18 @@
         <div class="col-md-auto comment-profile-picture-container">
             {% if d.user.userprofile.profile_picture %}
                 {% if d.anonymous_donor %}
-                    <img class="circular-square-sm" src="{% static 'img/user_default.svg' %}" />
+                    <div class="circular-square-sm">
+                        <img src="{% static 'img/user_default.svg' %}" />
+                    </div>
                 {% else %}
-                    <img class="{{ d.user.userprofile.profile_picture|img_class:'small' }}" src="{{ d.user.userprofile.profile_picture.image.url }}" />
+                    <div class="{{ d.user.userprofile.profile_picture|img_class:'small' }}">
+                        <img src="{{ d.user.userprofile.profile_picture.image.url }}" />
+                    </div>
                 {% endif %}
             {% else %}
-                <img class="circular-square-sm" src="{% static 'img/user_default.svg' %}" />
+                <div class="circular-square-sm">
+                    <img src="{% static 'img/user_default.svg' %}" />
+                </div>
             {% endif %}
         </div>
         <div class="col-md-9 {% if not d.comment %}d-flex align-items-center h100{% endif %}">
