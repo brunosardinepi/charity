@@ -26,8 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '^-rmwm-x8z_8p5=9qu3p!27&=-u7#j!84$39-xvw3w=odz0xmy'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
-DEBUG = False
+DEBUG = True
 
 SERVER_EMAIL = 'no-reply@page.fund'
 ADMINS = [('Garrett', 'gn9012@gmail.com')]
