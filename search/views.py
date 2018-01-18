@@ -37,7 +37,7 @@ def create_search_result_html(r, sponsored, trending):
     if r.profile_picture():
         html += "<img class='search-result-picture' src='{}' />".format(r.profile_picture().image.url)
     else:
-        html += "<img class='search-result-picture' src='/static/img/user_default.svg' />"
+        html += "<img class='search-result-picture' src='/static/img/campaign_default.svg' />"
 
     html += (
         "</div>"
