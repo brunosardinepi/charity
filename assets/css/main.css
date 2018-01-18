@@ -259,7 +259,8 @@ a.nav-link:hover {
 }
 .comment-profile-picture,
 .vote-participant-picture,
-.search-result-picture {
+.search-result-picture-page,
+.search-result-picture-campaign {
     transition: border 0.5s ease;
     border-radius: 50%;
     border: 1px solid #ddd;
@@ -270,16 +271,18 @@ a.nav-link:hover {
     width: 4rem;
 }
 .vote-participant-picture,
-.search-result-picture {
+.search-result-picture-page,
+.search-result-picture-campaign {
     height: 8rem;
     width: 8rem;
     margin-bottom: 0.5rem;
 }
 .comment-profile-picture:hover,
-.search-result-picture:hover {
+.search-result-picture-page:hover {
     border: 1px solid #990099;
 }
-.vote-participant-picture:hover {
+.vote-participant-picture:hover,
+.search-result-picture-campaign:hover {
     border: 1px solid #2db386;
 }
 .comment-content {
