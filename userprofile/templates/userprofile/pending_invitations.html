@@ -1,0 +1,30 @@
+{% extends '_layout.html' %}
+
+
+{% block title %} Profile | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-lg-3">
+            {% include "userprofile/profile_menu.html" %}
+        </div>
+
+        <div class="col-lg-9">
+            <h2>Pending Invitations</h2>
+            {% if invitations %}
+                <ul>
+                    {% for i in invitations %}
+                        <li>{% if i.page %}{{ i.page.name }}{% elif i.campaign %}{{ i.campaign.name }}{% endif %} (from {{ i.invite_from.first_name }} {{ i.invite_from.last_name }}) - <a href="{% url 'invitations:accept_invitation' invitation_pk=i.pk key=i.key  %}">Accept</a> - <a href="{% url 'invitations:decline_invitation' type='manager' invitation_pk=i.pk key=i.key %}">Decline</a></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <h2>Invitations I've Sent</h2>
+            <ul>
+                {% for i in userprofile.invitations %}
+                    <li>Invitation to {% if i.page %}{{ i.page.name }}{% elif i.campaign %}{{ i.campaign.name }}{% endif %} sent to {{ i.invite_to }} on {{ i.date_created }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

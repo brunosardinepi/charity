@@ -12,16 +12,6 @@ from pagefund import config
 from pagefund.utils import email
 
 
-@login_required
-def pending_invitations(request):
-    invitations = models.ManagerInvitation.objects.filter(
-        invite_to=request.user.email,
-        expired=False,
-        accepted=False,
-        declined=False
-    )
-    return render(request, 'invitations/pending_invitations.html', {'invitations': invitations})
-
 @login_required(login_url='signup')
 def accept_invitation(request, invitation_pk, key):
     invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)

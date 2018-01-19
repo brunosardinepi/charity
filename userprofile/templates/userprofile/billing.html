@@ -1,0 +1,146 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+{% load donation_extras %}
+{% load page_extras %}
+{% load userprofile_extras %}
+
+{% block title %} Profile | {{ block.super }}{% endblock %}
+
+{% block head_extra %}
+    <script src="{% static 'js/comment_csrf.js' %}"></script>
+
+    <script>
+        $(document).on("click", ".set-default", function(event) {
+            event.preventDefault();
+            var url = "{% url 'donation:default_card' %}";
+            var id = $(this).closest("span").attr("id");
+            $.ajax({
+                url : url,
+                type : "POST",
+                traditional: true,
+                data : {
+                    id : id
+                },
+                success : function(json) {
+                    $(".default").html("<a class='set-default' href=''>Set default</a>");
+                    $("#default-" + json.id).text("Default");
+                }
+            });
+        });
+
+        $(document).on("click", ".delete-plan", function(event) {
+            event.preventDefault();
+            var url = "{% url 'plans:delete_plan' %}";
+            var id = $(this).attr("id");
+            $.ajax({
+                url : url,
+                type : "POST",
+                traditional: true,
+                data : {
+                    id : id
+                },
+                success : function(json) {
+                    var plan = $("#" + id)
+                    plan.closest("li").remove();
+                }
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-lg-3">
+            {% include "userprofile/profile_menu.html" %}
+        </div>
+        <div class="col-lg-9">
+            <h2>Saved Credit Cards</h2>
+            {% if stripe_error %}
+                <p>We're having trouble communicating with our payment processor. This error generated an email and sent it to our dev team. We're looking into the issue now, thanks!</p>
+            {% elif cards %}
+                <ul>
+                    {% for x, c in cards.items %}
+                        <form action="{% url 'userprofile:update_card' %}" method="post">
+                            {% csrf_token %}
+                            <input type="text" name="name" value="{{ c.name }}" placeholder="Card name" maxlength="100" id="id_name" />
+                            <input type="text" name="exp_month" value="{{ c.exp_month }}" placeholder="Exp Month" maxlength="2" id="id_exp_month" />
+                            <input type="text" name="exp_year" value="{{ c.exp_year }}" placeholder="Exp Year" maxlength="4" id="id_exp_year" />
+                            <input type="hidden" name="id" value="{{ c.id }}" />
+                            <span class="default" id="default-{{ c.id }}">{% if c.default == True %}Default{% else %}<a class="set-default" href="">Set default</a>{% endif %}</span>
+                            <input type="submit" name="save" value="Save" />
+                            <input type="submit" name="delete" value="Delete" />
+                        </form>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if not stripe_error %}
+                <h3>Add Credit Card</h3>
+                <form action="{% url 'userprofile:add_card' %}" method="post" id="add-card-form">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <label for="card-element">Credit or debit card</label>
+                        <div id="card-element"></div>
+                        <div id="card-errors" role="alert"></div>
+                    </div>
+                    <button>Add card</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function stripeTokenHandler(token) {
+            var form = document.getElementById('add-card-form');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'stripeToken');
+            hiddenInput.setAttribute('value', token.id);
+            form.appendChild(hiddenInput);
+
+            form.submit();
+        }
+
+        var stripe = Stripe('{{ api_pk }}');
+        var elements = stripe.elements();
+
+        var style = {
+            base: {
+                fontSize: '16px',
+                lineHeight: '24px'
+            }
+        };
+
+        var card = elements.create('card', {style: style});
+        card.mount('#card-element');
+
+        card.addEventListener('change', function(event) {
+            var displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+
+        var form = document.getElementById('add-card-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var extraDetails = {
+                name: "{{ request.user.first_name }} {{ request.user.last_name }}",
+            };
+
+            stripe.createToken(card, extraDetails).then(function(result) {
+                if (result.error) {
+                    var errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = result.error.message;
+                } else {
+                    stripeTokenHandler(result.token);
+                }
+            });
+        });
+    </script>
+
+{% endblock %}
