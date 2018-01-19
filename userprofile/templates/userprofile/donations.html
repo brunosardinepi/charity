@@ -52,7 +52,7 @@
                             <p>{{ p.amount|cents_to_dollars }}</p>
                         </div>
                         <div class="col-7">
-                            <p><a href="{% url 'page' page_slug=p.page.page_slug %}">{{ p.page }}</a>{% if p.campaign %} via <a href="{% url 'campaign' page_slug=p.page.page_slug campaign_pk=p.campaign.pk campaign_slug=p.campaign.campaign_slug %}">{{ p.campaign }}</a>{% endif %} - <a class="delete-plan" id="plan-{{ p.id }}" href="">Delete</a></p>
+                            <p><a href="{% url 'page' page_slug=p.page.page_slug %}">{{ p.page }}</a>{% if p.campaign %} via <a class="teal" href="{% url 'campaign' page_slug=p.page.page_slug campaign_pk=p.campaign.pk campaign_slug=p.campaign.campaign_slug %}">{{ p.campaign }}</a>{% endif %} - <a class="delete-plan" id="plan-{{ p.id }}" href="">Delete</a></p>
                         </div>
                         <div class="col-3">
                             <p>{{ p.interval }}</p>
@@ -92,7 +92,7 @@
                             <p>{{ d.amount|cents_to_dollars }}</p>
                         </div>
                         <div class="col-7">
-                            <p><a href="{% url 'page' page_slug=d.page.page_slug %}">{{ d.page }}</a>{% if d.campaign %} via <a href="{% url 'campaign' page_slug=d.page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign }}</a>{% endif %}</p>
+                            <p><a href="{% url 'page' page_slug=d.page.page_slug %}">{{ d.page }}</a>{% if d.campaign %} via <a class="teal" href="{% url 'campaign' page_slug=d.page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign }}</a>{% endif %}</p>
                         </div>
                         <div class="col-3">
                             <p>{{ d.date }}</p>

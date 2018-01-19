@@ -58,7 +58,7 @@
                     <div class="col">
                         <div class="row pt-2">
                             <div class="col-md-auto">
-                                <p class="mb-0"><a href="{% url 'campaign' page_slug=c.page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a></p>
+                                <p class="mb-0"><a class="teal" href="{% url 'campaign' page_slug=c.page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a></p>
                                 <p class="mb-0">{{ user_admin_status }}</p>
                             </div>
                         </div>
