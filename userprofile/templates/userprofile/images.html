@@ -31,7 +31,6 @@
             event.preventDefault();
             var arr = $(this).closest("span").attr("id").split('-');
             var url = "{% url 'userprofile:user_profile_update' image_pk=0 %}".replace(0, arr[1]);
-//            var id = $(this).closest("span").attr("id");
             $.get(url, function() {
                 $(".profile").html("<a class='set-profile-picture' href=''>Make profile picture</a> - ");
                 $("#profile-" + arr[1]).text("Profile picture - ");
@@ -42,14 +41,22 @@
 {% endblock %}
 
 {% block body_content %}
-    <br />
-    <button type="button" id="upload-button">Upload Images</button>
+    <div class="row">
+        <div class="col-lg-3">
+            {% include "userprofile/profile_menu.html" %}
+        </div>
+        <div class="col-lg-9">
+            <h2>Upload Images</h2>
+            <hr>
+            <p>Uploads are limited to images and must be less than 4 MB in size.</p>
+            <button class="btn btn-purple" type="button" id="upload-button">Upload Images</button>
     <input id="upload-input" type="file" name="image" multiple
         style="display:none;"
         data-url="{% url 'userprofile:user_image_upload' %}"
         data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}' />
 
-    <h3 id="images-header">Images</h3>
+    <h2 class="mt-5" id="images-header">My Images</h2>
+    <hr>
     {% if images %}
         <ul id="image-list">
             {% for i in images %}
@@ -59,5 +66,7 @@
     {% else %}
         <p>No images!</p>
     {% endif %}
+    </div>
+</div>
 {% endblock %}
 
