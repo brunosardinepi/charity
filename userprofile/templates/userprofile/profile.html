@@ -3,10 +3,12 @@
 {% load donation_extras %}
 {% load page_extras %}
 {% load userprofile_extras %}
+{% load lib_extras %}
 
 {% block title %} Profile | {{ block.super }}{% endblock %}
 
 {% block head_extra %}
+    <link href="{% static 'css/lightbox.css' %}" rel="stylesheet">
     <script src="{% static 'js/comment_csrf.js' %}"></script>
 {% endblock %}
 
@@ -15,16 +17,30 @@
         <div class="col-lg-3">
             {% include "userprofile/profile_menu.html" %}
         </div>
-        <div class="col-lg-5">
+        <div class="col-lg-6">
             <form action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.as_p }}
                 <input type="submit" value="Update profile" />
             </form>
         </div>
-        <div class="col-lg-4">
-            <img src="{{ userprofile.profile_picture.image.url }}" width="250"/>
+        <div class="col-lg-3 text-center">
+            {% if userprofile.profile_picture %}
+                <div class="{{ userprofile.profile_picture|img_class:'large' }}">
+                    <a href="{{ userprofile.profile_picture.image.url }}" data-lightbox="image">
+                        <img src="{{ userprofile.profile_picture.image.url }}" />
+                    </a>
+                </div>
+            {% else %}
+                <div class="circular-square">
+                    <img src="{% static 'img/user_default.svg' %}" />
+                </div>
+            {% endif %}
             <p><a href="{% url 'userprofile:user_image_upload' %}">Upload and Edit images</a></p>
         </div>
     </div>
+{% endblock %}
+
+{% block body_extra %}
+    <script src="{% static 'js/lightbox.js' %}"></script>
 {% endblock %}
