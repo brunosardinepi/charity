@@ -10,21 +10,79 @@
         </div>
 
         <div class="col-lg-9">
-            <h2>Pending Invitations</h2>
+            <h2>Invitations Received</h2>
+            <hr>
             {% if invitations %}
-                <ul>
-                    {% for i in invitations %}
-                        <li>{% if i.page %}{{ i.page.name }}{% elif i.campaign %}{{ i.campaign.name }}{% endif %} (from {{ i.invite_from.first_name }} {{ i.invite_from.last_name }}) - <a href="{% url 'invitations:accept_invitation' invitation_pk=i.pk key=i.key  %}">Accept</a> - <a href="{% url 'invitations:decline_invitation' type='manager' invitation_pk=i.pk key=i.key %}">Decline</a></li>
-                    {% endfor %}
-                </ul>
+                <div class="row">
+                    <div class="col-4">
+                        <p class="font-weight-bold">Page/Campaign</p>
+                    </div>
+                    <div class="col-4">
+                        <p class="font-weight-bold">From</p>
+                    </div>
+                    <div class="col-4">
+                    </div>
+                </div>
+
+                {% for i in invitations %}
+                    <div class="row mb-1">
+                        <div class="col-4 my-auto">
+                            {% if i.campaign %}
+                                <a class="teal" href="{% url 'campaign' page_slug=i.campaign.page.page_slug campaign_pk=i.campaign.pk campaign_slug=i.campaign.campaign_slug %}">{{ i.campaign.name }}</a>
+                            {% elif i.page %}
+                                <a href="{% url 'page' page_slug=i.page.page_slug %}">{{ i.page.name }}</a>
+                            {% endif %}
+                        </div>
+                        <div class="col-4 my-auto">
+                            {% if i.invite_from.first_name %}{{ i.invite_from.first_name }} {{ i.invite_from.last_name }}{% else %}{{ i.invite_from.email }}{% endif %}
+                        </div>
+                        <div class="col-2">
+                            <a class="btn btn-block {% if i.campaign %}btn-teal{% else %}btn-purple{% endif %}" href="{% url 'invitations:accept_invitation' invitation_pk=i.pk key=i.key %}">Accept</a>
+                        </div>
+                        <div class="col-2">
+                            <a class="btn btn-block {% if i.campaign %}btn-outline-teal{% else %}btn-outline-purple{% endif %}" href="{% url 'invitations:decline_invitation' type='manager' invitation_pk=i.pk key=i.key %}">Decline</a></li>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>You haven't received any invitations!</p>
             {% endif %}
 
-            <h2>Invitations I've Sent</h2>
-            <ul>
+            <h2 class="mt-5">Invitations I've Sent</h2>
+            <hr>
+            {% if userprofile.invitations %}
+                <div class="row">
+                    <div class="col-4">
+                        <p class="font-weight-bold">Page/Campaign</p>
+                    </div>
+                    <div class="col-4">
+                        <p class="font-weight-bold">Sent to</p>
+                    </div>
+                    <div class="col-4">
+                        <p class="font-weight-bold">Date sent</p>
+                    </div>
+                </div>
+
                 {% for i in userprofile.invitations %}
-                    <li>Invitation to {% if i.page %}{{ i.page.name }}{% elif i.campaign %}{{ i.campaign.name }}{% endif %} sent to {{ i.invite_to }} on {{ i.date_created }}</li>
+                    <div class="row mb-1">
+                        <div class="col-4">
+                            {% if i.campaign %}
+                                <a class="teal" href="{% url 'campaign' page_slug=i.campaign.page.page_slug campaign_pk=i.campaign.pk campaign_slug=i.campaign.campaign_slug %}">{{ i.campaign.name }}</a>
+                            {% elif i.page %}
+                                <a href="{% url 'page' page_slug=i.page.page_slug %}">{{ i.page.name }}</a>
+                            {% endif %}
+                        </div>
+                        <div class="col-4">
+                            {{ i.invite_to }}
+                        </div>
+                        <div class="col-4">
+                            {{ i.date_created }}
+                        </div>
+                    </div>
                 {% endfor %}
-            </ul>
+            {% else %}
+                <p>You haven't sent any invitations!</p>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
