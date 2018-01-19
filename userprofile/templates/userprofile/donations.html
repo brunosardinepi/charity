@@ -31,24 +31,76 @@
             {% include "userprofile/profile_menu.html" %}
         </div>
         <div class="col-lg-9">
-            <p><a href="{% url 'userprofile:userprofile_taxes' %}" target="_blank">Print donation history for taxes</a></p>
-
             <h2>Recurring Donations</h2>
+            <hr>
             {% if userprofile.plans %}
-                <ul>
-                    {% for p in userprofile.plans %}
-                        <li id="test">{{ p.amount|cents_to_dollars }} every {{ p.interval }} to <a href="{% url 'page' page_slug=p.page.page_slug %}">{{ p.page }}</a>{% if p.campaign %} via <a href="{% url 'campaign' page_slug=p.page.page_slug campaign_pk=p.campaign.pk campaign_slug=p.campaign.campaign_slug %}">{{ p.campaign }}</a>{% endif %} - <a class="delete-plan" id="plan-{{ p.id }}" href="">Delete</a></li>
-                    {% endfor %}
-                </ul>
+                <div class="row">
+                    <div class="col-2">
+                        <p class="font-weight-bold">Amount</p>
+                    </div>
+                    <div class="col-7">
+                        <p class="font-weight-bold">Recipient</p>
+                    </div>
+                    <div class="col-3">
+                        <p class="font-weight-bold">Frequency</p>
+                    </div>
+                </div>
+
+                {% for p in userprofile.plans %}
+                    <div class="row">
+                        <div class="col-2">
+                            <p>{{ p.amount|cents_to_dollars }}</p>
+                        </div>
+                        <div class="col-7">
+                            <p><a href="{% url 'page' page_slug=p.page.page_slug %}">{{ p.page }}</a>{% if p.campaign %} via <a href="{% url 'campaign' page_slug=p.page.page_slug campaign_pk=p.campaign.pk campaign_slug=p.campaign.campaign_slug %}">{{ p.campaign }}</a>{% endif %} - <a class="delete-plan" id="plan-{{ p.id }}" href="">Delete</a></p>
+                        </div>
+                        <div class="col-3">
+                            <p>{{ p.interval }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>You have no recurring donations!</p>
             {% endif %}
 
-            <h2>Donations</h2>
+            <div class="row justify-content-between mt-5">
+                <div class="col">
+                    <h2>Donations</h2>
+                </div>
+                <div class="col-1 my-auto">
+                    <a href="{% url 'userprofile:userprofile_taxes' %}" target="_blank"><i class="fal fa-print fa-lg"></i></a>
+                </div>
+            </div>
+
+            <hr>
+
             {% if userprofile.donations %}
-                <ul>
-                    {% for d in userprofile.donations %}
-                        <li>{{ d.amount|cents_to_dollars }} to <a href="{% url 'page' page_slug=d.page.page_slug %}">{{ d.page }}</a>{% if d.campaign %} via <a href="{% url 'campaign' page_slug=d.page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign }}</a>{% endif %} @ {{ d.date }}</li>
-                    {% endfor %}
-                </ul>
+                <div class="row">
+                    <div class="col-2">
+                        <p class="font-weight-bold">Amount</p>
+                    </div>
+                    <div class="col-7">
+                        <p class="font-weight-bold">Recipient</p>
+                    </div>
+                    <div class="col-3">
+                        <p class="font-weight-bold">Date</p>
+                    </div>
+                </div>
+                {% for d in userprofile.donations %}
+                    <div class="row">
+                        <div class="col-2">
+                            <p>{{ d.amount|cents_to_dollars }}</p>
+                        </div>
+                        <div class="col-7">
+                            <p><a href="{% url 'page' page_slug=d.page.page_slug %}">{{ d.page }}</a>{% if d.campaign %} via <a href="{% url 'campaign' page_slug=d.page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign }}</a>{% endif %}</p>
+                        </div>
+                        <div class="col-3">
+                            <p>{{ d.date }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>You haven't made any donations yet!</p>
             {% endif %}
         </div>
     </div>
