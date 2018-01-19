@@ -56,27 +56,51 @@
         </div>
         <div class="col-lg-9">
             <h2>Saved Credit Cards</h2>
+            <hr>
             {% if stripe_error %}
                 <p>We're having trouble communicating with our payment processor. This error generated an email and sent it to our dev team. We're looking into the issue now, thanks!</p>
             {% elif cards %}
-                <ul>
-                    {% for x, c in cards.items %}
-                        <form action="{% url 'userprofile:update_card' %}" method="post">
-                            {% csrf_token %}
-                            <input type="text" name="name" value="{{ c.name }}" placeholder="Card name" maxlength="100" id="id_name" />
-                            <input type="text" name="exp_month" value="{{ c.exp_month }}" placeholder="Exp Month" maxlength="2" id="id_exp_month" />
-                            <input type="text" name="exp_year" value="{{ c.exp_year }}" placeholder="Exp Year" maxlength="4" id="id_exp_year" />
-                            <input type="hidden" name="id" value="{{ c.id }}" />
-                            <span class="default" id="default-{{ c.id }}">{% if c.default == True %}Default{% else %}<a class="set-default" href="">Set default</a>{% endif %}</span>
-                            <input type="submit" name="save" value="Save" />
-                            <input type="submit" name="delete" value="Delete" />
-                        </form>
-                    {% endfor %}
-                </ul>
+                <div class="row">
+                    <div class="col-3">
+                        <p class="font-weight-bold">Card name</p>
+                    </div>
+                    <div class="col-3">
+                        <p class="font-weight-bold">Exp month/year</p>
+                    </div>
+                    <div class="col-6">
+                    </div>
+                </div>
+                {% for x, c in cards.items %}
+                    <form action="{% url 'userprofile:update_card' %}" method="post">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="col-3">
+                                <input class="form-control" type="text" name="name" value="{{ c.name }}" placeholder="My Visa" maxlength="100" id="id_name" />
+                            </div>
+                            <div class="col-1">
+                                <input class="form-control" type="text" name="exp_month" value="{{ c.exp_month }}" placeholder="10" maxlength="2" id="id_exp_month" />
+                            </div>
+                            <div class="col-2">
+                                <input class="form-control" type="text" name="exp_year" value="{{ c.exp_year }}" placeholder="2025" maxlength="4" id="id_exp_year" />
+                            </div>
+                            <div class="col-2 my-auto">
+                                <span class="default" id="default-{{ c.id }}">{% if c.default == True %}Default{% else %}<a class="set-default" href="">Set default</a>{% endif %}</span>
+                            </div>
+                            <div class="col-2">
+                                <input class="btn btn-block btn-purple" type="submit" name="save" value="Save" />
+                            </div>
+                            <div class="col-2">
+                                <input class="btn btn-block btn-outline-purple" type="submit" name="delete" value="Delete" />
+                            </div>
+                        </div>
+                        <input type="hidden" name="id" value="{{ c.id }}" />
+                    </form>
+                {% endfor %}
             {% endif %}
 
             {% if not stripe_error %}
-                <h3>Add Credit Card</h3>
+                <h2 class="mt-5">Add Credit Card</h2>
+                <hr>
                 <form action="{% url 'userprofile:add_card' %}" method="post" id="add-card-form">
                     {% csrf_token %}
                     <div class="form-row">
