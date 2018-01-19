@@ -197,7 +197,7 @@ class UserProfileTest(TestCase):
         self.assertEqual(len(images), 1)
 
         image = images[0]
-        response = self.client.get('/profile/')
+        response = self.client.get('/profile/images/')
         self.assertContains(response, image.image.url, status_code=200)
 
         image.delete()
