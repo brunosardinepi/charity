@@ -89,14 +89,14 @@ class UserProfileTest(TestCase):
         self.donation = Donation.objects.create(
             amount=2200,
             page=self.page,
-            user=self.user
+            user=self.user,
         )
 
         self.donation2 = Donation.objects.create(
             amount=900,
             page=self.page,
             campaign=self.campaign,
-            user=self.user
+            user=self.user,
         )
 
         self.card = models.StripeCard.objects.create(
@@ -119,30 +119,44 @@ class UserProfileTest(TestCase):
         response = self.client.get('/profile/')
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.userprofile.subscribers.get(id=self.page.pk).name, status_code=200)
         self.assertContains(response, self.user.userprofile.state, status_code=200)
+        self.assertContains(response, "Personal Information")
+        self.assertContains(response, "Upload and Edit images")
+
+    def test_billing(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/profile/billing/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Saved Credit Cards")
+        self.assertContains(response, "Add Credit Card")
+
+    def test_donations(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/profile/donations/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Recurring Donations")
+        self.assertContains(response, "Donations")
+        self.assertContains(response, '${}'.format(int(self.donation.amount / 100)))
+        self.assertContains(response, self.page.name)
+        self.assertContains(response, '${}'.format(int(self.donation2.amount / 100)))
+        self.assertContains(response, self.campaign.name)
+
+    def test_pages_campaigns(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/profile/pages-and-campaigns/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "My Pages")
+        self.assertContains(response, "My Campaigns")
+        self.assertContains(response, self.user.userprofile.subscribers.get(id=self.page.pk).name, status_code=200)
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.page2.name, status_code=200)
         self.assertNotContains(response, self.page3.name, status_code=200)
         self.assertContains(response, self.campaign.name, status_code=200)
         self.assertContains(response, self.campaign2.name, status_code=200)
         self.assertContains(response, self.campaign3.name, status_code=200)
-        self.assertContains(response, '$%s to <a href="/%s/">%s</a> @' % (
-            int(self.donation.amount / 100),
-            self.page.page_slug,
-            self.page.name),
-            status_code=200
-        )
-        self.assertContains(response, '$%s to <a href="/%s/">%s</a> via <a href="/%s/%s/%s/">%s</a> @' % (
-            int(self.donation2.amount / 100),
-            self.page.page_slug,
-            self.page.name,
-            self.page.page_slug,
-            self.campaign.pk,
-            self.campaign.campaign_slug,
-            self.campaign.name),
-            status_code=200
-        )
 
     def test_userprofileform(self):
         form = forms.UserProfileForm({
@@ -157,16 +171,19 @@ class UserProfileTest(TestCase):
         form = forms.UserProfileForm({})
         self.assertTrue(form.is_valid())
 
-    def test_sent_invitations(self):
+    def test_invitations(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/profile/')
+        response = self.client.get('/profile/invitations/')
 
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Invitations Received")
+        self.assertContains(response, "Invitations Sent")
         self.assertContains(response, "rupert@oi.mate", status_code=200)
 
         self.invitation.expired = True
         self.invitation.save()
 
-        response = self.client.get('/profile/')
+        response = self.client.get('/profile/invitations/')
         self.assertNotContains(response, "rupert@oi.mate", status_code=200)
 
     def test_image_upload(self):
@@ -234,16 +251,18 @@ class UserProfileTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
 
         data = {'notification_preferences[]': ['notification_email_page_donation']}
-        response = self.client.post('/profile/notifications/update/', data)
+        response = self.client.post('/profile/notifications/', data)
         self.assertRedirects(response, '/profile/', 302, 200)
-        response = self.client.get('/profile/')
+        response = self.client.get('/profile/notifications/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Notification Preferences")
         response = response.content.decode("utf-8")
         self.assertEqual(response.count("checked"), 1)
 
         data = {'notification_preferences[]': ['notification_email_page_donation', 'notification_email_page_created']}
-        response = self.client.post('/profile/notifications/update/', data)
+        response = self.client.post('/profile/notifications/', data)
         self.assertRedirects(response, '/profile/', 302, 200)
-        response = self.client.get('/profile/')
+        response = self.client.get('/profile/notifications/')
         response = response.content.decode("utf-8")
         self.assertEqual(response.count("checked"), 2)
 
