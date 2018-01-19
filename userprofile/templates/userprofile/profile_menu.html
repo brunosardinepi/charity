@@ -8,13 +8,13 @@
     <a href="{% url 'userprofile:pages_campaigns' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'pages_campaigns' %} active{% endif %}">
         Pages and Campaigns
     </a>
-    <a href="{% url 'userprofile:pending_invitations' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'pending_invitations' %} active{% endif %}">
-        Invites
-    </a>
     <a href="{% url 'userprofile:donations' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'donations' %} active{% endif %}">
         Donations
     </a>
     <a href="{% url 'userprofile:notifications' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'notifications' %} active{% endif %}">
         Notifications
+    </a>
+    <a href="{% url 'userprofile:pending_invitations' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'pending_invitations' %} active{% endif %}">
+        Invitations
     </a>
 </div>

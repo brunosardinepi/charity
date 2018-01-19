@@ -402,3 +402,7 @@ a.nav-link:hover {
 .circular-portrait-sm img {
     margin-top: -1rem;
 }
+.list-group-item.active {
+    background-color: #990099;
+    border-color: #990099;
+}
