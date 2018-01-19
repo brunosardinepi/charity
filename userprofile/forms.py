@@ -3,6 +3,7 @@ from datetime import datetime
 from django import forms
 
 from . import models
+from .widgets import CustomSelectDateWidget
 
 
 YEAR_CHOICES = list(range(1900, datetime.now().year))[::-1]
@@ -10,7 +11,7 @@ YEAR_CHOICES = list(range(1900, datetime.now().year))[::-1]
 class UserProfileForm(forms.Form):
     first_name = forms.CharField(max_length=100, label='First name', required=False)
     last_name = forms.CharField(max_length=100, label='Last name', required=False)
-    birthday = forms.DateField(required=False, widget=forms.SelectDateWidget(years=YEAR_CHOICES))
+    birthday = forms.DateField(required=False, widget=CustomSelectDateWidget(years=YEAR_CHOICES))
     STATE_CHOICES = (
         ('', '-----'),
         ('AL', 'Alabama'),
