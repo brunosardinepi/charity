@@ -11,14 +11,13 @@
 
     <script>
         function delete_image(event) {
-            var arr = event.target.id.split('-');
+            var arr = $(event.target).closest("a").attr("id").split("-");
             var url = "{% url 'userprofile:user_image_delete' image_pk=0 %}".replace(0, arr[1]);
             $.get(url, function () {
                 $("#image-" + arr[1]).remove();
-                console.log($("#image-list").length);
                 if(!$.trim($("#image-list").html()).length) {
                     $("#image-list").empty();
-                    $("#image-list").append("<div class='col'><p>No images!</p></div>");
+                    $("#image-list").append("<div class='col' id='no-images'><p>No images!</p></div>");
                 };
             });
         };
@@ -30,11 +29,11 @@
 
         $(document).on("click", ".set-profile-picture", function(event) {
             event.preventDefault();
-            var arr = $(this).closest("span").attr("id").split('-');
+            var arr = $(event.target).parent().attr("id").split("-");
             var url = "{% url 'userprofile:user_profile_update' image_pk=0 %}".replace(0, arr[1]);
             $.get(url, function() {
-                $(".profile").html("<a class='set-profile-picture' href=''>Make profile picture</a> - ");
-                $("#profile-" + arr[1]).text("Profile picture - ");
+                $(".profile").html("<a class='set-profile-picture' href=''>Make profile picture</a>");
+                $("#profile-" + arr[1]).text("Profile picture");
             });
         });
     </script>
@@ -64,15 +63,21 @@
                 <div class="col-4" id="image-{{ i.pk }}">
                     <div class="card" style="border:0;">
                         <img class="card-img-top" src="{{ i.image.url }}">
-                        <div class="card-body">
-                            <p class="small profile" id="profile-{{ i.pk }}">{% if i.profile_picture %}Profile picture - {% else %}<a class="set-profile-picture" href="">Make profile picture</a> - {% endif %}</p>
-                            <a id="delete-{{ i.pk }}" class="delete-image" href="">Delete</a></li>
+                        <div class="card-body p-0 pt-1">
+                            <div class="row justify-content-between">
+                                <div class="col">
+                                    <span class="small profile" id="profile-{{ i.pk }}">{% if i.profile_picture %}Profile picture {% else %}<a class="set-profile-picture" href="">Make profile picture</a>{% endif %}</span>
+                                </div>
+                                <div class="col-3 text-right">
+                                    <a id="delete-{{ i.pk }}" class="delete-image" href=""><i class="fal fa-trash-alt"></i></a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         {% else %}
-            <div class="col">
+            <div class="col" id="no-images">
                 <p>No images!</p>
             </div>
         {% endif %}
