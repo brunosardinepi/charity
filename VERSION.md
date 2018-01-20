@@ -2,6 +2,24 @@
 
 This is the version history for PageFund development.
 
+## Version 0.17.1
+
+Release date: TBD
+
+### Additions
+
+* None
+
+### Changes
+
+* None
+
+### Fixes
+
+* Issue where Campaign admins couldn't view the Campaign dashboard
+* Subscribe button issues
+
+
 ## Version 0.17.0
 
 Release date: 01/19/2018
