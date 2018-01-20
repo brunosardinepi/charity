@@ -355,6 +355,7 @@ a.nav-link:hover {
 .circular-portrait-sm,
 .circular-square,
 .circular-square-sm {
+    display: inline-block;
     position: relative;
     overflow: hidden;
     border-radius: 50%;
@@ -371,10 +372,10 @@ a.nav-link:hover {
     width: 4rem;
     height: 4rem;
 }
-.circular-landscape,
+/* .circular-landscape,
 .circular-landscape-sm {
     display: inline-block;
-}
+} */
 .circular-square img,
 .circular-square-sm img {
     height: 100%;
