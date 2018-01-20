@@ -5,7 +5,6 @@ $(document).on("click", "#subscribe", function(event) {
     $.get(url, function (data) {
         subscribe_attr = JSON.parse(data);
         $("#subscribe").attr("name", subscribe_attr.name);
-        $("#subscribe").css("background-color", subscribe_attr.color);
         $("#subscribe").text(subscribe_attr.value);
     });
 });

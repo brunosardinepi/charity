@@ -11,7 +11,7 @@
         <p>{% if subscribe_attr.name == "subscribe" %}<i class="fal fa-fw fa-check-circle"></i>{% elif subscribe_attr.name == "unsubscribe" %}<i class="fal fa-fw fa-times-circle"></i>{% endif %} <a href="" id="subscribe" name="{{ subscribe_attr.name }}">{{ subscribe_attr.value  }}</a></p>
     {% endif %}
 {% else %}
-    <p><i class="fal fa-fw fa-check-circle"></i> <a href="" onclick="location.href='{% url 'login' %}?next=/page/subscribe/{{ page.pk }}/subscribe/'">Subscribe</a></p>
+    <p><i class="fal fa-fw fa-check-circle"></i> <a href="{% url 'subscribe' page_pk=page.pk action='subscribe' %}">Subscribe</a></p>
 {% endif %}
 
 <p><i class="fab fa-fw fa-facebook-f"></i> <a href="">Share on Facebook</a></p>
