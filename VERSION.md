@@ -12,7 +12,7 @@ Release date: TBD
 
 ### Changes
 
-* None
+* Admin site URL
 
 ### Fixes
 
