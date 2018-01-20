@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 
+from . import config
 from . import views
 from campaign import views as CampaignViews
 from invitations import views as InvitationsViews
@@ -12,7 +13,7 @@ from page import views as PageViews
 
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^{}/'.format(config.settings['admin']), admin.site.urls),
     url(r'^accounts/login/', views.LoginView.as_view(), name='login'),
     url(r'^accounts/signup/', views.SignupView.as_view(), name='signup'),
     url(r'^accounts/', include('allauth.urls')),

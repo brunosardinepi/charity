@@ -134,6 +134,10 @@ class HomeTest(TestCase):
             user=self.user2
         )
 
+    def test_admin(self):
+        response = self.client.get('/admin/')
+        self.assertEqual(response.status_code, 404)
+
     def test_home_logged_out(self):
         response = self.client.get('/')
 
