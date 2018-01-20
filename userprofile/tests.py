@@ -119,6 +119,7 @@ class UserProfileTest(TestCase):
         response = self.client.get('/profile/')
 
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user.email)
         self.assertContains(response, self.user.userprofile.state, status_code=200)
         self.assertContains(response, "Personal Information")
         self.assertContains(response, "Upload and Edit images")
