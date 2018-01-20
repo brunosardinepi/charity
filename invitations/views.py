@@ -63,7 +63,7 @@ def decline_invitation(request, type, invitation_pk, key):
 
     # if the user is logged in and declined the invitation, redirect them to their other pending invitations
     if request.user.is_authenticated:
-        return HttpResponseRedirect(reverse('invitations:pending_invitations'))
+        return HttpResponseRedirect(reverse('userprofile:pending_invitations'))
     # if the user isn't logged in and declined the invitation, redirect them to the homepage
     else:
         return HttpResponseRedirect(reverse('home'))

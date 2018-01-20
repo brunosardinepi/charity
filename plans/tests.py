@@ -85,18 +85,3 @@ class DonationTest(TestCase):
         )
         now = timezone.now()
         self.assertLess(plan.date, now)
-
-    def test_plan_profile(self):
-        self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/profile/')
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Recurring Donations", status_code=200)
-        self.assertContains(response, "$%s every month to " % int(self.plan.amount / 100), status_code=200)
-
-        self.client.login(username='packetloss', password='plshelap')
-        response = self.client.get('/profile/')
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Recurring Donations", status_code=200)
-        self.assertContains(response, "$%s every month to " % int(self.plan2.amount / 100), status_code=200)
-
-
