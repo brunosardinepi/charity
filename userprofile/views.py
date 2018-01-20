@@ -68,7 +68,7 @@ def userprofile(request):
 class UserImageUpload(View):
     def get(self, request):
         userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
-        images = UserImage.objects.filter(user=userprofile)
+        images = UserImage.objects.filter(user=userprofile).order_by('-date')
         return render(self.request, 'userprofile/images.html', {'userprofile': userprofile, 'images': images})
 
     def post(self, request):

@@ -245,6 +245,7 @@ def upload_to(instance, filename):
 
 class UserImage(models.Model):
     user = models.ForeignKey('userprofile.UserProfile', on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now)
     image = models.FileField(upload_to=upload_to, max_length=255, blank=True, null=True)
     caption = models.CharField(max_length=255, blank=True)
     profile_picture = models.BooleanField(default=False)
