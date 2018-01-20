@@ -14,57 +14,65 @@
         <div class="col-lg-9">
             <h2>My Pages</h2>
             <hr>
-            {% for p in userprofile.my_pages %}
-                {% user_admin_status user=request.user type="page" obj=p as user_admin_status %}
-                <div class="row mb-3">
-                    <div class="col-md-auto comment-profile-picture-container">
-                        {% if p.profile_picture %}
-                            <div class="{{ p.profile_picture|img_class:'small' }}">
-                                <img src="{{ p.profile_picture.image.url }}" />
-                            </div>
-                        {% else %}
-                            <div class="circular-square-sm">
-                                <img src="{% static 'img/campaign_default.svg' %}" />
-                            </div>
-                        {% endif %}
-                    </div>
-                    <div class="col">
-                        <div class="row pt-2">
-                            <div class="col-md-auto">
-                                <p class="mb-0"><a href="{% url 'page' page_slug=p.page_slug %}">{{ p.name }}</a></p>
-                                <p class="mb-0">{{ user_admin_status }}</p>
+            {% if userprofile.my_pages %}
+                {% for p in userprofile.my_pages %}
+                    {% user_admin_status user=request.user type="page" obj=p as user_admin_status %}
+                    <div class="row mb-3">
+                        <div class="col-md-auto comment-profile-picture-container">
+                            {% if p.profile_picture %}
+                                <div class="{{ p.profile_picture|img_class:'small' }}">
+                                    <img src="{{ p.profile_picture.image.url }}" />
+                                </div>
+                            {% else %}
+                                <div class="circular-square-sm">
+                                    <img src="{% static 'img/campaign_default.svg' %}" />
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col">
+                            <div class="row pt-2">
+                                <div class="col-md-auto">
+                                    <p class="mb-0"><a href="{% url 'page' page_slug=p.page_slug %}">{{ p.name }}</a></p>
+                                    <p class="mb-0">{{ user_admin_status }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            {% else %}
+                <p>You haven't subscribed to any Pages!</p>
+            {% endif %}
 
             <h2 class="mt-5">My Campaigns</h2>
             <hr>
-            {% for c in userprofile.my_campaigns %}
-                {% user_admin_status user=request.user type="campaign" obj=c as user_admin_status %}
-                <div class="row mb-3">
-                    <div class="col-md-auto comment-profile-picture-container">
-                        {% if c.profile_picture %}
-                            <div class="{{ c.profile_picture|img_class:'small' }}">
-                                <img src="{{ c.profile_picture.image.url }}" />
-                            </div>
-                        {% else %}
-                            <div class="circular-square-sm">
-                                <img src="{% static 'img/campaign_default.svg' %}" />
-                            </div>
-                        {% endif %}
-                    </div>
-                    <div class="col">
-                        <div class="row pt-2">
-                            <div class="col-md-auto">
-                                <p class="mb-0"><a class="teal" href="{% url 'campaign' page_slug=c.page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a></p>
-                                <p class="mb-0">{{ user_admin_status }}</p>
+            {% if userprofile.my_campaigns %}
+                {% for c in userprofile.my_campaigns %}
+                    {% user_admin_status user=request.user type="campaign" obj=c as user_admin_status %}
+                    <div class="row mb-3">
+                        <div class="col-md-auto comment-profile-picture-container">
+                            {% if c.profile_picture %}
+                                <div class="{{ c.profile_picture|img_class:'small' }}">
+                                    <img src="{{ c.profile_picture.image.url }}" />
+                                </div>
+                            {% else %}
+                                <div class="circular-square-sm">
+                                    <img src="{% static 'img/campaign_default.svg' %}" />
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col">
+                            <div class="row pt-2">
+                                <div class="col-md-auto">
+                                    <p class="mb-0"><a class="teal" href="{% url 'campaign' page_slug=c.page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a></p>
+                                    <p class="mb-0">{{ user_admin_status }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            {% else %}
+                <p>You haven't subscribed to any Campaigns!</p>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

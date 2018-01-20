@@ -96,6 +96,8 @@
                         <input type="hidden" name="id" value="{{ c.id }}" />
                     </form>
                 {% endfor %}
+            {% else %}
+                <p>You don't have any saved credit cards!</p>
             {% endif %}
 
             {% if not stripe_error %}

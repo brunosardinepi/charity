@@ -9,8 +9,18 @@ from .widgets import CustomSelectDateWidget
 YEAR_CHOICES = list(range(1900, datetime.now().year))[::-1]
 
 class UserProfileForm(forms.Form):
-    first_name = forms.CharField(max_length=100, label='First name', required=False)
-    last_name = forms.CharField(max_length=100, label='Last name', required=False)
+    first_name = forms.CharField(
+        max_length=100,
+        label='First name',
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder':'Bugs'})
+    )
+    last_name = forms.CharField(
+        max_length=100,
+        label='Last name',
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder':'Bunny'})
+    )
     birthday = forms.DateField(required=False, widget=CustomSelectDateWidget(years=YEAR_CHOICES))
     STATE_CHOICES = (
         ('', '-----'),
