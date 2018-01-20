@@ -15,9 +15,10 @@
             var url = "{% url 'userprofile:user_image_delete' image_pk=0 %}".replace(0, arr[1]);
             $.get(url, function () {
                 $("#image-" + arr[1]).remove();
-                if (!$("#image-list li").length) {
-                    $("#image-list").remove();
-                    $("<p>No images!</p>").insertAfter("#images-header");
+                console.log($("#image-list").length);
+                if(!$.trim($("#image-list").html()).length) {
+                    $("#image-list").empty();
+                    $("#image-list").append("<div class='col'><p>No images!</p></div>");
                 };
             });
         };
@@ -57,15 +58,24 @@
 
     <h2 class="mt-5" id="images-header">My Images</h2>
     <hr>
-    {% if images %}
-        <ul id="image-list">
+    <div class="row" id="image-list">
+        {% if images %}
             {% for i in images %}
-                <li id="image-{{ i.pk }}"><span class="profile" id="profile-{{ i.pk }}">{% if i.profile_picture %}Profile picture - {% else %}<a class="set-profile-picture" href="">Make profile picture</a> - {% endif %}</span><a href="{{ i.image.url }}">{{ i.image.name }}</a> - <a id="delete-{{ i.pk }}" class="delete-image" href="">Delete</a></li>
+                <div class="col-4" id="image-{{ i.pk }}">
+                    <div class="card" style="border:0;">
+                        <img class="card-img-top" src="{{ i.image.url }}">
+                        <div class="card-body">
+                            <p class="small profile" id="profile-{{ i.pk }}">{% if i.profile_picture %}Profile picture - {% else %}<a class="set-profile-picture" href="">Make profile picture</a> - {% endif %}</p>
+                            <a id="delete-{{ i.pk }}" class="delete-image" href="">Delete</a></li>
+                        </div>
+                    </div>
+                </div>
             {% endfor %}
-        </ul>
-    {% else %}
-        <p>No images!</p>
-    {% endif %}
+        {% else %}
+            <div class="col">
+                <p>No images!</p>
+            </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
