@@ -18,6 +18,7 @@ Release date: TBD
 
 * Issue where Campaign admins couldn't view the Campaign dashboard
 * Subscribe button issues
+* Error page for bad image size/type wasn't loading
 
 
 ## Version 0.17.0
