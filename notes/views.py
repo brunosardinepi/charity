@@ -4,7 +4,9 @@ from django.views import View
 from . import forms
 from .models import Note
 from .utils import create_note
+from campaign.models import CampaignImage
 from comments.models import Comment
+from page.models import PageImage
 
 
 def error_forgotpasswordreset_expired(request):
@@ -37,7 +39,7 @@ def error_stripe_invalid_request(request, error_pk):
 class AbuseComment(View):
     def get(self, request, comment_pk):
         comment = get_object_or_404(Comment, pk=comment_pk)
-        form = forms.AbuseCommentForm()
+        form = forms.AbuseForm()
         return render(request, 'notes/abuse_comment.html', {
             'comment': comment,
             'form': form,
@@ -45,9 +47,33 @@ class AbuseComment(View):
 
     def post(self, request, comment_pk):
         comment = get_object_or_404(Comment, pk=comment_pk)
-        form = forms.AbuseCommentForm(request.POST)
+        form = forms.AbuseForm(request.POST)
         if form.is_valid():
             create_note(request, comment, 'abuse')
+        # idk where to redirect this to. maybe a thank you page
+        return redirect('home')
+
+
+class AbuseImage(View):
+    def get(self, request, type, image_pk):
+        if type == "page":
+            image = get_object_or_404(PageImage, pk=image_pk)
+        elif type == "campaign":
+            image = get_object_or_404(CampaignImage, pk=image_pk)
+        form = forms.AbuseForm()
+        return render(request, 'notes/abuse_image.html', {
+            'image': image,
+            'form': form,
+        })
+
+    def post(self, request, type, image_pk):
+        if type == "page":
+            image = get_object_or_404(PageImage, pk=image_pk)
+        elif type == "campaign":
+            image = get_object_or_404(CampaignImage, pk=image_pk)
+        form = forms.AbuseForm(request.POST)
+        if form.is_valid():
+            create_note(request, image, 'abuse')
         # idk where to redirect this to. maybe a thank you page
         return redirect('home')
 

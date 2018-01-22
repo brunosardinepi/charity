@@ -2,7 +2,7 @@
 
 
 {% if page.profile_picture %}
-    <a href="{{ page.profile_picture.image.url }}" data-lightbox="profile-picture">
+    <a href="{{ page.profile_picture.image.url }}" data-lightbox="profile-picture" data-title="<a href='/notes/abuse/image/page/{{ page.profile_picture.pk }}/'>Report image</a>">
         <img src="{{ page.profile_picture.image.url }}" class="img-fluid img-thumbnail" />
     </a>
 {% else %}
@@ -15,7 +15,7 @@
 <div hidden>
     {% for image in page.images %}
         {% if not image.profile_picture %}
-            <a href="{{ image.image.url }}" data-lightbox="profile-picture">
+            <a href="{{ image.image.url }}" data-lightbox="profile-picture" data-title="<a href='/notes/abuse/image/page/{{ image.pk }}/'>Report image</a>">
                 <img src="{{ image.image.url }}" class="img-fluid img-thumbnail" />
             </a>
         {% endif %}

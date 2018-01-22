@@ -1,5 +1,5 @@
 from django import forms
 
 
-class AbuseCommentForm(forms.Form):
+class AbuseForm(forms.Form):
     note = forms.CharField(widget=forms.Textarea)
