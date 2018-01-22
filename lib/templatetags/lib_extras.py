@@ -23,9 +23,9 @@ def img_class(img, size):
     height = img.height
     width = img.width
 
-    if height < width:
+    if height < (width - 60):
         html = "circular-landscape"
-    elif height > width:
+    elif height > (width + 60):
         html = "circular-portrait"
     else:
         html = "circular-square"

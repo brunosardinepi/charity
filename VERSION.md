@@ -22,6 +22,7 @@ Release date: TBD
 * Error page for bad image size/type wasn't loading
 * Expired invitations
 * Add card to profile
+* Images getting cropped in circles
 
 
 ## Version 0.17.0
