@@ -2,6 +2,23 @@
 
 This is the version history for PageFund development.
 
+## Version 0.17.2
+
+Release date: TBD
+
+### Additions
+
+* None
+
+### Changes
+
+* None
+
+### Fixes
+
+* Active campaigns weren't showing up on Campaigns if the Campaign goal was $0
+
+
 ## Version 0.17.1
 
 Release date: 01/21/2018
