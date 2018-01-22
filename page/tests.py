@@ -179,7 +179,7 @@ class PageTest(TestCase):
             'page_slug': "testpage"
         }
 
-        response = self.client.post('/create/', data)
+        response = self.client.post('/create/page/', data)
         self.assertEqual(models.Page.objects.filter(deleted=False).count(), 1)
 
     def test_page_status_logged_out(self):
@@ -327,12 +327,12 @@ class PageTest(TestCase):
         self.assertRedirects(response, '/accounts/login/?next=/page/subscribe/%s/subscribe/' % self.page.pk, 302, 200)
 
     def test_page_create_logged_out(self):
-        response = self.client.get('/create/')
-        self.assertRedirects(response, '/accounts/signup/?next=/create/', 302, 200)
+        response = self.client.get('/create/page/')
+        self.assertRedirects(response, '/accounts/signup/?next=/create/page/', 302, 200)
 
     def test_page_create_logged_in(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/create/')
+        response = self.client.get('/create/page/')
         self.assertEqual(response.status_code, 200)
 
         data = {
@@ -347,7 +347,7 @@ class PageTest(TestCase):
             'website': "test.com",
             'tos_accepted': True,
         }
-        response = self.client.post('/create/', data)
+        response = self.client.post('/create/page/', data)
         self.assertRedirects(response, '/create/mytestpage/additional/', 302, 200)
 
         data_additional = {
@@ -369,13 +369,13 @@ class PageTest(TestCase):
         self.assertRedirects(response, '/mytestpage/', 302, 200)
 
         self.client.login(username='harrypotter', password='imawizard')
-        response = self.client.get('/create/')
+        response = self.client.get('/create/page/')
         self.assertEqual(response.status_code, 200)
 
         data['name'] = "My Other Test Page"
         data['type'] = "personal"
         data['page_slug'] = "myothertestpage"
-        response = self.client.post('/create/', data)
+        response = self.client.post('/create/page/', data)
         self.assertRedirects(response, '/create/myothertestpage/bank/', 302, 200)
 
         response = self.client.post('/create/myothertestpage/bank/', data_bank)
