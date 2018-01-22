@@ -17,6 +17,7 @@ Release date: TBD
 ### Fixes
 
 * Active campaigns weren't showing up on Campaigns if the Campaign goal was $0
+* Campaign end date and goal are required
 
 
 ## Version 0.17.1
