@@ -9,6 +9,7 @@ Release date: TBD
 ### Additions
 
 * Reporting for Page and Campaign images
+* Get started page
 
 ### Changes
 
