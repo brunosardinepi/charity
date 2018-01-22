@@ -11,8 +11,14 @@ def cents_to_dollars(n):
 
 @register.filter(name='progress_width')
 def progress_width(campaign):
-    return int((campaign.donation_money() / (campaign.goal * 100)) * 100)
+    if campaign.donation_money() == 0:
+        return 0
+    else:
+        return int((campaign.donation_money() / (campaign.goal * 100)) * 100)
 
 @register.filter(name='progress_value')
 def progress_value(m):
-    return int(m / 100)
+    if m == 0:
+        return 0
+    else:
+        return int(m / 100)
