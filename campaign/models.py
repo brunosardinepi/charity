@@ -31,7 +31,7 @@ class Campaign(models.Model):
     deleted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     deleted_on = models.DateTimeField(blank=True, null=True)
     description = models.TextField(blank=True)
-    end_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateTimeField()
     goal = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
     name = models.CharField(max_length=255, db_index=True)
