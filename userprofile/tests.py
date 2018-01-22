@@ -1,8 +1,11 @@
 import ast
+import datetime
+import pytz
 
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, RequestFactory, TestCase
+from django.utils import timezone
 
 from . import forms
 from . import models
@@ -51,6 +54,7 @@ class UserProfileTest(TestCase):
             type='Event',
             description='This is a description for Test Campaign.',
             goal='666',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
         )
 
         self.campaign.campaign_admins.add(self.user.userprofile)
@@ -62,6 +66,7 @@ class UserProfileTest(TestCase):
             type='Event',
             description='I use a mousepad.',
             goal='15',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
         )
 
         self.campaign2.campaign_managers.add(self.user.userprofile)
@@ -73,6 +78,7 @@ class UserProfileTest(TestCase):
             type='Event',
             description='I write with a pencil.',
             goal='153',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
         )
 
         self.campaign3.campaign_subscribers.add(self.user.userprofile)

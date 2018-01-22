@@ -1,4 +1,6 @@
 import ast
+import datetime
+import pytz
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
@@ -72,6 +74,7 @@ class CampaignTest(TestCase):
             state='Texas',
             description='This is a description for Test Campaign.',
             goal='666',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
         )
 
         self.campaign.campaign_admins.add(self.user.userprofile)
@@ -91,7 +94,8 @@ class CampaignTest(TestCase):
             state='Texas',
             description='Im the captain',
             goal='334',
-            deleted=True
+            deleted=True,
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
         )
 
         self.campaign3 = models.Campaign.objects.create(
@@ -103,7 +107,7 @@ class CampaignTest(TestCase):
             state='New York',
             description='aoiefj;asfn eafjsafj dsa;lfkjaeio;fj asdklf',
             goal='1999',
-            end_date='2018-01-14 06:00:00+00',
+            end_date=datetime.datetime(2001, 8, 15, 8, 15, 12, 0, pytz.UTC),
             is_active=False,
         )
 
@@ -187,7 +191,12 @@ class CampaignTest(TestCase):
         self.assertIn(self.campaign, campaigns)
 
     def test_campaign_creation_time(self):
-        campaign = models.Campaign.objects.create(name='time tester', page=self.page)
+        campaign = models.Campaign.objects.create(
+            name='time tester',
+            page=self.page,
+            goal='666',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
+        )
         now = timezone.now()
         self.assertLess(campaign.created_on, now)
 
@@ -211,6 +220,7 @@ class CampaignTest(TestCase):
             'goal': 1000,
             'city': "Honolulu",
             'state': "HI",
+            'end_date': "2099-01-01 00:00:00",
         }
         response = self.client.post('/campaign/create/', data)
         self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 3)
@@ -366,6 +376,7 @@ class CampaignTest(TestCase):
             'goal': 1000,
             'city': "Honolulu",
             'state': "HI",
+            'end_date': "2099-01-01 00:00:00",
         }
         response = self.client.post('/campaign/create/', data)
         self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 3)
@@ -383,6 +394,7 @@ class CampaignTest(TestCase):
             'goal': 1000,
             'city': "Honolulu",
             'state': "HI",
+            'end_date': "2099-01-01 00:00:00",
         }
         response = self.client.post('/campaign/create/', data)
         self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 3)
@@ -398,7 +410,8 @@ class CampaignTest(TestCase):
             'goal': '234',
             'type': 'event',
             'category': 'other',
-            'description': 'I wear headphones.'
+            'description': 'I wear headphones.',
+            'end_date': '2099-01-01 00:00:00',
         })
         self.assertTrue(form.is_valid())
         campaign = form.save(commit=False)

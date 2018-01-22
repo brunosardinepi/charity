@@ -1,4 +1,6 @@
 import ast
+import datetime
+import pytz
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
@@ -99,6 +101,7 @@ class PageTest(TestCase):
             type='event',
             description='This is a description for Test Campaign.',
             goal='11',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
         )
 
         self.campaign2 = CampaignModels.Campaign.objects.create(
@@ -108,6 +111,7 @@ class PageTest(TestCase):
             type='event',
             description='My cat died yesterday',
             goal='12',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
         )
 
         self.invitation = ManagerInvitation.objects.create(

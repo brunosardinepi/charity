@@ -1,3 +1,6 @@
+import datetime
+import pytz
+
 from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.contenttypes.models import ContentType
 from django.test import Client, RequestFactory, TestCase
@@ -53,6 +56,7 @@ class CommentTest(TestCase):
             page=self.page,
             description='This is a description for Test Campaign.',
             goal='11',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
         )
 
         self.comment = models.Comment.objects.create(

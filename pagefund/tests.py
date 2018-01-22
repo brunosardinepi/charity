@@ -2,6 +2,7 @@ from unittest import mock
 import datetime
 import django
 import os
+import pytz
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
@@ -100,18 +101,103 @@ class HomeTest(TestCase):
 
         self.page.subscribers.add(self.user.userprofile)
 
-        self.campaign = Campaign.objects.create(name="Blue", campaign_slug="blue", page=self.page, trending_score=30.0)
-        self.campaign2 = Campaign.objects.create(name="Green", campaign_slug="green", page=self.page, trending_score=29.0)
-        self.campaign3 = Campaign.objects.create(name="Yellow", campaign_slug="yellow", page=self.page, trending_score=28.0)
-        self.campaign4 = Campaign.objects.create(name="campaign4", campaign_slug="campaign4", page=self.page2, trending_score=27.0)
-        self.campaign5 = Campaign.objects.create(name="campaign5", campaign_slug="campaign5", page=self.page2, trending_score=26.0)
-        self.campaign6 = Campaign.objects.create(name="campaign6", campaign_slug="campaign6", page=self.page2, trending_score=25.0, is_active=False)
-        self.campaign7 = Campaign.objects.create(name="campaign7", campaign_slug="campaign7", page=self.page2, trending_score=24.0)
-        self.campaign8 = Campaign.objects.create(name="campaign8", campaign_slug="campaign8", page=self.page2, trending_score=23.0)
-        self.campaign9 = Campaign.objects.create(name="campaign9", campaign_slug="campaign9", page=self.page2, trending_score=22.0)
-        self.campaign10 = Campaign.objects.create(name="campaign10", campaign_slug="campaign10", page=self.page2, trending_score=21.0)
-        self.campaign11 = Campaign.objects.create(name="campaign11", campaign_slug="campaign11", page=self.page2, trending_score=20.0)
-        self.campaign12 = Campaign.objects.create(name="campaign12", campaign_slug="campaign12", page=self.page2, trending_score=2.0)
+        self.campaign = Campaign.objects.create(
+            name="Blue",
+            campaign_slug="blue",
+            page=self.page,
+            trending_score=30.0,
+            goal='1',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
+        )
+        self.campaign2 = Campaign.objects.create(
+            name="Green",
+            campaign_slug="green",
+            page=self.page,
+            trending_score=29.0,
+            goal='2',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
+        )
+        self.campaign3 = Campaign.objects.create(
+            name="Yellow",
+            campaign_slug="yellow",
+            page=self.page,
+            trending_score=28.0,
+            goal='3',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
+        )
+        self.campaign4 = Campaign.objects.create(
+            name="campaign4",
+            campaign_slug="campaign4",
+            page=self.page2,
+            trending_score=27.0,
+            goal='4',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
+        )
+        self.campaign5 = Campaign.objects.create(
+            name="campaign5",
+            campaign_slug="campaign5",
+            page=self.page2,
+            trending_score=26.0,
+            goal='5',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
+        )
+        self.campaign6 = Campaign.objects.create(
+            name="campaign6",
+            campaign_slug="campaign6",
+            page=self.page2,
+            trending_score=25.0,
+            is_active=False,
+            goal='6',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
+        )
+        self.campaign7 = Campaign.objects.create(
+            name="campaign7",
+            campaign_slug="campaign7",
+            page=self.page2,
+            trending_score=24.0,
+            goal='7',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
+        )
+        self.campaign8 = Campaign.objects.create(
+            name="campaign8",
+            campaign_slug="campaign8",
+            page=self.page2,
+            trending_score=23.0,
+            goal='8',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
+        )
+        self.campaign9 = Campaign.objects.create(
+            name="campaign9",
+            campaign_slug="campaign9",
+            page=self.page2,
+            trending_score=22.0,
+            goal='9',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
+        )
+        self.campaign10 = Campaign.objects.create(
+            name="campaign10",
+            campaign_slug="campaign10",
+            page=self.page2,
+            trending_score=21.0,
+            goal='10',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
+        )
+        self.campaign11 = Campaign.objects.create(
+            name="campaign11",
+            campaign_slug="campaign11",
+            page=self.page2,
+            trending_score=20.0,
+            goal='11',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
+        )
+        self.campaign12 = Campaign.objects.create(
+            name="campaign12",
+            campaign_slug="campaign12",
+            page=self.page2,
+            trending_score=2.0,
+            goal='12',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
+        )
 
         self.donation = Donation.objects.create(
             amount=2000,

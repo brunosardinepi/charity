@@ -1,3 +1,6 @@
+import datetime
+import pytz
+
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.test import Client, TestCase
@@ -53,6 +56,7 @@ class NoteTest(TestCase):
             page=self.page,
             description='This is a description for Test Campaign.',
             goal='11',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
         )
 
         self.note = Note.objects.create(
