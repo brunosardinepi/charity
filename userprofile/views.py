@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views import View
 
 import stripe
@@ -130,7 +131,7 @@ def add_card(request):
                     stripe_card_id=card_source.id,
                     stripe_card_fingerprint=card_source.fingerprint
                 )
-            return HttpResponseRedirect(request.user.userprofile.get_absolute_url())
+            return HttpResponseRedirect(reverse('userprofile:billing'))
 
 @login_required
 def update_card(request):
@@ -151,7 +152,7 @@ def update_card(request):
                 if not settings.TESTING:
                     customer = stripe.Customer.retrieve(request.user.userprofile.stripe_customer_id)
                     customer.sources.retrieve(card.stripe_card_id).delete()
-            return HttpResponseRedirect(card.user.get_absolute_url())
+            return HttpResponseRedirect(reverse('userprofile:billing'))
 
 class Notifications(View):
     def get(self, request):

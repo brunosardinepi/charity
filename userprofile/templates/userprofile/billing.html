@@ -71,7 +71,7 @@
                     </div>
                 </div>
                 {% for x, c in cards.items %}
-                    <form action="{% url 'userprofile:update_card' %}" method="post">
+                    <form action="{% url 'userprofile:update_card' %}" method="post" class="mb-1">
                         {% csrf_token %}
                         <div class="form-row">
                             <div class="col-3">
