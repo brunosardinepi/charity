@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from . import views
-from .forms import AbuseCommentForm
+from .forms import AbuseForm
 from .models import Note
 from campaign.models import Campaign
 from comments.models import Comment
@@ -97,16 +97,15 @@ class NoteTest(TestCase):
 
     def test_note_form(self):
         data = {}
-        form = AbuseCommentForm(data)
+        form = AbuseForm(data)
         self.assertFalse(form.is_valid())
 
         data = {'note': "A test note for you."}
-        form = AbuseCommentForm(data)
+        form = AbuseForm(data)
         self.assertTrue(form.is_valid())
         self.assertTrue(form['note'], "A test note for you.")
 
     def test_comments_abuse(self):
-        # notes/abuse/comment/16/
         self.client.login(username='testuser', password='testpassword')
         self.assertEqual(Note.objects.all().count(), 2)
         data = {'note': "How rude!"}
