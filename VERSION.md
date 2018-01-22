@@ -12,6 +12,7 @@ Release date: TBD
 
 ### Changes
 
+* Identifying the logged-in user in their profile
 * Admin site URL
 
 ### Fixes
@@ -19,6 +20,8 @@ Release date: TBD
 * Issue where Campaign admins couldn't view the Campaign dashboard
 * Subscribe button issues
 * Error page for bad image size/type wasn't loading
+* Expired invitations
+* Add card to profile
 
 
 ## Version 0.17.0
