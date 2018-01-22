@@ -1,9 +1,48 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
 
-{% block title %} Terms of Service | {{ block.super }}{% endblock %}
+{% block title %}Create | {{ block.super }}{% endblock %}
 
 {% block body_content %}
-    <h1>Terms of Service</h1>
-    {% include "snippets/terms_of_service.html" %}
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1>What do you want to create?</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <h2 class="text-center">Pages</h2>
+            <p>Some information about Pages and what they do or whatever Page intro we want here:</p>
+            <ul>
+                <li>Facts</li>
+                <li>about</li>
+                <li>Pages</li>
+                <li>go</li>
+                <li>here</li>
+            </ul>
+            <p>A final word or something can go here.</p>
+            <div class="row justify-content-center">
+                <div class="col-5">
+                    <a href="{% url 'page_create' %}" class="btn btn-block btn-purple">Create Page</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <h2 class="text-center">Campaigns</h2>
+            <p>Some information about Campaigns and what they do or whatever Campaign intro we want here:</p>
+            <ul>
+                <li>Facts</li>
+                <li>about</li>
+                <li>Campaigns</li>
+                <li>go</li>
+                <li>here</li>
+            </ul>
+            <p>A final word or something can go here.</p>
+            <div class="row justify-content-center">
+                <div class="col-5">
+                    <a href="{% url 'campaign_create' %}" class="btn btn-block btn-teal">Create Campaign</a>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

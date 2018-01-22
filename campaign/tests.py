@@ -222,7 +222,7 @@ class CampaignTest(TestCase):
             'state': "HI",
             'end_date': "2099-01-01 00:00:00",
         }
-        response = self.client.post('/campaign/create/', data)
+        response = self.client.post('/create/campaign/', data)
         self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 3)
 
         campaign = models.Campaign.objects.get(name="MyCampaign")
@@ -364,7 +364,7 @@ class CampaignTest(TestCase):
         response = self.client.get('/{}/campaign/create/'.format(self.page.page_slug))
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get('/campaign/create/')
+        response = self.client.get('/create/campaign/')
         self.assertEqual(response.status_code, 200)
 
         data = {
@@ -378,7 +378,7 @@ class CampaignTest(TestCase):
             'state': "HI",
             'end_date': "2099-01-01 00:00:00",
         }
-        response = self.client.post('/campaign/create/', data)
+        response = self.client.post('/create/campaign/', data)
         self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 3)
         campaign = models.Campaign.objects.get(campaign_slug="mycampaign")
         self.assertRedirects(response, '/{}/{}/{}/'.format(campaign.page.page_slug, campaign.pk, campaign.campaign_slug), 302, 200)
@@ -396,7 +396,7 @@ class CampaignTest(TestCase):
             'state': "HI",
             'end_date': "2099-01-01 00:00:00",
         }
-        response = self.client.post('/campaign/create/', data)
+        response = self.client.post('/create/campaign/', data)
         self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 3)
         campaign = models.Campaign.objects.get(campaign_slug="mycampaign")
         self.assertRedirects(response, '/{}/{}/{}/vote/edit/'.format(campaign.page.page_slug, campaign.pk, campaign.campaign_slug), 302, 200)
