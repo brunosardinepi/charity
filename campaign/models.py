@@ -32,7 +32,7 @@ class Campaign(models.Model):
     deleted_on = models.DateTimeField(blank=True, null=True)
     description = models.TextField(blank=True)
     end_date = models.DateTimeField()
-    goal = models.IntegerField(default=0)
+    goal = models.IntegerField()
     is_active = models.BooleanField(default=True)
     name = models.CharField(max_length=255, db_index=True)
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE, related_name='campaigns')
