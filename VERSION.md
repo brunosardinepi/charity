@@ -10,6 +10,8 @@ Release date: TBD
 
 * Reporting for Page and Campaign images
 * Get started page
+* Create Page design
+* Create Campaign design
 
 ### Changes
 

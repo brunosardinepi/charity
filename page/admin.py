@@ -5,8 +5,8 @@ from . import models
 
 
 class PageAdmin(GuardedModelAdmin):
-    list_display = ('id', 'name', 'page_slug', 'category', 'deleted',)
-    ordering = ('id', 'name', 'page_slug',)
+    list_display = ('id', 'name', 'trending_score', 'page_slug', 'category', 'deleted',)
+    ordering = ('id', 'name', 'trending_score', 'page_slug',)
     list_filter = ('category', 'deleted',)
     filter_horizontal = ('admins', 'managers',)
 
