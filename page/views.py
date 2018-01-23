@@ -524,3 +524,17 @@ class PageDashboardDonations(View):
             })
         else:
             raise Http404
+
+class PageDashboardCampaigns(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        if utils.has_dashboard_access(request.user, page, None):
+            return render(self.request, 'page/dashboard_campaigns.html', {
+                'page': page,
+                'donations': donation_statistics(page),
+                'campaign_types': campaign_types(page),
+                'campaign_average_duration': campaign_average_duration(page),
+                'campaign_success_pct': campaign_success_pct(page),
+            })
+        else:
+            raise Http404

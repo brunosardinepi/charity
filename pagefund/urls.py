@@ -43,6 +43,7 @@ urlpatterns = [
     url(r'^(?P<page_slug>[\w-]+)/dashboard/$', login_required(PageViews.PageDashboard.as_view()), name='page_dashboard'),
     url(r'^(?P<page_slug>[\w-]+)/dashboard/admin/$', login_required(PageViews.PageDashboardAdmin.as_view()), name='page_dashboard_admin'),
     url(r'^(?P<page_slug>[\w-]+)/dashboard/donations/$', login_required(PageViews.PageDashboardDonations.as_view()), name='page_dashboard_donations'),
+    url(r'^(?P<page_slug>[\w-]+)/dashboard/campaigns/$', login_required(PageViews.PageDashboardCampaigns.as_view()), name='page_dashboard_campaigns'),
     url(r'^page/dashboard/ajax/donations/', PageViews.PageAjaxDonations.as_view(), name='page_ajax_donations'),
     url(r'^(?P<page_slug>[\w-]+)/delete/$', PageViews.page_delete, name='page_delete'),
     url(r'^(?P<page_slug>[\w-]+)/donate/$', PageViews.PageDonate.as_view(), name='page_donate'),
