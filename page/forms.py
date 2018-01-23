@@ -1,6 +1,9 @@
+from datetime import datetime
+
 from django import forms
 
 from . import models
+from userprofile.widgets import CustomSelectDateWidget
 
 
 class PageForm(forms.ModelForm):
@@ -31,8 +34,6 @@ class PageForm(forms.ModelForm):
             'website': forms.TextInput(attrs={'placeholder': 'https://page.fund'}),
             'address_line1': forms.TextInput(attrs={'placeholder': '123 Main St.'}),
             'address_line2': forms.TextInput(attrs={'placeholder': 'Suite 200'}),
-            'city': forms.TextInput(attrs={'placeholder': 'Houston'}),
-            'zipcode': forms.TextInput(attrs={'placeholder': '77002'}),
             'description': forms.Textarea(attrs={'placeholder': 'We are an amazing group that does amazing things!'}),
         }
 
@@ -68,7 +69,9 @@ class PageBankForm(forms.Form):
 class PageAdditionalInfoForm(forms.Form):
     first_name = forms.CharField(max_length=255)
     last_name = forms.CharField(max_length=255)
-    birthday = forms.DateField()
+
+    YEAR_CHOICES = list(range(1900, datetime.now().year))[::-1]
+    birthday = forms.DateField(required=False, widget=CustomSelectDateWidget(years=YEAR_CHOICES))
 
 class PageEditBankForm(forms.Form):
     account_holder_first_name = forms.CharField(max_length=255)

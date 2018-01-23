@@ -111,8 +111,9 @@ class PageCreateAdditionalInfo(View):
         userprofile = get_object_or_404(UserProfile, user=request.user)
         form = forms.PageAdditionalInfoForm(request.POST)
         if form.is_valid():
-            userprofile.user.first_name = form.cleaned_data['first_name']
-            userprofile.user.last_name = form.cleaned_data['last_name']
+            request.user.first_name = form.cleaned_data['first_name']
+            request.user.last_name = form.cleaned_data['last_name']
+            request.user.save()
             userprofile.birthday = form.cleaned_data['birthday']
             userprofile.save()
             return redirect('page_create_bank_info', page_slug=page.page_slug)

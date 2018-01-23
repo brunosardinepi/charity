@@ -13,13 +13,11 @@ class UserProfileForm(forms.Form):
         max_length=100,
         label='First name',
         required=False,
-        widget=forms.TextInput(attrs={'placeholder':'Bugs'})
     )
     last_name = forms.CharField(
         max_length=100,
         label='Last name',
         required=False,
-        widget=forms.TextInput(attrs={'placeholder':'Bunny'})
     )
     birthday = forms.DateField(required=False, widget=CustomSelectDateWidget(years=YEAR_CHOICES))
     STATE_CHOICES = (
