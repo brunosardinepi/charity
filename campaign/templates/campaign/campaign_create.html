@@ -1,5 +1,7 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
+{% load widget_tweaks %}
+
 
 {% block title %}Create | {{ block.super }}{% endblock %}
 
@@ -29,27 +31,256 @@
 {% endblock %}
 
 {% block body_content %}
-    <h1>Create Campaign</h1>
-
-    <form>
-        {% csrf_token %}
-        <input id="q" type="text" placeholder="Search for Pages" />
-    </form>
-
-    <form action="{% url 'campaign_create' %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-
-        <div id="results">
-            <p>Search Results:</p>
-            <ul id="results-list">
-                {% if page %}
-                    <li><input type="radio" name="page" value="{{ page.pk }}" checked="checked" />{{ page.name }}  - {% if page.city %}{{ page.city }}, {% endif %}{{ page.state }}</li>
-                {% endif %}
-            </ul>
+    <div class="row mt-4 mb-3">
+        <div class="col-12 text-center">
+            <h1>Which Page are you helping?</h1>
         </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-8 offset-2">
+            <form>
+                {% csrf_token %}
+                <div class="form-group">
+                    <input id="q" type="text" class="form-control form-control-lg" placeholder="Search for Pages">
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <form action="{% url 'campaign_create' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
 
-        {{ form.as_p }}
+                <div id="results">
+                    <p>Search Results:</p>
+                    <ul id="results-list">
+                        {% if page %}
+                            <li><input type="radio" name="page" value="{{ page.pk }}" checked="checked" />{{ page.name }}  - {% if page.city %}{{ page.city }}, {% endif %}{{ page.state }}</li>
+                        {% endif %}
+                    </ul>
+                </div>
 
-        <input type="submit" value="Create campaign" />
-    </form>
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="form-group row">
+                    <label for="{{ form.name.id_for_label }}" class="col-md-2 col-form-label">
+                        Campaign name
+                    </label>
+                    <div class="col-md-10">
+                        {% render_field form.name class+="form-control" aria-describedby="name-help"%}
+                        <small id="name-help" class="form-text text-muted">
+                            This is how your name will be displayed on PageFund.
+                        </small>
+                    </div>
+                    {% if form.name.errors %}
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                            {% for error in form.name.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="row mb-3">
+                    <label for="{{ form.campaign_slug.id_for_label }}" class="col-md-2 col-form-label">
+                        Vanity URL
+                    </label>
+                    <div class="input-group col-md-10">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">https://page.fund/page-name/</span>
+                        </div>
+                        {% render_field form.campaign_slug class+="form-control" aria-describedby="campaign_slug-help"%}
+                    </div>
+                    <div class="col-md-10 offset-md-2">
+                        <small id="campaign_slug-help" class="form-text text-muted">
+                            Choose what your URL will look like.
+                        </small>
+                    </div>
+                    {% if form.campaign_slug.errors %}
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                            {% for error in form.campaign_slug.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group row">
+                    <label for="{{ form.website.id_for_label }}" class="col-md-2 col-form-label">
+                        Your website
+                    </label>
+                    <div class="col-md-10">
+                        {% render_field form.website class+="form-control" aria-describedby="website-help" %}
+                        <small id="website-help" class="form-text text-muted">
+                            What is your personal website?
+                        </small>
+                    </div>
+                    {% if form.website.errors %}
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                            {% for error in form.website.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <hr>
+
+                <div class="form-group row">
+                    <label for="{{ form.city.id_for_label }}" class="col-md-2 col-form-label">
+                        City
+                    </label>
+                    <div class="col-md-10">
+                        {% render_field form.city class+="form-control" %}
+                    </div>
+                    {% if form.city.errors %}
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                            {% for error in form.city.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group row">
+                    <label for="{{ form.state.id_for_label }}" class="col-md-2 col-form-label">
+                        State
+                    </label>
+                    <div class="col-md-10">
+                        {% render_field form.state class+="form-control" %}
+                    </div>
+                    {% if form.state.errors %}
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                            {% for error in form.state.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <hr>
+
+                <div class="form-group row">
+                    <label for="{{ form.goal.id_for_label }}" class="col-md-2 col-form-label">
+                        Goal
+                    </label>
+                    <div class="col-md-10">
+                        {% render_field form.goal class+="form-control" aria-describedby="goal-help" %}
+                        <small id="goal-help" class="form-text text-muted">
+                            How much do you want to raise?
+                        </small>
+                    </div>
+                    {% if form.goal.errors %}
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                            {% for error in form.goal.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group row">
+                    <label for="{{ form.end_date.id_for_label }}" class="col-md-2 col-form-label">
+                        End date
+                    </label>
+                    <div class="col-md-10">
+                        {% render_field form.end_date class+="form-control" aria-describedby="end_date-help" %}
+                        <small id="end_date-help" class="form-text text-muted">
+                            When will your Campaign end?
+                        </small>
+                    </div>
+                    {% if form.end_date.errors %}
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                            {% for error in form.end_date.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group row">
+                    <label for="{{ form.type.id_for_label }}" class="col-md-2 col-form-label">
+                        Type
+                    </label>
+                    <div class="col-md-10">
+                        {% render_field form.type class+="form-control" aria-describedby="type-help" %}
+                        <small id="type-help" class="form-text text-muted">
+                            What type of Campaign is this?
+                        </small>
+                    </div>
+                    {% if form.type.errors %}
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                            {% for error in form.type.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group row">
+                    <label for="{{ form.category.id_for_label }}" class="col-md-2 col-form-label">
+                        Category
+                    </label>
+                    <div class="col-md-10">
+                        {% render_field form.category class+="form-control" aria-describedby="category-help"%}
+                        <small id="category-help" class="form-text text-muted">
+                            Which category does your Campaign fit into?
+                        </small>
+                    </div>
+                    {% if form.category.errors %}
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                            {% for error in form.category.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group row">
+                    <label for="{{ form.description.id_for_label }}" class="col-md-2 col-form-label">
+                        Description
+                    </label>
+                    <div class="col-md-10">
+                        {% render_field form.description class+="form-control" aria-describedby="description-help"%}
+                        <small id="description-help" class="form-text text-muted">
+                            Tell us all about your Campaign and how you can help raise extra!
+                        </small>
+                    </div>
+                    {% if form.description.errors %}
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                            {% for error in form.description.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <input class="offset-md-2 btn btn-teal mt-3" type="submit" value="Create Campaign" />
+            </form>
+        </div>
+    </div>
 {% endblock %}
