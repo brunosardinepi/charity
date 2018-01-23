@@ -159,6 +159,32 @@ class CampaignEditVote(View):
         else:
             raise Http404
 
+def create_search_result_html(r):
+    html = (
+        "<div class='row mb-4'>"
+        "<div class='col-md-10 offset-md-2'>"
+        "<div class='form-check'>"
+        "<input class='form-check-input' type='radio' name='page' value='{}' id='page{}'>"
+        "<label class='form-check-label' for='page{}'>"
+        "<a class='pr-3' href='/{}/'>{}</a>"
+        "<i class='fal fa-compass mr-1' aria-hidden title='Location'></i><span class='sr-only'>Location</span>"
+        "<span class='small'>"
+    ).format(r.pk, r.pk, r.pk, r.page_slug, r.name)
+
+    if r.city:
+        html += "{}, {}".format(r.city, r.state)
+    elif r.state:
+        html += r.get_state_display()
+
+    html += (
+        "</span>"
+        "</div>"
+        "</div>"
+        "</label>"
+        "</div>"
+    )
+
+    return html
 
 def campaign_search_pages(request):
     if request.method == "POST":
@@ -170,17 +196,13 @@ def campaign_search_pages(request):
         query = SearchQuery(q)
         vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
         rank_metric = 0.2
-        results = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, is_sponsored=False, deleted=False).order_by('-rank')
+        results = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, deleted=False).order_by('-rank')
 
-        response_data = OrderedDict()
+        response_data = []
         if results:
             for r in results:
-                response_data[r.page_slug] = {
-                    'pk': r.pk,
-                    'name': r.name,
-                    'city': r.city,
-                    'state': r.state,
-                }
+                response_data.append(create_search_result_html(r))
+
         return HttpResponse(
             json.dumps(response_data),
             content_type="application/json"

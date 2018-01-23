@@ -38,9 +38,9 @@ def create_search_result_html(r, sponsored, trending):
         src = r.profile_picture().image.url
         height = r.profile_picture().height
         width = r.profile_picture().width
-        if height < width:
+        if height < (width - 60):
             html += "<div class='circular-landscape'>"
-        elif height > width:
+        elif height > (width + 60):
             html += "<div class='circular-portrait'>"
         else:
             html += "<div class='circular-square'>"

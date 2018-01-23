@@ -36,7 +36,7 @@
             <h1>Which Page are you helping?</h1>
         </div>
     </div>
-    <div class="row mb-3">
+    <div class="row">
         <div class="col-8 offset-2">
             <form>
                 {% csrf_token %}
@@ -51,13 +51,10 @@
             <form action="{% url 'campaign_create' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
-                <div id="results">
-                    <p>Search Results:</p>
-                    <ul id="results-list">
-                        {% if page %}
-                            <li><input type="radio" name="page" value="{{ page.pk }}" checked="checked" />{{ page.name }}  - {% if page.city %}{{ page.city }}, {% endif %}{{ page.state }}</li>
-                        {% endif %}
-                    </ul>
+                <div id="results" class="mb-5">
+                    {% if page %}
+                        <input type="radio" name="page" value="{{ page.pk }}" checked="checked" />
+                    {% endif %}
                 </div>
 
                 {% if form.non_field_errors %}
