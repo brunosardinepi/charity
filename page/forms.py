@@ -8,8 +8,6 @@ class PageForm(forms.ModelForm):
         super(PageForm, self).__init__(*args, **kwargs)
         self.fields['tos_accepted'].required = True
 
-#    ein = forms.CharField(required=False)
-
     class Meta:
         model = models.Page
         fields = [
@@ -27,6 +25,16 @@ class PageForm(forms.ModelForm):
             'website',
             'tos_accepted',
         ]
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'PageFund'}),
+            'page_slug': forms.TextInput(attrs={'placeholder': 'pagefund'}),
+            'website': forms.TextInput(attrs={'placeholder': 'https://page.fund'}),
+            'address_line1': forms.TextInput(attrs={'placeholder': '123 Main St.'}),
+            'address_line2': forms.TextInput(attrs={'placeholder': 'Suite 200'}),
+            'city': forms.TextInput(attrs={'placeholder': 'Houston'}),
+            'zipcode': forms.TextInput(attrs={'placeholder': '77002'}),
+            'description': forms.Textarea(attrs={'placeholder': 'We are an amazing group that does amazing things!'}),
+        }
 
 class PageImageForm(forms.ModelForm):
     class Meta:

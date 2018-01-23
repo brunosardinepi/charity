@@ -1,7 +1,7 @@
 $(document).on("change", "#id_type", function() {
-    if($(this).val() === "personal"){
-        $("#id_ein").hide()
+    if($(this).val() === "nonprofit"){
+        $("#ein-row").show()
     } else {
-        $("#id_ein").show()
+        $("#ein-row").hide()
     }
 });
