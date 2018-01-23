@@ -498,3 +498,18 @@ class PageDashboard(View):
         page = get_object_or_404(Page, page_slug=page_slug)
         utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
         return redirect('page_dashboard', page_slug=page.page_slug)
+
+class PageDashboardAdmin(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        if utils.has_dashboard_access(request.user, page, None):
+            return render(self.request, 'page/dashboard_admin.html', {
+                'page': page,
+            })
+        else:
+            raise Http404
+
+    def post(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
+        return redirect('page_dashboard_admin', page_slug=page.page_slug)
