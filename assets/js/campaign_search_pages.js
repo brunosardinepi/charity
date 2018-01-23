@@ -4,7 +4,7 @@ function search() {
 //    q = q.split(/[ ]+/).join(',');
 
     $.ajax({
-        url : "/campaign/create/search/",
+        url : "/create/campaign/search/",
         type : "POST",
         traditional: true,
         data : {
