@@ -22,17 +22,17 @@
                 {% endif %}
 
                 <div class="form-group row">
-                    <label for="{{ form.account_number.id_for_label }}" class="col-sm-3 col-form-label">
+                    <label for="{{ form.account_number.id_for_label }}" class="col-md-3 col-form-label">
                         Account number
                     </label>
-                    <div class="col-sm-9">
+                    <div class="col-md-9">
                         {% render_field form.account_number class+="form-control" aria-describedby="account_number-help"%}
                         <small id="account_number-help" class="form-text text-muted">
                             The bank account number (example: 000123456789).
                         </small>
                     </div>
                     {% if form.account_number.errors %}
-                        <div class="col-sm-10 offset-sm-2 mt-1 mb-4">
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
                             {% for error in form.account_number.errors %}
                                 <div class="alert alert-danger" role="alert">
                                     {{ error|escape }}
@@ -43,17 +43,17 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="{{ form.routing_number.id_for_label }}" class="col-sm-3 col-form-label">
+                    <label for="{{ form.routing_number.id_for_label }}" class="col-md-3 col-form-label">
                         Routing number
                     </label>
-                    <div class="col-sm-9">
+                    <div class="col-md-9">
                         {% render_field form.routing_number class+="form-control" aria-describedby="routing_number-help"%}
                         <small id="routing_number-help" class="form-text text-muted">
                             The bank routing number (example: 110000000).
                         </small>
                     </div>
                     {% if form.routing_number.errors %}
-                        <div class="col-sm-10 offset-sm-2 mt-1 mb-4">
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
                             {% for error in form.routing_number.errors %}
                                 <div class="alert alert-danger" role="alert">
                                     {{ error|escape }}
@@ -64,17 +64,17 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="{{ form.ssn.id_for_label }}" class="col-sm-3 col-form-label">
+                    <label for="{{ form.ssn.id_for_label }}" class="col-md-3 col-form-label">
                         Last 4 of SSN
                     </label>
-                    <div class="col-sm-9">
+                    <div class="col-md-9">
                         {% render_field form.ssn class+="form-control" aria-describedby="ssn-help"%}
                         <small id="ssn-help" class="form-text text-muted">
                             Last 4 digits of the account owner's Social Security Number (SSN).
                         </small>
                     </div>
                     {% if form.ssn.errors %}
-                        <div class="col-sm-10 offset-sm-2 mt-1 mb-4">
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
                             {% for error in form.ssn.errors %}
                                 <div class="alert alert-danger" role="alert">
                                     {{ error|escape }}
@@ -85,17 +85,17 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="{{ form.account_holder_first_name.id_for_label }}" class="col-sm-3 col-form-label">
+                    <label for="{{ form.account_holder_first_name.id_for_label }}" class="col-md-3 col-form-label">
                         Account holder's first name
                     </label>
-                    <div class="col-sm-9">
+                    <div class="col-md-9">
                         {% render_field form.account_holder_first_name class+="form-control" aria-describedby="account_holder_first_name-help"%}
                         <small id="account_holder_first_name-help" class="form-text text-muted">
                             This is the first name of the owner of the bank account that will receive funds.
                         </small>
                     </div>
                     {% if form.account_holder_first_name.errors %}
-                        <div class="col-sm-10 offset-sm-2 mt-1 mb-4">
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
                             {% for error in form.account_holder_first_name.errors %}
                                 <div class="alert alert-danger" role="alert">
                                     {{ error|escape }}
@@ -106,17 +106,17 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="{{ form.account_holder_last_name.id_for_label }}" class="col-sm-3 col-form-label">
+                    <label for="{{ form.account_holder_last_name.id_for_label }}" class="col-md-3 col-form-label">
                         Account holder's last name
                     </label>
-                    <div class="col-sm-9">
+                    <div class="col-md-9">
                         {% render_field form.account_holder_last_name class+="form-control" aria-describedby="account_holder_last_name-help"%}
                         <small id="account_holder_last_name-help" class="form-text text-muted">
                             This is the last name of the owner of the bank account that will receive funds.
                         </small>
                     </div>
                     {% if form.account_holder_last_name.errors %}
-                        <div class="col-sm-10 offset-sm-2 mt-1 mb-4">
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
                             {% for error in form.account_holder_last_name.errors %}
                                 <div class="alert alert-danger" role="alert">
                                     {{ error|escape }}
@@ -125,7 +125,7 @@
                         </div>
                     {% endif %}
                 </div>
-                <input class="offset-sm-3 btn btn-purple mt-3" type="submit" value="Create Page" />
+                <input class="offset-md-3 btn btn-purple mt-3" type="submit" value="Create Page" />
             </form>
         </div>
     </div>
