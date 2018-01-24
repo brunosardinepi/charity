@@ -351,25 +351,6 @@ def remove_manager(request, page_slug, manager_pk):
     else:
         raise Http404
 
-
-class PageImageUpload(View):
-    def get(self, request, page_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
-        if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
-            images = PageImage.objects.filter(page=page)
-            return render(self.request, 'page/images.html', {'page': page, 'images': images})
-        else:
-            raise Http404
-
-    def post(self, request, page_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
-        if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
-            form = forms.PageImageForm(self.request.POST, self.request.FILES)
-            data = image_is_valid(request, form, page)
-            return JsonResponse(data)
-        else:
-            raise Http404
-
 class PageDonate(View):
     def get(self, request, page_slug):
         template_params = {}
@@ -538,3 +519,25 @@ class PageDashboardCampaigns(View):
             })
         else:
             raise Http404
+
+class PageDashboardImages(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
+            images = PageImage.objects.filter(page=page)
+            return render(self.request, 'page/dashboard_images.html', {
+                'page': page,
+                'images': images,
+            })
+        else:
+            raise Http404
+
+    def post(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
+            form = forms.PageImageForm(self.request.POST, self.request.FILES)
+            data = image_is_valid(request, form, page)
+            return JsonResponse(data)
+        else:
+            raise Http404
+
