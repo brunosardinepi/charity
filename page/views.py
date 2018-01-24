@@ -458,7 +458,6 @@ class PageAjaxDonations(View):
                 data = sorted(data.values(), key=operator.itemgetter('{}'.format(column)))
         return HttpResponse(json.dumps(data), content_type="application/json")
 
-
 class PageDashboard(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
@@ -467,18 +466,9 @@ class PageDashboard(View):
                 'page': page,
                 'donations': donation_statistics(page),
                 'graph': donation_graph(page, 30),
-                'campaign_types': campaign_types(page),
-                'campaign_average_duration': campaign_average_duration(page),
-                'campaign_success_pct': campaign_success_pct(page)
             })
         else:
-            #return redirect('error:error_forgotpasswordreset_expired')
             raise Http404
-
-    def post(self, request, page_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
-        utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
-        return redirect('page_dashboard', page_slug=page.page_slug)
 
 class PageDashboardAdmin(View):
     def get(self, request, page_slug):

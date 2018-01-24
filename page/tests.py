@@ -245,12 +245,6 @@ class PageTest(TestCase):
 
         response = self.client.get('/%s/dashboard/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Edit Page", status_code=200)
-        self.assertContains(response, "Delete Page", status_code=200)
-        self.assertContains(response, "Invite others to manage Page", status_code=200)
-        self.assertContains(response, "Upload and Edit images", status_code=200)
-        self.assertContains(response, "/%s/managers/%s/remove/" % (self.page.page_slug, self.user3.pk), status_code=200)
-        self.assertContains(response, "/%s/managers/%s/remove/" % (self.page.page_slug, self.user4.pk), status_code=200)
 
     def test_page_manager_logged_in(self):
         self.client.login(username='bobdole', password='dogsarecool')
@@ -662,27 +656,27 @@ class PageTest(TestCase):
 
     def test_upload_admin(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/%s/images/' % self.page.page_slug)
+        response = self.client.get('/%s/dashboard/images/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
 
     def test_upload_manager_perms(self):
         self.client.login(username='bobdole', password='dogsarecool')
-        response = self.client.get('/%s/images/' % self.page.page_slug)
+        response = self.client.get('/%s/dashboard/images/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
 
     def test_upload_manager_no_perms(self):
         self.client.login(username='batman', password='imbatman')
-        response = self.client.get('/%s/images/' % self.page.page_slug)
+        response = self.client.get('/%s/dashboard/images/' % self.page.page_slug)
         self.assertEqual(response.status_code, 404)
 
     def test_upload_logged_in_no_perms(self):
         self.client.login(username='newguy', password='imnewhere')
-        response = self.client.get('/%s/images/' % self.page.page_slug)
+        response = self.client.get('/%s/dashboard/images/' % self.page.page_slug)
         self.assertEqual(response.status_code, 404)
 
     def test_upload_logged_out(self):
-        response = self.client.get('/%s/images/' % self.page.page_slug)
-        self.assertRedirects(response, '/accounts/login/?next=/testpage/images/', 302, 200)
+        response = self.client.get('/%s/dashboard/images/' % self.page.page_slug)
+        self.assertRedirects(response, '/accounts/login/?next=/testpage/dashboard/images/', 302, 200)
 
     def test_dashboard_total_donations(self):
         self.client.login(username='testuser', password='testpassword')
@@ -773,7 +767,7 @@ class PageTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
         content = b"a" * 1024
         image = SimpleUploadedFile("image.png", content, content_type="image/png")
-        response = self.client.post('/{}/images/'.format(self.page.page_slug), {'image': image})
+        response = self.client.post('/{}/dashboard/images/'.format(self.page.page_slug), {'image': image})
         self.assertEqual(response.status_code, 200)
 
         images = models.PageImage.objects.filter(page=self.page)
@@ -791,7 +785,7 @@ class PageTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
         content = b"a" * 1024 * 1024 * 5
         image = SimpleUploadedFile("image.png", content, content_type="image/png")
-        response = self.client.post('/{}/images/'.format(self.page.page_slug), {'image': image})
+        response = self.client.post('/{}/dashboard/images/'.format(self.page.page_slug), {'image': image})
         content = response.content.decode('ascii')
         content = ast.literal_eval(content)
         self.assertEqual(response.status_code, 200)
@@ -805,7 +799,7 @@ class PageTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
         content = b"a"
         image = SimpleUploadedFile("notimage.txt", content, content_type="text/html")
-        response = self.client.post('/{}/images/'.format(self.page.page_slug), {'image': image})
+        response = self.client.post('/{}/dashboard/images/'.format(self.page.page_slug), {'image': image})
         content = response.content.decode('ascii')
         content = ast.literal_eval(content)
         self.assertEqual(response.status_code, 200)
@@ -814,3 +808,18 @@ class PageTest(TestCase):
 
         images = models.PageImage.objects.filter(page=self.page)
         self.assertEqual(len(images), 0)
+
+    def test_dashboard_admin(self):
+        self.client.login(username='testuser', password='testpassword')
+        response  = self.client.get('/{}/dashboard/admin/'.format(self.page.page_slug))
+        self.assertEqual(response.status_code, 200)
+
+    def test_dashboard_donations(self):
+        self.client.login(username='testuser', password='testpassword')
+        response  = self.client.get('/{}/dashboard/donations/'.format(self.page.page_slug))
+        self.assertEqual(response.status_code, 200)
+
+    def test_dashboard_campaigns(self):
+        self.client.login(username='testuser', password='testpassword')
+        response  = self.client.get('/{}/dashboard/campaigns/'.format(self.page.page_slug))
+        self.assertEqual(response.status_code, 200)

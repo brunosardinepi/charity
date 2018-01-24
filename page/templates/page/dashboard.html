@@ -15,6 +15,9 @@
             <h1><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a></h1>
             {% if request.user.userprofile in page.admins.all or "manager_view_dashboard" in page_perms %}
                 <p>Total donated: {{ donations.total_donations|cents_to_dollars }} (Avg: {{ donations.total_donations_avg|cents_to_dollars }})</p>
+                <p>Donated to page: {{ donations.page_donations|cents_to_dollars }} (Avg: {{ donations.page_donations_avg|cents_to_dollars }})</p>
+                <p>Donated to campaigns: {{ donations.campaign_donations|cents_to_dollars }} (Avg: {{ donations.campaign_donations_avg|cents_to_dollars }})</p>
+                <p>Page recurring donations: {{ donations.plan_donations|cents_to_dollars }} (Avg: {{ donations.plan_donations_avg|cents_to_dollars }})</p>
 
                 <h2>Donation Graph</h2>
                 <ul>
