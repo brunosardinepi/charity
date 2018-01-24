@@ -39,3 +39,9 @@ def img_class(img, size):
 def get_img_from_pk(pk, type):
     if type == "user":
         return UserImage.objects.get(pk=pk)
+
+@register.filter
+def convert_to_pct(obj):
+    if not obj:
+        obj = 0
+    return "{}%".format(int(obj * 100))

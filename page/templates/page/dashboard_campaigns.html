@@ -2,6 +2,8 @@
 {% load static from staticfiles %}
 {% load guardian_tags %}
 {% load donation_extras %}
+{% load lib_extras %}
+
 
 {% block title %}Dashboard | {{ block.super }}{% endblock %}
 
@@ -16,25 +18,104 @@
             <hr>
 
             {% if request.user.userprofile in page.admins.all or "manager_view_dashboard" in page_perms %}
-                <p>Donated to campaigns: {{ donations.campaign_donations|cents_to_dollars }} (Avg: {{ donations.campaign_donations_avg|cents_to_dollars }})</p>
+                <div class="row justify-content-center mt-5 mb-5">
+                    <div class="col-lg-4 text-center">
+                        <p class="small m-0">Donated to Campaigns</p>
+                        <h2 class="m-0">{{ donations.campaign_donations|cents_to_dollars }}</h2>
+                        <p class="small m-0">Avg: {{ donations.campaign_donations_avg|cents_to_dollars }}</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <p class="small m-0">Average Campaign Duration</p>
+                        <h2 class="m-0">{{ campaign_average_duration }} days</h2>
+                    </div>
+                </div>
+
+                <h2>Campaign Success Percentage</h2>
+                <hr>
+                <p>These charts show how many of your Campaigns reach their goal before their end date.</p>
+                <div class="row justify-content-center mt-5 mb-5">
+                    <div class="col-lg-4 text-center">
+                        <section>
+                            <canvas id="generalChart"></canvas>
+                            <div class="doughnut-text">
+                                <span class="doughnut-text-label">General Campaigns</span>
+                                <br />
+                                <span class="doughnut-text-pct">{{ campaign_success_pct.general.success_pct|convert_to_pct }}</span>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <section>
+                            <canvas id="voteChart"></canvas>
+                            <div class="doughnut-text">
+                                <span class="doughnut-text-label">Vote Campaigns</span>
+                                <br />
+                                <span class="doughnut-text-pct">{{ campaign_success_pct.vote.success_pct|convert_to_pct }}</span>
+                            </div>
+                        </section>
+                    </div>
+                </div>
 
                 <h2>Campaign Types</h2>
+                <hr>
                 <ul>
                     {% for k,v in campaign_types.items %}
                         <li>Type: {{ v.display }}; Count: {{ v.count }}; Donations: {{ v.sum|cents_to_dollars }}</li>
                     {% endfor %}
                 </ul>
 
-                <h2>Average Campaign Duration</h2>
-                <p>{{ campaign_average_duration }} days</p>
 
-                <h2>Campaign Success Percentage</h2>
-                <ul>
-                    {% for k,v in campaign_success_pct.items %}
-                        <li>Type: {{ v.display }}; Success Pct: {{ v.success_pct }}</li>
-                    {% endfor %}
-                </ul>
             {% endif %}
         </div>
     </div>
+{% endblock %}
+
+{% block body_extra %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+    <script>
+    var generalChartData = {{ campaign_success_pct.general.success_pct }} * 100;
+    var voteChartData = {{ campaign_success_pct.vote.success_pct }} * 100;
+
+    var ctx = document.getElementById("generalChart").getContext('2d');
+    var ctx2 = document.getElementById("voteChart").getContext('2d');
+
+    var options = {
+        cutoutPercentage: 70,
+        tooltips: {
+            enabled: false
+        },
+        legend: {
+            display: false
+        },
+    };
+
+    var backgroundColor = [
+        'rgba(51, 204, 153, 1)',
+        'rgba(238, 238, 238, 1)'
+    ];
+
+    var generalChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [generalChartData, 100 - generalChartData],
+                backgroundColor: backgroundColor,
+            }]
+        },
+        options: options,
+    });
+
+    var voteChart = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [voteChartData, 100 - voteChartData],
+                backgroundColor: backgroundColor,
+            }]
+        },
+        options: options,
+    });
+    </script>
+
 {% endblock %}

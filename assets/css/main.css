@@ -423,3 +423,17 @@ a.nav-link:hover {
     border-radius: .25rem;
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
+
+.doughnut-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.doughnut-text-label {
+
+}
+.doughnut-text-pct {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
