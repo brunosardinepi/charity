@@ -54,7 +54,7 @@ class Campaign(models.Model):
     )
 
     TYPE_CHOICES = (
-        ('event', 'Event'),
+#        ('event', 'Event'),
         ('general', 'General'),
         ('vote', 'Vote'),
     )
