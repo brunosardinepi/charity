@@ -12,7 +12,8 @@
             {% include "page/dashboard_menu.html" %}
         </div>
         <div class="col-lg-9">
-            <h1><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a></h1>
+            <h2>Analytics</h2>
+            <hr>
             {% if request.user.userprofile in page.admins.all or "manager_view_dashboard" in page_perms %}
                 <div class="row mt-5 mb-5">
                     <div class="col-lg-3 text-center">

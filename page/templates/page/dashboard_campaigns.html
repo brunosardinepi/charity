@@ -8,11 +8,12 @@
 {% block body_content %}
 
     <div class="row">
-        <div class="col-lg-2">
+        <div class="col-lg-3">
             {% include "page/dashboard_menu.html" %}
         </div>
-        <div class="col-lg-10">
-            <h1><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a></h1>
+        <div class="col-lg-9">
+            <h2>Campaigns</h2>
+            <hr>
 
             {% if request.user.userprofile in page.admins.all or "manager_view_dashboard" in page_perms %}
                 <p>Donated to campaigns: {{ donations.campaign_donations|cents_to_dollars }} (Avg: {{ donations.campaign_donations_avg|cents_to_dollars }})</p>

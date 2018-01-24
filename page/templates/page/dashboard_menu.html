@@ -1,4 +1,7 @@
 <div class="list-group">
+    <a href="{% url 'page' page_slug=page.page_slug %}" class="list-group-item list-group-item-dark">
+        {{ page.name }}
+    </a>
     <a href="{% url 'page_dashboard' page_slug=page.page_slug %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'page_dashboard' %} active{% endif %}">
         Dashboard
     </a>
