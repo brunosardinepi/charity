@@ -30,7 +30,7 @@
                     </div>
                 </div>
 
-                <h2>Campaign Success Percentage</h2>
+                <h2>Campaign Success</h2>
                 <hr>
                 <p>These charts show how many of your Campaigns reach their goal before their end date.</p>
                 <div class="row justify-content-center mt-5 mb-5">
@@ -48,7 +48,7 @@
                         <section>
                             <canvas id="voteChart"></canvas>
                             <div class="doughnut-text">
-                                <span class="doughnut-text-label">Vote Campaigns</span>
+                                <span class="doughnut-text-label">Voting Campaigns</span>
                                 <br />
                                 <span class="doughnut-text-pct">{{ campaign_success_pct.vote.success_pct|convert_to_pct }}</span>
                             </div>
@@ -58,13 +58,34 @@
 
                 <h2>Campaign Types</h2>
                 <hr>
-                <ul>
-                    {% for k,v in campaign_types.items %}
-                        <li>Type: {{ v.display }}; Count: {{ v.count }}; Donations: {{ v.sum|cents_to_dollars }}</li>
-                    {% endfor %}
-                </ul>
-
-
+                <div class="row justify-content-center mt-5 mb-5">
+                    <div class="col-lg-6 text-center">
+                        <h3 class="mb-3">General</h3>
+                        <div class="row">
+                            <div class="col-6 text-center">
+                                <p class="small m-0">Count</p>
+                                <h2 class="m-0">{{ campaign_types.general.count }}</h2>
+                            </div>
+                            <div class="col-6 text-center">
+                                <p class="small m-0">Total raised</p>
+                                <h2 class="m-0">{{ campaign_types.general.sum|cents_to_dollars }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 text-center">
+                        <h3 class="mb-3">Voting</h3>
+                        <div class="row">
+                            <div class="col-6 text-center">
+                                <p class="small m-0">Count</p>
+                                <h2 class="m-0">{{ campaign_types.vote.count }}</h2>
+                            </div>
+                            <div class="col-6 text-center">
+                                <p class="small m-0">Total raised</p>
+                                <h2 class="m-0">{{ campaign_types.vote.sum|cents_to_dollars }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {% endif %}
         </div>
     </div>

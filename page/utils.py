@@ -41,7 +41,6 @@ def campaign_types(page):
 def campaign_average_duration(page):
     # find all campaigns for this page that have ended
     campaigns = Campaign.objects.filter(page=page, is_active=False, deleted=False)
-    print("campaigns = {}".format(campaigns))
     durations = []
     for c in campaigns:
         # find how much money the campaign raised
@@ -51,7 +50,6 @@ def campaign_average_duration(page):
             # find this campaign's duration
 #            durations.append(campaign_duration(c))
         durations.append(campaign_duration(c))
-        print("duration = {}".format(campaign_duration(c)))
     # find the average duration
     if len(durations) > 0:
         return int(sum(durations) / len(durations))
