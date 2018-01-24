@@ -462,10 +462,19 @@ class PageDashboard(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
         if utils.has_dashboard_access(request.user, page, None):
+            graph = donation_graph(page, 30)
+            graph_dates = []
+            graph_donations = []
+            for k, v in graph.items():
+                graph_dates.append(k.strftime('%b %-d'))
+                graph_donations.append(int(v/100))
+            graph_dates = list(reversed(graph_dates))
+            graph_donations = list(reversed(graph_donations))
             return render(self.request, 'page/dashboard.html', {
                 'page': page,
                 'donations': donation_statistics(page),
-                'graph': donation_graph(page, 30),
+                'graph_dates': graph_dates,
+                'graph_donations': graph_donations,
             })
         else:
             raise Http404

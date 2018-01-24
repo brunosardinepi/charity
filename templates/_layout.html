@@ -34,7 +34,7 @@
     <body>
         {% block pre_nav %}{% endblock %}
         <nav class="navbar navbar-expand-lg">
-            <div class="container{% if 'dashboard' in request.resolver_match.url_name %}-fluid{% endif %}">
+            <div class="container{% if '1dashboard' in request.resolver_match.url_name %}-fluid{% endif %}">
             <a class="navbar-brand" href="{% url 'home' %}"><img id="logo-nav" src="{% static 'img/logo.svg' %}" /></a>
 
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +69,7 @@
             </div>
         </nav>
 
-        <main role="main" class="container{% if 'dashboard' in request.resolver_match.url_name %}-fluid{% endif %}">
+        <main role="main" class="container{% if '1dashboard' in request.resolver_match.url_name %}-fluid{% endif %}">
             {% block body_content %}{% endblock %}
         </main>
 
