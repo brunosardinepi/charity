@@ -256,7 +256,7 @@ def page_edit(request, page_slug):
                 return HttpResponseRedirect(page.get_absolute_url())
     else:
         raise Http404
-    return render(request, 'page/page_edit.html', {'page': page, 'page_form': form})
+    return render(request, 'page/page_edit.html', {'page': page, 'form': form})
 
 @login_required
 def page_delete(request, page_slug):
