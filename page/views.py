@@ -241,7 +241,8 @@ class PageEditBankInfo(View):
                 page.stripe_bank_account_id = ext_acct.id
             page.save()
             utils.email(request.user.email, "blank", "blank", "page_bank_information_updated")
-            return HttpResponseRedirect(page.get_absolute_url())
+#            return HttpResponseRedirect(page.get_absolute_url())
+            return redirect('page_dashboard_admin', page_slug=page.page_slug)
 
 
 @login_required
@@ -325,7 +326,7 @@ def page_invite(request, page_slug):
                 if status == True:
                     # redirect the admin/manager to the Page
 #                    utils.email(form.cleaned_data["email"], "", "", "new_page_created")
-                    return HttpResponseRedirect(page.get_absolute_url())
+                    return redirect('page_dashboard_admin', page_slug=page.page_slug)
         return render(request, 'page/page_invite.html', {'form': form, 'page': page})
     # the user isn't an admin or a manager, so they can't invite someone
     # the only way someone got here was by typing the url manually
@@ -482,9 +483,11 @@ class PageDashboard(View):
 class PageDashboardAdmin(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
+        invitations = ManagerInvitation.objects.filter(page=page, expired=False)
         if utils.has_dashboard_access(request.user, page, None):
             return render(self.request, 'page/dashboard_admin.html', {
                 'page': page,
+                'invitations': invitations,
             })
         else:
             raise Http404

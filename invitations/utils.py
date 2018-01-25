@@ -15,12 +15,13 @@ def invite(data):
     # check if the person we are inviting is already a manager
     try:
         user = User.objects.get(email=form.cleaned_data["email"])
-        if page:
-            if user.userprofile in page.managers.all():
-                status = True
-        elif campaign:
-            if user.userprofile in campaign.campaign_managers.all():
-                status = True
+        if user:
+            if page:
+                if user.userprofile in page.managers.all():
+                    status = True
+            elif campaign:
+                if user.userprofile in campaign.campaign_managers.all():
+                    status = True
 #            return HttpResponseRedirect(page.get_absolute_url())
     except User.DoesNotExist:
         pass
