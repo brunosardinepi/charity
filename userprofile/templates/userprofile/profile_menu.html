@@ -2,14 +2,14 @@
     <a href="{% url 'userprofile:userprofile' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'userprofile' or request.resolver_match.url_name == 'user_image_upload' %} active{% endif %}">
         Personal
     </a>
-    <a href="{% url 'userprofile:billing' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'billing' %} active{% endif %}">
-        Billing
-    </a>
     <a href="{% url 'userprofile:pages_campaigns' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'pages_campaigns' %} active{% endif %}">
         Pages and Campaigns
     </a>
     <a href="{% url 'userprofile:donations' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'donations' %} active{% endif %}">
         Donations
+    </a>
+    <a href="{% url 'userprofile:billing' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'billing' %} active{% endif %}">
+        Billing
     </a>
     <a href="{% url 'userprofile:notifications' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'notifications' %} active{% endif %}">
         Notifications

@@ -94,9 +94,10 @@ class ManagerInvitationTest(TestCase):
         self.assertNotIn(self.invitation, invitations)
 
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/testpage/dashboard/')
-        self.assertContains(response, "%s %s" % (self.user2.first_name, self.user2.last_name), status_code=200)
-        self.assertContains(response, self.user2.email, status_code=200)
+        response = self.client.get('/testpage/dashboard/admin/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "{} {}".format(self.user2.first_name, self.user2.last_name))
+        self.assertContains(response, self.user2.email)
 
     # need to write tests for these when the view has been built:
         # wrong user accepts invite

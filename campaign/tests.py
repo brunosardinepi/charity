@@ -27,7 +27,9 @@ class CampaignTest(TestCase):
         self.user = User.objects.create_user(
             username='testuser',
             email='test@test.test',
-            password='testpassword'
+            password='testpassword',
+            first_name='Tester',
+            last_name='McTestee',
         )
 
         self.user2 = User.objects.create_user(
@@ -215,7 +217,7 @@ class CampaignTest(TestCase):
             'name': "MyCampaign",
             'campaign_slug': self.campaign.campaign_slug,
             'page': self.page.pk,
-            'type': "event",
+            'type': "vote",
             'category': "other",
             'goal': 1000,
             'city': "Honolulu",
@@ -371,7 +373,7 @@ class CampaignTest(TestCase):
             'name': "MyCampaign",
             'campaign_slug': "mycampaign",
             'page': self.page.pk,
-            'type': "event",
+            'type': "general",
             'category': "other",
             'goal': 1000,
             'city': "Honolulu",
@@ -408,7 +410,7 @@ class CampaignTest(TestCase):
             'state': 'TX',
             'campaign_slug': 'headphones',
             'goal': '234',
-            'type': 'event',
+            'type': 'vote',
             'category': 'other',
             'description': 'I wear headphones.',
             'end_date': '2099-01-01 00:00:00',
@@ -425,7 +427,7 @@ class CampaignTest(TestCase):
         self.assertEqual(campaign.state, "TX")
         self.assertEqual(campaign.campaign_slug, "headphones")
         self.assertEqual(campaign.goal, 234)
-        self.assertEqual(campaign.type, "event")
+        self.assertEqual(campaign.type, "vote")
         self.assertEqual(campaign.description, "I wear headphones.")
 
     def test_campaignform_blank(self):
@@ -767,8 +769,9 @@ class CampaignTest(TestCase):
 
     def test_dashboard_top_donors(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/{}/dashboard/'.format(self.page.page_slug))
+        response = self.client.get('/{}/{}/{}/dashboard/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
+        self.assertEqual(response.status_code, 200)
         total_donation_amount = int((self.donation.amount + self.donation2.amount) / 100)
         self.assertContains(response, "${} - {} {}".format(total_donation_amount, self.user.first_name, self.user.last_name), status_code=200)
 
