@@ -3,7 +3,7 @@
 
 {% get_obj_perms request.user for campaign as "campaign_perms" %}
 {% if request.user.userprofile in campaign.campaign_admins.all or campaign_perms %}
-    <p><i class="fal fa-fw fa-chart-bar"></i> <a class="teal" href="{% url 'campaign_dashboard' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Dashboard</a></p>
+    <p><i class="fal fa-fw fa-chart-bar"></i> <a class="teal" href="{% url 'campaign_dashboard' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Manage this Campaign</a></p>
 {% endif %}
 
 {% if request.user.is_authenticated %}
@@ -14,5 +14,7 @@
     <p><i class="fal fa-fw fa-check-circle"></i> <a class="teal" href="{% url 'campaign_subscribe' campaign_pk=campaign.pk action='subscribe' %}">Subscribe</a></p>
 {% endif %}
 
-<p><i class="fab fa-fw fa-facebook-f"></i> <a class="teal" href="">Share on Facebook</a></p>
-<p><i class="fab fa-fw fa-twitter"></i> <a class="teal" href="">Tweet it</a></p>
+<p>
+    <a class="teal" href=""><i class="fab fa-fw fa-facebook-f"></i></a>
+    <a class="teal" href=""><i class="fab fa-fw fa-twitter"></i></a>
+</p>

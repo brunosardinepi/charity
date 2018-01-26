@@ -285,9 +285,9 @@ class CampaignTest(TestCase):
         response = self.client.get('/{}/{}/{}/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Dashboard", status_code=200)
+        self.assertContains(response, "Manage", status_code=200)
 
-        response = self.client.get('/{}/{}/{}/dashboard/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/{}/{}/{}/manage/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Edit Campaign")
         self.assertContains(response, "Delete Campaign")
@@ -530,7 +530,7 @@ class CampaignTest(TestCase):
         invitation = ManagerInvitation.objects.get(invite_to=self.user5.email)
         response = self.client.get('/invite/manager/accept/%s/%s/' % (invitation.pk, invitation.key))
         self.assertRedirects(response, invitation.campaign.get_absolute_url(), 302, 200)
-        response = self.client.get('/%s/%s/%s/dashboard/' % (
+        response = self.client.get('/%s/%s/%s/manage/' % (
             invitation.campaign.page.page_slug,
             invitation.campaign.pk,
             invitation.campaign.campaign_slug
@@ -561,7 +561,7 @@ class CampaignTest(TestCase):
         invitation = ManagerInvitation.objects.get(invite_to=self.user5.email)
         response = self.client.get('/invite/manager/accept/{}/{}/'.format(invitation.pk, invitation.key))
         self.assertRedirects(response, invitation.campaign.get_absolute_url(), 302, 200)
-        response = self.client.get('/{}/{}/{}/dashboard/'.format(invitation.campaign.page.page_slug, invitation.campaign.pk, invitation.campaign.campaign_slug))
+        response = self.client.get('/{}/{}/{}/manage/'.format(invitation.campaign.page.page_slug, invitation.campaign.pk, invitation.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Edit Campaign")
         self.assertContains(response, "Delete Campaign")
@@ -577,10 +577,10 @@ class CampaignTest(TestCase):
         permissions.append(str(self.user5.pk) + "_manager_image_edit")
         permissions.append(str(self.user5.pk) + "_manager_view_dashboard")
         data = {'permissions[]': permissions}
-        response = self.client.post('/{}/{}/{}/dashboard/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug), data)
+        response = self.client.post('/{}/{}/{}/manage/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug), data)
 
         self.client.login(username='ijustate', password='foodcoma')
-        response = self.client.get('/{}/{}/{}/dashboard/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/{}/{}/{}/manage/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Edit Campaign")
         self.assertContains(response, "Delete Campaign")
@@ -748,7 +748,7 @@ class CampaignTest(TestCase):
 
     def test_dashboard_total_donations(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/{}/{}/{}/dashboard/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/{}/{}/{}/manage/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
         total_donations = Donation.objects.filter(campaign=self.campaign).aggregate(Sum('amount')).get('amount__sum')
         total_donations_count = Donation.objects.filter(campaign=self.campaign).count()
@@ -760,7 +760,7 @@ class CampaignTest(TestCase):
 
     def test_dashboard_donation_history(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/{}/{}/{}/dashboard/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/{}/{}/{}/manage/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
         self.assertContains(response, self.donation.user.first_name, status_code=200)
         self.assertContains(response, self.donation.user.last_name, status_code=200)
@@ -769,7 +769,7 @@ class CampaignTest(TestCase):
 
     def test_dashboard_top_donors(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/{}/{}/{}/dashboard/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/{}/{}/{}/manage/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
         self.assertEqual(response.status_code, 200)
         total_donation_amount = int((self.donation.amount + self.donation2.amount) / 100)
