@@ -254,7 +254,11 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
                 status = invite(data)
                 if status == True:
                     # redirect the admin/manager to the Campaign
-                    return HttpResponseRedirect(campaign.get_absolute_url())
+                    return redirect('campaign_dashboard_admin',
+                        page_slug=campaign.page.page_slug,
+                        campaign_pk=campaign.pk,
+                        campaign_slug=campaign.campaign_slug
+                    )
         return render(request, 'campaign/campaign_invite.html', {'form': form, 'campaign': campaign})
     # the user isn't an admin or a manager, so they can't invite someone
     # the only way someone got here was by typing the url manually

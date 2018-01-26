@@ -15,6 +15,7 @@ def email(user_email, subject, body, template):
     if not settings.TESTING:
         templates = {
             "page_manager_invitation": "d6a60dee-9e61-41e5-954e-0e049e95d0ed",
+            "campaign_manager_invitation": "19f2f1f5-0559-4f27-a2c1-fd0fee5a3dc0",
             "new_campaign_created": "d5952e1d-3672-4876-97a1-7b5ee3c2fef7",
             "new_page_created": "0ba093a3-5628-4da9-b3e5-267f9f0313c4",
             "new_user_signup": "0f0ff154-4a0e-48eb-b073-d59447ac67e8",
