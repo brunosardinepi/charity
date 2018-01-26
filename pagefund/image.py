@@ -27,7 +27,8 @@ def image_is_valid(request, form, model):
                     'is_valid': 't',
                     'name': image.image.name,
                     'pk': image.pk,
-                    'url': image.image.url
+                    'url': image.image.url,
+                    'type': model.__class__.__name__,
                 }
         else:
              data = {'is_valid': 'f', 'redirect': "error_type"}

@@ -34,7 +34,7 @@
             var arr = $(event.target).parent().attr("id").split("-");
             var url = "{% url 'campaign_profile_update' image_pk=0 %}".replace(0, arr[1]);
             $.get(url, function() {
-                $(".profile").html("<a class='set-profile-picture' href=''>Make profile picture</a>");
+                $(".profile").html("<a class='set-profile-picture teal' href=''>Make profile picture</a>");
                 $("#profile-" + arr[1]).text("Profile picture");
             });
         });
@@ -51,7 +51,7 @@
             <h2>Upload Images</h2>
             <hr>
             <p>Uploads are limited to images and must be less than 4 MB in size.</p>
-            <button class="btn btn-purple" type="button" id="upload-button">Upload Images</button>
+            <button class="btn btn-teal" type="button" id="upload-button">Upload Images</button>
             <input id="upload-input" type="file" name="image" multiple
                 style="display:none;"
                 data-url="{% url 'campaign_dashboard_images' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}"
@@ -62,16 +62,16 @@
             <div class="row" id="image-list">
                 {% if images %}
                     {% for i in images %}
-                        <div class="col-4" id="image-{{ i.pk }}">
+                        <div class="col-4 mb-3" id="image-{{ i.pk }}">
                             <div class="card" style="border:0;">
                                 <img class="card-img-top" src="{{ i.image.url }}">
                                 <div class="card-body p-0 pt-1">
                                     <div class="row justify-content-between">
                                         <div class="col">
-                                            <span class="small profile" id="profile-{{ i.pk }}">{% if i.profile_picture %}Profile picture {% else %}<a class="set-profile-picture" href="">Make profile picture</a>{% endif %}</span>
+                                            <span class="small profile" id="profile-{{ i.pk }}">{% if i.profile_picture %}Profile picture {% else %}<a class="set-profile-picture teal" href="">Make profile picture</a>{% endif %}</span>
                                         </div>
                                         <div class="col-3 text-right">
-                                            <a id="delete-{{ i.pk }}" class="delete-image" href=""><i class="fal fa-trash-alt"></i></a>
+                                            <a id="delete-{{ i.pk }}" class="delete-image teal" href=""><i class="fal fa-trash-alt"></i></a>
                                         </div>
                                     </div>
                                 </div>

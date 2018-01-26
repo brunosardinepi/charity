@@ -62,7 +62,7 @@
             <div class="row" id="image-list">
                 {% if images %}
                     {% for i in images %}
-                        <div class="col-4" id="image-{{ i.pk }}">
+                        <div class="col-4 mb-3" id="image-{{ i.pk }}">
                             <div class="card" style="border:0;">
                                 <img class="card-img-top" src="{{ i.image.url }}">
                                 <div class="card-body p-0 pt-1">
