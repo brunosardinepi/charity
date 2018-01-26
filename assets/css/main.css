@@ -407,6 +407,12 @@ a.nav-link:hover {
     background-color: #990099;
     border-color: #990099;
 }
+.list-group-item.active-teal {
+    background-color: #33cc99;
+    border-color: #33cc99;
+    z-index: 2;
+    color: #fff;
+}
 
 
 

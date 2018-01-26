@@ -64,12 +64,18 @@
 {% endblock %}
 
 {% block body_content %}
+    <div class="row">
+        <div class="col-lg-3">
+            {% include "campaign/dashboard_menu.html" %}
+        </div>
+    </div>
+
     <h1>{{ campaign.name }}</h1>
     {% if request.user.userprofile in campaign.campaign_admins.all %}
         <p><a href="{% url 'campaign_edit' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
         <p><a class="delete-campaign" href="{% url 'campaign_delete' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
         <p><a href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
-        <p><a href="{% url 'campaign_image_upload' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload and Edit images</a></p>
+        <p><a href="{% url 'campaign_dashboard_images' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload and Edit images</a></p>
         {% if campaign.type == "vote" %}<p><a href="{% url 'campaign_edit_vote' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit vote participants</a></p>{% endif %}
         {% if campaign.managers_list %}
             <h5>Managers</h5>
@@ -118,7 +124,7 @@
             <p><a href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
         {% endif %}
         {% if "manager_image_edit" in campaign_perms %}
-            <p><a href="{% url 'campaign_image_upload' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload and Edit images</a></p>
+            <p><a href="{% url 'campaign_dashboard_images' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload and Edit images</a></p>
         {% endif %}
     {% endif %}
 

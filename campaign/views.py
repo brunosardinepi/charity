@@ -435,10 +435,31 @@ class CampaignDashboard(View):
     def get(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
         if utils.has_dashboard_access(request.user, campaign, None):
+            graph = donation_graph(campaign, 30)
+            graph_dates = []
+            graph_donations = []
+            for k, v in graph.items():
+                graph_dates.append(k.strftime('%b %-d'))
+                graph_donations.append(int(v/100))
+            graph_dates = list(reversed(graph_dates))
+            graph_donations = list(reversed(graph_donations))
             return render(self.request, 'campaign/dashboard.html', {
                 'campaign': campaign,
                 'donations': donation_statistics(campaign),
-                'graph': donation_graph(campaign, 30),
+                'graph_dates': graph_dates,
+                'graph_donations': graph_donations,
+            })
+        else:
+            raise Http404
+
+class CampaignDashboardAdmin(View):
+    def get(self, request, page_slug, campaign_pk, campaign_slug):
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        invitations = ManagerInvitation.objects.filter(campaign=campaign, expired=False)
+        if utils.has_dashboard_access(request.user, campaign, None):
+            return render(self.request, 'campaign/dashboard_admin.html', {
+                'campaign': campaign,
+                'invitations': invitations,
             })
         else:
             raise Http404
@@ -446,4 +467,41 @@ class CampaignDashboard(View):
     def post(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
         utils.update_manager_permissions(request.POST.getlist('permissions[]'), campaign)
-        return redirect('campaign_dashboard', page_slug=campaign.page.page_slug, campaign_pk=campaign.pk, campaign_slug=campaign.campaign_slug)
+        return redirect('campaign_dashboard_admin',
+            page_slug=campaign.page.page_slug,
+            campaign_pk=campaign.pk,
+            campaign_slug=campaign.campaign_slug
+        )
+
+class CampaignDashboardDonations(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        if utils.has_dashboard_access(request.user, page, None):
+            return render(self.request, 'page/dashboard_donations.html', {
+                'page': page,
+                'donations': donation_statistics(page),
+            })
+        else:
+            raise Http404
+
+class CampaignDashboardImages(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
+            images = PageImage.objects.filter(page=page)
+            return render(self.request, 'page/dashboard_images.html', {
+                'page': page,
+                'images': images,
+            })
+        else:
+            raise Http404
+
+    def post(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
+            form = forms.PageImageForm(self.request.POST, self.request.FILES)
+            data = image_is_valid(request, form, page)
+            return JsonResponse(data)
+        else:
+            raise Http404
+
