@@ -474,12 +474,12 @@ class CampaignDashboardAdmin(View):
         )
 
 class CampaignDashboardDonations(View):
-    def get(self, request, page_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
-        if utils.has_dashboard_access(request.user, page, None):
-            return render(self.request, 'page/dashboard_donations.html', {
-                'page': page,
-                'donations': donation_statistics(page),
+    def get(self, request, page_slug, campaign_pk, campaign_slug):
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        if utils.has_dashboard_access(request.user, campaign, None):
+            return render(self.request, 'campaign/dashboard_donations.html', {
+                'campaign': campaign,
+                'donations': donation_statistics(campaign),
             })
         else:
             raise Http404
