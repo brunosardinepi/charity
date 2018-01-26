@@ -491,7 +491,6 @@ class PageDashboardAdmin(View):
 
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        print(request.POST.getlist('permissions[]'))
         utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
         return redirect('page_dashboard_admin', page_slug=page.page_slug)
 

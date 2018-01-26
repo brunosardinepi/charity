@@ -581,18 +581,14 @@ class PageTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_remove_manager_logged_in_admin(self):
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.remove_manager(request, self.page.page_slug, self.user3.pk)
-        response.client = self.client
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/%s/managers/%s/remove/' % (self.page.page_slug, self.user3.pk))
 
-        self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
+        self.assertRedirects(response, '/{}/dashboard/admin/'.format(self.page.page_slug), 302, 200)
 
     def test_remove_manager(self):
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.remove_manager(request, self.page.page_slug, self.user3.pk)
-        response.client = self.client
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/%s/managers/%s/remove/' % (self.page.page_slug, self.user3.pk))
 
         managers = self.page.managers.all()
         self.assertNotIn(self.user3, managers)
@@ -600,7 +596,7 @@ class PageTest(TestCase):
         self.assertFalse(self.user3.has_perm('manager_delete', self.page))
         self.assertFalse(self.user3.has_perm('manager_invite', self.page))
         self.assertFalse(self.user3.has_perm('manager_image_edit', self.page))
-        self.assertRedirects(response, self.page.get_absolute_url(), 302, 200)
+        self.assertRedirects(response, '/{}/dashboard/admin/'.format(self.page.page_slug), 302, 200)
 
     def test_page_permissions_add(self):
         permissions = []
@@ -611,9 +607,9 @@ class PageTest(TestCase):
         data = {'permissions[]': permissions}
 
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.post('/%s/' % self.page.page_slug, data)
+        response = self.client.post('/{}/dashboard/admin/'.format(self.page.page_slug), data)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, '/{}/dashboard/admin/'.format(self.page.page_slug), 302, 200)
         self.assertTrue(self.user4.has_perm('manager_edit', self.page))
         self.assertTrue(self.user4.has_perm('manager_delete', self.page))
         self.assertTrue(self.user4.has_perm('manager_invite', self.page))
@@ -625,9 +621,9 @@ class PageTest(TestCase):
         data = {'permissions[]': permissions}
 
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.post('/%s/' % self.page.page_slug, data)
+        response = self.client.post('/{}/dashboard/admin/'.format(self.page.page_slug), data)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, '/{}/dashboard/admin/'.format(self.page.page_slug), 302, 200)
         self.assertFalse(self.user3.has_perm('manager_edit', self.page))
         self.assertFalse(self.user3.has_perm('manager_delete', self.page))
         self.assertTrue(self.user3.has_perm('manager_invite', self.page))
@@ -643,9 +639,9 @@ class PageTest(TestCase):
         data = {'permissions[]': permissions}
 
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.post('/%s/' % self.page.page_slug, data)
+        response = self.client.post('/{}/dashboard/admin/'.format(self.page.page_slug), data)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, '/{}/dashboard/admin/'.format(self.page.page_slug), 302, 200)
         self.assertFalse(self.user3.has_perm('manager_edit', self.page))
         self.assertFalse(self.user3.has_perm('manager_delete', self.page))
         self.assertTrue(self.user3.has_perm('manager_invite', self.page))
