@@ -15,8 +15,6 @@
             <hr>
             <form action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                {{ page_form.as_p }}
-
 
                 {% if form.non_field_errors %}
                     <div class="alert alert-danger" role="alert">
