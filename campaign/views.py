@@ -280,26 +280,6 @@ def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
     else:
         raise Http404
 
-class CampaignImageUpload(View):
-    def get(self, request, page_slug, campaign_pk, campaign_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
-        campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        if utils.has_dashboard_access(request.user, campaign, 'manager_image_edit'):
-            images = CampaignImage.objects.filter(campaign=campaign)
-            return render(self.request, 'campaign/images.html', {'campaign': campaign, 'images': images })
-        else:
-            raise Http404
-
-    def post(self, request, page_slug, campaign_pk, campaign_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
-        campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        if utils.has_dashboard_access(request.user, campaign, 'manager_image_edit'):
-            form = forms.CampaignImageForm(self.request.POST, self.request.FILES)
-            data = image_is_valid(request, form, campaign)
-            return JsonResponse(data)
-        else:
-            raise Http404
-
 @login_required
 def campaign_image_delete(request, image_pk):
     image = get_object_or_404(CampaignImage, pk=image_pk)
@@ -485,23 +465,20 @@ class CampaignDashboardDonations(View):
             raise Http404
 
 class CampaignDashboardImages(View):
-    def get(self, request, page_slug):
+    def get(self, request, page_slug, campaign_pk, campaign_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
-            images = PageImage.objects.filter(page=page)
-            return render(self.request, 'page/dashboard_images.html', {
-                'page': page,
-                'images': images,
-            })
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        if utils.has_dashboard_access(request.user, campaign, 'manager_image_edit'):
+            images = CampaignImage.objects.filter(campaign=campaign)
+            return render(self.request, 'campaign/dashboard_images.html', {'campaign': campaign, 'images': images })
         else:
             raise Http404
 
-    def post(self, request, page_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
-        if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
-            form = forms.PageImageForm(self.request.POST, self.request.FILES)
-            data = image_is_valid(request, form, page)
+    def post(self, request, page_slug, campaign_pk, campaign_slug):
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        if utils.has_dashboard_access(request.user, campaign, 'manager_image_edit'):
+            form = forms.CampaignImageForm(self.request.POST, self.request.FILES)
+            data = image_is_valid(request, form, campaign)
             return JsonResponse(data)
         else:
             raise Http404
-
