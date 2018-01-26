@@ -62,9 +62,6 @@ def page(request, page_slug):
         else:
             subscribe_attr = {"name": "subscribe", "value": "Subscribe"}
 
-        if request.method == "POST":
-             utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
-
         template_params["page"] = page
         template_params["donate_form"] = donate_form
         template_params["subscribe_attr"] = subscribe_attr
@@ -347,8 +344,8 @@ def remove_manager(request, page_slug, manager_pk):
         remove_perm('manager_invite', manager, page)
         remove_perm('manager_image_edit', manager, page)
         remove_perm('manager_view_dashboard', manager, page)
-        # redirect to page
-        return HttpResponseRedirect(page.get_absolute_url())
+        # redirect to page admin
+        return redirect('page_dashboard_admin', page_slug=page.page_slug)
     else:
         raise Http404
 
@@ -494,6 +491,7 @@ class PageDashboardAdmin(View):
 
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
+        print(request.POST.getlist('permissions[]'))
         utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
         return redirect('page_dashboard_admin', page_slug=page.page_slug)
 
