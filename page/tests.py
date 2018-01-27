@@ -747,6 +747,28 @@ class PageTest(TestCase):
             self.assertContains(response, "{}".format(v["count"]))
             self.assertContains(response, "${}".format(int(v["sum"] / 100)))
 
+    def test_dashboard_campaigns_active(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/manage/campaigns/'.format(self.page.page_slug))
+
+        campaigns = CampaignModels.Campaign.objects.filter(page=self.page, is_active=True)
+        for c in campaigns:
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, c.name)
+            self.assertContains(response, int(c.donation_money() / 100))
+            self.assertContains(response, c.goal)
+
+    def test_dashboard_campaigns_inactive(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/manage/campaigns/'.format(self.page.page_slug))
+
+        campaigns = CampaignModels.Campaign.objects.filter(page=self.page, is_active=False)
+        for c in campaigns:
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, c.name)
+            self.assertContains(response, int(c.donation_money() / 100))
+            self.assertContains(response, c.goal)
+
     def test_dashboard_average_campaign_duration(self):
         self.client.login(username='testuser', password='testpassword')
         response = self.client.get('/{}/manage/'.format(self.page.page_slug))

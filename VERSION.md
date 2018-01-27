@@ -8,7 +8,7 @@ Release date: TBD
 
 ### Additions
 
-* None
+* Active and past Campaigns on Page dashboard
 
 ### Changes
 
