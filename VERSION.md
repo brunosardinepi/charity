@@ -20,7 +20,7 @@ Release date: TBD
 
 ### Fixes
 
-* None
+* Page wasn't getting populated on Campaign creation when coming from a Page instead of a new search
 
 
 ## Version 0.20.0
