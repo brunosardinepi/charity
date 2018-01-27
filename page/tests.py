@@ -195,8 +195,6 @@ class PageTest(TestCase):
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.user.first_name, status_code=200)
         self.assertContains(response, self.user.last_name, status_code=200)
-        self.assertContains(response, self.page.city, status_code=200)
-        self.assertContains(response, self.page.state, status_code=200)
         self.assertContains(response, self.page.type, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count(), status_code=200)
@@ -219,8 +217,6 @@ class PageTest(TestCase):
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.user.first_name, status_code=200)
         self.assertContains(response, self.user.last_name, status_code=200)
-        self.assertContains(response, self.page.city, status_code=200)
-        self.assertContains(response, self.page.state, status_code=200)
         self.assertContains(response, self.page.type, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count(), status_code=200)
@@ -288,7 +284,6 @@ class PageTest(TestCase):
         response = self.client.post('/%s/edit/' % self.page.page_slug, data)
         self.assertRedirects(response, '/%s/' % self.page.page_slug, 302, 200)
         response = self.client.get('/%s/' % self.page.page_slug)
-        self.assertContains(response, 'DE', status_code=200)
 
     def test_page_edit_manager_perms(self):
         request = self.factory.get('home')

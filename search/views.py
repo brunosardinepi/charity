@@ -9,7 +9,7 @@ from itertools import chain
 import json
 import operator
 
-from .utils import filter_list, query_list, state_list
+from .utils import filter_list, query_list
 from campaign.models import Campaign
 from page.models import Page
 
@@ -20,11 +20,9 @@ def search(request):
     else:
         query_from_search = None
     categories = OrderedDict(Page._meta.get_field('category').choices)
-    states = OrderedDict(Page._meta.get_field('state').choices)
 
     return render(request, 'search/search.html', {
         'categories': categories,
-        'states': states,
         'query_from_search': query_from_search,
     })
 
@@ -79,16 +77,6 @@ def create_search_result_html(r, sponsored, trending):
 
     html += (
         "<i class='fal fa-compass mr-1' aria-hidden title='Location'></i><span class='sr-only'>Location</span>"
-        "<span class='small'>"
-    )
-
-    if r.city:
-        html += "{}, {}".format(r.city, r.state)
-    elif r.state:
-        html += r.get_state_display()
-
-    html += (
-        "</span>"
         "</div>"
         "<div class='col-md-3 vote-amount'>"
     )
@@ -112,7 +100,6 @@ def results(request):
     if request.method == "POST":
         q = request.POST.get('q')
         f = request.POST.get('f')
-        s = request.POST.get('s')
         a = request.POST.get('a')
 
         if a == "false":
@@ -129,7 +116,7 @@ def results(request):
             if all([q, f]):
                 results = []
                 sponsored = []
-                pages, sponsored_pages = query_list(q, s)
+                pages, sponsored_pages = query_list(q)
                 f = f.split(",")
                 for x in f:
                     p = [n for n in pages if n.category == x]
@@ -139,11 +126,9 @@ def results(request):
                     for y in s:
                         sponsored.append(y)
             elif q:
-                results, sponsored = query_list(q, s)
+                results, sponsored = query_list(q)
             elif f:
-                results, sponsored = filter_list(f, s)
-            elif s:
-                results, sponsored = state_list(s)
+                results, sponsored = filter_list(f)
             else:
                 results = None
                 sponsored = None

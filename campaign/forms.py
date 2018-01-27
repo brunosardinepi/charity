@@ -13,8 +13,6 @@ class CampaignForm(forms.ModelForm):
             'type',
             'goal',
             'end_date',
-            'city',
-            'state',
             'category',
             'description',
             'website',

@@ -72,8 +72,6 @@ class CampaignTest(TestCase):
             campaign_slug='testcampaign',
             page=self.page,
             type='vote',
-            city='Dallas',
-            state='Texas',
             description='This is a description for Test Campaign.',
             goal='666',
             end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
@@ -92,8 +90,6 @@ class CampaignTest(TestCase):
             campaign_slug='captain',
             page=self.page,
             type='event',
-            city='Austin',
-            state='Texas',
             description='Im the captain',
             goal='334',
             deleted=True,
@@ -105,8 +101,6 @@ class CampaignTest(TestCase):
             campaign_slug='uhilwuaenflaknjndsaf',
             page=self.page2,
             type='general',
-            city='New York City',
-            state='New York',
             description='aoiefj;asfn eafjsafj dsa;lfkjaeio;fj asdklf',
             goal='1999',
             end_date=datetime.datetime(2001, 8, 15, 8, 15, 12, 0, pytz.UTC),
@@ -220,8 +214,6 @@ class CampaignTest(TestCase):
             'type': "vote",
             'category': "other",
             'goal': 1000,
-            'city': "Honolulu",
-            'state': "HI",
             'end_date': "2099-01-01 00:00:00",
         }
         response = self.client.post('/create/campaign/', data)
@@ -236,8 +228,6 @@ class CampaignTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.campaign.name, status_code=200)
         self.assertContains(response, self.campaign.get_type_display(), status_code=200)
-        self.assertContains(response, self.campaign.city, status_code=200)
-        self.assertContains(response, self.campaign.state, status_code=200)
         self.assertContains(response, self.campaign.description, status_code=200)
         self.assertContains(response, self.campaign.goal, status_code=200)
         self.assertContains(response, self.campaign.donation_count(), status_code=200)
@@ -253,8 +243,6 @@ class CampaignTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.campaign.name, status_code=200)
         self.assertContains(response, self.campaign.get_type_display(), status_code=200)
-        self.assertContains(response, self.campaign.city, status_code=200)
-        self.assertContains(response, self.campaign.state, status_code=200)
         self.assertContains(response, self.campaign.description, status_code=200)
         self.assertContains(response, self.campaign.goal, status_code=200)
         self.assertContains(response, self.campaign.donation_count(), status_code=200)
@@ -377,8 +365,6 @@ class CampaignTest(TestCase):
             'type': "general",
             'category': "other",
             'goal': 1000,
-            'city': "Honolulu",
-            'state': "HI",
             'end_date': "2099-01-01 00:00:00",
         }
         response = self.client.post('/create/campaign/', data)
@@ -395,8 +381,6 @@ class CampaignTest(TestCase):
             'type': "vote",
             'category': "other",
             'goal': 1000,
-            'city': "Honolulu",
-            'state': "HI",
             'end_date': "2099-01-01 00:00:00",
         }
         response = self.client.post('/create/campaign/', data)
@@ -407,8 +391,6 @@ class CampaignTest(TestCase):
     def test_campaignform(self):
         form = forms.CampaignForm({
             'name': 'Headphones',
-            'city': 'Austin',
-            'state': 'TX',
             'campaign_slug': 'headphones',
             'goal': '234',
             'type': 'vote',
@@ -424,8 +406,6 @@ class CampaignTest(TestCase):
         self.assertEqual(campaign.name, "Headphones")
         self.assertEqual(campaign.user, self.user)
         self.assertEqual(campaign.page, self.page)
-        self.assertEqual(campaign.city, "Austin")
-        self.assertEqual(campaign.state, "TX")
         self.assertEqual(campaign.campaign_slug, "headphones")
         self.assertEqual(campaign.goal, 234)
         self.assertEqual(campaign.type, "vote")

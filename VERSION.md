@@ -13,6 +13,7 @@ Release date: TBD
 ### Changes
 
 * Mobile design for Page/Campaign dashboards
+* Removed location site-wide
 
 ### Fixes
 

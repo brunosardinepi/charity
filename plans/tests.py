@@ -48,8 +48,6 @@ class DonationTest(TestCase):
             campaign_slug='campaignslug',
             page=self.page,
             type='Event',
-            city='Dallas',
-            state='Texas',
             description='This is a description for Test Campaign.',
             goal='666',
             end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
