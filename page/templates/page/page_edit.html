@@ -5,6 +5,10 @@
 
 {% block title %}Edit | {{ block.super }}{% endblock %}
 
+{% block head_extra %}
+    <script src="{% static 'js/ein.js' %}"></script>
+{% endblock %}
+
 {% block body_content %}
     <div class="row">
         <div class="col-lg-3">
@@ -211,26 +215,26 @@
                     {% endif %}
                 </div>
 
-                <div id="ein-row" class="form-group row">
-                    <label for="{{ form.ein.id_for_label }}" class="col-md-2 col-form-label">
-                        EIN
-                    </label>
-                    <div class="col-md-10">
-                        {% render_field form.ein class+="form-control" aria-describedby="ein-help" %}
-                        <small id="ein-help" class="form-text text-muted">
-                            This is your Employer Identification Number (EIN), also known as a Federal Tax Identification Number.
-                        </small>
-                    </div>
-                    {% if form.ein.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.ein.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
+                    <div id="ein-row" class="form-group row">
+                        <label for="{{ form.ein.id_for_label }}" class="col-md-2 col-form-label">
+                            EIN
+                        </label>
+                        <div class="col-md-10">
+                            {% render_field form.ein class+="form-control" aria-describedby="ein-help" %}
+                            <small id="ein-help" class="form-text text-muted">
+                                This is your Employer Identification Number (EIN), also known as a Federal Tax Identification Number.
+                            </small>
                         </div>
-                    {% endif %}
-                </div>
+                        {% if form.ein.errors %}
+                            <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                                {% for error in form.ein.errors %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ error|escape }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
 
                 <div class="form-group row">
                     <label for="{{ form.category.id_for_label }}" class="col-md-2 col-form-label">
@@ -266,6 +270,27 @@
                     {% if form.description.errors %}
                         <div class="col-md-10 offset-md-2 mt-1 mb-4">
                             {% for error in form.description.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-2">Terms of Service</div>
+                    <div class="col-md-10">
+                        <div class="form-check">
+                           {% render_field form.tos_accepted class+="form-check-input" %}
+                            <label class="form-check-label" for="{{ form.tos_accepted.id_for_label }}">
+                                Please check this box to agree to our <a href="/terms-of-service/">Terms of Service</a>.
+                            </label>
+                        </div>
+                    </div>
+                    {% if form.tos_accepted.errors %}
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                            {% for error in form.tos_accepted.errors %}
                                 <div class="alert alert-danger" role="alert">
                                     {{ error|escape }}
                                 </div>

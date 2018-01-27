@@ -13,6 +13,7 @@ from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.text import slugify
 
 from campaign.models import Campaign
 from comments.models import Comment
@@ -137,6 +138,13 @@ class Page(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        # if this page is new
+        if not self.pk:
+            # create a new page_slug
+            self.page_slug = slugify(self.name)
+        super(Page, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('page', kwargs={

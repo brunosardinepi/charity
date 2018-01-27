@@ -94,7 +94,7 @@ class ManagerInvitationTest(TestCase):
         self.assertNotIn(self.invitation, invitations)
 
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/testpage/manage/admin/')
+        response = self.client.get('/{}/manage/admin/'.format(self.page.page_slug))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "{} {}".format(self.user2.first_name, self.user2.last_name))
         self.assertContains(response, self.user2.email)
