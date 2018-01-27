@@ -3,6 +3,14 @@ $(function () {
         $("#upload-input").click();
     });
 
+    $("#upload-input").bind("change", function(event) {
+        if (this.files[0].size > (4 * 1024 * 1024)) {
+//            event.preventDefault();
+//            alert("Please upload a file less than 4 MB in size.");
+            window.location.href = "/notes/error/image/size/";
+        };
+    });
+
     $("#upload-input").fileupload({
         dataType: 'json',
         done: function (event, data) {

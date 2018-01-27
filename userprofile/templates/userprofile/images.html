@@ -50,10 +50,10 @@
             <hr>
             <p>Uploads are limited to images and must be less than 4 MB in size.</p>
             <button class="btn btn-purple" type="button" id="upload-button">Upload Images</button>
-    <input id="upload-input" type="file" name="image" multiple
-        style="display:none;"
-        data-url="{% url 'userprofile:user_image_upload' %}"
-        data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}' />
+            <input id="upload-input" type="file" name="image" multiple
+                style="display:none;"
+                data-url="{% url 'userprofile:user_image_upload' %}"
+                data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}' />
 
     <h2 class="mt-5" id="images-header">My Images</h2>
     <hr>

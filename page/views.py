@@ -534,7 +534,10 @@ class PageDashboardImages(View):
         if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
             form = forms.PageImageForm(self.request.POST, self.request.FILES)
             data = image_is_valid(request, form, page)
-            return JsonResponse(data)
+            if data:
+                return JsonResponse(data)
+            else:
+                return HttpResponse('')
         else:
             raise Http404
 

@@ -24,6 +24,7 @@ Release date: TBD
 * Page monthly donations weren't working
 * Deleting Page monthly donations weren't working
 * Can't invite managers with a blank permission set
+* Image uploads that were too large weren't being redirected to the proper error page
 
 
 ## Version 0.20.0

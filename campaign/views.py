@@ -480,6 +480,9 @@ class CampaignDashboardImages(View):
         if utils.has_dashboard_access(request.user, campaign, 'manager_image_edit'):
             form = forms.CampaignImageForm(self.request.POST, self.request.FILES)
             data = image_is_valid(request, form, campaign)
-            return JsonResponse(data)
+            if data:
+                return JsonResponse(data)
+            else:
+                return HttpResponse('')
         else:
             raise Http404

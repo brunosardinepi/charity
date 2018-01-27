@@ -76,7 +76,10 @@ class UserImageUpload(View):
         userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
         form = forms.UserImageForm(self.request.POST, self.request.FILES)
         data = image_is_valid(request, form, userprofile)
-        return JsonResponse(data)
+        if data:
+            return JsonResponse(data)
+        else:
+            return HttpResponse('')
 
 @login_required
 def user_image_delete(request, image_pk):
