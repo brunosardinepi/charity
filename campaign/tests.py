@@ -271,7 +271,6 @@ class CampaignTest(TestCase):
         self.assertNotContains(response, "Delete Campaign", status_code=200)
         self.assertNotContains(response, "Manager", status_code=200)
         self.assertNotContains(response, "Invite others to manage Campaign", status_code=200)
-        self.assertNotContains(response, "Upload and Edit images", status_code=200)
 
     def test_campaign_admin_logged_in(self):
         request = self.factory.get('home')
@@ -287,12 +286,11 @@ class CampaignTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Manage", status_code=200)
 
-        response = self.client.get('/{}/{}/{}/manage/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/{}/{}/{}/manage/admin/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Edit Campaign")
         self.assertContains(response, "Delete Campaign")
         self.assertContains(response, "Invite others to manage Campaign")
-        self.assertContains(response, "Upload and Edit images")
         self.assertContains(response, "Remove self as manager")
         self.assertNotContains(response, "/%s/%s/%s/managers/%s/remove/".format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug, self.user4.pk))
 
@@ -302,9 +300,12 @@ class CampaignTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_campaign_edit_admin(self):
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.campaign_edit(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/{}/{}/manage/admin/'.format(
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug
+        ))
 
         self.assertEqual(response.status_code, 200)
 
@@ -462,13 +463,16 @@ class CampaignTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_campaign_invite_admin_not_manager(self):
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.campaign_invite(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/{}/{}/managers/invite/'.format(
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug
+        ))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.campaign.name, status_code=200)
-        self.assertContains(response, "Invite", status_code=200)
+        self.assertContains(response, self.campaign.name)
+        self.assertContains(response, "Invite")
 
     def test_campaign_invite_not_admin_manager_no_perms(self):
         self.client.login(username='goforit', password='yougottawin')
@@ -496,14 +500,23 @@ class CampaignTest(TestCase):
 
         self.client.login(username='testuser', password='testpassword')
 
+        response = self.client.get('/{}/{}/{}/managers/invite/'.format(
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug,
+        ))
+
         # user is already a manager
         response = self.client.post('/%s/%s/%s/managers/invite/' % (
             self.page.page_slug,
             self.campaign.pk,
             self.campaign.campaign_slug
-            ), data
-        )
-        self.assertRedirects(response, self.campaign.get_absolute_url(), 302, 200)
+            ), data)
+
+        self.assertRedirects(response, '/{}/{}/{}/manage/admin/'.format(
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug), 302, 200)
 
         # user already has an invite
         data['email'] = self.user3.email
@@ -513,7 +526,10 @@ class CampaignTest(TestCase):
             self.campaign.campaign_slug
             ), data
         )
-        self.assertRedirects(response, self.campaign.get_absolute_url(), 302, 200)
+        self.assertRedirects(response, '/{}/{}/{}/manage/admin/'.format(
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug), 302, 200)
 
         # user isn't a manager and doesn't have an invite
         data['email'] = self.user5.email
@@ -524,13 +540,16 @@ class CampaignTest(TestCase):
             ), data
         )
         self.assertTrue(ManagerInvitation.objects.all().count(), 2)
-        self.assertRedirects(response, self.campaign.get_absolute_url(), 302, 200)
+        self.assertRedirects(response, '/{}/{}/{}/manage/admin/'.format(
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug), 302, 200)
         # accept the invite and make sure the page has the right perms
         self.client.login(username='ijustate', password='foodcoma')
         invitation = ManagerInvitation.objects.get(invite_to=self.user5.email)
         response = self.client.get('/invite/manager/accept/%s/%s/' % (invitation.pk, invitation.key))
         self.assertRedirects(response, invitation.campaign.get_absolute_url(), 302, 200)
-        response = self.client.get('/%s/%s/%s/manage/' % (
+        response = self.client.get('/%s/%s/%s/manage/admin/' % (
             invitation.campaign.page.page_slug,
             invitation.campaign.pk,
             invitation.campaign.campaign_slug
@@ -555,19 +574,20 @@ class CampaignTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
         response = self.client.post('/{}/{}/{}/managers/invite/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug), data)
         self.assertTrue(ManagerInvitation.objects.all().count(), 2)
-        self.assertRedirects(response, self.campaign.get_absolute_url(), 302, 200)
+        self.assertRedirects(response, '/{}/{}/{}/manage/admin/'.format(
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug), 302, 200)
 
         self.client.login(username='ijustate', password='foodcoma')
         invitation = ManagerInvitation.objects.get(invite_to=self.user5.email)
         response = self.client.get('/invite/manager/accept/{}/{}/'.format(invitation.pk, invitation.key))
         self.assertRedirects(response, invitation.campaign.get_absolute_url(), 302, 200)
-        response = self.client.get('/{}/{}/{}/manage/'.format(invitation.campaign.page.page_slug, invitation.campaign.pk, invitation.campaign.campaign_slug))
+        response = self.client.get('/{}/{}/{}/manage/admin/'.format(invitation.campaign.page.page_slug, invitation.campaign.pk, invitation.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Edit Campaign")
         self.assertContains(response, "Delete Campaign")
         self.assertContains(response, "Invite others to manage Campaign")
-        self.assertContains(response, "Upload and Edit images")
-        self.assertNotContains(response, "Donation History")
 
         self.client.login(username='testuser', password='testpassword')
         permissions = []
@@ -580,13 +600,11 @@ class CampaignTest(TestCase):
         response = self.client.post('/{}/{}/{}/manage/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug), data)
 
         self.client.login(username='ijustate', password='foodcoma')
-        response = self.client.get('/{}/{}/{}/manage/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/{}/{}/{}/manage/admin/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Edit Campaign")
         self.assertContains(response, "Delete Campaign")
         self.assertContains(response, "Invite others to manage Campaign")
-        self.assertContains(response, "Upload and Edit images")
-        self.assertContains(response, "Donation History")
 
     def test_ManagerInviteForm(self):
         data = {
@@ -715,27 +733,27 @@ class CampaignTest(TestCase):
 
     def test_upload_admin(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/%s/%s/%s/images/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/%s/%s/%s/manage/images/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
 
     def test_upload_manager_perms(self):
         self.client.login(username='pizza', password='mehungry')
-        response = self.client.get('/%s/%s/%s/images/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/%s/%s/%s/manage/images/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
 
     def test_upload_manager_no_perms(self):
         self.client.login(username='goforit', password='yougottawin')
-        response = self.client.get('/%s/%s/%s/images/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/%s/%s/%s/manage/images/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 404)
 
     def test_upload_logged_in_no_perms(self):
         self.client.login(username='ijustate', password='foodcoma')
-        response = self.client.get('/%s/%s/%s/images/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/%s/%s/%s/manage/images/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 404)
 
     def test_upload_logged_out(self):
-        response = self.client.get('/%s/%s/%s/images/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
-        self.assertRedirects(response, '/accounts/login/?next=/%s/%s/%s/images/' % (
+        response = self.client.get('/%s/%s/%s/manage/images/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        self.assertRedirects(response, '/accounts/login/?next=/%s/%s/%s/manage/images/' % (
             self.page.page_slug,
             self.campaign.pk,
             self.campaign.campaign_slug
@@ -750,17 +768,16 @@ class CampaignTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
         response = self.client.get('/{}/{}/{}/manage/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
+        self.assertEqual(response.status_code, 200)
         total_donations = Donation.objects.filter(campaign=self.campaign).aggregate(Sum('amount')).get('amount__sum')
         total_donations_count = Donation.objects.filter(campaign=self.campaign).count()
         total_donations_avg = int((total_donations / total_donations_count) / 100)
-        self.assertContains(response, "Total donated: ${} (Avg: ${})".format(
-            int(total_donations / 100),
-            total_donations_avg),
-            status_code=200)
+        self.assertContains(response, "${}".format(int(total_donations / 100)))
+        self.assertContains(response, "${}".format(total_donations_avg))
 
     def test_dashboard_donation_history(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/{}/{}/{}/manage/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/{}/{}/{}/manage/donations/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
         self.assertContains(response, self.donation.user.first_name, status_code=200)
         self.assertContains(response, self.donation.user.last_name, status_code=200)
@@ -769,17 +786,18 @@ class CampaignTest(TestCase):
 
     def test_dashboard_top_donors(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/{}/{}/{}/manage/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        response = self.client.get('/{}/{}/{}/manage/donations/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
         self.assertEqual(response.status_code, 200)
         total_donation_amount = int((self.donation.amount + self.donation2.amount) / 100)
-        self.assertContains(response, "${} - {} {}".format(total_donation_amount, self.user.first_name, self.user.last_name), status_code=200)
+        self.assertContains(response, "{} {}".format(self.user.first_name, self.user.last_name))
+        self.assertContains(response, "${}".format(total_donation_amount))
 
     def test_image_upload(self):
         self.client.login(username='testuser', password='testpassword')
         content = b"a" * 1024
         image = SimpleUploadedFile("image.png", content, content_type="image/png")
-        response = self.client.post('/{}/{}/{}/images/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug), {'image': image})
+        response = self.client.post('/{}/{}/{}/manage/images/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug), {'image': image})
         self.assertEqual(response.status_code, 200)
 
         images = models.CampaignImage.objects.filter(campaign=self.campaign)
@@ -797,7 +815,7 @@ class CampaignTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
         content = b"a" * 1024 * 1024 * 5
         image = SimpleUploadedFile("image.png", content, content_type="image/png")
-        response = self.client.post('/{}/{}/{}/images/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug), {'image': image})
+        response = self.client.post('/{}/{}/{}/manage/images/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug), {'image': image})
         content = response.content.decode('ascii')
         content = ast.literal_eval(content)
         self.assertEqual(response.status_code, 200)
@@ -811,7 +829,7 @@ class CampaignTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
         content = b"a"
         image = SimpleUploadedFile("notimage.txt", content, content_type="text/html")
-        response = self.client.post('/{}/{}/{}/images/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug), {'image': image})
+        response = self.client.post('/{}/{}/{}/manage/images/'.format(self.campaign.page.page_slug, self.campaign.pk, self.campaign.campaign_slug), {'image': image})
         content = response.content.decode('ascii')
         content = ast.literal_eval(content)
         self.assertEqual(response.status_code, 200)
@@ -869,7 +887,10 @@ class CampaignTest(TestCase):
             self.campaign.page.page_slug,
             self.campaign.pk,
             self.campaign.campaign_slug), data)
-        self.assertRedirects(response, '/{}/{}/{}/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug), 302, 200)
+        self.assertRedirects(response, '/{}/{}/{}/manage/admin/'.format(
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug), 302, 200)
 
         vote_participants = models.VoteParticipant.objects.filter(campaign=self.campaign)
         self.assertEqual(len(vote_participants), 4)
@@ -897,3 +918,13 @@ class CampaignTest(TestCase):
         ))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Donate")
+
+    def test_dashboard_donations(self):
+        self.client.login(username='testuser', password='testpassword')
+        response  = self.client.get('/{}/{}/{}/manage/donations/'.format(
+            self.page.page_slug,
+            self.campaign.pk,
+            self.campaign.campaign_slug,
+        ))
+        self.assertEqual(response.status_code, 200)
+

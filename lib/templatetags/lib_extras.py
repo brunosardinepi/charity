@@ -39,18 +39,15 @@ def img_class(img, size):
 @register.filter
 def img_url_class(img, size):
     img = str(img)
-    print("str(img) = {}".format(img))
     if img:
         try:
             img = img.split('/media/', 1)[1]
         except:
             return ""
-        print("img.split('media') = {}".format(img))
         try:
             img = img.split('<br />', 1)[0]
         except:
             pass
-        print("img.split('br') = {}".format(img))
         img = VoteParticipant.objects.get(image=img).image
 
         height = img.height

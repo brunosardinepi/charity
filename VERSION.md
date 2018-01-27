@@ -8,7 +8,7 @@ Release date: TBD
 
 ### Additions
 
-* None
+* Campaign dashboard design
 
 ### Changes
 
