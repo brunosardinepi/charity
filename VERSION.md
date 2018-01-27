@@ -23,6 +23,7 @@ Release date: TBD
 * Page wasn't getting populated on Campaign creation when coming from a Page instead of a new search
 * Page monthly donations weren't working
 * Deleting Page monthly donations weren't working
+* Can't invite managers with a blank permission set
 
 
 ## Version 0.20.0

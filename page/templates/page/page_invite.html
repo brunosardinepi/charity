@@ -5,6 +5,10 @@
 
 {% block title %}Invite | {{ block.super }}{% endblock %}
 
+{% block head_extra %}
+    <script src="{% static 'js/form_checkboxes.js' %}"></script>
+{% endblock %}
+
 {% block body_content %}
     <div class="row">
         <div class="col-lg-3">
@@ -14,7 +18,7 @@
             <h2>Invite</h2>
             <hr>
             <p>Invite someone you trust to help manage this Page.</p>
-            <form action="" method="post">
+            <form action="" method="post" id="invite-form">
                 {% csrf_token %}
 
                 {% if form.non_field_errors %}
@@ -81,7 +85,7 @@
                     </label>
                 </div>
 
-                <input class="btn btn-purple mt-3" type="submit" value="Invite" />
+                <input id="form-submit" class="btn btn-purple mt-3" type="submit" value="Invite" />
             </form>
         </div>
     </div>
