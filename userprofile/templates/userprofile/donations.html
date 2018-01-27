@@ -1,29 +1,9 @@
 {% extends '_layout.html' %}
 {% load donation_extras %}
+{% load static from staticfiles %}
+
 
 {% block title %} Profile | {{ block.super }}{% endblock %}
-
-{% block head_extra %}
-    <script>
-        $(document).on("click", ".delete-plan", function(event) {
-            event.preventDefault();
-            var url = "{% url 'plans:delete_plan' %}";
-            var id = $(this).attr("id");
-            $.ajax({
-                url : url,
-                type : "POST",
-                traditional: true,
-                data : {
-                    id : id
-                },
-                success : function(json) {
-                    var plan = $("#" + id)
-                    plan.closest("li").remove();
-                }
-            });
-        });
-    </script>
-{% endblock %}
 
 {% block body_content %}
     <div class="row">
@@ -32,34 +12,33 @@
         </div>
         <div class="col-lg-9">
             <h2>Recurring Donations</h2>
-            <hr>
             {% if userprofile.plans %}
-                <div class="row">
-                    <div class="col-2">
-                        <p class="font-weight-bold">Amount</p>
-                    </div>
-                    <div class="col-7">
-                        <p class="font-weight-bold">Recipient</p>
-                    </div>
-                    <div class="col-3">
-                        <p class="font-weight-bold">Frequency</p>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">Recipient</th>
+                                    <th scope="col">Frequency</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for plan in userprofile.plans %}
+                                    <tr>
+                                        <td>{{ plan.amount|cents_to_dollars }}</td>
+                                        <td><a href="{% url 'page' page_slug=plan.page.page_slug %}">{{ plan.page }}</a>{% if plan.campaign %} via <a class="teal" href="{% url 'campaign' page_slug=plan.page.page_slug campaign_pk=plan.campaign.pk campaign_slug=plan.campaign.campaign_slug %}">{{ plan.campaign }}</a>{% endif %}</td>
+                                        <td>{{ plan.interval }}</td>
+                                        <td><a href="{% url 'plans:delete_plan' plan_pk=plan.pk %}">Delete</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-
-                {% for p in userprofile.plans %}
-                    <div class="row">
-                        <div class="col-2">
-                            <p>{{ p.amount|cents_to_dollars }}</p>
-                        </div>
-                        <div class="col-7">
-                            <p><a href="{% url 'page' page_slug=p.page.page_slug %}">{{ p.page }}</a>{% if p.campaign %} via <a class="teal" href="{% url 'campaign' page_slug=p.page.page_slug campaign_pk=p.campaign.pk campaign_slug=p.campaign.campaign_slug %}">{{ p.campaign }}</a>{% endif %} - <a class="delete-plan" id="plan-{{ p.id }}" href="">Delete</a></p>
-                        </div>
-                        <div class="col-3">
-                            <p>{{ p.interval }}</p>
-                        </div>
-                    </div>
-                {% endfor %}
             {% else %}
+                <hr>
                 <p>You have no recurring donations!</p>
             {% endif %}
 
@@ -72,34 +51,31 @@
                 </div>
             </div>
 
-            <hr>
-
             {% if userprofile.donations %}
-                <div class="row">
-                    <div class="col-2">
-                        <p class="font-weight-bold">Amount</p>
-                    </div>
-                    <div class="col-7">
-                        <p class="font-weight-bold">Recipient</p>
-                    </div>
-                    <div class="col-3">
-                        <p class="font-weight-bold">Date</p>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">Recipient</th>
+                                    <th scope="col">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for d in userprofile.donations %}
+                                    <tr>
+                                        <td>{{ d.amount|cents_to_dollars }}</td>
+                                        <td><a href="{% url 'page' page_slug=d.page.page_slug %}">{{ d.page }}</a>{% if d.campaign %} via <a class="teal" href="{% url 'campaign' page_slug=d.page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign }}</a>{% endif %}</td>
+                                        <td>{{ d.date }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                {% for d in userprofile.donations %}
-                    <div class="row">
-                        <div class="col-2">
-                            <p>{{ d.amount|cents_to_dollars }}</p>
-                        </div>
-                        <div class="col-7">
-                            <p><a href="{% url 'page' page_slug=d.page.page_slug %}">{{ d.page }}</a>{% if d.campaign %} via <a class="teal" href="{% url 'campaign' page_slug=d.page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign }}</a>{% endif %}</p>
-                        </div>
-                        <div class="col-3">
-                            <p>{{ d.date }}</p>
-                        </div>
-                    </div>
-                {% endfor %}
             {% else %}
+                <hr>
                 <p>You haven't made any donations yet!</p>
             {% endif %}
         </div>

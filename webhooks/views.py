@@ -72,8 +72,10 @@ def charge_succeeded(request):
         try:
             vote_participant_pk = event_json['data']['object']['metadata']['vote_participant']
             vote_participant = get_object_or_404(VoteParticipant, pk=vote_participant_pk)
+            print("found vote_participant")
         except KeyError:
             vote_participant = None
+            print("didn't find vote_participant")
 
     amount = event_json['data']['object']['amount']
     page = get_object_or_404(Page, pk=page_pk)
