@@ -2,6 +2,23 @@
 
 This is the version history for PageFund development.
 
+## Version 0.21.0
+
+Release date: TBD
+
+### Additions
+
+* None
+
+### Changes
+
+* Mobile design for Page/Campaign dashboards
+
+### Fixes
+
+* None
+
+
 ## Version 0.20.0
 
 Release date: 01/26/2018
