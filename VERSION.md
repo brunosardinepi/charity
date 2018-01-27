@@ -14,6 +14,9 @@ Release date: TBD
 
 * Mobile design for Page/Campaign dashboards
 * Removed location site-wide
+* Auto-generating Page/Campaign slug on creation and letting users change it in the dashboard
+* Removed majority of helper text on forms and stated which fields are optional
+* Resized form fields for better readability
 
 ### Fixes
 

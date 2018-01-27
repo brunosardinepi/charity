@@ -76,7 +76,6 @@ def create_search_result_html(r, sponsored, trending):
         html += "<i class='fal fa-chart-line mr-3' aria-hidden title='Trending'></i><span class='sr-only'>Trending</span>"
 
     html += (
-        "<i class='fal fa-compass mr-1' aria-hidden title='Location'></i><span class='sr-only'>Location</span>"
         "</div>"
         "<div class='col-md-3 vote-amount'>"
     )
