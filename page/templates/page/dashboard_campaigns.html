@@ -19,12 +19,12 @@
 
             {% if request.user.userprofile in page.admins.all or "manager_view_dashboard" in page_perms %}
                 <div class="row justify-content-center mt-5 mb-5">
-                    <div class="col-lg-4 text-center">
+                    <div class="col-lg-4 mb-4 text-center">
                         <p class="small m-0">Donated to Campaigns</p>
                         <h2 class="m-0">{{ donations.campaign_donations|cents_to_dollars }}</h2>
                         <p class="small m-0">Avg: {{ donations.campaign_donations_avg|cents_to_dollars }}</p>
                     </div>
-                    <div class="col-lg-4 text-center">
+                    <div class="col-lg-4 mb-4 text-center">
                         <p class="small m-0">Average Campaign Duration</p>
                         <h2 class="m-0">{{ campaign_average_duration }} days</h2>
                     </div>
@@ -34,7 +34,7 @@
                 <hr>
                 <p>These charts show how many of your Campaigns reach their goal before their end date.</p>
                 <div class="row justify-content-center mt-5 mb-5">
-                    <div class="col-lg-4 text-center">
+                    <div class="col-lg-4 mb-4 text-center">
                         <section>
                             <canvas id="generalChart"></canvas>
                             <div class="doughnut-text">
@@ -44,7 +44,7 @@
                             </div>
                         </section>
                     </div>
-                    <div class="col-lg-4 text-center">
+                    <div class="col-lg-4 mb-4 text-center">
                         <section>
                             <canvas id="voteChart"></canvas>
                             <div class="doughnut-text">
