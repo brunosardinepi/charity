@@ -182,10 +182,10 @@ class Page(models.Model):
             return None
 
     def active_campaigns(self):
-        return Campaign.objects.filter(page=self, is_active=True, deleted=False).order_by('name')
+        return Campaign.objects.filter(page=self, is_active=True, deleted=False).order_by('end_date')
 
     def inactive_campaigns(self):
-        return Campaign.objects.filter(page=self, is_active=False, deleted=False)
+        return Campaign.objects.filter(page=self, is_active=False, deleted=False).order_by('-end_date')
 
     def donations(self):
         return Donation.objects.filter(page=self).order_by('-date')
