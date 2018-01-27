@@ -1,0 +1,89 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+{% load guardian_tags %}
+{% load donation_extras %}
+
+{% block title %}Dashboard | {{ block.super }}{% endblock %}
+
+{% block head_extra %}
+    <script src="{% static '/jquery-file-upload/vendor/jquery.ui.widget.js' %}"></script>
+    <script src="{% static '/jquery-file-upload/jquery.iframe-transport.js' %}"></script>
+    <script src="{% static '/jquery-file-upload/jquery.fileupload.js' %}"></script>
+    <script src="{% static '/js/image_upload.js' %}"></script>
+
+    <script>
+        function delete_image(event) {
+            var arr = $(event.target).closest("a").attr("id").split("-");
+            var url = "{% url 'page_image_delete' image_pk=0 %}".replace(0, arr[1]);
+            $.get(url, function () {
+                $("#image-" + arr[1]).remove();
+                if(!$.trim($("#image-list").html()).length) {
+                    $("#image-list").empty();
+                    $("#image-list").append("<div class='col' id='no-images'><p>No images!</p></div>");
+                };
+            });
+        };
+
+        $(document).on('click', ".delete-image", function(event) {
+            event.preventDefault();
+            delete_image(event);
+        });
+
+        $(document).on("click", ".set-profile-picture", function(event) {
+            event.preventDefault();
+            var arr = $(event.target).parent().attr("id").split("-");
+            var url = "{% url 'page_profile_update' image_pk=0 %}".replace(0, arr[1]);
+            $.get(url, function() {
+                $(".profile").html("<a class='set-profile-picture' href=''>Make profile picture</a>");
+                $("#profile-" + arr[1]).text("Profile picture");
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body_content %}
+
+    <div class="row">
+        <div class="col-lg-3">
+            {% include "page/dashboard_menu.html" %}
+        </div>
+        <div class="col-lg-9">
+            <h2>Upload Images</h2>
+            <hr>
+            <p>Uploads are limited to images and must be less than 4 MB in size.</p>
+            <button class="btn btn-purple" type="button" id="upload-button">Upload Images</button>
+            <input id="upload-input" type="file" name="image" multiple
+                style="display:none;"
+                data-url="{% url 'page_dashboard_images' page_slug=page.page_slug %}"
+                data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}' />
+
+            <h2 class="mt-5" id="images-header">Page Images</h2>
+            <hr>
+            <div class="row" id="image-list">
+                {% if images %}
+                    {% for i in images %}
+                        <div class="col-4 mb-3" id="image-{{ i.pk }}">
+                            <div class="card" style="border:0;">
+                                <img class="card-img-top" src="{{ i.image.url }}">
+                                <div class="card-body p-0 pt-1">
+                                    <div class="row justify-content-between">
+                                        <div class="col">
+                                            <span class="small profile" id="profile-{{ i.pk }}">{% if i.profile_picture %}Profile picture {% else %}<a class="set-profile-picture" href="">Make profile picture</a>{% endif %}</span>
+                                        </div>
+                                        <div class="col-3 text-right">
+                                            <a id="delete-{{ i.pk }}" class="delete-image" href=""><i class="fal fa-trash-alt"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col" id="no-images">
+                        <p>No images!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

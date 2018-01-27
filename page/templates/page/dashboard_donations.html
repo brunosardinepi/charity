@@ -1,0 +1,133 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+{% load guardian_tags %}
+{% load donation_extras %}
+
+{% block title %}Dashboard | {{ block.super }}{% endblock %}
+
+{% block head_extra %}
+    <script src="{% static 'js/comment_csrf.js' %}"></script>
+    <script>
+        function sort(event, column) {
+            var parent_th = $(event.target).parent("th");
+            if (parent_th.hasClass("desc")) {
+                var sort_by = "asc";
+            } else {
+                var sort_by = "desc";
+            };
+
+            var url = "{% url 'page_ajax_donations' %}";
+
+            $.ajax({
+                url : url,
+                type : "POST",
+                traditional: true,
+                data : {
+                    page_pk : "{{ page.pk }}",
+                    sort_by : sort_by,
+                    column : column,
+                },
+                success : function(result) {
+                    $("#donation-history-body").empty();
+                    parent_th.attr("class", sort_by);
+                    for (var key in result) {
+                        var date = result[key]["date"];
+                        if (result[key]["anonymous_amount"] == true) {
+                            var amount = "Anonymous";
+                        } else if (result[key]["anonymous_amount"] == false) {
+                            var amount = "$" + result[key]['amount'] / 100;
+                        };
+                        if (result[key]["campaign"]) {
+                            var campaign = result[key]["campaign"];
+                        } else {
+                            var campaign = "--";
+                        };
+                        if (result[key]["anonymous_donor"] == true) {
+                            var donor = "Anonymous";
+                        } else if (result[key]["anonymous_donor"] == false) {
+                            var donor = result[key]["user"]["first_name"] + " " + result[key]["user"]["last_name"];
+                        };
+                        $("#donation-history-body").append("<tr><td>" + date + "</td><td>" + amount + "</td><td>" + campaign + "</td><td>" + donor + "</td></tr>");
+                    }
+                }
+            });
+        };
+
+        $(document).on("click", ".sort", function(event) {
+            event.preventDefault();
+            var column = $(event.target).attr("id");
+            sort(event, column);
+        });
+    </script>
+{% endblock %}
+
+{% block body_content %}
+
+    <div class="row">
+        <div class="col-lg-3">
+            {% include "page/dashboard_menu.html" %}
+        </div>
+        <div class="col-lg-9">
+            {% if request.user.userprofile in page.admins.all or "manager_view_dashboard" in page_perms %}
+                <h2>Donations</h2>
+                <hr>
+                <div class="row justify-content-center mt-5 mb-5">
+                    <div class="col-lg-4 mb-4 text-center">
+                        <p class="small m-0">Donated to Page</p>
+                        <h2 class="m-0">{{ donations.page_donations|cents_to_dollars }}</h2>
+                        <p class="small m-0">Avg: {{ donations.page_donations_avg|cents_to_dollars }}</p>
+                    </div>
+                    <div class="col-lg-4 mb-4 text-center">
+                        <p class="small m-0">Recurring Donations</p>
+                        <h2 class="m-0">{{ donations.plan_donations|cents_to_dollars }}</h2>
+                        <p class="small m-0">Avg: {{ donations.plan_donations_avg|cents_to_dollars }}</p>
+                    </div>
+                </div>
+
+                <h2>Top Donors</h2>
+                <div class="row justify-content-center mt-3 mb-5">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th class="purple">Donor</th>
+                                <th class="purple">Total donated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a, b in page.top_donors %}
+                                <tr>
+                                    <td>{{ b.first_name }} {{ b.last_name }}</td>
+                                    <td>{{ b.amount|cents_to_dollars }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Donation History</h2>
+                <div class="row justify-content-center mt-3 mb-5">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th class="desc"><a class="sort" id="sort-date" href="">Date</a></th>
+                                <th><a class="sort" id="sort-amount" href="">Amount</a></th>
+                                <th><a class="sort" id="sort-campaign" href="">Campaign</a></th>
+                                <th><a class="sort" id="sort-donor_first_name" href="">Donor</a></th>
+                            </tr>
+                        </thead>
+                        <tbody id="donation-history-body">
+                            {% for d in page.donations %}
+                                <tr>
+                                    <td>{{ d.date|date:'N j, Y, g:i A' }}</td>
+                                    <td>{% if d.anonymous_amount %}Anonymous{% else %}{{ d.amount|cents_to_dollars }}{% endif %}</td>
+                                    <td>{% if d.campaign %}{{ d.campaign }}{% else %}--{% endif %}</td>
+                                    <td>{% if d.anonymous_donor == True %}Anonymous{% else %}{% if d.user %}{{ d.user.first_name }} {{ d.user.last_name }}{% else %}{{ d.donor_first_name }} {{ d.donor_last_name }}{% endif %}{% endif %}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

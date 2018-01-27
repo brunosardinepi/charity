@@ -1,5 +1,8 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
+{% load lib_extras %}
+{% load widget_tweaks %}
+
 
 {% block title %}Edit | {{ block.super }}{% endblock %}
 
@@ -8,29 +11,63 @@
 {% endblock %}
 
 {% block body_content %}
-    <h1>Create Campaign - Vote</h1>
+    <h1>Campaign Vote Participants</h1>
+    <hr>
+    <p>Enter the <span class="font-weight-bold">name</span> of your vote participant and optionally give a <span class="font-weight-bold">description</span>.</p>
+    <p>When <span class="font-weight-bold">uploading a picture</span>, select your image and it will be uploaded when you click "Save".</p>
+    <p>To <span class="font-weight-bold">delete</span> a vote participant, select "delete" and click "Save".</p>
     
-    <form id="vote-participant-form" method="POST" action="" enctype="multipart/form-data">
+    <form class="mt-5" id="vote-participant-form" method="POST" action="" enctype="multipart/form-data">
         {% csrf_token %}
 
         {{ formset.management_form }}
 
-        <table>
-            <tbody>
-                {% for form in formset %}
-                    <tr class="form-container">
-                        <td>{{ form.id}}{{ form.name }}</td>
-                        <td>{{ form.description }}</td>
-                        <td>{{ form.image }}</td>
-                        {% if form.instance.pk %}
-                            <td>delete: {{ form.DELETE }}</td>
-                        {% endif %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {% for form in formset %}
 
-        <input type="submit" class="button" value="Save">
+            <div class="row mb-5">
+                <div class="col-md-3">
+                    {{ form.image }}
+                </div>
+
+                <div class="form-group col-md-7">
+                    {{ form.id }}
+                    {% render_field form.name class+="form-control mb-3" %}
+
+                    {% if form.name.errors %}
+                        {% for error in form.name.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ error|escape }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% render_field form.description class+="form-control" %}
+
+                    {% if form.description.errors %}
+                        {% for error in form.description.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ error|escape }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="col-md-2 d-flex align-items-center h100">
+                    <div class="row">
+                        <div class="col-12">
+                            {% if form.instance.pk %}
+                                {{ form.DELETE }} Delete
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="row">
+            <a class="btn btn-secondary col-md-2 offset-md-3" href="{% url 'campaign_dashboard_admin' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Cancel</a>
+            <input type="submit" class="btn btn-teal col-md-2 offset-md-3" value="Save">
+        </div>
     </form>
 {% endblock %}
 

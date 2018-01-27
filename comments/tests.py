@@ -1,3 +1,6 @@
+import datetime
+import pytz
+
 from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.contenttypes.models import ContentType
 from django.test import Client, RequestFactory, TestCase
@@ -53,6 +56,7 @@ class CommentTest(TestCase):
             page=self.page,
             description='This is a description for Test Campaign.',
             goal='11',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
         )
 
         self.comment = models.Comment.objects.create(
@@ -82,7 +86,7 @@ class CommentTest(TestCase):
         response = self.client.post('/comments/post/{}/{}/'.format(ContentType.objects.get_for_model(self.page).pk, self.page.pk), data)
         # can i redirect to a 404 page?
 #        self.assertRedirects(response, '/accounts/login/?next=/comments/page/%s/comment/' % self.page.pk, 302, 200)
-        response = self.client.get('/testpage/')
+        response = self.client.get('/{}/'.format(self.page.page_slug))
         self.assertNotContains(response, "I am anonymous!", status_code=200)
 
         self.client.login(username='testuser', password='testpassword')
@@ -91,10 +95,10 @@ class CommentTest(TestCase):
         response = self.client.post('/comments/post/{}/{}/'.format(ContentType.objects.get_for_model(self.page).pk, self.page.pk), data)
 
         comment = models.Comment.objects.get(comment="Hello my name is Testy McTestface.")
-        self.assertRedirects(response, '/testpage/#c{}'.format(comment.pk), 302, 200)
+        self.assertRedirects(response, '/{}/#c{}'.format(self.page.page_slug, comment.pk), 302, 200)
         self.assertEqual(models.Comment.objects.all().count(), 2)
 
-        response = self.client.get('/testpage/')
+        response = self.client.get('/{}/'.format(self.page.page_slug))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Hello my name is Testy McTestface.")
         self.assertContains(response, "{} {}".format(self.user.first_name, self.user.last_name))

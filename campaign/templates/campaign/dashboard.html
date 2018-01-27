@@ -3,160 +3,87 @@
 {% load guardian_tags %}
 {% load donation_extras %}
 
-{% block title %}Dashboard | {{ block.super }}{% endblock %}
-
-{% block head_extra %}
-    <script src="{% static 'js/comment_csrf.js' %}"></script>
-    <script>
-        $(document).ready(function() {
-            $(".delete-campaign").click(function () {
-                return confirm("Are you sure you want to delete this Campaign?");
-            });
-        });
-
-
-        function sort(event, column) {
-            var parent_th = $(event.target).parent("th");
-            if (parent_th.hasClass("desc")) {
-                var sort_by = "asc";
-            } else {
-                var sort_by = "desc";
-            };
-
-            var url = "{% url 'campaign_ajax_donations' %}";
-
-            $.ajax({
-                url : url,
-                type : "POST",
-                traditional: true,
-                data : {
-                    campaign_pk : "{{ campaign.pk }}",
-                    sort_by : sort_by,
-                    column : column,
-                },
-                success : function(result) {
-                    $("#donation-history-body").empty();
-                    parent_th.attr("class", sort_by);
-                    for (var key in result) {
-                        var date = result[key]["date"];
-                        if (result[key]["anonymous_amount"] == true) {
-                            var amount = "Anonymous";
-                        } else if (result[key]["anonymous_amount"] == false) {
-                            var amount = "$" + result[key]['amount'] / 100;
-                        };
-                        if (result[key]["anonymous_donor"] == true) {
-                            var donor = "Anonymous";
-                        } else if (result[key]["anonymous_donor"] == false) {
-                            var donor = result[key]["user"]["first_name"] + " " + result[key]["user"]["last_name"];
-                        };
-                        $("#donation-history-body").append("<tr><td>" + date + "</td><td>" + amount + "</td></td><td>" + donor + "</td></tr>");
-                    }
-                }
-            });
-        };
-
-        $(document).on("click", ".sort", function(event) {
-            event.preventDefault();
-            var column = $(event.target).attr("id");
-            sort(event, column);
-        });
-    </script>
-{% endblock %}
+{% block title %}Analytics | {{ block.super }}{% endblock %}
 
 {% block body_content %}
-    <h1>{{ campaign.name }}</h1>
-    {% if request.user.userprofile in campaign.campaign_admins.all %}
-        <p><a href="{% url 'campaign_edit' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
-        <p><a class="delete-campaign" href="{% url 'campaign_delete' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
-        <p><a href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
-        <p><a href="{% url 'campaign_image_upload' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload and Edit images</a></p>
-        {% if campaign.type == "vote" %}<p><a href="{% url 'campaign_edit_vote' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit vote participants</a></p>{% endif %}
-        {% if campaign.managers_list %}
-            <h5>Managers</h5>
-            <form method="POST" action"">
-                {% csrf_token %}
-                <table>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
-                        <th>Invite</th>
-                        <th>Upload</th>
-                        <th>View Dashboard</th>
-                        <th></th>
-                    </tr>
-                {% for manager in campaign.managers_list %}
-                    {% get_obj_perms manager.user for campaign as "campaign_perms" %}
-                    <tr>
-                        <td>{{ manager.first_name }} {{ manager.last_name }}</td>
-                        <td>{{ manager.user.email }}</td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_edit" {% if 'manager_edit' in campaign_perms %}checked{% endif %} /></td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_delete" {% if 'manager_delete' in campaign_perms %}checked{% endif %} /></td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_invite" {% if 'manager_invite' in campaign_perms %}checked{% endif %} /></td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_image_edit" {% if 'manager_image_edit' in campaign_perms %}checked{% endif %} /></td>
-                        <td><input name="permissions[]" type="checkbox" value="{{ manager.pk }}_manager_view_dashboard" {% if 'manager_view_dashboard' in campaign_perms %}checked{% endif %} /></td>
-                        <td><a href="{% url 'remove_manager' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug manager_pk=manager.pk %}">Remove<a/></td>
-                {% endfor %}
-                </table>
-                <input type="submit" value="Save" />
-            </form>
-        {% endif %}
-    {% else %}
-        <p><a href="{% url 'remove_manager' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug manager_pk=request.user.pk %}">Remove self as manager<a/></p>
-        {% get_obj_perms request.user for campaign as "campaign_perms" %}
-        {% if campaign_perms %}
-            <h4>Manager</h4>
-        {% endif %}
-        {% if "manager_edit" in campaign_perms %}
-            <p><a href="{% url 'campaign_edit' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
-        {% endif %}
-        {% if "manager_delete" in campaign_perms %}
-            <p><a class="delete-campaign" href="{% url 'campaign_delete' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
-        {% endif %}
-        {% if "manager_invite" in campaign_perms %}
-            <p><a href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
-        {% endif %}
-        {% if "manager_image_edit" in campaign_perms %}
-            <p><a href="{% url 'campaign_image_upload' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload and Edit images</a></p>
-        {% endif %}
-    {% endif %}
+    <div class="row">
+        <div class="col-lg-3">
+            {% include "campaign/dashboard_menu.html" %}
+        </div>
+        <div class="col-lg-9">
+            <h2>Analytics</h2>
+            <hr>
+            {% if request.user.userprofile in campaign.campaign_admins.all or "manager_view_dashboard" in campaign_perms %}
+                <div class="row mt-5 mb-5 justify-content-center">
+                    <div class="col-lg-3 text-center">
+                        <p class="small m-0">Total raised</p>
+                        <h2 class="m-0">{{ donations.total_donations|cents_to_dollars }}</h2>
+                        <p class="small m-0">Avg: {{ donations.total_donations_avg|cents_to_dollars }}</p>
+                    </div>
+                </div>
 
-    {% if request.user.userprofile in campaign.campaign_admins.all or "manager_view_dashboard" in campaign_perms %}
-        <p>Total donated: {{ donations.total_donations|cents_to_dollars }} (Avg: {{ donations.total_donations_avg|cents_to_dollars }})</p>
-        <h2>Donation Graph</h2>
-        <ul>
-            {% for k,v in graph.items %}
-                <li>Date: {{ k }}, Donations: {{ v|cents_to_dollars }}</li>
-            {% endfor %}
-        </ul>
-        <h2>Donation History</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th class="desc"><a class="sort" id="sort-date" href="">Date</a></th>
-                    <th><a class="sort" id="sort-amount" href="">Amount</a></th>
-                    <th><a class="sort" id="sort-donor_first_name" href="">Donor</a></th>
-                </tr>
-            </thead>
-            <tbody id="donation-history-body">
-                {% for d in campaign.donations %}
-                    <tr>
-                        <td>{{ d.date|date:'N j, Y, g:i A' }}</td>
-                        <td>{% if d.anonymous_amount %}Anonymous{% else %}{{ d.amount|cents_to_dollars }}{% endif %}</td>
-                        <td>{% if d.anonymous_donor == True %}Anonymous{% else %}{% if d.user %}{{ d.user.first_name }} {{ d.user.last_name }}{% else %}{{ d.donor_first_name }} {{ d.donor_last_name }}{% endif %}{% endif %}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                <section>
+                    <canvas id="myChart"></canvas>
+                </section>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
 
-        <h2>Top Donors</h2>
-        <ul>
-            {% for a, b in campaign.top_donors %}
-                <li>{{ b.amount|cents_to_dollars }} - {{ b.first_name }} {{ b.last_name }}</li>
-            {% endfor %}
-        </ul>
-        <h2>Trending Scores</h2>
-        <p>Campaign score: {{ campaign.trending_score }}</p>
-    {% endif %}
+{% block body_extra %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+
+
+<script>
+var ctx = document.getElementById("myChart").getContext('2d');
+var graph_dates = {{ graph_dates|safe }};
+var graph_donations = {{ graph_donations|safe }};
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: graph_dates,
+        datasets: [{
+            data: graph_donations,
+            backgroundColor: 'rgba(51, 204, 153, 0.2)',
+            hoverBackgroundColor: 'rgba(51, 204, 153, 0.5)',
+            borderColor: 'rgba(51, 204, 153, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        title: {
+            display: true,
+            text: 'Donations for past 30 days',
+            fontSize: '16',
+            padding: '16',
+        },
+        tooltips: {
+            callbacks: {
+                label: function(tooltipItems, data) {
+                    return '$' + tooltipItems.yLabel.toString();
+                }
+            },
+        },
+        legend: {
+            display: false
+        },
+        scales: {
+            xAxes: [{
+                gridLines: {
+                    display: false,
+                },
+            }],
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    // Include a dollar sign in the ticks
+                    callback: function(value, index, values) {
+                        return '$' + value;
+                    }
+                }
+            }]
+        }
+    }
+});
+</script>
 {% endblock %}

@@ -1,3 +1,6 @@
+import datetime
+import pytz
+
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.utils import timezone
@@ -45,10 +48,9 @@ class DonationTest(TestCase):
             campaign_slug='campaignslug',
             page=self.page,
             type='Event',
-            city='Dallas',
-            state='Texas',
             description='This is a description for Test Campaign.',
             goal='666',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
         )
 
         self.plan = StripePlan.objects.create(
@@ -85,18 +87,3 @@ class DonationTest(TestCase):
         )
         now = timezone.now()
         self.assertLess(plan.date, now)
-
-    def test_plan_profile(self):
-        self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/profile/')
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Recurring Donations", status_code=200)
-        self.assertContains(response, "$%s every month to " % int(self.plan.amount / 100), status_code=200)
-
-        self.client.login(username='packetloss', password='plshelap')
-        response = self.client.get('/profile/')
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Recurring Donations", status_code=200)
-        self.assertContains(response, "$%s every month to " % int(self.plan2.amount / 100), status_code=200)
-
-

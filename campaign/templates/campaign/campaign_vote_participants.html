@@ -1,16 +1,21 @@
 {% load donation_extras %}
 {% load staticfiles %}
+{% load lib_extras %}
 
 
 {% for p in campaign.vote_participants %}
     <div class="row mb-4">
         <div class="col-md-auto vote-participant-picture-container">
             {% if p.image %}
-                <a href="{{ p.image.url }}" data-lightbox="image-{{ p.pk }}">
-                    <img class="vote-participant-picture" src="{{ p.image.url }}" />
-                </a>
+                <div class="{{ p.image|img_class:'large' }}">
+                    <a href="{{ p.image.url }}" data-lightbox="image-{{ p.pk }}">
+                        <img src="{{ p.image.url }}" />
+                    </a>
+                </div>
             {% else %}
-                <img class="vote-participant-picture" src="{% static 'img/user_default.svg' %}" />
+                <div class="circular-square">
+                    <img src="{% static 'img/user_default.svg' %}" />
+                </div>
             {% endif %}
         </div>
 

@@ -26,7 +26,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '^-rmwm-x8z_8p5=9qu3p!27&=-u7#j!84$39-xvw3w=odz0xmy'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config.settings['debug']
+
+SERVER_EMAIL = 'no-reply@page.fund'
+ADMINS = [('Garrett', 'gn9012@gmail.com')]
 
 ALLOWED_HOSTS = config.settings['allowed_hosts']
 
@@ -160,6 +163,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 UPLOAD_TYPES = ['image']
 MAX_IMAGE_UPLOAD_SIZE = 4*1024*1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 4*1024*1024
 
 # allauth
 SITE_ID = 1
@@ -177,3 +181,9 @@ ACCOUNT_USERNAME_REQUIRED = False
 
 # testing
 TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
+
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = config.settings['sendgrid_username']
+EMAIL_HOST_PASSWORD = config.settings['sendgrid_password']
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

@@ -12,16 +12,6 @@ from pagefund import config
 from pagefund.utils import email
 
 
-@login_required
-def pending_invitations(request):
-    invitations = models.ManagerInvitation.objects.filter(
-        invite_to=request.user.email,
-        expired=False,
-        accepted=False,
-        declined=False
-    )
-    return render(request, 'invitations/pending_invitations.html', {'invitations': invitations})
-
 @login_required(login_url='signup')
 def accept_invitation(request, invitation_pk, key):
     invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
@@ -73,7 +63,7 @@ def decline_invitation(request, type, invitation_pk, key):
 
     # if the user is logged in and declined the invitation, redirect them to their other pending invitations
     if request.user.is_authenticated:
-        return HttpResponseRedirect(reverse('invitations:pending_invitations'))
+        return HttpResponseRedirect(reverse('userprofile:pending_invitations'))
     # if the user isn't logged in and declined the invitation, redirect them to the homepage
     else:
         return HttpResponseRedirect(reverse('home'))

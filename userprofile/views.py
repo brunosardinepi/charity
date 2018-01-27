@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views import View
 
 import stripe
@@ -68,14 +69,17 @@ def userprofile(request):
 class UserImageUpload(View):
     def get(self, request):
         userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
-        images = UserImage.objects.filter(user=userprofile)
+        images = UserImage.objects.filter(user=userprofile).order_by('-date')
         return render(self.request, 'userprofile/images.html', {'userprofile': userprofile, 'images': images})
 
     def post(self, request):
         userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
         form = forms.UserImageForm(self.request.POST, self.request.FILES)
         data = image_is_valid(request, form, userprofile)
-        return JsonResponse(data)
+        if data:
+            return JsonResponse(data)
+        else:
+            return HttpResponse('')
 
 @login_required
 def user_image_delete(request, image_pk):
@@ -130,7 +134,7 @@ def add_card(request):
                     stripe_card_id=card_source.id,
                     stripe_card_fingerprint=card_source.fingerprint
                 )
-            return HttpResponseRedirect(request.user.userprofile.get_absolute_url())
+            return HttpResponseRedirect(reverse('userprofile:billing'))
 
 @login_required
 def update_card(request):
@@ -151,11 +155,14 @@ def update_card(request):
                 if not settings.TESTING:
                     customer = stripe.Customer.retrieve(request.user.userprofile.stripe_customer_id)
                     customer.sources.retrieve(card.stripe_card_id).delete()
-            return HttpResponseRedirect(card.user.get_absolute_url())
+            return HttpResponseRedirect(reverse('userprofile:billing'))
 
-@login_required
-def update_notification_preferences(request):
-    if request.method == "POST":
+class Notifications(View):
+    def get(self, request):
+        userprofile = get_object_or_404(UserProfile, user=request.user)
+        return render(request, 'userprofile/notifications.html', {'userprofile': userprofile})
+
+    def post(self, request):
         userprofile = get_object_or_404(UserProfile, user=request.user)
         post_data = request.POST.getlist('notification_preferences[]')
         new_notification_preferences = [n for n in post_data]
@@ -167,6 +174,7 @@ def update_notification_preferences(request):
                 setattr(userprofile, "%s" % o, False)
         userprofile.save()
         return HttpResponseRedirect(request.user.userprofile.get_absolute_url())
+
 
 def card_list(request):
     cards = get_user_credit_cards(request.user.userprofile)
@@ -187,3 +195,52 @@ class UserProfileTaxes(View):
                 "last4": get_last4_donation(donation),
             }
         return render(request, 'userprofile/taxes.html', {"donations": donations})
+
+class PagesCampaigns(View):
+    def get(self, request):
+        userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
+        return render(self.request, 'userprofile/pages_campaigns.html', {'userprofile': userprofile})
+
+class PendingInvitations(View):
+    def get(self, request):
+        userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
+        invitations = ManagerInvitation.objects.filter(
+            invite_to=request.user.email,
+            expired=False,
+            accepted=False,
+            declined=False,
+        )
+        return render(request, 'userprofile/pending_invitations.html', {
+            'userprofile': userprofile,
+            'invitations': invitations,
+        })
+
+class Donations(View):
+    def get(self, request):
+        userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
+        return render(self.request, 'userprofile/donations.html', {'userprofile': userprofile})
+
+class Billing(View):
+    def get(self, request):
+        userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
+        if userprofile.user == request.user:
+            try:
+                cards = get_user_credit_cards(userprofile)
+                stripe_error = None
+            except Exception as e:
+                cards = None
+                stripe_error = True
+                error = {
+                    "e": e,
+                    "user": request.user.pk,
+                    "page": "profile",
+                    "campaign": None,
+                }
+                error_email(error)
+
+        return render(request, 'userprofile/billing.html', {
+            'userprofile': userprofile,
+            'cards': cards,
+            'stripe_error': stripe_error,
+            'api_pk': config.settings['stripe_api_pk'],
+        })

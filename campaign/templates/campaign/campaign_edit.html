@@ -1,9 +1,169 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
+{% load widget_tweaks %}
+
 
 {% block title %}Edit | {{ block.super }}{% endblock %}
 
-{% block head_extra %}
+{% block body_content %}
+    <div class="row">
+        <div class="col-lg-3">
+            {% include "campaign/dashboard_menu.html" %}
+        </div>
+        <div class="col-lg-9">
+            <h2>Edit Campaign</h2>
+            <hr>
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="form-group row">
+                    <label for="{{ form.name.id_for_label }}" class="col-md-3 col-form-label">
+                        Campaign name
+                    </label>
+                    <div class="col-md-6">
+                        {% render_field form.name class+="form-control" aria-describedby="name-help"%}
+                        <small id="name-help" class="form-text text-muted">
+                            This is how your name will be displayed on PageFund.
+                        </small>
+                    </div>
+                    {% if form.name.errors %}
+                        <div class="col-md-9 offset-md-3 mt-1 mb-4">
+                            {% for error in form.name.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="row mb-3">
+                    <label for="{{ form.campaign_slug.id_for_label }}" class="col-md-3 col-form-label">
+                        Vanity URL
+                    </label>
+                    <div class="input-group col-md-9">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">https://page.fund/{{ campaign.page.page_slug }}/{{ campaign.pk }}/</span>
+                        </div>
+                        {% render_field form.campaign_slug class+="form-control" aria-describedby="campaign_slug-help"%}
+                    </div>
+                    <div class="col-md-9 offset-md-3">
+                        <small id="campaign_slug-help" class="form-text text-muted">
+                            Choose what your URL will look like.
+                        </small>
+                    </div>
+                    {% if form.campaign_slug.errors %}
+                        <div class="col-md-9 offset-md-3 mt-1 mb-4">
+                            {% for error in form.campaign_slug.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group row">
+                    <label for="{{ form.website.id_for_label }}" class="col-md-3 col-form-label">
+                        Your website
+                    </label>
+                    <div class="col-md-6">
+                        {% render_field form.website class+="form-control" aria-describedby="website-help" %}
+                        <small id="website-help" class="form-text text-muted">
+                            Optional
+                        </small>
+                    </div>
+                    {% if form.website.errors %}
+                        <div class="col-md-9 offset-md-3 mt-1 mb-4">
+                            {% for error in form.website.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <hr>
+
+                <div class="form-group row">
+                    <label for="{{ form.goal.id_for_label }}" class="col-md-3 col-form-label">
+                        Goal
+                    </label>
+                    <div class="col-md-4">
+                        {% render_field form.goal class+="form-control" aria-describedby="goal-help" %}
+                        <small id="goal-help" class="form-text text-muted">
+                            How much do you want to raise?
+                        </small>
+                    </div>
+                    {% if form.goal.errors %}
+                        <div class="col-md-9 offset-md-3 mt-1 mb-4">
+                            {% for error in form.goal.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group row">
+                    <label for="{{ form.end_date.id_for_label }}" class="col-md-3 col-form-label">
+                        End date
+                    </label>
+                    <div class="col-md-5">
+                        {% render_field form.end_date class+="form-control" aria-describedby="end_date-help" %}
+                        <small id="end_date-help" class="form-text text-muted">
+                            When will your Campaign end?
+                        </small>
+                    </div>
+                    {% if form.end_date.errors %}
+                        <div class="col-md-9 offset-md-3 mt-1 mb-4">
+                            {% for error in form.end_date.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <hr>
+
+                <div class="form-group row">
+                    <label for="{{ form.description.id_for_label }}" class="col-md-3 col-form-label">
+                        Description
+                    </label>
+                    <div class="col-md-9">
+                        {% render_field form.description class+="form-control" aria-describedby="description-help"%}
+                        <small id="description-help" class="form-text text-muted">
+                            Optional
+                        </small>
+                    </div>
+                    {% if form.description.errors %}
+                        <div class="col-md-9 offset-md-3 mt-1 mb-4">
+                            {% for error in form.description.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <input class="offset-md-3 btn btn-teal mt-3" type="submit" value="Update campaign" />
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_extra %}
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
@@ -14,13 +174,5 @@
             });
         });
     </script>
-{% endblock %}
-
-{% block body_content %}
-    <form action="" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Update campaign" />
-    </form>
 {% endblock %}
 

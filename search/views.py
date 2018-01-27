@@ -9,7 +9,7 @@ from itertools import chain
 import json
 import operator
 
-from .utils import filter_list, query_list, state_list
+from .utils import filter_list, query_list
 from campaign.models import Campaign
 from page.models import Page
 
@@ -20,25 +20,85 @@ def search(request):
     else:
         query_from_search = None
     categories = OrderedDict(Page._meta.get_field('category').choices)
-    states = OrderedDict(Page._meta.get_field('state').choices)
-    sponsored = Page.objects.filter(is_sponsored=True, deleted=False)
-    trending_pages = Page.objects.filter(deleted=False).order_by('-trending_score')[:10]
-    trending_campaigns = Campaign.objects.filter(deleted=False, is_active=True).order_by('-trending_score')[:10]
 
     return render(request, 'search/search.html', {
         'categories': categories,
-        'states': states,
         'query_from_search': query_from_search,
-        'sponsored': sponsored,
-        'trending_pages': trending_pages,
-        'trending_campaigns': trending_campaigns,
     })
+
+def create_search_result_html(r, sponsored, trending):
+    html = (
+        "<div class='row mb-4'>"
+        "<div class='col-md-auto search-result-picture-container'>"
+    )
+
+    if r.profile_picture():
+        src = r.profile_picture().image.url
+        height = r.profile_picture().height
+        width = r.profile_picture().width
+        if height < (width - 60):
+            html += "<div class='circular-landscape'>"
+        elif height > (width + 60):
+            html += "<div class='circular-portrait'>"
+        else:
+            html += "<div class='circular-square'>"
+    else:
+        html += "<div class='circular-square'>"
+        src = "/static/img/campaign_default.svg"
+
+    if isinstance(r, Page):
+        html += "<img src='{}' />".format(src)
+    elif isinstance(r, Campaign):
+        html += "<img src='{}' />".format(src)
+
+    html += (
+        "</div>"
+        "</div>"
+        "<div class='col-md-10 mb-4'>"
+        "<div class='row justify-content-between'>"
+        "<div class='col-md-auto'>"
+    )
+
+    if isinstance(r, Page):
+        html += "<h3><a class='purple' href='/{}/'>{}</a></h3>".format(r.page_slug, r.name)
+    elif isinstance(r, Campaign):
+        html += "<h3><a class='teal' href='/{}/{}/{}/'>{}</a></h3>".format(r.page.page_slug, r.pk, r.campaign_slug, r.name)
+
+    html += (
+        "</div>"
+        "<div class='col d-flex align-items-center h100'>"
+    )
+
+    if sponsored == True:
+        html += "<i class='fal fa-star mr-3' aria-hidden title='Sponsored'></i><span class='sr-only'>Sponsored</span>"
+
+    if trending == True:
+        html += "<i class='fal fa-chart-line mr-3' aria-hidden title='Trending'></i><span class='sr-only'>Trending</span>"
+
+    html += (
+        "</div>"
+        "<div class='col-md-3 vote-amount'>"
+    )
+
+    if isinstance(r, Page):
+        html += "<span class='purple font-weight-bold font-size-175'>${}</span>".format(int(r.donation_money() / 100))
+    elif isinstance(r, Campaign):
+        html += "<span class='teal font-weight-bold font-size-175'>${}</span>".format(int(r.donation_money() / 100))
+
+    html += (
+        "</div>"
+        "</div>"
+        "<span class='comment-content'><p>{}</p></span>"
+        "</div>"
+        "</div>"
+    ).format(r.search_description())
+
+    return html
 
 def results(request):
     if request.method == "POST":
         q = request.POST.get('q')
         f = request.POST.get('f')
-        s = request.POST.get('s')
         a = request.POST.get('a')
 
         if a == "false":
@@ -55,7 +115,7 @@ def results(request):
             if all([q, f]):
                 results = []
                 sponsored = []
-                pages, sponsored_pages = query_list(q, s)
+                pages, sponsored_pages = query_list(q)
                 f = f.split(",")
                 for x in f:
                     p = [n for n in pages if n.category == x]
@@ -65,11 +125,9 @@ def results(request):
                     for y in s:
                         sponsored.append(y)
             elif q:
-                results, sponsored = query_list(q, s)
+                results, sponsored = query_list(q)
             elif f:
-                results, sponsored = filter_list(f, s)
-            elif s:
-                results, sponsored = state_list(s)
+                results, sponsored = filter_list(f)
             else:
                 results = None
                 sponsored = None
@@ -77,50 +135,26 @@ def results(request):
             results = Page.objects.filter(is_sponsored=False, deleted=False).order_by('name')
             sponsored = Page.objects.filter(is_sponsored=True, deleted=False).order_by('name')
         elif a == "campaigns":
-            results = Campaign.objects.filter(page__is_sponsored=False, deleted=False).order_by('name')
-            sponsored = Campaign.objects.filter(page__is_sponsored=True, deleted=False).order_by('name')
+            results = Campaign.objects.filter(page__is_sponsored=False, deleted=False, is_active=True).order_by('name')
+            sponsored = Campaign.objects.filter(page__is_sponsored=True, deleted=False, is_active=True).order_by('name')
 
-        response_data = OrderedDict()
-        if results:
-            for r in results:
-                if isinstance(r, Page):
-                    response_data[r.page_slug] = {
-                        'name': r.name,
-                        'city': r.city,
-                        'state': r.state,
-                        'sponsored': 'f',
-                        'model': 'page'
-                    }
-                elif isinstance(r, Campaign):
-                    response_data[r.campaign_slug] = {
-                        'name': r.name,
-                        'city': r.city,
-                        'state': r.state,
-                        'sponsored': 'f',
-                        'model': 'campaign',
-                        'page_slug': r.page.page_slug,
-                        'pk': r.pk
-                    }
+        trending_pages = Page.objects.filter(deleted=False).order_by('-trending_score')[:10]
+        trending_campaigns = Campaign.objects.filter(deleted=False, is_active=True).order_by('-trending_score')[:10]
+
+        response_data = []
         if sponsored:
             for s in sponsored:
-                if isinstance(s, Page):
-                    response_data[s.page_slug] = {
-                        'name': s.name,
-                        'city': s.city,
-                        'state': s.state,
-                        'sponsored': 't',
-                        'model': 'page'
-                    }
-                elif isinstance(s, Campaign):
-                    response_data[s.campaign_slug] = {
-                        'name': s.name,
-                        'city': s.city,
-                        'state': s.state,
-                        'sponsored': 't',
-                        'model': 'campaign',
-                        'page_slug': s.page.page_slug,
-                        'pk': s.pk
-                    }
+                if s in trending_pages or s in trending_campaigns:
+                    response_data.append(create_search_result_html(s, True, True))
+                else:
+                    response_data.append(create_search_result_html(s, True, False))
+
+        if results:
+            for r in results:
+                if r in trending_pages or r in trending_campaigns:
+                    response_data.append(create_search_result_html(r, False, True))
+                else:
+                    response_data.append(create_search_result_html(r, False, False))
 
         return HttpResponse(
             json.dumps(response_data),

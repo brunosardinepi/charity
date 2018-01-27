@@ -1,3 +1,6 @@
+import datetime
+import pytz
+
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.utils import timezone
@@ -46,10 +49,9 @@ class DonationTest(TestCase):
             campaign_slug='campaignslug',
             page=self.page,
             type='vote',
-            city='Dallas',
-            state='Texas',
             description='This is a description for Test Campaign.',
             goal='666',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
         )
 
         self.donation = models.Donation.objects.create(

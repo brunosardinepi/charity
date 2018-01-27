@@ -155,10 +155,29 @@ class CampaignEditVote(View):
                     vote_participant.save()
                 for d in formset.deleted_objects:
                     d.delete()
-                return HttpResponseRedirect(campaign.get_absolute_url())
+                return redirect('campaign_dashboard_admin',
+                    page_slug=campaign.page.page_slug,
+                    campaign_pk=campaign.pk,
+                    campaign_slug=campaign.campaign_slug
+                )
         else:
             raise Http404
 
+def create_search_result_html(r):
+    html = (
+        "<div class='row mb-4'>"
+        "<div class='col-md-10 offset-md-2'>"
+        "<div class='form-check'>"
+        "<input class='form-check-input' type='radio' name='page' value='{}' id='page{}'>"
+        "<label class='form-check-label' for='page{}'>"
+        "<a class='pr-3' href='/{}/' target='_blank'>{}</a>"
+        "</label>"
+        "</div>"
+        "</div>"
+        "</div>"
+    ).format(r.pk, r.pk, r.pk, r.page_slug, r.name)
+
+    return html
 
 def campaign_search_pages(request):
     if request.method == "POST":
@@ -170,17 +189,13 @@ def campaign_search_pages(request):
         query = SearchQuery(q)
         vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
         rank_metric = 0.2
-        results = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, is_sponsored=False, deleted=False).order_by('-rank')
+        results = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, deleted=False).order_by('-rank')
 
-        response_data = OrderedDict()
+        response_data = []
         if results:
             for r in results:
-                response_data[r.page_slug] = {
-                    'pk': r.pk,
-                    'name': r.name,
-                    'city': r.city,
-                    'state': r.state,
-                }
+                response_data.append(create_search_result_html(r))
+
         return HttpResponse(
             json.dumps(response_data),
             content_type="application/json"
@@ -190,12 +205,16 @@ def campaign_search_pages(request):
 def campaign_edit(request, page_slug, campaign_pk, campaign_slug):
     campaign = get_object_or_404(Campaign, pk=campaign_pk)
     if utils.has_dashboard_access(request.user, campaign, 'manager_edit'):
-        form = forms.CampaignForm(instance=campaign)
+        form = forms.CampaignEditForm(instance=campaign)
         if request.method == 'POST':
-            form = forms.CampaignForm(instance=campaign, data=request.POST)
+            form = forms.CampaignEditForm(instance=campaign, data=request.POST)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(campaign.get_absolute_url())
+                return redirect('campaign_dashboard_admin',
+                    page_slug=campaign.page.page_slug,
+                    campaign_pk=campaign.pk,
+                    campaign_slug=campaign.campaign_slug
+                )
     else:
         raise Http404
     return render(request, 'campaign/campaign_edit.html', {'campaign': campaign, 'form': form})
@@ -232,7 +251,11 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
                 status = invite(data)
                 if status == True:
                     # redirect the admin/manager to the Campaign
-                    return HttpResponseRedirect(campaign.get_absolute_url())
+                    return redirect('campaign_dashboard_admin',
+                        page_slug=campaign.page.page_slug,
+                        campaign_pk=campaign.pk,
+                        campaign_slug=campaign.campaign_slug
+                    )
         return render(request, 'campaign/campaign_invite.html', {'form': form, 'campaign': campaign})
     # the user isn't an admin or a manager, so they can't invite someone
     # the only way someone got here was by typing the url manually
@@ -257,26 +280,6 @@ def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
         return HttpResponseRedirect(campaign.get_absolute_url())
     else:
         raise Http404
-
-class CampaignImageUpload(View):
-    def get(self, request, page_slug, campaign_pk, campaign_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
-        campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        if utils.has_dashboard_access(request.user, campaign, 'manager_image_edit'):
-            images = CampaignImage.objects.filter(campaign=campaign)
-            return render(self.request, 'campaign/images.html', {'campaign': campaign, 'images': images })
-        else:
-            raise Http404
-
-    def post(self, request, page_slug, campaign_pk, campaign_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
-        campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        if utils.has_dashboard_access(request.user, campaign, 'manager_image_edit'):
-            form = forms.CampaignImageForm(self.request.POST, self.request.FILES)
-            data = image_is_valid(request, form, campaign)
-            return JsonResponse(data)
-        else:
-            raise Http404
 
 @login_required
 def campaign_image_delete(request, image_pk):
@@ -413,10 +416,31 @@ class CampaignDashboard(View):
     def get(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
         if utils.has_dashboard_access(request.user, campaign, None):
+            graph = donation_graph(campaign, 30)
+            graph_dates = []
+            graph_donations = []
+            for k, v in graph.items():
+                graph_dates.append(k.strftime('%b %-d'))
+                graph_donations.append(int(v/100))
+            graph_dates = list(reversed(graph_dates))
+            graph_donations = list(reversed(graph_donations))
             return render(self.request, 'campaign/dashboard.html', {
                 'campaign': campaign,
                 'donations': donation_statistics(campaign),
-                'graph': donation_graph(campaign, 30),
+                'graph_dates': graph_dates,
+                'graph_donations': graph_donations,
+            })
+        else:
+            raise Http404
+
+class CampaignDashboardAdmin(View):
+    def get(self, request, page_slug, campaign_pk, campaign_slug):
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        invitations = ManagerInvitation.objects.filter(campaign=campaign, expired=False)
+        if utils.has_dashboard_access(request.user, campaign, None):
+            return render(self.request, 'campaign/dashboard_admin.html', {
+                'campaign': campaign,
+                'invitations': invitations,
             })
         else:
             raise Http404
@@ -424,4 +448,41 @@ class CampaignDashboard(View):
     def post(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
         utils.update_manager_permissions(request.POST.getlist('permissions[]'), campaign)
-        return redirect('campaign_dashboard', page_slug=campaign.page.page_slug, campaign_pk=campaign.pk, campaign_slug=campaign.campaign_slug)
+        return redirect('campaign_dashboard_admin',
+            page_slug=campaign.page.page_slug,
+            campaign_pk=campaign.pk,
+            campaign_slug=campaign.campaign_slug
+        )
+
+class CampaignDashboardDonations(View):
+    def get(self, request, page_slug, campaign_pk, campaign_slug):
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        if utils.has_dashboard_access(request.user, campaign, None):
+            return render(self.request, 'campaign/dashboard_donations.html', {
+                'campaign': campaign,
+                'donations': donation_statistics(campaign),
+            })
+        else:
+            raise Http404
+
+class CampaignDashboardImages(View):
+    def get(self, request, page_slug, campaign_pk, campaign_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        if utils.has_dashboard_access(request.user, campaign, 'manager_image_edit'):
+            images = CampaignImage.objects.filter(campaign=campaign)
+            return render(self.request, 'campaign/dashboard_images.html', {'campaign': campaign, 'images': images })
+        else:
+            raise Http404
+
+    def post(self, request, page_slug, campaign_pk, campaign_slug):
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        if utils.has_dashboard_access(request.user, campaign, 'manager_image_edit'):
+            form = forms.CampaignImageForm(self.request.POST, self.request.FILES)
+            data = image_is_valid(request, form, campaign)
+            if data:
+                return JsonResponse(data)
+            else:
+                return HttpResponse('')
+        else:
+            raise Http404

@@ -62,9 +62,6 @@ def page(request, page_slug):
         else:
             subscribe_attr = {"name": "subscribe", "value": "Subscribe"}
 
-        if request.method == "POST":
-             utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
-
         template_params["page"] = page
         template_params["donate_form"] = donate_form
         template_params["subscribe_attr"] = subscribe_attr
@@ -89,15 +86,15 @@ def page_create(request):
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
             if request.user.first_name and request.user.last_name and request.user.userprofile.birthday:
-                return redirect('page_create_bank_info', page_slug=page.page_slug)
+                return redirect('page_create_bank_info', page_pk=page.pk)
             else:
-                return redirect('page_create_additional_info', page_slug=page.page_slug)
+                return redirect('page_create_additional_info', page_pk=page.pk)
     return render(request, 'page/page_create.html', {'form': form})
 
 
 class PageCreateAdditionalInfo(View):
-    def get(self, request, page_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
+    def get(self, request, page_pk):
+        page = get_object_or_404(Page, pk=page_pk)
         userprofile = get_object_or_404(UserProfile, user=request.user)
         initial = {
             'first_name': userprofile.user.first_name,
@@ -106,21 +103,21 @@ class PageCreateAdditionalInfo(View):
         }
         form = forms.PageAdditionalInfoForm(initial=initial)
         return render(request, 'page/page_create_additional_info.html', {'page': page, 'form': form})
-    def post(self, request, page_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
+    def post(self, request, page_pk):
+        page = get_object_or_404(Page, pk=page_pk)
         userprofile = get_object_or_404(UserProfile, user=request.user)
         form = forms.PageAdditionalInfoForm(request.POST)
         if form.is_valid():
-            userprofile.user.first_name = form.cleaned_data['first_name']
-            userprofile.user.last_name = form.cleaned_data['last_name']
+            request.user.first_name = form.cleaned_data['first_name']
+            request.user.last_name = form.cleaned_data['last_name']
+            request.user.save()
             userprofile.birthday = form.cleaned_data['birthday']
             userprofile.save()
-            return redirect('page_create_bank_info', page_slug=page.page_slug)
-
+            return redirect('page_create_bank_info', page_pk=page.pk)
 
 class PageCreateBankInfo(View):
-    def get(self, request, page_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
+    def get(self, request, page_pk):
+        page = get_object_or_404(Page, pk=page_pk)
         userprofile = get_object_or_404(UserProfile, user=request.user)
         initial = {
             'account_holder_first_name': userprofile.user.first_name,
@@ -129,8 +126,8 @@ class PageCreateBankInfo(View):
         form = forms.PageBankForm(initial=initial)
         return render(request, 'page/page_create_bank_info.html', {'page': page, 'form': form})
 
-    def post(self, request, page_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
+    def post(self, request, page_pk):
+        page = get_object_or_404(Page, pk=page_pk)
         form = forms.PageBankForm(request.POST)
         if form.is_valid():
             if not settings.TESTING:
@@ -240,22 +237,22 @@ class PageEditBankInfo(View):
                 page.stripe_bank_account_id = ext_acct.id
             page.save()
             utils.email(request.user.email, "blank", "blank", "page_bank_information_updated")
-            return HttpResponseRedirect(page.get_absolute_url())
+            return redirect('page_dashboard_admin', page_slug=page.page_slug)
 
 
 @login_required
 def page_edit(request, page_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
     if utils.has_dashboard_access(request.user, page, 'manager_edit'):
-        form = forms.PageForm(instance=page)
+        form = forms.PageEditForm(instance=page)
         if request.method == 'POST':
-            form = forms.PageForm(instance=page, data=request.POST)
+            form = forms.PageEditForm(instance=page, data=request.POST)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(page.get_absolute_url())
+                return redirect('page_dashboard_admin', page_slug=page.page_slug)
     else:
         raise Http404
-    return render(request, 'page/page_edit.html', {'page': page, 'page_form': form})
+    return render(request, 'page/page_edit.html', {'page': page, 'form': form})
 
 @login_required
 def page_delete(request, page_slug):
@@ -324,7 +321,7 @@ def page_invite(request, page_slug):
                 if status == True:
                     # redirect the admin/manager to the Page
 #                    utils.email(form.cleaned_data["email"], "", "", "new_page_created")
-                    return HttpResponseRedirect(page.get_absolute_url())
+                    return redirect('page_dashboard_admin', page_slug=page.page_slug)
         return render(request, 'page/page_invite.html', {'form': form, 'page': page})
     # the user isn't an admin or a manager, so they can't invite someone
     # the only way someone got here was by typing the url manually
@@ -345,29 +342,10 @@ def remove_manager(request, page_slug, manager_pk):
         remove_perm('manager_invite', manager, page)
         remove_perm('manager_image_edit', manager, page)
         remove_perm('manager_view_dashboard', manager, page)
-        # redirect to page
-        return HttpResponseRedirect(page.get_absolute_url())
+        # redirect to page admin
+        return redirect('page_dashboard_admin', page_slug=page.page_slug)
     else:
         raise Http404
-
-
-class PageImageUpload(View):
-    def get(self, request, page_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
-        if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
-            images = PageImage.objects.filter(page=page)
-            return render(self.request, 'page/images.html', {'page': page, 'images': images})
-        else:
-            raise Http404
-
-    def post(self, request, page_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
-        if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
-            form = forms.PageImageForm(self.request.POST, self.request.FILES)
-            data = image_is_valid(request, form, page)
-            return JsonResponse(data)
-        else:
-            raise Http404
 
 class PageDonate(View):
     def get(self, request, page_slug):
@@ -476,24 +454,90 @@ class PageAjaxDonations(View):
                 data = sorted(data.values(), key=operator.itemgetter('{}'.format(column)))
         return HttpResponse(json.dumps(data), content_type="application/json")
 
-
 class PageDashboard(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
         if utils.has_dashboard_access(request.user, page, None):
+            graph = donation_graph(page, 30)
+            graph_dates = []
+            graph_donations = []
+            for k, v in graph.items():
+                graph_dates.append(k.strftime('%b %-d'))
+                graph_donations.append(int(v/100))
+            graph_dates = list(reversed(graph_dates))
+            graph_donations = list(reversed(graph_donations))
             return render(self.request, 'page/dashboard.html', {
                 'page': page,
                 'donations': donation_statistics(page),
-                'graph': donation_graph(page, 30),
-                'campaign_types': campaign_types(page),
-                'campaign_average_duration': campaign_average_duration(page),
-                'campaign_success_pct': campaign_success_pct(page)
+                'graph_dates': graph_dates,
+                'graph_donations': graph_donations,
             })
         else:
-            #return redirect('error:error_forgotpasswordreset_expired')
+            raise Http404
+
+class PageDashboardAdmin(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        invitations = ManagerInvitation.objects.filter(page=page, expired=False)
+        if utils.has_dashboard_access(request.user, page, None):
+            return render(self.request, 'page/dashboard_admin.html', {
+                'page': page,
+                'invitations': invitations,
+            })
+        else:
             raise Http404
 
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
         utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
-        return redirect('page_dashboard', page_slug=page.page_slug)
+        return redirect('page_dashboard_admin', page_slug=page.page_slug)
+
+class PageDashboardDonations(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        if utils.has_dashboard_access(request.user, page, None):
+            return render(self.request, 'page/dashboard_donations.html', {
+                'page': page,
+                'donations': donation_statistics(page),
+            })
+        else:
+            raise Http404
+
+class PageDashboardCampaigns(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        if utils.has_dashboard_access(request.user, page, None):
+            return render(self.request, 'page/dashboard_campaigns.html', {
+                'page': page,
+                'donations': donation_statistics(page),
+                'campaign_types': campaign_types(page),
+                'campaign_average_duration': campaign_average_duration(page),
+                'campaign_success_pct': campaign_success_pct(page),
+            })
+        else:
+            raise Http404
+
+class PageDashboardImages(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
+            images = PageImage.objects.filter(page=page)
+            return render(self.request, 'page/dashboard_images.html', {
+                'page': page,
+                'images': images,
+            })
+        else:
+            raise Http404
+
+    def post(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
+            form = forms.PageImageForm(self.request.POST, self.request.FILES)
+            data = image_is_valid(request, form, page)
+            if data:
+                return JsonResponse(data)
+            else:
+                return HttpResponse('')
+        else:
+            raise Http404
+

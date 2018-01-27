@@ -1,0 +1,83 @@
+{% extends '_layout.html' %}
+{% load donation_extras %}
+{% load static from staticfiles %}
+
+
+{% block title %} Profile | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-lg-3">
+            {% include "userprofile/profile_menu.html" %}
+        </div>
+        <div class="col-lg-9">
+            <h2>Recurring Donations</h2>
+            {% if userprofile.plans %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">Recipient</th>
+                                    <th scope="col">Frequency</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for plan in userprofile.plans %}
+                                    <tr>
+                                        <td>{{ plan.amount|cents_to_dollars }}</td>
+                                        <td><a href="{% url 'page' page_slug=plan.page.page_slug %}">{{ plan.page }}</a>{% if plan.campaign %} via <a class="teal" href="{% url 'campaign' page_slug=plan.page.page_slug campaign_pk=plan.campaign.pk campaign_slug=plan.campaign.campaign_slug %}">{{ plan.campaign }}</a>{% endif %}</td>
+                                        <td>{{ plan.get_interval_display }}</td>
+                                        <td><a href="{% url 'plans:delete_plan' plan_pk=plan.pk %}">Delete</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% else %}
+                <hr>
+                <p>You have no recurring donations!</p>
+            {% endif %}
+
+            <div class="row justify-content-between mt-5">
+                <div class="col">
+                    <h2>Donations</h2>
+                </div>
+                <div class="col-1 my-auto">
+                    <a href="{% url 'userprofile:userprofile_taxes' %}" target="_blank"><i class="fal fa-print fa-lg"></i></a>
+                </div>
+            </div>
+
+            {% if userprofile.donations %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">Recipient</th>
+                                    <th scope="col">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for d in userprofile.donations %}
+                                    <tr>
+                                        <td>{{ d.amount|cents_to_dollars }}</td>
+                                        <td><a href="{% url 'page' page_slug=d.page.page_slug %}">{{ d.page }}</a>{% if d.campaign %} via <a class="teal" href="{% url 'campaign' page_slug=d.page.page_slug campaign_pk=d.campaign.pk campaign_slug=d.campaign.campaign_slug %}">{{ d.campaign }}</a>{% endif %}</td>
+                                        <td>{{ d.date }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% else %}
+                <hr>
+                <p>You haven't made any donations yet!</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

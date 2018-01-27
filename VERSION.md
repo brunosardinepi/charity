@@ -2,10 +2,142 @@
 
 This is the version history for PageFund development.
 
+## Version 0.21.0
 
-## Version 0.16.0
+Release date: 01/27/2018
 
-Release date: TBD
+61 files changed, 574 insertions(+), 772 deletions(-)
+
+### Additions
+
+* Active and past Campaigns on Page dashboard
+
+### Changes
+
+* Mobile design for Page/Campaign dashboards
+* Removed location site-wide
+* Auto-generating Page/Campaign slug on creation and letting users change it in the dashboard
+* Removed majority of helper text on forms and stated which fields are optional
+* Resized form fields for better readability
+
+### Fixes
+
+* Page wasn't getting populated on Campaign creation when coming from a Page instead of a new search
+* Page monthly donations weren't working
+* Deleting Page monthly donations weren't working
+* Can't invite managers with a blank permission set
+
+
+## Version 0.20.0
+
+Release date: 01/26/2018
+
+29 files changed, 1091 insertions(+), 318 deletions(-)
+
+### Additions
+
+* Campaign dashboard design
+
+### Changes
+
+* Renamed dashboard and admin links, re-organized social links
+
+### Fixes
+
+* Large images weren't uploading properly
+
+
+## Version 0.19.0
+
+Release date: 01/25/2018
+
+24 files changed, 1446 insertions(+), 339 deletions(-)
+
+### Additions
+
+* Page dashboard design
+
+### Changes
+
+* None
+
+### Fixes
+
+* None
+
+
+## Version 0.18.0
+
+Release date: 01/23/2018
+
+40 files changed, 1145 insertions(+), 121 deletions(-)
+
+### Additions
+
+* Reporting for Page and Campaign images
+* Get started page
+* Create Page design
+* Create Campaign design
+
+### Changes
+
+* None
+
+### Fixes
+
+* Active campaigns weren't showing up on Campaigns if the Campaign goal was $0
+* Campaign end date and goal are required
+
+
+## Version 0.17.1
+
+Release date: 01/21/2018
+
+15 files changed, 138 insertions(+), 71 deletions(-)
+
+### Additions
+
+* None
+
+### Changes
+
+* Identifying the logged-in user in their profile
+* Admin site URL
+
+### Fixes
+
+* Issue where Campaign admins couldn't view the Campaign dashboard
+* Subscribe button issues
+* Error page for bad image size/type wasn't loading
+* Expired invitations
+* Add card to profile
+* Images getting cropped in circles
+
+
+## Version 0.17.0
+
+Release date: 01/19/2018
+
+26 files changed, 788 insertions(+), 303 deletions(-)
+
+### Additions
+
+* Profile design
+
+### Changes
+
+* None
+
+### Fixes
+
+* None
+
+
+## Version 0.16.1
+
+Release date: 01/18/2018
+
+14 files changed, 217 insertions(+), 22 deletions(-)
 
 ### Additions
 
@@ -17,7 +149,28 @@ Release date: TBD
 
 ### Fixes
 
+* Images are no longer warped when placed in a circle on the site
+
+
+## Version 0.16.0
+
+Release date: 01/17/2018
+
+32 files changed, 273 insertions(+), 172 deletions(-)
+
+### Additions
+
+* Search design
+* Error logging on production server
+
+### Changes
+
+* None
+
+### Fixes
+
 * "Notes" reporting feature works again
+* Search results with Pages/Campaigns that have $0 donated
 
 
 ## Version 0.15.0

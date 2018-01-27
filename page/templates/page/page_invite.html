@@ -1,12 +1,93 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
+{% load widget_tweaks %}
 
-{% block title %} Invite to {{ page.name }} | {{ block.super }}{% endblock %}
+
+{% block title %}Invite | {{ block.super }}{% endblock %}
+
+{% block head_extra %}
+    <script src="{% static 'js/form_checkboxes.js' %}"></script>
+{% endblock %}
 
 {% block body_content %}
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Invite" />
-    </form>
+    <div class="row">
+        <div class="col-lg-3">
+            {% include "page/dashboard_menu.html" %}
+        </div>
+        <div class="col-lg-9">
+            <h2>Invite</h2>
+            <hr>
+            <p>Invite someone you trust to help manage this Page.</p>
+            <form action="" method="post" id="invite-form">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="form-group row">
+                    <label for="{{ form.email.id_for_label }}" class="col-md-2 col-form-label">
+                        Email
+                    </label>
+                    <div class="col-md-10">
+                        {% render_field form.email class+="form-control" aria-describedby="email-help" %}
+                        <small id="email-help" class="form-text text-muted">
+                            This is the email address of the person you want to invite to help manage this Page.
+                        </small>
+                    </div>
+                    {% if form.email.errors %}
+                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                            {% for error in form.email.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <p>What should this person be allowed to do?</p>
+
+                <div class="form-check">
+                    {% render_field form.manager_edit class+="form-check-input" %}
+                    <label class="form-check-label" for="{{ form.manager_edit.id_for_label }}">
+                        Edit this Page
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    {% render_field form.manager_delete class+="form-check-input" %}
+                    <label class="form-check-label" for="{{ form.manager_delete.id_for_label }}">
+                        Delete this Page
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    {% render_field form.manager_invite class+="form-check-input" %}
+                    <label class="form-check-label" for="{{ form.manager_invite.id_for_label }}">
+                        Invite users to manage this Page
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    {% render_field form.manager_image_edit class+="form-check-input" %}
+                    <label class="form-check-label" for="{{ form.manager_image_edit.id_for_label }}">
+                        Upload images to this Page
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    {% render_field form.manager_view_dashboard class+="form-check-input" %}
+                    <label class="form-check-label" for="{{ form.manager_view_dashboard.id_for_label }}">
+                        View the Page analytics
+                    </label>
+                </div>
+
+                <input id="form-submit" class="btn btn-purple mt-3" type="submit" value="Invite" />
+            </form>
+        </div>
+    </div>
+
 {% endblock %}

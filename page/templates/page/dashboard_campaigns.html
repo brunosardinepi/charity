@@ -1,0 +1,184 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+{% load guardian_tags %}
+{% load donation_extras %}
+{% load lib_extras %}
+{% load humanize %}
+
+
+{% block title %}Dashboard | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+
+    <div class="row">
+        <div class="col-lg-3">
+            {% include "page/dashboard_menu.html" %}
+        </div>
+        <div class="col-lg-9">
+            <h2>Campaigns</h2>
+            <hr>
+
+            {% if request.user.userprofile in page.admins.all or "manager_view_dashboard" in page_perms %}
+                <div class="row justify-content-center mt-5 mb-5">
+                    <div class="col-lg-4 mb-4 text-center">
+                        <p class="small m-0">Donated to Campaigns</p>
+                        <h2 class="m-0">{{ donations.campaign_donations|cents_to_dollars }}</h2>
+                        <p class="small m-0">Avg: {{ donations.campaign_donations_avg|cents_to_dollars }}</p>
+                    </div>
+                    <div class="col-lg-4 mb-4 text-center">
+                        <p class="small m-0">Average Campaign Duration</p>
+                        <h2 class="m-0">{{ campaign_average_duration }} days</h2>
+                    </div>
+                </div>
+
+                <h2>Campaign Success</h2>
+                <hr>
+                <p>These charts show how many of your Campaigns reach their goal before their end date.</p>
+                <div class="row justify-content-center mt-5 mb-5">
+                    <div class="col-lg-4 mb-4 text-center">
+                        <section>
+                            <canvas id="generalChart"></canvas>
+                            <div class="doughnut-text">
+                                <span class="doughnut-text-label">General Campaigns</span>
+                                <br />
+                                <span class="doughnut-text-pct">{{ campaign_success_pct.general.success_pct|convert_to_pct }}</span>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="col-lg-4 mb-4 text-center">
+                        <section>
+                            <canvas id="voteChart"></canvas>
+                            <div class="doughnut-text">
+                                <span class="doughnut-text-label">Voting Campaigns</span>
+                                <br />
+                                <span class="doughnut-text-pct">{{ campaign_success_pct.vote.success_pct|convert_to_pct }}</span>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <h2>Campaign Types</h2>
+                <hr>
+                <p>These are statistics for your active Campaigns, broken down by Campaign type.</p>
+                <div class="row justify-content-center mt-3 mb-5">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th class="teal">Type</th>
+                                <th class="teal">Count</th>
+                                <th class="teal">Total raised</th>
+                            </tr>
+                        </thead>
+                        <tbody id="donation-history-body">
+                            {% for k,v in campaign_types.items %}
+                                <tr>
+                                    <td>{{ v.display }}</td>
+                                    <td>{{ v.count }}</td>
+                                    <td>{{ v.sum|cents_to_dollars }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Active Campaigns</h2>
+                <div class="row justify-content-center mt-3 mb-5">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th class="teal">Name</th>
+                                <th class="teal">Ends</th>
+                                <th class="teal">Raised</th>
+                                <th class="teal">Goal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="donation-history-body">
+                            {% for c in page.active_campaigns %}
+                                <tr>
+                                    <td>{{ c.name }}</td>
+                                    <td>{{ c.end_date|naturaltime }}</td>
+                                    <td>{{ c.donation_money|cents_to_dollars }}</td>
+                                    <td>${{ c.goal }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Past Campaigns</h2>
+                <div class="row justify-content-center mt-3 mb-5">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th class="teal">Name</th>
+                                <th class="teal">Ended</th>
+                                <th class="teal">Raised</th>
+                                <th class="teal">Goal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="donation-history-body">
+                            {% for c in page.inactive_campaigns %}
+                                <tr>
+                                    <td>{{ c.name }}</td>
+                                    <td>{{ c.end_date|naturaltime }}</td>
+                                    <td>{{ c.donation_money|cents_to_dollars }}</td>
+                                    <td>${{ c.goal }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_extra %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+    <script>
+    var generalChartData = {{ campaign_success_pct.general.success_pct }} * 100;
+    var voteChartData = {{ campaign_success_pct.vote.success_pct }} * 100;
+
+    var ctx = document.getElementById("generalChart").getContext('2d');
+    var ctx2 = document.getElementById("voteChart").getContext('2d');
+
+    var options = {
+        cutoutPercentage: 70,
+        tooltips: {
+            enabled: false
+        },
+        legend: {
+            display: false
+        },
+    };
+
+    var backgroundColor = [
+        'rgba(51, 204, 153, 1)',
+        'rgba(238, 238, 238, 1)'
+    ];
+
+    var generalChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [generalChartData, 100 - generalChartData],
+                backgroundColor: backgroundColor,
+            }]
+        },
+        options: options,
+    });
+
+    var voteChart = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [voteChartData, 100 - voteChartData],
+                backgroundColor: backgroundColor,
+            }]
+        },
+        options: options,
+    });
+    </script>
+
+{% endblock %}

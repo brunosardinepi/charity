@@ -13,6 +13,7 @@ from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.text import slugify
 
 from campaign.models import Campaign
 from comments.models import Comment
@@ -138,6 +139,22 @@ class Page(models.Model):
     def __str__(self):
         return self.name
 
+    def _get_unique_slug(self):
+        slug = slugify(self.name)
+        unique_slug = slug
+        num = 1
+        while Page.objects.filter(page_slug=unique_slug).exists():
+            unique_slug = '{}-{}'.format(slug, num)
+            num += 1
+        return unique_slug
+
+    def save(self, *args, **kwargs):
+        # if this page is new
+        if not self.pk:
+            # create a new page_slug
+            self.page_slug = self._get_unique_slug()
+        super(Page, self).save(*args, **kwargs)
+
     def get_absolute_url(self):
         return reverse('page', kwargs={
             'page_slug': self.page_slug
@@ -161,6 +178,7 @@ class Page(models.Model):
                     }
                     if user.userprofile.profile_picture():
                         top_donors[d]['image_url'] = user.userprofile.profile_picture().image.url
+                        top_donors[d]['image_pk'] = user.userprofile.profile_picture().pk
         top_donors = OrderedDict(sorted(top_donors.items(), key=lambda t: t[1]['amount'], reverse=True))
         top_donors = list(top_donors.items())[:10]
         return top_donors
@@ -177,12 +195,14 @@ class Page(models.Model):
         except PageImage.MultipleObjectsReturned:
             # create an exception for future use
             print("multiple profile images returned")
+        except PageImage.DoesNotExist:
+            return None
 
     def active_campaigns(self):
-        return Campaign.objects.filter(page=self, is_active=True, deleted=False).order_by('name')
+        return Campaign.objects.filter(page=self, is_active=True, deleted=False).order_by('end_date')
 
     def inactive_campaigns(self):
-        return Campaign.objects.filter(page=self, is_active=False, deleted=False)
+        return Campaign.objects.filter(page=self, is_active=False, deleted=False).order_by('-end_date')
 
     def donations(self):
         return Donation.objects.filter(page=self).order_by('-date')
@@ -194,10 +214,20 @@ class Page(models.Model):
         return Donation.objects.filter(page=self).count()
 
     def donation_money(self):
-        return Donation.objects.filter(page=self).aggregate(Sum('amount')).get('amount__sum')
+        d = Donation.objects.filter(page=self).aggregate(Sum('amount')).get('amount__sum')
+        if d is None:
+            return 0
+        else:
+            return d
 
     def unique_donors(self):
         return Donation.objects.filter(page=self).distinct('donor_first_name').distinct('donor_last_name').count()
+
+    def search_description(self):
+        if len(self.description) > 300:
+            return self.description[:300] + "..."
+        else:
+            return self.description
 
 def create_random_string(length=30):
     if length <= 0:

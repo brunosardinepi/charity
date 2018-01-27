@@ -75,13 +75,6 @@ class ManagerInvitationTest(TestCase):
         g_invitations = models.GeneralInvitation.objects.all()
         self.assertIn(self.invitation2, g_invitations)
 
-    def test_invitation_page(self):
-        request = self.factory.get('home')
-        request.user = self.user2
-        response = views.pending_invitations(request)
-
-        self.assertEqual(response.status_code, 200)
-
     def test_accept_manager_invitation_logged_out(self):
         response = self.client.get('/invite/manager/accept/%s/%s/' % (self.invitation.pk, self.invitation.key))
         self.assertRedirects(response, '/accounts/signup/?next=/invite/manager/accept/%s/%s/' % (self.invitation.pk, self.invitation.key), 302, 200)
@@ -101,9 +94,10 @@ class ManagerInvitationTest(TestCase):
         self.assertNotIn(self.invitation, invitations)
 
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/testpage/dashboard/')
-        self.assertContains(response, "%s %s" % (self.user2.first_name, self.user2.last_name), status_code=200)
-        self.assertContains(response, self.user2.email, status_code=200)
+        response = self.client.get('/{}/manage/admin/'.format(self.page.page_slug))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "{} {}".format(self.user2.first_name, self.user2.last_name))
+        self.assertContains(response, self.user2.email)
 
     # need to write tests for these when the view has been built:
         # wrong user accepts invite
@@ -133,7 +127,7 @@ class ManagerInvitationTest(TestCase):
 
         self.client.login(username='harrypotter', password='imawizard')
         response = self.client.get('/invite/manager/decline/%s/%s/' % (self.invitation.pk, self.invitation.key))
-        self.assertRedirects(response, '/invite/pending/', 302, 200)
+        self.assertRedirects(response, '/profile/invitations/', 302, 200)
         self.assertFalse(self.user2.has_perm('manager_edit', self.page))
         self.assertFalse(self.user2.has_perm('manager_delete', self.page))
         self.assertFalse(self.user2.has_perm('manager_invite', self.page))

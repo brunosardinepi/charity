@@ -23,17 +23,11 @@ def charge_succeeded(request):
     date = datetime.datetime.utcfromtimestamp(event_json['data']['object']['created']).replace(tzinfo=pytz.utc)
     tz = pytz.timezone('America/Chicago')
     date = date.astimezone(tz)
-    print("date = {}".format(date))
     print(json.dumps(event_json, indent=4, sort_keys=True))
 
     if not event_json['data']['object']['metadata']:
-        print("metadata is empty")
         invoice = stripe.Invoice.retrieve(event_json['data']['object']['invoice'])
-        print("invoice")
-        print(invoice)
         subscription = stripe.Subscription.retrieve(invoice['subscription'])
-        print("subscription")
-        print(subscription)
         anonymous_amount = subscription['plan']['metadata']['anonymous_amount']
         anonymous_donor = subscription['plan']['metadata']['anonymous_donor']
         try:
@@ -47,7 +41,7 @@ def charge_succeeded(request):
         except KeyError:
             comment = ''
         pf_user_pk = subscription['plan']['metadata']['pf_user_pk']
-
+        vote_participant = None
     else:
         anonymous_amount = event_json['data']['object']['metadata']['anonymous_amount']
         anonymous_donor = event_json['data']['object']['metadata']['anonymous_donor']
@@ -135,14 +129,12 @@ def charge_succeeded(request):
                 donor_last_name=last_name,
              )
 
-    print("donation created")
     return HttpResponse(status=200)
 
 @require_POST
 @csrf_exempt
 def customer_subscription_created(request):
     event_json = json.loads(request.body.decode('utf-8'))
-    print("raw customer.subscription.created")
     print(json.dumps(event_json, indent=4, sort_keys=True))
 
     amount = event_json['data']['object']['plan']['amount']
@@ -175,7 +167,6 @@ def customer_subscription_created(request):
 @csrf_exempt
 def customer_subscription_deleted(request):
     event_json = json.loads(request.body.decode('utf-8'))
-    print("raw customer.subscription.deleted")
     print(json.dumps(event_json, indent=4, sort_keys=True))
 
     subscription_id = event_json['data']['object']['id']

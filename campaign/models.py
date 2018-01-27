@@ -5,6 +5,7 @@ from collections import OrderedDict
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
+from django.core.files.images import get_image_dimensions
 from django.db import models
 from django.db.models.signals import post_delete
 from django.db.models import Sum
@@ -12,6 +13,7 @@ from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.text import slugify
 
 from comments.models import Comment
 from donation.models import Donation
@@ -23,15 +25,14 @@ class Campaign(models.Model):
     campaign_managers = models.ManyToManyField('userprofile.UserProfile', related_name='campaign_managers', blank=True)
     campaign_slug = models.SlugField(max_length=255)
     campaign_subscribers = models.ManyToManyField('userprofile.UserProfile', related_name='campaign_subscribers', blank=True)
-    city = models.CharField(max_length=255, blank=True)
     comments = GenericRelation(Comment)
     created_on = models.DateTimeField(default=timezone.now)
     deleted = models.BooleanField(default=False)
     deleted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     deleted_on = models.DateTimeField(blank=True, null=True)
     description = models.TextField(blank=True)
-    end_date = models.DateTimeField(blank=True, null=True)
-    goal = models.IntegerField(default=0)
+    end_date = models.DateTimeField()
+    goal = models.IntegerField()
     is_active = models.BooleanField(default=True)
     name = models.CharField(max_length=255, db_index=True)
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE, related_name='campaigns')
@@ -53,7 +54,7 @@ class Campaign(models.Model):
     )
 
     TYPE_CHOICES = (
-        ('event', 'Event'),
+#        ('event', 'Event'),
         ('general', 'General'),
         ('vote', 'Vote'),
     )
@@ -61,64 +62,6 @@ class Campaign(models.Model):
         max_length=255,
         choices=TYPE_CHOICES,
         default='general',
-    )
-
-    STATE_CHOICES = (
-        ('AL', 'Alabama'),
-        ('AK', 'Alaska'),
-        ('AZ', 'Arizona'),
-        ('AR', 'Arkansas'),
-        ('CA', 'California'),
-        ('CO', 'Colorado'),
-        ('CT', 'Connecticut'),
-        ('DE', 'Delaware'),
-        ('FL', 'Florida'),
-        ('GA', 'Georgia'),
-        ('HI', 'Hawaii'),
-        ('ID', 'Idaho'),
-        ('IL', 'Illinois'),
-        ('IN', 'Indiana'),
-        ('IA', 'Iowa'),
-        ('KS', 'Kansas'),
-        ('KY', 'Kentucky'),
-        ('LA', 'Louisiana'),
-        ('ME', 'Maine'),
-        ('MD', 'Maryland'),
-        ('MA', 'Massachusetts'),
-        ('MI', 'Michigan'),
-        ('MN', 'Minnesota'),
-        ('MS', 'Mississippi'),
-        ('MO', 'Missouri'),
-        ('MT', 'Montana'),
-        ('NE', 'Nebraska'),
-        ('NV', 'Nevada'),
-        ('NH', 'New Hampshire'),
-        ('NJ', 'New Jersey'),
-        ('NM', 'New Mexico'),
-        ('NY', 'New York'),
-        ('NC', 'North Carolina'),
-        ('ND', 'North Dakota'),
-        ('OH', 'Ohio'),
-        ('OK', 'Oklahoma'),
-        ('OR', 'Oregon'),
-        ('PA', 'Pennsylvania'),
-        ('RI', 'Rhode Island'),
-        ('SC', 'South Carolina'),
-        ('SD', 'South Dakota'),
-        ('TN', 'Tennessee'),
-        ('TX', 'Texas'),
-        ('UT', 'Utah'),
-        ('VT', 'Vermont'),
-        ('VA', 'Virginia'),
-        ('WA', 'Washington'),
-        ('WV', 'West Virginia'),
-        ('WI', 'Wisconsin'),
-        ('WY', 'Wyoming'),
-    )
-    state = models.CharField(
-        max_length=100,
-        choices=STATE_CHOICES,
-        default='',
     )
 
     class Meta:
@@ -141,6 +84,11 @@ class Campaign(models.Model):
             })
 
     def save(self, *args, **kwargs):
+        # if this campaign is new
+        if not self.pk:
+            # create a new campaign_slug
+            self.campaign_slug = slugify(self.name)
+
         self.category = self.page.category
         super(Campaign, self).save(*args, **kwargs)
 
@@ -162,6 +110,7 @@ class Campaign(models.Model):
                     }
                     if user.userprofile.profile_picture():
                         top_donors[d]['image_url'] = user.userprofile.profile_picture().image.url
+                        top_donors[d]['image_pk'] = user.userprofile.profile_picture().pk
         top_donors = OrderedDict(sorted(top_donors.items(), key=lambda t: t[1]['amount'], reverse=True))
         top_donors = list(top_donors.items())[:10]
         return top_donors
@@ -206,6 +155,11 @@ class Campaign(models.Model):
     def unique_donors(self):
         return Donation.objects.filter(campaign=self).distinct('donor_first_name').distinct('donor_last_name').count()
 
+    def search_description(self):
+        if len(self.description) > 300:
+            return self.description[:300] + "..."
+        else:
+            return self.description
 
 def create_random_string(length=30):
     if length <= 0:
@@ -242,6 +196,14 @@ class CampaignImage(models.Model):
     profile_picture = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(default=timezone.now)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
+
+    def save(self, *args, **kwargs):
+        width, height = get_image_dimensions(self.image)
+        self.width = width
+        self.height = height
+        super(CampaignImage, self).save(*args, **kwargs)
 
 @receiver(post_delete, sender=CampaignImage)
 def auto_delete_file_on_delete(sender, instance, **kwargs):
