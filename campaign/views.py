@@ -170,7 +170,7 @@ def create_search_result_html(r):
         "<div class='form-check'>"
         "<input class='form-check-input' type='radio' name='page' value='{}' id='page{}'>"
         "<label class='form-check-label' for='page{}'>"
-        "<a class='pr-3' href='/{}/'>{}</a>"
+        "<a class='pr-3' href='/{}/' target='_blank'>{}</a>"
         "</label>"
         "</div>"
         "</div>"
