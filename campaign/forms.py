@@ -9,11 +9,27 @@ class CampaignForm(forms.ModelForm):
         model = models.Campaign
         fields = [
             'name',
-            'campaign_slug',
             'type',
             'goal',
             'end_date',
-            'category',
+            'description',
+            'website',
+        ]
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Fun Run for the Cure'}),
+            'website': forms.TextInput(attrs={'placeholder': 'http://funrunforthecure.com'}),
+            'description': forms.Textarea(attrs={'placeholder': 'Help us raise money during our Fun Run for the Cure!'}),
+            'goal': forms.NumberInput(attrs={'placeholder': '5000'}),
+        }
+
+class CampaignEditForm(forms.ModelForm):
+    class Meta:
+        model = models.Campaign
+        fields = [
+            'name',
+            'campaign_slug',
+            'goal',
+            'end_date',
             'description',
             'website',
         ]

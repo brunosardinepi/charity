@@ -13,6 +13,7 @@ from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.text import slugify
 
 from comments.models import Comment
 from donation.models import Donation
@@ -83,6 +84,11 @@ class Campaign(models.Model):
             })
 
     def save(self, *args, **kwargs):
+        # if this campaign is new
+        if not self.pk:
+            # create a new campaign_slug
+            self.campaign_slug = slugify(self.name)
+
         self.category = self.page.category
         super(Campaign, self).save(*args, **kwargs)
 

@@ -53,7 +53,16 @@
 
                 <div id="results" class="mb-5">
                     {% if page %}
-                        <input type="radio" name="page" value="{{ page.pk }}" checked="checked" />
+                        <div class="row mb-4">
+                            <div class="col-md-10 offset-md-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="page" value="{{ page.pk }}" id="page{{ page.pk }}" checked>
+                                    <label class="form-check-label" for="page{{ page.pk }}">
+                                        <a class="pr-3" href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     {% endif %}
                 </div>
 
@@ -84,32 +93,6 @@
                     {% endif %}
                 </div>
 
-                <div class="row mb-3">
-                    <label for="{{ form.campaign_slug.id_for_label }}" class="col-md-2 col-form-label">
-                        Vanity URL
-                    </label>
-                    <div class="input-group col-md-10">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">https://page.fund/page-name/</span>
-                        </div>
-                        {% render_field form.campaign_slug class+="form-control" aria-describedby="campaign_slug-help"%}
-                    </div>
-                    <div class="col-md-10 offset-md-2">
-                        <small id="campaign_slug-help" class="form-text text-muted">
-                            Choose what your URL will look like.
-                        </small>
-                    </div>
-                    {% if form.campaign_slug.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.campaign_slug.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
                 <div class="form-group row">
                     <label for="{{ form.website.id_for_label }}" class="col-md-2 col-form-label">
                         Your website
@@ -117,50 +100,13 @@
                     <div class="col-md-10">
                         {% render_field form.website class+="form-control" aria-describedby="website-help" %}
                         <small id="website-help" class="form-text text-muted">
-                            What is your personal website?
+                            Optional
                         </small>
+
                     </div>
                     {% if form.website.errors %}
                         <div class="col-md-10 offset-md-2 mt-1 mb-4">
                             {% for error in form.website.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <hr>
-
-                <div class="form-group row">
-                    <label for="{{ form.city.id_for_label }}" class="col-md-2 col-form-label">
-                        City
-                    </label>
-                    <div class="col-md-10">
-                        {% render_field form.city class+="form-control" %}
-                    </div>
-                    {% if form.city.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.city.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <div class="form-group row">
-                    <label for="{{ form.state.id_for_label }}" class="col-md-2 col-form-label">
-                        State
-                    </label>
-                    <div class="col-md-10">
-                        {% render_field form.state class+="form-control" %}
-                    </div>
-                    {% if form.state.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.state.errors %}
                                 <div class="alert alert-danger" role="alert">
                                     {{ error|escape }}
                                 </div>
@@ -218,10 +164,7 @@
                         Type
                     </label>
                     <div class="col-md-10">
-                        {% render_field form.type class+="form-control" aria-describedby="type-help" %}
-                        <small id="type-help" class="form-text text-muted">
-                            What type of Campaign is this?
-                        </small>
+                        {% render_field form.type class+="form-control" %}
                     </div>
                     {% if form.type.errors %}
                         <div class="col-md-10 offset-md-2 mt-1 mb-4">
@@ -235,34 +178,13 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="{{ form.category.id_for_label }}" class="col-md-2 col-form-label">
-                        Category
-                    </label>
-                    <div class="col-md-10">
-                        {% render_field form.category class+="form-control" aria-describedby="category-help"%}
-                        <small id="category-help" class="form-text text-muted">
-                            Which category does your Campaign fit into?
-                        </small>
-                    </div>
-                    {% if form.category.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.category.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <div class="form-group row">
                     <label for="{{ form.description.id_for_label }}" class="col-md-2 col-form-label">
                         Description
                     </label>
                     <div class="col-md-10">
-                        {% render_field form.description class+="form-control" aria-describedby="description-help"%}
+                        {% render_field form.description class+="form-control" aria-describedby="description-help" %}
                         <small id="description-help" class="form-text text-muted">
-                            Tell us all about your Campaign and how you can help raise extra!
+                            Optional
                         </small>
                     </div>
                     {% if form.description.errors %}

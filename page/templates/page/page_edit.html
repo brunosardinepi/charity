@@ -78,10 +78,7 @@
                         Your website
                     </label>
                     <div class="col-md-10">
-                        {% render_field form.website class+="form-control" aria-describedby="website-help" %}
-                        <small id="website-help" class="form-text text-muted">
-                            What is your personal website?
-                        </small>
+                        {% render_field form.website class+="form-control" %}
                     </div>
                     {% if form.website.errors %}
                         <div class="col-md-10 offset-md-2 mt-1 mb-4">
@@ -101,10 +98,7 @@
                         Address
                     </label>
                     <div class="col-md-10">
-                       {% render_field form.address_line1 class+="form-control" aria-describedby="address_line1-help" %}
-                        <small id="address_line1-help" class="form-text text-muted">
-                            Where are you located?
-                        </small>
+                       {% render_field form.address_line1 class+="form-control" %}
                     </div>
                     {% if form.address_line1.errors %}
                         <div class="col-md-10 offset-md-2 mt-1 mb-4">
@@ -201,7 +195,7 @@
                     <div class="col-md-10">
                         {% render_field form.type class+="form-control" aria-describedby="type-help" %}
                         <small id="type-help" class="form-text text-muted">
-                            What type of Page is this? Note that only nonprofits require an EIN.
+                            Only nonprofits require an EIN.
                         </small>
                     </div>
                     {% if form.type.errors %}
@@ -241,10 +235,7 @@
                         Category
                     </label>
                     <div class="col-md-10">
-                        {% render_field form.category class+="form-control" aria-describedby="category-help"%}
-                        <small id="category-help" class="form-text text-muted">
-                            Which category does your Page fit into?
-                        </small>
+                        {% render_field form.category class+="form-control" %}
                     </div>
                     {% if form.category.errors %}
                         <div class="col-md-10 offset-md-2 mt-1 mb-4">
@@ -262,35 +253,14 @@
                         Description
                     </label>
                     <div class="col-md-10">
-                        {% render_field form.description class+="form-control" aria-describedby="description-help"%}
+                        {% render_field form.description class+="form-control" aria-describedby="description-help" %}
                         <small id="description-help" class="form-text text-muted">
-                            Tell us all about your Page! This will be seen by the public.
+                            Optional
                         </small>
                     </div>
                     {% if form.description.errors %}
                         <div class="col-md-10 offset-md-2 mt-1 mb-4">
                             {% for error in form.description.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <div class="form-group row">
-                    <div class="col-md-2">Terms of Service</div>
-                    <div class="col-md-10">
-                        <div class="form-check">
-                           {% render_field form.tos_accepted class+="form-check-input" %}
-                            <label class="form-check-label" for="{{ form.tos_accepted.id_for_label }}">
-                                Please check this box to agree to our <a href="/terms-of-service/">Terms of Service</a>.
-                            </label>
-                        </div>
-                    </div>
-                    {% if form.tos_accepted.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.tos_accepted.errors %}
                                 <div class="alert alert-danger" role="alert">
                                     {{ error|escape }}
                                 </div>
