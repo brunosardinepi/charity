@@ -21,6 +21,8 @@ Release date: TBD
 ### Fixes
 
 * Page wasn't getting populated on Campaign creation when coming from a Page instead of a new search
+* Page monthly donations weren't working
+* Deleting Page monthly donations weren't working
 
 
 ## Version 0.20.0

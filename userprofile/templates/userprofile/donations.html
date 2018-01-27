@@ -29,7 +29,7 @@
                                     <tr>
                                         <td>{{ plan.amount|cents_to_dollars }}</td>
                                         <td><a href="{% url 'page' page_slug=plan.page.page_slug %}">{{ plan.page }}</a>{% if plan.campaign %} via <a class="teal" href="{% url 'campaign' page_slug=plan.page.page_slug campaign_pk=plan.campaign.pk campaign_slug=plan.campaign.campaign_slug %}">{{ plan.campaign }}</a>{% endif %}</td>
-                                        <td>{{ plan.interval }}</td>
+                                        <td>{{ plan.get_interval_display }}</td>
                                         <td><a href="{% url 'plans:delete_plan' plan_pk=plan.pk %}">Delete</a></td>
                                     </tr>
                                 {% endfor %}

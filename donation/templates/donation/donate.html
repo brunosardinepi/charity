@@ -14,6 +14,8 @@
     {% endif %}
         {% csrf_token %}
             {{ form.as_p  }}
+
+            <p>Please <a href="{% url 'userprofile:billing' %}">add a credit card to your account</a> if you'd like to create a monthly donation for a Page.</p>
             
             <input type="checkbox" name="preset-amount" class="preset-amount" value=5 />$5<br />
             <input type="checkbox" name="preset-amount" class="preset-amount" value=10 />$10<br />
