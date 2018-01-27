@@ -18,7 +18,7 @@ Release date: 01/26/2018
 
 ### Fixes
 
-* None
+* Large images weren't uploading properly
 
 
 ## Version 0.19.0
