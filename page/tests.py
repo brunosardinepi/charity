@@ -195,8 +195,6 @@ class PageTest(TestCase):
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.user.first_name, status_code=200)
         self.assertContains(response, self.user.last_name, status_code=200)
-        self.assertContains(response, self.page.city, status_code=200)
-        self.assertContains(response, self.page.state, status_code=200)
         self.assertContains(response, self.page.type, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count(), status_code=200)
@@ -219,8 +217,6 @@ class PageTest(TestCase):
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.user.first_name, status_code=200)
         self.assertContains(response, self.user.last_name, status_code=200)
-        self.assertContains(response, self.page.city, status_code=200)
-        self.assertContains(response, self.page.state, status_code=200)
         self.assertContains(response, self.page.type, status_code=200)
         self.assertContains(response, self.page.description, status_code=200)
         self.assertContains(response, self.page.donation_count(), status_code=200)
@@ -286,9 +282,9 @@ class PageTest(TestCase):
         }
         self.client.login(username='testuser', password='testpassword')
         response = self.client.post('/%s/edit/' % self.page.page_slug, data)
-        self.assertRedirects(response, '/%s/' % self.page.page_slug, 302, 200)
-        response = self.client.get('/%s/' % self.page.page_slug)
-        self.assertContains(response, 'DE', status_code=200)
+        self.assertRedirects(response, '/{}/manage/admin/'.format(self.page.page_slug), 302, 200)
+        response = self.client.get('/{}/'.format(self.page.page_slug))
+        self.assertEqual(response.status_code, 200)
 
     def test_page_edit_manager_perms(self):
         request = self.factory.get('home')
@@ -333,22 +329,22 @@ class PageTest(TestCase):
             'city': "Houston",
             'state': "TX",
             'zipcode': "77008",
-            'page_slug': "mytestpage",
             'type': "nonprofit",
             'category': "other",
             'website': "test.com",
             'tos_accepted': True,
         }
         response = self.client.post('/create/page/', data)
-        self.assertRedirects(response, '/create/mytestpage/additional/', 302, 200)
+        page = models.Page.objects.get(page_slug="my-test-page")
+        self.assertRedirects(response, '/create/{}/additional/'.format(page.pk), 302, 200)
 
         data_additional = {
             'first_name': "Tester",
             'last_name': "McGee",
             'birthday': "1988-10-18",
         }
-        response = self.client.post('/create/mytestpage/additional/', data_additional)
-        self.assertRedirects(response, '/create/mytestpage/bank/', 302, 200)
+        response = self.client.post('/create/{}/additional/'.format(page.pk), data_additional)
+        self.assertRedirects(response, '/create/{}/bank/'.format(page.pk), 302, 200)
 
         data_bank = {
             'account_holder_first_name': "Tester",
@@ -357,8 +353,8 @@ class PageTest(TestCase):
             'account_number': "000123456789",
             'routing_number': "110000000",
         }
-        response = self.client.post('/create/mytestpage/bank/', data_bank)
-        self.assertRedirects(response, '/mytestpage/', 302, 200)
+        response = self.client.post('/create/{}/bank/'.format(page.pk), data_bank)
+        self.assertRedirects(response, '/{}/'.format(page.page_slug), 302, 200)
 
         self.client.login(username='harrypotter', password='imawizard')
         response = self.client.get('/create/page/')
@@ -366,18 +362,17 @@ class PageTest(TestCase):
 
         data['name'] = "My Other Test Page"
         data['type'] = "personal"
-        data['page_slug'] = "myothertestpage"
         response = self.client.post('/create/page/', data)
-        self.assertRedirects(response, '/create/myothertestpage/bank/', 302, 200)
+        page = models.Page.objects.get(page_slug="my-other-test-page")
+        self.assertRedirects(response, '/create/{}/bank/'.format(page.pk), 302, 200)
 
-        response = self.client.post('/create/myothertestpage/bank/', data_bank)
-        self.assertRedirects(response, '/myothertestpage/', 302, 200)
+        response = self.client.post('/create/{}/bank/'.format(page.pk), data_bank)
+        self.assertRedirects(response, '/{}/'.format(page.page_slug), 302, 200)
 
     def test_pageform(self):
         form = forms.PageForm({
             'name': 'Ribeye Steak',
             'type': 'personal',
-            'page_slug': 'ribeyesteak',
             'city': 'Atlanta',
             'state': 'GA',
             'category': 'animal',
@@ -392,7 +387,7 @@ class PageTest(TestCase):
         page = form.save()
         self.assertEqual(page.name, "Ribeye Steak")
         self.assertEqual(page.type, "personal")
-        self.assertEqual(page.page_slug, "ribeyesteak")
+        self.assertEqual(page.page_slug, "ribeye-steak")
         self.assertEqual(page.city, "Atlanta")
         self.assertEqual(page.state, "GA")
         self.assertEqual(page.category, "animal")
@@ -677,7 +672,7 @@ class PageTest(TestCase):
 
     def test_upload_logged_out(self):
         response = self.client.get('/%s/manage/images/' % self.page.page_slug)
-        self.assertRedirects(response, '/accounts/login/?next=/testpage/manage/images/', 302, 200)
+        self.assertRedirects(response, '/accounts/login/?next=/{}/manage/images/'.format(self.page.page_slug), 302, 200)
 
     def test_dashboard_total_donations(self):
         self.client.login(username='testuser', password='testpassword')
@@ -746,6 +741,28 @@ class PageTest(TestCase):
             self.assertContains(response, "{}".format(v["display"]))
             self.assertContains(response, "{}".format(v["count"]))
             self.assertContains(response, "${}".format(int(v["sum"] / 100)))
+
+    def test_dashboard_campaigns_active(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/manage/campaigns/'.format(self.page.page_slug))
+
+        campaigns = CampaignModels.Campaign.objects.filter(page=self.page, is_active=True)
+        for c in campaigns:
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, c.name)
+            self.assertContains(response, int(c.donation_money() / 100))
+            self.assertContains(response, c.goal)
+
+    def test_dashboard_campaigns_inactive(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/manage/campaigns/'.format(self.page.page_slug))
+
+        campaigns = CampaignModels.Campaign.objects.filter(page=self.page, is_active=False)
+        for c in campaigns:
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, c.name)
+            self.assertContains(response, int(c.donation_money() / 100))
+            self.assertContains(response, c.goal)
 
     def test_dashboard_average_campaign_duration(self):
         self.client.login(username='testuser', password='testpassword')

@@ -170,23 +170,12 @@ def create_search_result_html(r):
         "<div class='form-check'>"
         "<input class='form-check-input' type='radio' name='page' value='{}' id='page{}'>"
         "<label class='form-check-label' for='page{}'>"
-        "<a class='pr-3' href='/{}/'>{}</a>"
-        "<i class='fal fa-compass mr-1' aria-hidden title='Location'></i><span class='sr-only'>Location</span>"
-        "<span class='small'>"
-    ).format(r.pk, r.pk, r.pk, r.page_slug, r.name)
-
-    if r.city:
-        html += "{}, {}".format(r.city, r.state)
-    elif r.state:
-        html += r.get_state_display()
-
-    html += (
-        "</span>"
-        "</div>"
-        "</div>"
+        "<a class='pr-3' href='/{}/' target='_blank'>{}</a>"
         "</label>"
         "</div>"
-    )
+        "</div>"
+        "</div>"
+    ).format(r.pk, r.pk, r.pk, r.page_slug, r.name)
 
     return html
 
@@ -216,12 +205,16 @@ def campaign_search_pages(request):
 def campaign_edit(request, page_slug, campaign_pk, campaign_slug):
     campaign = get_object_or_404(Campaign, pk=campaign_pk)
     if utils.has_dashboard_access(request.user, campaign, 'manager_edit'):
-        form = forms.CampaignForm(instance=campaign)
+        form = forms.CampaignEditForm(instance=campaign)
         if request.method == 'POST':
-            form = forms.CampaignForm(instance=campaign, data=request.POST)
+            form = forms.CampaignEditForm(instance=campaign, data=request.POST)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(campaign.get_absolute_url())
+                return redirect('campaign_dashboard_admin',
+                    page_slug=campaign.page.page_slug,
+                    campaign_pk=campaign.pk,
+                    campaign_slug=campaign.campaign_slug
+                )
     else:
         raise Http404
     return render(request, 'campaign/campaign_edit.html', {'campaign': campaign, 'form': form})
@@ -487,6 +480,9 @@ class CampaignDashboardImages(View):
         if utils.has_dashboard_access(request.user, campaign, 'manager_image_edit'):
             form = forms.CampaignImageForm(self.request.POST, self.request.FILES)
             data = image_is_valid(request, form, campaign)
-            return JsonResponse(data)
+            if data:
+                return JsonResponse(data)
+            else:
+                return HttpResponse('')
         else:
             raise Http404

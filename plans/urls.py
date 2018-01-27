@@ -5,6 +5,6 @@ from . import views
 
 app_name = 'plans'
 urlpatterns = [
-    url(r'^delete/', views.delete_plan, name='delete_plan'),
+    url(r'^/(?P<plan_pk>\d+)/delete/', views.delete_plan, name='delete_plan'),
 ]
 

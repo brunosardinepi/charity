@@ -26,7 +26,7 @@
                     <label for="{{ form.name.id_for_label }}" class="col-md-3 col-form-label">
                         Campaign name
                     </label>
-                    <div class="col-md-9">
+                    <div class="col-md-6">
                         {% render_field form.name class+="form-control" aria-describedby="name-help"%}
                         <small id="name-help" class="form-text text-muted">
                             This is how your name will be displayed on PageFund.
@@ -73,10 +73,10 @@
                     <label for="{{ form.website.id_for_label }}" class="col-md-3 col-form-label">
                         Your website
                     </label>
-                    <div class="col-md-9">
+                    <div class="col-md-6">
                         {% render_field form.website class+="form-control" aria-describedby="website-help" %}
                         <small id="website-help" class="form-text text-muted">
-                            What is your personal website?
+                            Optional
                         </small>
                     </div>
                     {% if form.website.errors %}
@@ -92,20 +92,19 @@
 
                 <hr>
 
-
                 <div class="form-group row">
-                    <label for="{{ form.type.id_for_label }}" class="col-md-3 col-form-label">
-                        Type
+                    <label for="{{ form.goal.id_for_label }}" class="col-md-3 col-form-label">
+                        Goal
                     </label>
-                    <div class="col-md-9">
-                        {% render_field form.type class+="form-control" aria-describedby="type-help" %}
-                        <small id="type-help" class="form-text text-muted">
-                            What type of Campaign is this?
+                    <div class="col-md-4">
+                        {% render_field form.goal class+="form-control" aria-describedby="goal-help" %}
+                        <small id="goal-help" class="form-text text-muted">
+                            How much do you want to raise?
                         </small>
                     </div>
-                    {% if form.type.errors %}
+                    {% if form.goal.errors %}
                         <div class="col-md-9 offset-md-3 mt-1 mb-4">
-                            {% for error in form.type.errors %}
+                            {% for error in form.goal.errors %}
                                 <div class="alert alert-danger" role="alert">
                                     {{ error|escape }}
                                 </div>
@@ -115,15 +114,18 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="{{ form.category.id_for_label }}" class="col-md-3 col-form-label">
-                        Category
+                    <label for="{{ form.end_date.id_for_label }}" class="col-md-3 col-form-label">
+                        End date
                     </label>
-                    <div class="col-md-9">
-                        {% render_field form.category class+="form-control" %}
+                    <div class="col-md-5">
+                        {% render_field form.end_date class+="form-control" aria-describedby="end_date-help" %}
+                        <small id="end_date-help" class="form-text text-muted">
+                            When will your Campaign end?
+                        </small>
                     </div>
-                    {% if form.category.errors %}
+                    {% if form.end_date.errors %}
                         <div class="col-md-9 offset-md-3 mt-1 mb-4">
-                            {% for error in form.category.errors %}
+                            {% for error in form.end_date.errors %}
                                 <div class="alert alert-danger" role="alert">
                                     {{ error|escape }}
                                 </div>
@@ -131,6 +133,8 @@
                         </div>
                     {% endif %}
                 </div>
+
+                <hr>
 
                 <div class="form-group row">
                     <label for="{{ form.description.id_for_label }}" class="col-md-3 col-form-label">
@@ -139,7 +143,7 @@
                     <div class="col-md-9">
                         {% render_field form.description class+="form-control" aria-describedby="description-help"%}
                         <small id="description-help" class="form-text text-muted">
-                            Tell us all about your Campaign! This will be seen by the public.
+                            Optional
                         </small>
                     </div>
                     {% if form.description.errors %}

@@ -19,8 +19,6 @@ class SearchTest(TestCase):
         self.page = Page.objects.create(
             name='Test Page',
             page_slug='testpage',
-            city='San Diego',
-            state='CA',
             description='This is a description for Test Page. test test test test test test',
             category='Animal',
             is_sponsored=True
@@ -29,8 +27,6 @@ class SearchTest(TestCase):
         self.page2 = Page.objects.create(
             name='Nachos',
             page_slug='mmmmmmmm',
-            city='Seattle',
-            state='WA',
             description='I like nachos. nachos nachos nachos',
             category='Environment',
             is_sponsored=False

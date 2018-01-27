@@ -124,6 +124,8 @@ def charge_source(c, page=None, campaign=None):
 
 def donate(request, form, page=None, campaign=None):
 #    amount = form.cleaned_data['amount'] * 100
+    print("page in donate() = {}".format(page))
+    print("campaign in donate() = {}".format(campaign))
     amount = form.cleaned_data['amount']
     preset_amount = request.POST.get('preset-amount')
     if amount:
@@ -176,7 +178,7 @@ def donate(request, form, page=None, campaign=None):
                 # set this saved card as the default card
                 set_default_card(request, card_source.id)
                 # create the plan and charge them
-                create_plan(request, form, page, campaign)
+                create_plan(request, form, amount, page, campaign)
             else:
                 # this is a one-time donation, charge the card
                 charge = charge_source(c, page, campaign)
@@ -191,7 +193,7 @@ def donate(request, form, page=None, campaign=None):
                 # set this saved card as the default card
                 set_default_card(request, card.id)
                 # create the plan and charge them
-                create_plan(request, form, page, campaign)
+                create_plan(request, form, amount, page, campaign)
             else:
                 # this is a one-time donation, charge the card
                 charge = charge_source(c, page, campaign)

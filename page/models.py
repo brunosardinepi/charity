@@ -13,6 +13,7 @@ from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.text import slugify
 
 from campaign.models import Campaign
 from comments.models import Comment
@@ -138,6 +139,22 @@ class Page(models.Model):
     def __str__(self):
         return self.name
 
+    def _get_unique_slug(self):
+        slug = slugify(self.name)
+        unique_slug = slug
+        num = 1
+        while Page.objects.filter(page_slug=unique_slug).exists():
+            unique_slug = '{}-{}'.format(slug, num)
+            num += 1
+        return unique_slug
+
+    def save(self, *args, **kwargs):
+        # if this page is new
+        if not self.pk:
+            # create a new page_slug
+            self.page_slug = self._get_unique_slug()
+        super(Page, self).save(*args, **kwargs)
+
     def get_absolute_url(self):
         return reverse('page', kwargs={
             'page_slug': self.page_slug
@@ -182,10 +199,10 @@ class Page(models.Model):
             return None
 
     def active_campaigns(self):
-        return Campaign.objects.filter(page=self, is_active=True, deleted=False).order_by('name')
+        return Campaign.objects.filter(page=self, is_active=True, deleted=False).order_by('end_date')
 
     def inactive_campaigns(self):
-        return Campaign.objects.filter(page=self, is_active=False, deleted=False)
+        return Campaign.objects.filter(page=self, is_active=False, deleted=False).order_by('-end_date')
 
     def donations(self):
         return Donation.objects.filter(page=self).order_by('-date')

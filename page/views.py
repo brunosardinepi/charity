@@ -86,15 +86,15 @@ def page_create(request):
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
             if request.user.first_name and request.user.last_name and request.user.userprofile.birthday:
-                return redirect('page_create_bank_info', page_slug=page.page_slug)
+                return redirect('page_create_bank_info', page_pk=page.pk)
             else:
-                return redirect('page_create_additional_info', page_slug=page.page_slug)
+                return redirect('page_create_additional_info', page_pk=page.pk)
     return render(request, 'page/page_create.html', {'form': form})
 
 
 class PageCreateAdditionalInfo(View):
-    def get(self, request, page_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
+    def get(self, request, page_pk):
+        page = get_object_or_404(Page, pk=page_pk)
         userprofile = get_object_or_404(UserProfile, user=request.user)
         initial = {
             'first_name': userprofile.user.first_name,
@@ -103,8 +103,8 @@ class PageCreateAdditionalInfo(View):
         }
         form = forms.PageAdditionalInfoForm(initial=initial)
         return render(request, 'page/page_create_additional_info.html', {'page': page, 'form': form})
-    def post(self, request, page_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
+    def post(self, request, page_pk):
+        page = get_object_or_404(Page, pk=page_pk)
         userprofile = get_object_or_404(UserProfile, user=request.user)
         form = forms.PageAdditionalInfoForm(request.POST)
         if form.is_valid():
@@ -113,12 +113,11 @@ class PageCreateAdditionalInfo(View):
             request.user.save()
             userprofile.birthday = form.cleaned_data['birthday']
             userprofile.save()
-            return redirect('page_create_bank_info', page_slug=page.page_slug)
-
+            return redirect('page_create_bank_info', page_pk=page.pk)
 
 class PageCreateBankInfo(View):
-    def get(self, request, page_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
+    def get(self, request, page_pk):
+        page = get_object_or_404(Page, pk=page_pk)
         userprofile = get_object_or_404(UserProfile, user=request.user)
         initial = {
             'account_holder_first_name': userprofile.user.first_name,
@@ -127,8 +126,8 @@ class PageCreateBankInfo(View):
         form = forms.PageBankForm(initial=initial)
         return render(request, 'page/page_create_bank_info.html', {'page': page, 'form': form})
 
-    def post(self, request, page_slug):
-        page = get_object_or_404(Page, page_slug=page_slug)
+    def post(self, request, page_pk):
+        page = get_object_or_404(Page, pk=page_pk)
         form = forms.PageBankForm(request.POST)
         if form.is_valid():
             if not settings.TESTING:
@@ -238,7 +237,6 @@ class PageEditBankInfo(View):
                 page.stripe_bank_account_id = ext_acct.id
             page.save()
             utils.email(request.user.email, "blank", "blank", "page_bank_information_updated")
-#            return HttpResponseRedirect(page.get_absolute_url())
             return redirect('page_dashboard_admin', page_slug=page.page_slug)
 
 
@@ -246,12 +244,12 @@ class PageEditBankInfo(View):
 def page_edit(request, page_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
     if utils.has_dashboard_access(request.user, page, 'manager_edit'):
-        form = forms.PageForm(instance=page)
+        form = forms.PageEditForm(instance=page)
         if request.method == 'POST':
-            form = forms.PageForm(instance=page, data=request.POST)
+            form = forms.PageEditForm(instance=page, data=request.POST)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(page.get_absolute_url())
+                return redirect('page_dashboard_admin', page_slug=page.page_slug)
     else:
         raise Http404
     return render(request, 'page/page_edit.html', {'page': page, 'form': form})
@@ -536,7 +534,10 @@ class PageDashboardImages(View):
         if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
             form = forms.PageImageForm(self.request.POST, self.request.FILES)
             data = image_is_valid(request, form, page)
-            return JsonResponse(data)
+            if data:
+                return JsonResponse(data)
+            else:
+                return HttpResponse('')
         else:
             raise Http404
 

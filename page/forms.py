@@ -20,13 +20,37 @@ class PageForm(forms.ModelForm):
             'city',
             'state',
             'zipcode',
-            'page_slug',
             'type',
             'ein',
             'category',
             'description',
             'website',
             'tos_accepted',
+        ]
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'PageFund'}),
+            'website': forms.TextInput(attrs={'placeholder': 'https://page.fund'}),
+            'address_line1': forms.TextInput(attrs={'placeholder': '123 Main St.'}),
+            'address_line2': forms.TextInput(attrs={'placeholder': 'Suite 200'}),
+            'description': forms.Textarea(attrs={'placeholder': 'We are an amazing group that does amazing things!'}),
+        }
+
+class PageEditForm(forms.ModelForm):
+    class Meta:
+        model = models.Page
+        fields = [
+            'name',
+            'address_line1',
+            'address_line2',
+            'city',
+            'state',
+            'zipcode',
+            'page_slug',
+            'type',
+            'ein',
+            'category',
+            'description',
+            'website',
         ]
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'PageFund'}),

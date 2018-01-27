@@ -5,6 +5,10 @@
 
 {% block title %}Edit | {{ block.super }}{% endblock %}
 
+{% block head_extra %}
+    <script src="{% static 'js/ein.js' %}"></script>
+{% endblock %}
+
 {% block body_content %}
     <div class="row">
         <div class="col-lg-3">
@@ -26,7 +30,7 @@
                     <label for="{{ form.name.id_for_label }}" class="col-md-2 col-form-label">
                         Page name
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-6">
                         {% render_field form.name class+="form-control" aria-describedby="name-help"%}
                         <small id="name-help" class="form-text text-muted">
                             This is how your name will be displayed on PageFund.
@@ -47,7 +51,7 @@
                     <label for="{{ form.page_slug.id_for_label }}" class="col-md-2 col-form-label">
                         Vanity URL
                     </label>
-                    <div class="input-group col-md-10">
+                    <div class="input-group col-md-7">
                         <div class="input-group-prepend">
                             <span class="input-group-text">https://page.fund/</span>
                         </div>
@@ -73,11 +77,8 @@
                     <label for="{{ form.website.id_for_label }}" class="col-md-2 col-form-label">
                         Your website
                     </label>
-                    <div class="col-md-10">
-                        {% render_field form.website class+="form-control" aria-describedby="website-help" %}
-                        <small id="website-help" class="form-text text-muted">
-                            What is your personal website?
-                        </small>
+                    <div class="col-md-6">
+                        {% render_field form.website class+="form-control" %}
                     </div>
                     {% if form.website.errors %}
                         <div class="col-md-10 offset-md-2 mt-1 mb-4">
@@ -96,11 +97,8 @@
                     <label for="{{ form.address_line1.id_for_label }}" class="col-md-2 col-form-label">
                         Address
                     </label>
-                    <div class="col-md-10">
-                       {% render_field form.address_line1 class+="form-control" aria-describedby="address_line1-help" %}
-                        <small id="address_line1-help" class="form-text text-muted">
-                            Where are you located?
-                        </small>
+                    <div class="col-md-6">
+                       {% render_field form.address_line1 class+="form-control" %}
                     </div>
                     {% if form.address_line1.errors %}
                         <div class="col-md-10 offset-md-2 mt-1 mb-4">
@@ -117,7 +115,7 @@
                     <label for="{{ form.address_line2.id_for_label }}" class="col-md-2 col-form-label">
                         Address (continued)
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-6">
                         {% render_field form.address_line2 class+="form-control" aria-describedby="address_line2-help" %}
                         <small id="address_line2-help" class="form-text text-muted">
                             Apartment, suite, floor, etc.
@@ -138,7 +136,7 @@
                     <label for="{{ form.city.id_for_label }}" class="col-md-2 col-form-label">
                         City
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-4">
                        {% render_field form.city class+="form-control" %}
                     </div>
                     {% if form.city.errors %}
@@ -156,7 +154,7 @@
                     <label for="{{ form.state.id_for_label }}" class="col-md-2 col-form-label">
                         State
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-4">
                         {% render_field form.state class+="form-control" %}
                     </div>
                     {% if form.state.errors %}
@@ -174,7 +172,7 @@
                     <label for="{{ form.zipcode.id_for_label }}" class="col-md-2 col-form-label">
                         ZIP code
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-2">
                         {% render_field form.zipcode class+="form-control" %}
                     </div>
                     {% if form.zipcode.errors %}
@@ -194,10 +192,10 @@
                     <label for="{{ form.type.id_for_label }}" class="col-md-2 col-form-label">
                         Type
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-4">
                         {% render_field form.type class+="form-control" aria-describedby="type-help" %}
                         <small id="type-help" class="form-text text-muted">
-                            What type of Page is this? Note that only nonprofits require an EIN.
+                            Only nonprofits require an EIN.
                         </small>
                     </div>
                     {% if form.type.errors %}
@@ -215,7 +213,7 @@
                     <label for="{{ form.ein.id_for_label }}" class="col-md-2 col-form-label">
                         EIN
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-6">
                         {% render_field form.ein class+="form-control" aria-describedby="ein-help" %}
                         <small id="ein-help" class="form-text text-muted">
                             This is your Employer Identification Number (EIN), also known as a Federal Tax Identification Number.
@@ -236,11 +234,8 @@
                     <label for="{{ form.category.id_for_label }}" class="col-md-2 col-form-label">
                         Category
                     </label>
-                    <div class="col-md-10">
-                        {% render_field form.category class+="form-control" aria-describedby="category-help"%}
-                        <small id="category-help" class="form-text text-muted">
-                            Which category does your Page fit into?
-                        </small>
+                    <div class="col-md-3">
+                        {% render_field form.category class+="form-control" %}
                     </div>
                     {% if form.category.errors %}
                         <div class="col-md-10 offset-md-2 mt-1 mb-4">
@@ -257,10 +252,10 @@
                     <label for="{{ form.description.id_for_label }}" class="col-md-2 col-form-label">
                         Description
                     </label>
-                    <div class="col-md-10">
-                        {% render_field form.description class+="form-control" aria-describedby="description-help"%}
+                    <div class="col-md-8">
+                        {% render_field form.description class+="form-control" aria-describedby="description-help" %}
                         <small id="description-help" class="form-text text-muted">
-                            Tell us all about your Page! This will be seen by the public.
+                            Optional
                         </small>
                     </div>
                     {% if form.description.errors %}

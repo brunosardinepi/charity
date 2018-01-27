@@ -3,6 +3,7 @@
 {% load guardian_tags %}
 {% load donation_extras %}
 {% load lib_extras %}
+{% load humanize %}
 
 
 {% block title %}Dashboard | {{ block.super }}{% endblock %}
@@ -19,12 +20,12 @@
 
             {% if request.user.userprofile in page.admins.all or "manager_view_dashboard" in page_perms %}
                 <div class="row justify-content-center mt-5 mb-5">
-                    <div class="col-lg-4 text-center">
+                    <div class="col-lg-4 mb-4 text-center">
                         <p class="small m-0">Donated to Campaigns</p>
                         <h2 class="m-0">{{ donations.campaign_donations|cents_to_dollars }}</h2>
                         <p class="small m-0">Avg: {{ donations.campaign_donations_avg|cents_to_dollars }}</p>
                     </div>
-                    <div class="col-lg-4 text-center">
+                    <div class="col-lg-4 mb-4 text-center">
                         <p class="small m-0">Average Campaign Duration</p>
                         <h2 class="m-0">{{ campaign_average_duration }} days</h2>
                     </div>
@@ -34,7 +35,7 @@
                 <hr>
                 <p>These charts show how many of your Campaigns reach their goal before their end date.</p>
                 <div class="row justify-content-center mt-5 mb-5">
-                    <div class="col-lg-4 text-center">
+                    <div class="col-lg-4 mb-4 text-center">
                         <section>
                             <canvas id="generalChart"></canvas>
                             <div class="doughnut-text">
@@ -44,7 +45,7 @@
                             </div>
                         </section>
                     </div>
-                    <div class="col-lg-4 text-center">
+                    <div class="col-lg-4 mb-4 text-center">
                         <section>
                             <canvas id="voteChart"></canvas>
                             <div class="doughnut-text">
@@ -63,9 +64,9 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th class="purple">Type</th>
-                                <th class="purple">Count</th>
-                                <th class="purple">Total raised</th>
+                                <th class="teal">Type</th>
+                                <th class="teal">Count</th>
+                                <th class="teal">Total raised</th>
                             </tr>
                         </thead>
                         <tbody id="donation-history-body">
@@ -74,6 +75,54 @@
                                     <td>{{ v.display }}</td>
                                     <td>{{ v.count }}</td>
                                     <td>{{ v.sum|cents_to_dollars }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Active Campaigns</h2>
+                <div class="row justify-content-center mt-3 mb-5">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th class="teal">Name</th>
+                                <th class="teal">Ends</th>
+                                <th class="teal">Raised</th>
+                                <th class="teal">Goal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="donation-history-body">
+                            {% for c in page.active_campaigns %}
+                                <tr>
+                                    <td>{{ c.name }}</td>
+                                    <td>{{ c.end_date|naturaltime }}</td>
+                                    <td>{{ c.donation_money|cents_to_dollars }}</td>
+                                    <td>${{ c.goal }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Past Campaigns</h2>
+                <div class="row justify-content-center mt-3 mb-5">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th class="teal">Name</th>
+                                <th class="teal">Ended</th>
+                                <th class="teal">Raised</th>
+                                <th class="teal">Goal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="donation-history-body">
+                            {% for c in page.inactive_campaigns %}
+                                <tr>
+                                    <td>{{ c.name }}</td>
+                                    <td>{{ c.end_date|naturaltime }}</td>
+                                    <td>{{ c.donation_money|cents_to_dollars }}</td>
+                                    <td>${{ c.goal }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>

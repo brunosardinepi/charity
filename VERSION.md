@@ -2,6 +2,31 @@
 
 This is the version history for PageFund development.
 
+## Version 0.21.0
+
+Release date: TBD
+
+### Additions
+
+* Active and past Campaigns on Page dashboard
+
+### Changes
+
+* Mobile design for Page/Campaign dashboards
+* Removed location site-wide
+* Auto-generating Page/Campaign slug on creation and letting users change it in the dashboard
+* Removed majority of helper text on forms and stated which fields are optional
+* Resized form fields for better readability
+
+### Fixes
+
+* Page wasn't getting populated on Campaign creation when coming from a Page instead of a new search
+* Page monthly donations weren't working
+* Deleting Page monthly donations weren't working
+* Can't invite managers with a blank permission set
+* Image uploads that were too large weren't being redirected to the proper error page
+
+
 ## Version 0.20.0
 
 Release date: 01/26/2018

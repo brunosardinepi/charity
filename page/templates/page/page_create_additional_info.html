@@ -9,7 +9,7 @@
     <div class="row">
         <div class="col-10 offset-2 mb-4">
             <h1>Additional Page Information</h1>
-            <p>We need a few more bits of personal information before we create your Page.</p>
+            <p>We need a few more bits of personal information before we create your Page. This information is used by our payment processor to verify that you are who you say you are.</p>
         </div>
         <div class="col-12">
             <form action="" method="post" enctype="multipart/form-data">
@@ -25,8 +25,8 @@
                     <label for="{{ form.first_name.id_for_label }}" class="col-md-2 col-form-label">
                         First name
                     </label>
-                    <div class="col-md-7">
-                        {% render_field form.first_name class+="form-control" aria-describedby="first_name-help"%}
+                    <div class="col-md-4">
+                        {% render_field form.first_name class+="form-control" %}
                     </div>
                     {% if form.first_name.errors %}
                         <div class="col-md-7 offset-md-2 mt-1 mb-4">
@@ -43,8 +43,8 @@
                     <label for="{{ form.last_name.id_for_label }}" class="col-md-2 col-form-label">
                         Last name
                     </label>
-                    <div class="col-md-7">
-                        {% render_field form.last_name class+="form-control" aria-describedby="last_name-help"%}
+                    <div class="col-md-4">
+                        {% render_field form.last_name class+="form-control" %}
                     </div>
                     {% if form.last_name.errors %}
                         <div class="col-md-7 offset-md-2 mt-1 mb-4">
@@ -61,8 +61,8 @@
                     <label for="{{ form.birthday.id_for_label }}" class="col-md-2 col-form-label">
                         Birthday
                     </label>
-                    <div class="col-md-7">
-                        {% render_field form.birthday class+="form-control" aria-describedby="birthday-help"%}
+                    <div class="col-md-5">
+                        {% render_field form.birthday class+="form-control" %}
                     </div>
                     {% if form.birthday.errors %}
                         <div class="col-md-7 offset-md-2 mt-1 mb-4">
