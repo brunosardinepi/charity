@@ -4,7 +4,9 @@ This is the version history for PageFund development.
 
 ## Version 0.21.0
 
-Release date: TBD
+Release date: 01/27/2018
+
+61 files changed, 574 insertions(+), 772 deletions(-)
 
 ### Additions
 
@@ -24,7 +26,6 @@ Release date: TBD
 * Page monthly donations weren't working
 * Deleting Page monthly donations weren't working
 * Can't invite managers with a blank permission set
-* Image uploads that were too large weren't being redirected to the proper error page
 
 
 ## Version 0.20.0
