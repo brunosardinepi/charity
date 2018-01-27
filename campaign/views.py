@@ -155,7 +155,11 @@ class CampaignEditVote(View):
                     vote_participant.save()
                 for d in formset.deleted_objects:
                     d.delete()
-                return HttpResponseRedirect(campaign.get_absolute_url())
+                return redirect('campaign_dashboard_admin',
+                    page_slug=campaign.page.page_slug,
+                    campaign_pk=campaign.pk,
+                    campaign_slug=campaign.campaign_slug
+                )
         else:
             raise Http404
 

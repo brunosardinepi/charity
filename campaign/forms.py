@@ -1,6 +1,7 @@
 from django import forms
 
 from . import models
+from .widgets import VoteParticipantInput
 
 
 class CampaignForm(forms.ModelForm):
@@ -59,10 +60,18 @@ class VoteParticipantForm(forms.ModelForm):
             'description',
             'image',
         ]
+        widgets = {
+            'image': VoteParticipantInput(),
+            'description': forms.Textarea(attrs={'rows': 5}),
+        }
 
 VoteParticipantFormSet = forms.modelformset_factory(
     models.VoteParticipant,
     form=VoteParticipantForm,
+    widgets = {
+        'image': VoteParticipantInput(),
+        'description': forms.Textarea(attrs={'rows': 5}),
+    },
     extra=1,
     can_delete=True,
 )
@@ -73,6 +82,10 @@ VoteParticipantInlineFormSet = forms.inlineformset_factory(
     extra=1,
     fields=('name', 'description', 'image',),
     formset=VoteParticipantFormSet,
+    widgets = {
+        'image': VoteParticipantInput(),
+        'description': forms.Textarea(attrs={'rows': 5}),
+    },
     min_num=2,
     can_delete=True,
 )
