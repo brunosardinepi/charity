@@ -25,7 +25,7 @@
                     <label for="{{ form.account_number.id_for_label }}" class="col-md-3 col-form-label">
                         Account number
                     </label>
-                    <div class="col-md-9">
+                    <div class="col-md-5">
                         {% render_field form.account_number class+="form-control" aria-describedby="account_number-help"%}
                         <small id="account_number-help" class="form-text text-muted">
                             The bank account number (example: 000123456789).
@@ -46,7 +46,7 @@
                     <label for="{{ form.routing_number.id_for_label }}" class="col-md-3 col-form-label">
                         Routing number
                     </label>
-                    <div class="col-md-9">
+                    <div class="col-md-5">
                         {% render_field form.routing_number class+="form-control" aria-describedby="routing_number-help"%}
                         <small id="routing_number-help" class="form-text text-muted">
                             The bank routing number (example: 110000000).
@@ -67,7 +67,7 @@
                     <label for="{{ form.ssn.id_for_label }}" class="col-md-3 col-form-label">
                         Last 4 of SSN
                     </label>
-                    <div class="col-md-9">
+                    <div class="col-md-3">
                         {% render_field form.ssn class+="form-control" aria-describedby="ssn-help"%}
                         <small id="ssn-help" class="form-text text-muted">
                             Last 4 digits of the account owner's Social Security Number (SSN).
@@ -88,10 +88,10 @@
                     <label for="{{ form.account_holder_first_name.id_for_label }}" class="col-md-3 col-form-label">
                         Account holder's first name
                     </label>
-                    <div class="col-md-9">
+                    <div class="col-md-4">
                         {% render_field form.account_holder_first_name class+="form-control" aria-describedby="account_holder_first_name-help"%}
                         <small id="account_holder_first_name-help" class="form-text text-muted">
-                            This is the first name of the owner of the bank account that will receive funds.
+                            First name of the bank account owner.
                         </small>
                     </div>
                     {% if form.account_holder_first_name.errors %}
@@ -109,10 +109,10 @@
                     <label for="{{ form.account_holder_last_name.id_for_label }}" class="col-md-3 col-form-label">
                         Account holder's last name
                     </label>
-                    <div class="col-md-9">
+                    <div class="col-md-4">
                         {% render_field form.account_holder_last_name class+="form-control" aria-describedby="account_holder_last_name-help"%}
                         <small id="account_holder_last_name-help" class="form-text text-muted">
-                            This is the last name of the owner of the bank account that will receive funds.
+                            Last name of the bank account owner.
                         </small>
                     </div>
                     {% if form.account_holder_last_name.errors %}

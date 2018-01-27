@@ -76,7 +76,7 @@
                     <label for="{{ form.name.id_for_label }}" class="col-md-2 col-form-label">
                         Campaign name
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-5">
                         {% render_field form.name class+="form-control" aria-describedby="name-help"%}
                         <small id="name-help" class="form-text text-muted">
                             This is how your name will be displayed on PageFund.
@@ -97,7 +97,7 @@
                     <label for="{{ form.website.id_for_label }}" class="col-md-2 col-form-label">
                         Your website
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-5">
                         {% render_field form.website class+="form-control" aria-describedby="website-help" %}
                         <small id="website-help" class="form-text text-muted">
                             Optional
@@ -121,7 +121,7 @@
                     <label for="{{ form.goal.id_for_label }}" class="col-md-2 col-form-label">
                         Goal
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-3">
                         {% render_field form.goal class+="form-control" aria-describedby="goal-help" %}
                         <small id="goal-help" class="form-text text-muted">
                             How much do you want to raise?
@@ -142,7 +142,7 @@
                     <label for="{{ form.end_date.id_for_label }}" class="col-md-2 col-form-label">
                         End date
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-3">
                         {% render_field form.end_date class+="form-control" aria-describedby="end_date-help" %}
                         <small id="end_date-help" class="form-text text-muted">
                             When will your Campaign end?
@@ -163,7 +163,7 @@
                     <label for="{{ form.type.id_for_label }}" class="col-md-2 col-form-label">
                         Type
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-2">
                         {% render_field form.type class+="form-control" %}
                     </div>
                     {% if form.type.errors %}
@@ -181,7 +181,7 @@
                     <label for="{{ form.description.id_for_label }}" class="col-md-2 col-form-label">
                         Description
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-8">
                         {% render_field form.description class+="form-control" aria-describedby="description-help" %}
                         <small id="description-help" class="form-text text-muted">
                             Optional

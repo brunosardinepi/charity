@@ -29,7 +29,7 @@
                     <label for="{{ form.name.id_for_label }}" class="col-md-2 col-form-label">
                         Page name
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-5">
                         {% render_field form.name class+="form-control" aria-describedby="name-help"%}
                         <small id="name-help" class="form-text text-muted">
                             This is how your name will be displayed on PageFund.
@@ -50,7 +50,7 @@
                     <label for="{{ form.website.id_for_label }}" class="col-md-2 col-form-label">
                         Your website
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-5">
                         {% render_field form.website class+="form-control" aria-describedby="website-help" %}
                         <small id="website-help" class="form-text text-muted">
                             Optional
@@ -73,7 +73,7 @@
                     <label for="{{ form.address_line1.id_for_label }}" class="col-md-2 col-form-label">
                         Address
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-6">
                        {% render_field form.address_line1 class+="form-control" %}
                     </div>
                     {% if form.address_line1.errors %}
@@ -91,7 +91,7 @@
                     <label for="{{ form.address_line2.id_for_label }}" class="col-md-2 col-form-label">
                         Address (continued)
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-6">
                         {% render_field form.address_line2 class+="form-control" aria-describedby="address_line2-help" %}
                         <small id="address_line2-help" class="form-text text-muted">
                             Optional
@@ -112,7 +112,7 @@
                     <label for="{{ form.city.id_for_label }}" class="col-md-2 col-form-label">
                         City
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-4">
                        {% render_field form.city class+="form-control" %}
                     </div>
                     {% if form.city.errors %}
@@ -130,7 +130,7 @@
                     <label for="{{ form.state.id_for_label }}" class="col-md-2 col-form-label">
                         State
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-3">
                         {% render_field form.state class+="form-control" %}
                     </div>
                     {% if form.state.errors %}
@@ -148,7 +148,7 @@
                     <label for="{{ form.zipcode.id_for_label }}" class="col-md-2 col-form-label">
                         ZIP code
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-2">
                         {% render_field form.zipcode class+="form-control" %}
                     </div>
                     {% if form.zipcode.errors %}
@@ -168,7 +168,7 @@
                     <label for="{{ form.type.id_for_label }}" class="col-md-2 col-form-label">
                         Type
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-3">
                         {% render_field form.type class+="form-control" aria-describedby="type-help" %}
                         <small id="type-help" class="form-text text-muted">
                             Only nonprofits require an EIN.
@@ -189,7 +189,7 @@
                     <label for="{{ form.ein.id_for_label }}" class="col-md-2 col-form-label">
                         EIN
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-4">
                         {% render_field form.ein class+="form-control" aria-describedby="ein-help" %}
                         <small id="ein-help" class="form-text text-muted">
                             This is your Employer Identification Number (EIN), also known as a Federal Tax Identification Number.
@@ -210,7 +210,7 @@
                     <label for="{{ form.category.id_for_label }}" class="col-md-2 col-form-label">
                         Category
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-3">
                         {% render_field form.category class+="form-control" %}
                     </div>
                     {% if form.category.errors %}
@@ -228,7 +228,7 @@
                     <label for="{{ form.description.id_for_label }}" class="col-md-2 col-form-label">
                         Description
                     </label>
-                    <div class="col-md-10">
+                    <div class="col-md-8">
                         {% render_field form.description class+="form-control" aria-describedby="description-help"%}
                         <small id="description-help" class="form-text text-muted">
                             Optional

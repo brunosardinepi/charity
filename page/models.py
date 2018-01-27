@@ -139,11 +139,20 @@ class Page(models.Model):
     def __str__(self):
         return self.name
 
+    def _get_unique_slug(self):
+        slug = slugify(self.name)
+        unique_slug = slug
+        num = 1
+        while Page.objects.filter(page_slug=unique_slug).exists():
+            unique_slug = '{}-{}'.format(slug, num)
+            num += 1
+        return unique_slug
+
     def save(self, *args, **kwargs):
         # if this page is new
         if not self.pk:
             # create a new page_slug
-            self.page_slug = slugify(self.name)
+            self.page_slug = self._get_unique_slug()
         super(Page, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
