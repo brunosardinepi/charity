@@ -163,6 +163,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 UPLOAD_TYPES = ['image']
 MAX_IMAGE_UPLOAD_SIZE = 4*1024*1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 4*1024*1024
 
 # allauth
 SITE_ID = 1
