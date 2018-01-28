@@ -202,8 +202,8 @@ class Page(models.Model):
         try:
             return PageImage.objects.get(page=self, profile_picture=True)
         except PageImage.MultipleObjectsReturned:
-            # create an exception for future use
-            print("multiple profile images returned")
+            # multiple profile images returned
+            return None
         except PageImage.DoesNotExist:
             return None
 

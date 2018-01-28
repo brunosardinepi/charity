@@ -122,8 +122,8 @@ class Campaign(models.Model):
         try:
             return CampaignImage.objects.get(campaign=self, profile_picture=True)
         except CampaignImage.MultipleObjectsReturned:
-            # create an exception for future use
-            print("multiple profile images returned")
+            # multiple profile images returned
+            return None
         except CampaignImage.DoesNotExist:
             return None
 

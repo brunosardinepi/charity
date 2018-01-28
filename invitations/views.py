@@ -39,8 +39,6 @@ def accept_invitation(request, invitation_pk, key):
                     assign_perm(k, request.user, invitation.campaign)
             remove_invitation(invitation_pk, "manager", "True", "False")
             return HttpResponseRedirect(invitation.campaign.get_absolute_url())
-    else:
-        print("bad")
 
 @login_required(login_url='signup')
 def accept_general_invitation(request, invitation_pk, key):
@@ -48,8 +46,6 @@ def accept_general_invitation(request, invitation_pk, key):
     if invitation_is_good(request, invitation, key) == True:
         remove_invitation(invitation_pk, "general", "True", "False")
         return HttpResponseRedirect(reverse('home'))
-    else:
-        print("bad")
 
 def decline_invitation(request, type, invitation_pk, key):
     if type == 'manager':
@@ -58,8 +54,6 @@ def decline_invitation(request, type, invitation_pk, key):
         invitation = get_object_or_404(models.GeneralInvitation, pk=invitation_pk)
     if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key):
         remove_invitation(invitation_pk, type, "False", "True")
-    else:
-        print("bad")
 
     # if the user is logged in and declined the invitation, redirect them to their other pending invitations
     if request.user.is_authenticated:

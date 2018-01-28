@@ -23,7 +23,7 @@
         $(document).on("submit", "form", function(event) {
             if (!$("input[type='radio']:checked").length) {
                 event.preventDefault();
-                $("#results").append("Please select a Page.");
+                $("#results").append("<div class='col-md-8 offset-md-2 mt-1 mb-4'><div class='alert alert-danger' role='alert'>Please select a Page.</div></div>");
             };
         });
 
@@ -102,7 +102,6 @@
                         <small id="website-help" class="form-text text-muted">
                             Optional
                         </small>
-
                     </div>
                     {% if form.website.errors %}
                         <div class="col-md-10 offset-md-2 mt-1 mb-4">

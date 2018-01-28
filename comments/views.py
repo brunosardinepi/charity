@@ -17,5 +17,3 @@ class CommentPost(View):
             comment.object_id = object_id
             comment.save()
             return HttpResponseRedirect(comment.content_object.get_absolute_url() + "#c{}".format(comment.pk))
-        else:
-            print(form.errors)
