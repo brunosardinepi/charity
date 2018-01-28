@@ -22,7 +22,6 @@
 </div>
 
 
-
 <div class="modal fade" id="newComment" tabindex="-1" role="dialog" aria-labelledby="newCommentLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -51,9 +50,7 @@
 </div>
 
 
-
-
-{% if obj.comments %}
+{% if obj.comments.all %}
     {% for c in obj.comments.all reversed %}
         <div class="row comment" id="comment-{{ c.pk }}">
             <a name="c{{ c.pk }}"></a>
@@ -101,5 +98,5 @@
         </div>
     {% endfor %}
 {% else %}
-    <p>No comments!</p>
+    <p>There aren't any comments.</p>
 {% endif %}

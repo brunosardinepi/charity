@@ -5,7 +5,6 @@ $(document).ready(function() {
 });
 
 $(document).on('change', "input.preset-amount", function() {
-    console.log("input.preset-amount changed. amount = " + $(this).val());
     $("input.preset-amount").not(this).prop("checked", false);
 });
 

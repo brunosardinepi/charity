@@ -31,14 +31,14 @@ class Page(models.Model):
     deleted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     deleted_on = models.DateTimeField(blank=True, null=True)
     description = models.TextField(blank=True)
-    ein = models.CharField(max_length=255, blank=True, null=True)
+    ein = models.CharField(max_length=255, blank=True)
     is_sponsored = models.BooleanField(default=False)
     managers = models.ManyToManyField('userprofile.UserProfile', related_name='page_managers', blank=True)
     name = models.CharField(max_length=255, db_index=True)
     page_slug = models.SlugField(max_length=255, unique=True)
     subscribers = models.ManyToManyField('userprofile.UserProfile', related_name='subscribers', blank=True)
-    stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
-    stripe_bank_account_id = models.CharField(max_length=255, blank=True, null=True)
+    stripe_account_id = models.CharField(max_length=255, blank=True)
+    stripe_bank_account_id = models.CharField(max_length=255, blank=True)
     tos_accepted = models.BooleanField(default=False)
     trending_score = models.DecimalField(default=0, max_digits=10, decimal_places=1)
     website = models.CharField(max_length=128, blank=True)
@@ -46,10 +46,20 @@ class Page(models.Model):
 
     CATEGORY_CHOICES = (
         ('animal', 'Animal'),
-        ('environment', 'Environment'),
+        ('arts', 'Arts'),
+        ('community', 'Community'),
         ('education', 'Education'),
+        ('emergencies', 'Emergencies'),
+        ('environmental', 'Environmental'),
+        ('family', 'Family'),
+        ('humanitarian', 'Humanitarian Aid'),
+        ('medical', 'Medical'),
+        ('memorial', 'Memorial'),
         ('other', 'Other'),
         ('religious', 'Religious'),
+        ('sports', 'Sports'),
+        ('stem', 'STEM (Science, Technology, Engineering, and Math)'),
+        ('veterans', 'Veterans'),
     )
     category = models.CharField(
         max_length=255,
@@ -118,7 +128,6 @@ class Page(models.Model):
     TYPE_CHOICES = (
         ('nonprofit', 'Nonprofit'),
         ('personal', 'Personal'),
-        ('religious', 'Religious'),
         ('other', 'Other'),
     )
     type = models.CharField(
@@ -193,8 +202,8 @@ class Page(models.Model):
         try:
             return PageImage.objects.get(page=self, profile_picture=True)
         except PageImage.MultipleObjectsReturned:
-            # create an exception for future use
-            print("multiple profile images returned")
+            # multiple profile images returned
+            return None
         except PageImage.DoesNotExist:
             return None
 
@@ -243,7 +252,7 @@ def upload_to(instance, filename):
 
 class PageImage(models.Model):
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE)
-    image = models.FileField(upload_to=upload_to, blank=True, null=True)
+    image = models.FileField(upload_to=upload_to, blank=True)
     caption = models.CharField(max_length=255, blank=True)
     profile_picture = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(default=timezone.now)

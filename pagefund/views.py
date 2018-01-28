@@ -44,7 +44,7 @@ def invite(request):
                 if user.userprofile:
                     return redirect('notes:error_invite_user_exists')
             except User.DoesNotExist:
-                print("no user found, good!")
+                pass
 
             # check if the user has already been invited by this person
             # expired should be False, otherwise the previous invitation has expired and we are OK with them getting a new one

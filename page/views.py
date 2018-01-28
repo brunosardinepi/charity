@@ -292,8 +292,6 @@ def subscribe(request, page_pk, action=None):
     elif action == "unsubscribe":
         page.subscribers.remove(request.user.userprofile)
         new_subscribe_attr = {"name": "subscribe", "value": "Subscribe"}
-    else:
-        print("something went wrong")
     previous_page = request.META.get('HTTP_REFERER')
     expected_url = "/accounts/login/?next=/page/subscribe/"
     if expected_url in previous_page:

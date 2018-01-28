@@ -109,20 +109,15 @@ class CampaignCreate(View):
 
                 admins = page.admins.all()
                 for admin in admins:
-#                    email_new_campaign(admin.user.email, campaign)
                     email(admin.user.email, "blank", "blank", "new_campaign_created")
                 managers = page.managers.all()
                 for manager in managers:
-#                    email_new_campaign(manager.user.email, campaign)
                     email(admin.user.email, "blank", "blank", "new_campaign_created")
 
                 if campaign.type == 'vote':
                     return redirect('campaign_edit_vote', page_slug=page.page_slug, campaign_pk=campaign.pk, campaign_slug=campaign.campaign_slug)
                 else:
                     return HttpResponseRedirect(campaign.get_absolute_url())
-            else:
-                # redirect to error page
-                print("no page selected")
         return render(request, 'campaign/campaign_create.html', {'form': form})
 
 
@@ -362,8 +357,6 @@ def subscribe(request, campaign_pk, action=None):
     elif action == "unsubscribe":
         campaign.campaign_subscribers.remove(request.user.userprofile)
         new_subscribe_attr = {"name": "subscribe", "value": "Subscribe", "color": "green"}
-    else:
-        print("something went wrong")
     previous_page = request.META.get('HTTP_REFERER')
     expected_url = "/accounts/login/?next=/campaign/subscribe/"
     if expected_url in previous_page:

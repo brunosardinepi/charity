@@ -28,7 +28,7 @@ stripe.api_key = config.settings['stripe_api_sk']
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     birthday = models.DateField(blank=True, null=True)
-    stripe_customer_id = models.CharField(max_length=255, blank=True, null=True)
+    stripe_customer_id = models.CharField(max_length=255, blank=True)
     notification_email_pagefund_news = models.BooleanField(default=True)
     notification_email_page_created = models.BooleanField(default=True)
     notification_email_campaign_created = models.BooleanField(default=True)
@@ -229,7 +229,7 @@ def user_signed_up_(request, user, **kwargs):
         user.userprofile.stripe_customer_id = customer.id
         user.save()
 
-    email(user.email, "blank", "blank", "new_user_sign_up")
+    email(user.email, "blank", "blank", "new_user_signup")
 
 def create_random_string(length=30):
     if length <= 0:
@@ -246,7 +246,7 @@ def upload_to(instance, filename):
 class UserImage(models.Model):
     user = models.ForeignKey('userprofile.UserProfile', on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)
-    image = models.FileField(upload_to=upload_to, max_length=255, blank=True, null=True)
+    image = models.FileField(upload_to=upload_to, max_length=255, blank=True)
     caption = models.CharField(max_length=255, blank=True)
     profile_picture = models.BooleanField(default=False)
     width = models.IntegerField(null=True)

@@ -23,7 +23,6 @@ def charge_succeeded(request):
     date = datetime.datetime.utcfromtimestamp(event_json['data']['object']['created']).replace(tzinfo=pytz.utc)
     tz = pytz.timezone('America/Chicago')
     date = date.astimezone(tz)
-    print(json.dumps(event_json, indent=4, sort_keys=True))
 
     if not event_json['data']['object']['metadata']:
         invoice = stripe.Invoice.retrieve(event_json['data']['object']['invoice'])
@@ -135,7 +134,6 @@ def charge_succeeded(request):
 @csrf_exempt
 def customer_subscription_created(request):
     event_json = json.loads(request.body.decode('utf-8'))
-    print(json.dumps(event_json, indent=4, sort_keys=True))
 
     amount = event_json['data']['object']['plan']['amount']
     page_pk = event_json['data']['object']['plan']['metadata']['page']
@@ -167,7 +165,6 @@ def customer_subscription_created(request):
 @csrf_exempt
 def customer_subscription_deleted(request):
     event_json = json.loads(request.body.decode('utf-8'))
-    print(json.dumps(event_json, indent=4, sort_keys=True))
 
     subscription_id = event_json['data']['object']['id']
     plan = get_object_or_404(StripePlan, stripe_subscription_id=subscription_id)

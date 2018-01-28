@@ -23,7 +23,6 @@ def email_new_campaign(email_to, campaign):
         try:
             response = sg.client.mail.send.post(request_body=mail.get())
         except urllib.HTTPError as e:
-            print (e.read())
             exit()
 
 def campaign_duration(campaign):

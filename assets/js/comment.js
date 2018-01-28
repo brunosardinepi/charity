@@ -5,5 +5,7 @@ $(document).ready(function() {
 });
 
 $(document).on("click", "#submit-comment", function(event) {
-    $("#comment-form").submit();
+    if ($("#comment-text").val()) {
+        $("#comment-form").submit();
+    };
 });

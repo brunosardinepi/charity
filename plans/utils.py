@@ -3,10 +3,6 @@ import stripe
 from . import models
 
 def create_plan(request, form, amount, page=None, campaign=None):
-#    amount = form.cleaned_data['amount']
-    print("amount in create_plan() = {}".format(amount))
-    print("page in create_plan() = {}".format(page))
-    print("campaign in create_plan() = {}".format(campaign))
     customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
     if page is not None:
         plan = stripe.Plan.create(
@@ -14,7 +10,6 @@ def create_plan(request, form, amount, page=None, campaign=None):
             id="user-%s-page-%s" % (request.user.pk, page.pk),
             interval="month",
             currency="usd",
-#            amount=amount * 100,
             amount=amount,
             metadata={
                 "page": page.id,
@@ -30,7 +25,6 @@ def create_plan(request, form, amount, page=None, campaign=None):
             id="user-%s-campaign-%s" % (request.user.pk, campaign.pk),
             interval="month",
             currency="usd",
-#            amount=amount * 100,
             amount=amount,
             metadata={
                 "pf_user_pk": request.user.pk,

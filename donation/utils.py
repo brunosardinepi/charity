@@ -24,7 +24,8 @@ def set_default_card(request, id):
     except StripeCard.DoesNotExist:
         default = None
     except StripeCard.MultipleObjectsReturned:
-        print("multiple default cards found, bad")
+        # multiple default cards found, bad
+        return None
     # if there is a current default, remove the default tag
     if default:
         default.default = False
@@ -70,7 +71,7 @@ def card_check(request, id):
         card = StripeCard.objects.get(user=request.user.userprofile, id=id)
         return card
     except StripeCard.DoesNotExist:
-        print("not your card")
+        # not your card
         return False
 
 def charge_source(c, page=None, campaign=None):
@@ -124,16 +125,12 @@ def charge_source(c, page=None, campaign=None):
 
 def donate(request, form, page=None, campaign=None):
 #    amount = form.cleaned_data['amount'] * 100
-    print("page in donate() = {}".format(page))
-    print("campaign in donate() = {}".format(campaign))
     amount = form.cleaned_data['amount']
     preset_amount = request.POST.get('preset-amount')
     if amount:
         amount *= 100
     elif preset_amount:
         amount = int(preset_amount) * 100
-    else:
-        print("error, no amount chosen")
     stripe_fee = Decimal(amount * 0.029) + 30
     pagefund_fee = Decimal(amount * config.settings['pagefund_fee'])
     final_amount = amount - stripe_fee - pagefund_fee
@@ -168,13 +165,13 @@ def donate(request, form, page=None, campaign=None):
             try:
                 saved_card = int(saved_card)
             except ValueError:
-                print("not an int, possible tampering")
+                # not an int, possible tampering
+                saved_card = None
             card_source = card_check(request, saved_card)
             if card_source is not False:
                 c["card_source"] = card_source.stripe_card_id
             # check if the user wants this to be a monthly payment
             if request.POST.get('monthly'):
-                print("monthly is checked for saved card")
                 # set this saved card as the default card
                 set_default_card(request, card_source.id)
                 # create the plan and charge them
@@ -189,7 +186,6 @@ def donate(request, form, page=None, campaign=None):
                 c["card_source"] = card.stripe_card_id
             # check if the user wants this to be a monthly payment
             if request.POST.get('monthly'):
-                print("monthly is checked for newly created card")
                 # set this saved card as the default card
                 set_default_card(request, card.id)
                 # create the plan and charge them

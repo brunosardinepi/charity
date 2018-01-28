@@ -7,6 +7,23 @@
 
 {% block head_extra %}
     <script src="{% static 'js/ein.js' %}"></script>
+
+    <script>
+        $(document).on("click", "#form-input", function(event) {
+            event.preventDefault();
+            var type = $("#id_type");
+            var ein = $("#id_ein");
+            if (type.val() == "nonprofit") {
+                if (ein.val().length) {
+                    $("#create-form").submit();
+                } else {
+                    alert("Please add your EIN.");
+                };
+            } else {
+                $("#create-form").submit();
+            };
+        });
+    </script>
 {% endblock %}
 
 {% block body_content %}
@@ -16,7 +33,7 @@
             <p>All fields are required unless stated otherwise.</p>
         </div>
         <div class="col-12">
-            <form action="" method="post" enctype="multipart/form-data">
+            <form id="create-form" action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
                 {% if form.non_field_errors %}
@@ -210,7 +227,7 @@
                     <label for="{{ form.category.id_for_label }}" class="col-md-2 col-form-label">
                         Category
                     </label>
-                    <div class="col-md-3">
+                    <div class="col-md-5">
                         {% render_field form.category class+="form-control" %}
                     </div>
                     {% if form.category.errors %}
@@ -268,7 +285,7 @@
                     {% endif %}
                 </div>
 
-                <input class="offset-md-2 btn btn-purple mt-3" type="submit" value="Continue" />
+                <input id="form-input" class="offset-md-2 btn btn-purple mt-3" type="submit" value="Continue" />
             </form>
         </div>
     </div>
