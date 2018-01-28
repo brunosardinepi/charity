@@ -46,10 +46,20 @@ class Page(models.Model):
 
     CATEGORY_CHOICES = (
         ('animal', 'Animal'),
-        ('environment', 'Environment'),
+        ('arts', 'Arts'),
+        ('community', 'Community'),
         ('education', 'Education'),
+        ('emergencies', 'Emergencies'),
+        ('environmental', 'Environmental'),
+        ('family', 'Family'),
+        ('humanitarian', 'Humanitarian Aid'),
+        ('medical', 'Medical'),
+        ('memorial', 'Memorial'),
         ('other', 'Other'),
         ('religious', 'Religious'),
+        ('sports', 'Sports'),
+        ('stem', 'STEM (Science, Technology, Engineering, and Math)'),
+        ('veterans', 'Veterans'),
     )
     category = models.CharField(
         max_length=255,
@@ -118,7 +128,6 @@ class Page(models.Model):
     TYPE_CHOICES = (
         ('nonprofit', 'Nonprofit'),
         ('personal', 'Personal'),
-        ('religious', 'Religious'),
         ('other', 'Other'),
     )
     type = models.CharField(
