@@ -9,10 +9,14 @@ Release date: TBD
 ### Additions
 
 * Placeholder text for when comments, donations, and Campaigns don't exist
+* Alerts for required fields in forms
+* All new categories to Pages
+* Text placeholders for areas on the site that have nothing, like no donations/comments
+* Social media links in footer
 
 ### Changes
 
-* None
+* Removed all debugs
 
 ### Fixes
 
