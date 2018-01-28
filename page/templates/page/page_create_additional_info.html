@@ -5,6 +5,22 @@
 
 {% block title %}Create | {{ block.super }}{% endblock %}
 
+{% block head_extra %}
+    <script>
+        $(document).on("click", "#form-input", function(event) {
+            event.preventDefault();
+            var month = $("#id_birthday_month :selected");
+            var day = $("#id_birthday_day :selected");
+            var year = $("#id_birthday_year :selected");
+            if ((month.text() != "---") && (day.text() != "---") && (year.text() != "---")) {
+                $("#create-form").submit();
+            } else {
+                alert("Please fill in your birthday.");
+            };
+        });
+    </script>
+{% endblock %}
+
 {% block body_content %}
     <div class="row">
         <div class="col-10 offset-2 mb-4">
@@ -12,7 +28,7 @@
             <p>We need a few more bits of personal information before we create your Page. This information is used by our payment processor to verify that you are who you say you are.</p>
         </div>
         <div class="col-12">
-            <form action="" method="post" enctype="multipart/form-data">
+            <form id="create-form" action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
                 {% if form.non_field_errors %}
@@ -74,7 +90,7 @@
                         </div>
                     {% endif %}
                 </div>
-                <input class="offset-md-2 btn btn-purple mt-3" type="submit" value="Continue" />
+                <input id="form-input" class="offset-md-2 btn btn-purple mt-3" type="submit" value="Continue" />
             </form>
         </div>
     </div>
