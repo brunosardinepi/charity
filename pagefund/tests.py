@@ -257,8 +257,11 @@ class HomeTest(TestCase):
     def test_signup(self):
         response = self.client.get('/accounts/signup/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Sign up with Google", status_code=200)
-        self.assertContains(response, "Sign up with Facebook", status_code=200)
+        self.assertContains(response, "Sign up with Google")
+        self.assertContains(response, "Sign up with Facebook")
+        self.assertContains(response, "Sign up with Twitter")
+        self.assertContains(response, "Sign up")
+        self.assertContains(response, "Sign in")
 
         data = {
             'email': 'mytestemail@gmail.com',

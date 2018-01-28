@@ -26,12 +26,12 @@
             {% csrf_token %}
 
                 <div class="row justify-content-center">
-                    <div class="form-group col-lg-9">
+                    <div class="form-group col-lg-10">
                         {% render_field form.login class+="form-control" %}
                     </div>
                 </div>
                 <div class="row justify-content-center">
-                    <div class="form-group col-lg-9">
+                    <div class="form-group col-lg-10">
                         {% render_field form.password class+="form-control" %}
                     </div>
                 </div>
@@ -41,7 +41,7 @@
                 {% endif %}
 
                 <div class="row justify-content-center">
-                    <div class="col-lg-9">
+                    <div class="col-lg-10">
                         <button class="btn btn-purple btn-block" type="submit">Login</button>
                     </div>
                 </div>
@@ -53,7 +53,7 @@
     {% if socialaccount_providers %}
         {% for socialaccount_provider in socialaccount_providers %}
             <div class="row mb-1 justify-content-center">
-                <div class="col-lg-9">
+                <div class="col-lg-10">
                     {% if socialaccount_provider.name|lower == 'google' %}
                         <a href="{% provider_login_url "google" %}" class="btn btn-block btn-primary google">
                             <i class="fab fa-fw fa-google"></i> Login with Google

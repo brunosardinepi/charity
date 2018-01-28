@@ -1,29 +1,93 @@
-{% extends '_layout.html' %}
+{% extends '_base.html' %}
 
 {% load socialaccount %}
+{% load static from staticfiles %}
+{% load widget_tweaks %}
 
-{% block title %}Sign Up | {{ block.super }}{% endblock %}
+
+{% block title %}Sign up | {{ block.super }}{% endblock %}
 
 {% block body_content %}
-    <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-            {% if redirect_field_value %}
-                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-            {% endif %}
-            <button type="submit" class="btn btn-success btn-block">Sign up</button>
-    </form>
+    <div class="row">
+        <div class="col-12 text-center">
+            <img id="logo-login" src="{% static 'img/logo.svg' %}" />
+        </div>
+    </div>
+
+    <div class="row mt-3 mb-3">
+        <div class="col-lg-12 text-center">
+            <h3>Sign up</h3>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+                {% csrf_token %}
+
+                <div class="row justify-content-center">
+                    <div class="form-group col-lg-10">
+                        {% render_field form.email class+="form-control" %}
+                    </div>
+                </div>
+
+                <div class="row mb-3 justify-content-center">
+                    <div class="form-group col-lg-10">
+                        {% render_field form.email2 class+="form-control" %}
+                    </div>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="form-group col-lg-10">
+                        {% render_field form.password1 class+="form-control" %}
+                    </div>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="form-group col-lg-10">
+                        {% render_field form.password2 class+="form-control" %}
+                    </div>
+                </div>
+
+                {% if redirect_field_value %}
+                     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                {% endif %}
+
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <button class="btn btn-purple btn-block" type="submit">Sign up</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     {% get_providers as socialaccount_providers %}
     {% if socialaccount_providers %}
         {% for socialaccount_provider in socialaccount_providers %}
-            {% if socialaccount_provider.name|lower == 'facebook' %}
-                <a href="{% provider_login_url "facebook" method="oauth2" %}">Sign up with Facebook</a>
-            {% elif socialaccount_provider.name|lower == 'google' %}
-                <a href="{% provider_login_url "google" %}">Sign up with Google</a>
-            {% elif socialaccount_provider.name|lower == 'twitter' %}
-                <a href="{% provider_login_url "twitter" %}">Sign up with Twitter</a>
-            {% endif %}
+            <div class="row mb-1 justify-content-center">
+                <div class="col-lg-10">
+                    {% if socialaccount_provider.name|lower == 'google' %}
+                        <a href="{% provider_login_url "google" %}" class="btn btn-block btn-primary google">
+                            <i class="fab fa-fw fa-google"></i> Sign up with Google
+                        </a>
+                    {% elif socialaccount_provider.name|lower == 'facebook' %}
+                        <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn btn-block btn-primary facebook">
+                            <i class="fab fa-fw fa-facebook-f"></i> Sign up with Facebook
+                        </a>
+                    {% elif socialaccount_provider.name|lower == 'twitter' %}
+                        <a href="{% provider_login_url "twitter" %}" class="btn btn-block btn-primary twitter">
+                            <i class="fab fa-fw fa-twitter"></i> Sign up with Twitter
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
         {% endfor %}
     {% endif %}
-    <p class="text-center login-text">Already have an account? <a href="{{ login_url }}">Sign in!</a></p>
+
+    <div class="row mt-3">
+        <div class="col-12 text-center">
+            <p class="text-center login-text">Already have an account? <a href="{{ login_url }}">Sign in!</a></p>
+        </div>
+    </div>
 {% endblock %}
