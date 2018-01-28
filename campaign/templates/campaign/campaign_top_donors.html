@@ -5,32 +5,35 @@
 
 <h2 class="mb-3">Top Donors</h2>
 
-{% for a, b in campaign.top_donors %}
-    <div class="row top-donor mb-3">
-        <div class="col-md-auto comment-profile-picture-container">
-            {% if b.image_url %}
-                {% get_img_from_pk b.image_pk "user" as img %}
-                <div class="{{ img|img_class:'small' }}">
-                    <img src="{{ b.image_url }}" />
-                </div>
-            {% else %}
-                <div class="circular-square-sm">
-                    <img src="{% static 'img/user_default.svg' %}" />
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="col">
-            <div class="row comment-info">
-                <div class="col">
-                    <span class="comment-user-name">{{ b.first_name }} {{ b.last_name }}</span>
-                </div>
+{% if campaign.top_donors %}
+    {% for a, b in campaign.top_donors %}
+        <div class="row top-donor mb-3">
+            <div class="col-md-auto comment-profile-picture-container">
+                {% if b.image_url %}
+                    {% get_img_from_pk b.image_pk "user" as img %}
+                    <div class="{{ img|img_class:'small' }}">
+                        <img src="{{ b.image_url }}" />
+                    </div>
+                {% else %}
+                    <div class="circular-square-sm">
+                        <img src="{% static 'img/user_default.svg' %}" />
+                    </div>
+                {% endif %}
             </div>
+            <div class="col">
+                <div class="row comment-info">
+                    <div class="col">
+                        <span class="comment-user-name">{{ b.first_name }} {{ b.last_name }}</span>
+                    </div>
+                </div>
 
-            <hr>
+                <hr>
 
-            <span class="teal font-weight-bold font-size-125">{{ b.amount|cents_to_dollars }}</span>
+                <span class="teal font-weight-bold font-size-125">{{ b.amount|cents_to_dollars }}</span>
 
+            </div>
         </div>
-    </div>
-{% endfor %}
+    {% endfor %}
+{% else %}
+    <p>There aren't any donors.</p>
+{% endif %}

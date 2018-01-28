@@ -2,6 +2,23 @@
 
 This is the version history for PageFund development.
 
+## Version 0.22.0
+
+Release date: TBD
+
+### Additions
+
+* Placeholder text for when comments, donations, and Campaigns don't exist
+
+### Changes
+
+* None
+
+### Fixes
+
+* None
+
+
 ## Version 0.21.0
 
 Release date: 01/27/2018
