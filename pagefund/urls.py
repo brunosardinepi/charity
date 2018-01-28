@@ -33,6 +33,8 @@ urlpatterns = [
     url(r'^privacy-policy/$', TemplateView.as_view(template_name="privacy_policy.html")),
     url(r'^notes/', include('notes.urls', namespace='notes')),
     url(r'^create/$', TemplateView.as_view(template_name="create.html")),
+    url(r'^features/$', TemplateView.as_view(template_name="features.html")),
+    url(r'^how-it-works/$', TemplateView.as_view(template_name="how_it_works.html")),
 
     url(r'^page/subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),
     url(r'^create/page/$', PageViews.page_create, name='page_create'),
