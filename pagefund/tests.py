@@ -248,8 +248,11 @@ class HomeTest(TestCase):
     def test_login(self):
         response = self.client.get('/accounts/login/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Login with Google", status_code=200)
-        self.assertContains(response, "Login with Facebook", status_code=200)
+        self.assertContains(response, "Login with Google")
+        self.assertContains(response, "Login with Facebook")
+        self.assertContains(response, "Login with Twitter")
+        self.assertContains(response, "Forgot password")
+        self.assertContains(response, "Sign up")
 
     def test_signup(self):
         response = self.client.get('/accounts/signup/')

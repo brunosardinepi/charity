@@ -6,6 +6,19 @@ body {
     /* Margin bottom by footer height */
     margin-bottom: 60px;
 }
+.body-login {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    -ms-flex-pack: center;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: #ffffff;
+}
 a,
 .purple {
     color: #990099;
@@ -19,6 +32,30 @@ a.purple:hover {
 }
 a.teal:hover {
     color: #336666;
+}
+.facebook {
+    background-color: #4267b2;
+    border-color: #29487d;
+}
+.facebook:hover {
+    background-color: #365899;
+    border-color: #29487d;
+}
+.google {
+    background-color: #4285f4;
+    border-color: #4285f4;
+}
+.google:hover {
+    background-color: #357ae8;
+    border-color: #2f5bb7;
+}
+.twitter {
+    background-color: #1da1f2;
+    border-color: #1da1f2;
+}
+.twitter:hover {
+    background-color: #006dbf;
+    border-color: #006dbf;
 }
 .font-size-125 {
     font-size: 1.25rem;
@@ -182,6 +219,9 @@ a.teal:hover {
 }
 #logo-nav {
     height: 40px;
+}
+#logo-login {
+    height: 5rem;
 }
 .fixed-nav {
     position: fixed;
