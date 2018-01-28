@@ -8,7 +8,8 @@ Release date: TBD
 
 ### Additions
 
-* None
+* Login design
+* Signup design
 
 ### Changes
 
