@@ -208,7 +208,18 @@ class UserProfile(models.Model):
     def saved_cards(self):
         return StripeCard.objects.filter(user=self.user.userprofile)
 
-def create_stripe_customer(user):
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.userprofile.save()
+
+@receiver(user_signed_up, dispatch_uid="user_signed_up")
+def user_signed_up_(request, user, **kwargs):
+    if not settings.TESTING:
         metadata = {'user_pk': user.pk}
         customer = stripe.Customer.create(
             email=user.email,
@@ -218,25 +229,7 @@ def create_stripe_customer(user):
         user.userprofile.stripe_customer_id = customer.id
         user.save()
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        UserProfile.objects.create(user=instance)
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    try:
-        instance.userprofile.save()
-    except:
-        UserProfile.objects.create(user=instance)
-        create_stripe_customer(instance)
-
-@receiver(user_signed_up, dispatch_uid="user_signed_up")
-def user_signed_up_(request, user, **kwargs):
-    if not settings.TESTING:
-        create_stripe_customer(user)
-
-    email(user.email, "blank", "blank", "new_user_sign_up")
+    email(user.email, "blank", "blank", "new_user_signup")
 
 def create_random_string(length=30):
     if length <= 0:
