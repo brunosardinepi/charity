@@ -17,6 +17,7 @@ Release date: TBD
 ### Changes
 
 * Removed all debugs
+* Removed NULL fields from database where unneccessary
 
 ### Fixes
 

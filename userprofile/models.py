@@ -28,7 +28,7 @@ stripe.api_key = config.settings['stripe_api_sk']
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     birthday = models.DateField(blank=True, null=True)
-    stripe_customer_id = models.CharField(max_length=255, blank=True, null=True)
+    stripe_customer_id = models.CharField(max_length=255, blank=True)
     notification_email_pagefund_news = models.BooleanField(default=True)
     notification_email_page_created = models.BooleanField(default=True)
     notification_email_campaign_created = models.BooleanField(default=True)
@@ -208,18 +208,7 @@ class UserProfile(models.Model):
     def saved_cards(self):
         return StripeCard.objects.filter(user=self.user.userprofile)
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        UserProfile.objects.create(user=instance)
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.userprofile.save()
-
-@receiver(user_signed_up, dispatch_uid="user_signed_up")
-def user_signed_up_(request, user, **kwargs):
-    if not settings.TESTING:
+def create_stripe_customer(user):
         metadata = {'user_pk': user.pk}
         customer = stripe.Customer.create(
             email=user.email,
@@ -228,6 +217,24 @@ def user_signed_up_(request, user, **kwargs):
 
         user.userprofile.stripe_customer_id = customer.id
         user.save()
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    try:
+        instance.userprofile.save()
+    except:
+        UserProfile.objects.create(user=instance)
+        create_stripe_customer(instance)
+
+@receiver(user_signed_up, dispatch_uid="user_signed_up")
+def user_signed_up_(request, user, **kwargs):
+    if not settings.TESTING:
+        create_stripe_customer(user)
 
     email(user.email, "blank", "blank", "new_user_sign_up")
 
@@ -246,7 +253,7 @@ def upload_to(instance, filename):
 class UserImage(models.Model):
     user = models.ForeignKey('userprofile.UserProfile', on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)
-    image = models.FileField(upload_to=upload_to, max_length=255, blank=True, null=True)
+    image = models.FileField(upload_to=upload_to, max_length=255, blank=True)
     caption = models.CharField(max_length=255, blank=True)
     profile_picture = models.BooleanField(default=False)
     width = models.IntegerField(null=True)

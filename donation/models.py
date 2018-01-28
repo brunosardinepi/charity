@@ -12,10 +12,10 @@ class Donation(models.Model):
     comment = models.TextField(blank=True)
     date = models.DateTimeField(default=timezone.now)
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE, blank=True, null=True)
-    stripe_charge_id = models.CharField(max_length=255, blank=True, null=True)
+    stripe_charge_id = models.CharField(max_length=255, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    donor_first_name = models.CharField(max_length=255, blank=True, null=True)
-    donor_last_name = models.CharField(max_length=255, blank=True, null=True)
+    donor_first_name = models.CharField(max_length=255, blank=True)
+    donor_last_name = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         if self.page:

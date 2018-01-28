@@ -177,7 +177,7 @@ class VoteParticipant(models.Model):
     name = models.CharField(max_length=255)
     campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE)
     description = models.TextField(blank=True)
-    image = models.ImageField(upload_to=upload_to, blank=True, null=True)
+    image = models.ImageField(upload_to=upload_to, blank=True)
 
     def __str__(self):
         return self.name
@@ -191,7 +191,7 @@ class VoteParticipant(models.Model):
 
 class CampaignImage(models.Model):
     campaign = models.ForeignKey('campaign.Campaign', on_delete=models.CASCADE)
-    image = models.FileField(upload_to=upload_to, blank=True, null=True)
+    image = models.FileField(upload_to=upload_to, blank=True)
     caption = models.CharField(max_length=255, blank=True)
     profile_picture = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(default=timezone.now)
