@@ -14,6 +14,7 @@ Release date: TBD
 ### Changes
 
 * Home design
+* Put all javascript at the end of files for faster page loads
 
 ### Fixes
 

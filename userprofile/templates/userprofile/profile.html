@@ -10,7 +10,6 @@
 
 {% block head_extra %}
     <link href="{% static 'css/lightbox.css' %}" rel="stylesheet">
-    <script src="{% static 'js/comment_csrf.js' %}"></script>
 {% endblock %}
 
 {% block body_content %}
@@ -87,5 +86,6 @@
 {% endblock %}
 
 {% block body_extra %}
+    <script src="{% static 'js/comment_csrf.js' %}"></script>
     <script src="{% static 'js/lightbox.js' %}"></script>
 {% endblock %}
