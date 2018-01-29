@@ -5,27 +5,6 @@
 
 {% block title %}Create | {{ block.super }}{% endblock %}
 
-{% block head_extra %}
-    <script src="{% static 'js/ein.js' %}"></script>
-
-    <script>
-        $(document).on("click", "#form-input", function(event) {
-            event.preventDefault();
-            var type = $("#id_type");
-            var ein = $("#id_ein");
-            if (type.val() == "nonprofit") {
-                if (ein.val().length) {
-                    $("#create-form").submit();
-                } else {
-                    alert("Please add your EIN.");
-                };
-            } else {
-                $("#create-form").submit();
-            };
-        });
-    </script>
-{% endblock %}
-
 {% block body_content %}
     <div class="row">
         <div class="col-10 offset-2 mb-4">
@@ -289,4 +268,8 @@
             </form>
         </div>
     </div>
+{% endblock %}
+
+{% block body_extra %}
+    <script src="{% static 'js/ein.js' %}"></script>
 {% endblock %}

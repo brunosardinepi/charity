@@ -5,10 +5,6 @@
 
 {% block title %}Invite | {{ block.super }}{% endblock %}
 
-{% block head_extra %}
-    <script src="{% static 'js/form_checkboxes.js' %}"></script>
-{% endblock %}
-
 {% block body_content %}
     <div class="row">
         <div class="col-lg-3">
@@ -90,4 +86,8 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block body_extra %}
+    <script src="{% static 'js/form_checkboxes.js' %}"></script>
 {% endblock %}

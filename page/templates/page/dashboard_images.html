@@ -5,42 +5,6 @@
 
 {% block title %}Dashboard | {{ block.super }}{% endblock %}
 
-{% block head_extra %}
-    <script src="{% static '/jquery-file-upload/vendor/jquery.ui.widget.js' %}"></script>
-    <script src="{% static '/jquery-file-upload/jquery.iframe-transport.js' %}"></script>
-    <script src="{% static '/jquery-file-upload/jquery.fileupload.js' %}"></script>
-    <script src="{% static '/js/image_upload.js' %}"></script>
-
-    <script>
-        function delete_image(event) {
-            var arr = $(event.target).closest("a").attr("id").split("-");
-            var url = "{% url 'page_image_delete' image_pk=0 %}".replace(0, arr[1]);
-            $.get(url, function () {
-                $("#image-" + arr[1]).remove();
-                if(!$.trim($("#image-list").html()).length) {
-                    $("#image-list").empty();
-                    $("#image-list").append("<div class='col' id='no-images'><p>No images!</p></div>");
-                };
-            });
-        };
-
-        $(document).on('click', ".delete-image", function(event) {
-            event.preventDefault();
-            delete_image(event);
-        });
-
-        $(document).on("click", ".set-profile-picture", function(event) {
-            event.preventDefault();
-            var arr = $(event.target).parent().attr("id").split("-");
-            var url = "{% url 'page_profile_update' image_pk=0 %}".replace(0, arr[1]);
-            $.get(url, function() {
-                $(".profile").html("<a class='set-profile-picture' href=''>Make profile picture</a>");
-                $("#profile-" + arr[1]).text("Profile picture");
-            });
-        });
-    </script>
-{% endblock %}
-
 {% block body_content %}
 
     <div class="row">
@@ -86,4 +50,40 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block body_extra %}
+    <script src="{% static '/jquery-file-upload/vendor/jquery.ui.widget.js' %}"></script>
+    <script src="{% static '/jquery-file-upload/jquery.iframe-transport.js' %}"></script>
+    <script src="{% static '/jquery-file-upload/jquery.fileupload.js' %}"></script>
+    <script src="{% static '/js/image_upload.js' %}"></script>
+
+    <script>
+        function delete_image(event) {
+            var arr = $(event.target).closest("a").attr("id").split("-");
+            var url = "{% url 'page_image_delete' image_pk=0 %}".replace(0, arr[1]);
+            $.get(url, function () {
+                $("#image-" + arr[1]).remove();
+                if(!$.trim($("#image-list").html()).length) {
+                    $("#image-list").empty();
+                    $("#image-list").append("<div class='col' id='no-images'><p>No images!</p></div>");
+                };
+            });
+        };
+
+        $(document).on('click', ".delete-image", function(event) {
+            event.preventDefault();
+            delete_image(event);
+        });
+
+        $(document).on("click", ".set-profile-picture", function(event) {
+            event.preventDefault();
+            var arr = $(event.target).parent().attr("id").split("-");
+            var url = "{% url 'page_profile_update' image_pk=0 %}".replace(0, arr[1]);
+            $.get(url, function() {
+                $(".profile").html("<a class='set-profile-picture' href=''>Make profile picture</a>");
+                $("#profile-" + arr[1]).text("Profile picture");
+            });
+        });
+    </script>
 {% endblock %}
