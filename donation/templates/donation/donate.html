@@ -39,23 +39,23 @@
         </div>
         <div class="col-lg-5 text-center" id="amount-group">
             <div class="row mx-0">
-            <div class="btn-group btn-group-toggle" data-toggle="buttons" style="width:100%;">
-                <label class="preset-label btn btn-purple col-lg-auto btn-block">
-                    <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=5>$5
-                </label>
-                <label class="preset-label btn btn-purple col-lg-auto btn-block">
-                    <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=10>$10
-                </label>
-                <label class="preset-label btn btn-purple col-lg-auto btn-block">
-                    <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=25>$25
-                </label>
-                <label class="preset-label btn btn-purple col-lg-auto btn-block">
-                    <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=50>$50
-                </label>
-                <label class="preset-label btn btn-purple col-lg-auto btn-block">
-                    <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=100>$100
-                </label>
-            </div>
+                <div class="btn-group btn-group-toggle" data-toggle="buttons" style="width:100%;">
+                    <label class="preset-label btn btn-purple col-lg-auto btn-block">
+                        <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=5>$5
+                    </label>
+                    <label class="preset-label btn btn-purple col-lg-auto btn-block">
+                        <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=10>$10
+                    </label>
+                    <label class="preset-label btn btn-purple col-lg-auto btn-block">
+                        <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=25>$25
+                    </label>
+                    <label class="preset-label btn btn-purple col-lg-auto btn-block">
+                        <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=50>$50
+                    </label>
+                    <label class="preset-label btn btn-purple col-lg-auto btn-block">
+                        <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=100>$100
+                    </label>
+                </div>
             </div>
         </div>
     </div>
@@ -157,7 +157,11 @@
         <div class="col-lg-8">
             <div class="row justify-content-between">
                 <div class="col-md-3 offset-lg-3 mb-3" id="cancel-col">
-                    <a class="btn btn-block btn-secondary" href="{% url 'page' page_slug=page.page_slug %}">Cancel</a>
+                    {% if campaign %}
+                        <a class="btn btn-block btn-secondary" href="{% url 'campaign' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Cancel</a>
+                    {% else %}
+                        <a class="btn btn-block btn-secondary" href="{% url 'page' page_slug=page.page_slug %}">Cancel</a>
+                    {% endif %}
                 </div>
                 <div class="col-md-3 mb-3" id="donate-col">
                     <button class="btn btn-block btn-purple">Donate</button>
