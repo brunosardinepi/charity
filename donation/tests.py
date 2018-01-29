@@ -54,6 +54,16 @@ class DonationTest(TestCase):
             end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
         )
 
+        self.campaign2 = Campaign.objects.create(
+            name='My Phone',
+            campaign_slug='myphone',
+            page=self.page,
+            type='general',
+            description='There it is on the table',
+            goal='123',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
+        )
+
         self.donation = models.Donation.objects.create(
             amount=2000,
             comment='I donated!',
@@ -161,7 +171,7 @@ class DonationTest(TestCase):
         now = timezone.now()
         self.assertLess(donation.date, now)
 
-    def test_donate_page(self):
+    def test_donations_page(self):
         response = self.client.get('/%s/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "%s %s" % (self.user.first_name, self.user.last_name))
@@ -191,16 +201,29 @@ class DonationTest(TestCase):
         self.assertContains(response, "An anonymous donor")
         self.assertContains(response, "an anonymous amount")
 
+    def test_donate_page(self):
+        response = self.client.get('/{}/donate/'.format(self.page.page_slug))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.page.name)
+
     def test_donate_campaign(self):
         response = self.client.get('/{}/{}/{}/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.vote_participant.name)
         self.assertContains(response, self.vote_participant2.name)
 
+        response = self.client.get('/{}/{}/{}/donate/'.format(self.page.page_slug, self.campaign2.pk, self.campaign2.campaign_slug))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.page.name)
+        self.assertContains(response, self.campaign2.name)
+        self.assertNotContains(response, "Your vote is for")
+
         response = self.client.get('/{}/{}/{}/donate/{}/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug, self.vote_participant.pk))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Voting for: {}".format(self.vote_participant.name))
-        self.assertNotContains(response, "Voting for: {}".format(self.vote_participant2.name))
+        self.assertContains(response, self.page.name)
+        self.assertContains(response, self.campaign.name)
+        self.assertContains(response, 'Your vote is for: <span class="font-weight-bold">{}</span>'.format(self.vote_participant.name))
+        self.assertNotContains(response, 'Your vote is for: <span class="font-weight-bold">{}</span>'.format(self.vote_participant2.name))
 
     def test_donateform_bad_amount(self):
         form = BaseDonate({

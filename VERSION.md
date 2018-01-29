@@ -12,6 +12,7 @@ Release date: TBD
 * Signup design
 * Alt tags and titles on images
 * Meta descriptions for static pages
+* Donate design
 
 ### Changes
 

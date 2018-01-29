@@ -1,6 +1,17 @@
 {% load widget_tweaks %}
 
 
+<div class="alert alert-secondary" role="alert">
+    {% if page %}
+        You're donating to the <a href="{% url 'page' page_slug=page.page_slug %}" target="_blank">{{ page.name }}</a> Page.
+    {% elif campaign %}
+        You're donating to the <a href="{% url 'campaign' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}" class="teal" target="_blank">{{ campaign.name }}</a> Campaign, which benefits the <a href="{% url 'page' page_slug=campaign.page.page_slug %}" target="_blank">{{ campaign.page.name }}</a> Page.
+        {% if campaign.type == "vote" %}
+            <p class="mb-0 mt-3">Your vote is for: <span class="font-weight-bold">{{ vote_participant.name }}</span></p>
+        {% endif %}
+    {% endif %}
+</div>
+
 <div class="row">
     <div class="col-lg-12">
         <h2>Donate</h2>
@@ -40,19 +51,19 @@
         <div class="col-lg-5 text-center" id="amount-group">
             <div class="row mx-0">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons" style="width:100%;">
-                    <label class="preset-label btn btn-purple col-lg-auto btn-block">
+                    <label class="col-lg-auto preset-label btn btn-block {% if campaign %}btn-teal{% else %}btn-purple{% endif %}">
                         <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=5>$5
                     </label>
-                    <label class="preset-label btn btn-purple col-lg-auto btn-block">
+                    <label class="col-lg-auto preset-label btn btn-block {% if campaign %}btn-teal{% else %}btn-purple{% endif %}">
                         <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=10>$10
                     </label>
-                    <label class="preset-label btn btn-purple col-lg-auto btn-block">
+                    <label class="col-lg-auto preset-label btn btn-block {% if campaign %}btn-teal{% else %}btn-purple{% endif %}">
                         <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=25>$25
                     </label>
-                    <label class="preset-label btn btn-purple col-lg-auto btn-block">
+                    <label class="col-lg-auto preset-label btn btn-block {% if campaign %}btn-teal{% else %}btn-purple{% endif %}">
                         <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=50>$50
                     </label>
-                    <label class="preset-label btn btn-purple col-lg-auto btn-block">
+                    <label class="col-lg-auto preset-label btn btn-block {% if campaign %}btn-teal{% else %}btn-purple{% endif %}">
                         <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=100>$100
                     </label>
                 </div>
@@ -62,17 +73,19 @@
 
     <div id="amount-errors"></div>
 
-    <div class="row">
-        <div class="col offset-lg-2">
-            <div class="form-check">
-                {% render_field form.monthly class+="form-check-input" %}
-                <label class="form-check-label" for="{{ form.monthly.id_for_label }}">
-                    Donate this amount <span class="font-weight-bold">every month</span>
-                </label>
+    {% if page %}
+        <div class="row">
+            <div class="col offset-lg-2">
+                <div class="form-check">
+                    {% render_field form.monthly class+="form-check-input" %}
+                    <label class="form-check-label" for="{{ form.monthly.id_for_label }}">
+                        Donate this amount <span class="font-weight-bold">every month</span>
+                    </label>
+                </div>
+                <p>Please <a href="{% url 'userprofile:billing' %}"{% if campaign %} class="teal"{% endif %}>add a credit card to your account</a> if you'd like to create a monthly donation for a Page.</p>
             </div>
-            <p>Please <a href="{% url 'userprofile:billing' %}">add a credit card to your account</a> if you'd like to create a monthly donation for a Page.</p>
         </div>
-    </div>
+    {% endif %}
 
 
     <div class="form-group row">
@@ -135,7 +148,7 @@
             <h6>New card</h6>
         </div>
         <div class="col-lg-10">
-            <p><a id="new-card" href="">Add card</a></p>
+            <p><a id="new-card" href=""{% if campaign %} class="teal"{% endif %}>Add card</a></p>
             <div id="new-card-info" style="display:none;">
                 <div id="card-element"></div>
                 <div id="card-errors" role="alert"></div>
@@ -164,7 +177,7 @@
                     {% endif %}
                 </div>
                 <div class="col-md-3 mb-3" id="donate-col">
-                    <button class="btn btn-block btn-purple">Donate</button>
+                    <button class="btn btn-block {% if campaign %}btn-teal{% else %}btn-purple{% endif %}">Donate</button>
                 </div>
             </div>
         </div>
