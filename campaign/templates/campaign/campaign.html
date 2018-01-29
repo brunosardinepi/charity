@@ -3,6 +3,10 @@
 {% load guardian_tags %}
 {% load donation_extras %}
 
+{% block meta %}
+    <meta name="description" content="{{ campaign.description|truncatechars:300 }}">
+{% endblock %}
+
 {% block title %} {{ campaign.name }} | {{ block.super }}{% endblock %}
 
 {% block head_extra %}

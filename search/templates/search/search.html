@@ -1,6 +1,10 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
 
+{% block meta %}
+    <meta name="description" content="Search for Pages and Campaigns on PageFund using keywords and filters.">
+{% endblock %}
+
 {% block title %} Search | {{ block.super }}{% endblock %}
 
 {% block body_content %}

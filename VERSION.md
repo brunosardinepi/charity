@@ -11,6 +11,7 @@ Release date: TBD
 * Login design
 * Signup design
 * Alt tags and titles on images
+* Meta descriptions for static pages
 
 ### Changes
 

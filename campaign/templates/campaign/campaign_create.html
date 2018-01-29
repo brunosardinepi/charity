@@ -2,6 +2,9 @@
 {% load static from staticfiles %}
 {% load widget_tweaks %}
 
+{% block meta %}
+    <meta name="description" content="Campaigns are goal-based fundraisers designed for anyone to raise funds on behalf of any Page. Campaigns do not require any affiliation, are easy to setup, and funnel donations directly to the Page they are benefiting without having to exchange funds.">
+{% endblock %}
 
 {% block title %}Create | {{ block.super }}{% endblock %}
 
