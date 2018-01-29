@@ -6,10 +6,6 @@
 
 {% block title %}Edit | {{ block.super }}{% endblock %}
 
-{% block head_extra %}
-    <script src="{% static 'js/formset.js' %}"></script>    
-{% endblock %}
-
 {% block body_content %}
     <h1>Campaign Vote Participants</h1>
     <hr>
@@ -24,7 +20,7 @@
 
         {% for form in formset %}
 
-            <div class="row mb-5">
+            <div class="row mb-5 form-container">
                 <div class="col-md-3">
                     {{ form.image }}
                 </div>
@@ -72,11 +68,12 @@
 {% endblock %}
 
 {% block body_extra %}
-<script type="text/javascript">
-    $(function() {
-        $(".form-container").formset({
-            prefix: "{{ formset.prefix }}",
-        });
-    })
-</script>
+    <script src="{% static 'js/formset.js' %}"></script>    
+    <script type="text/javascript">
+        $(function() {
+            $(".form-container").formset({
+                prefix: "{{ formset.prefix }}",
+            });
+        })
+    </script>
 {% endblock %}

@@ -6,28 +6,7 @@
 {% block title %}Create | {{ block.super }}{% endblock %}
 
 {% block head_extra %}
-    <script src="{% static 'js/comment_csrf.js' %}"></script>
-    <script src="{% static 'js/campaign_search_pages.js' %}"></script>
-
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
-    <script>
-        $(function() {
-            $("#id_end_date").datepicker({
-                minDate: 0,
-            });
-        });
-
-
-        $(document).on("submit", "form", function(event) {
-            if (!$("input[type='radio']:checked").length) {
-                event.preventDefault();
-                $("#results").append("<div class='col-md-8 offset-md-2 mt-1 mb-4'><div class='alert alert-danger' role='alert'>Please select a Page.</div></div>");
-            };
-        });
-
-    </script>
 {% endblock %}
 
 {% block body_content %}
@@ -201,4 +180,11 @@
             </form>
         </div>
     </div>
+{% endblock %}
+
+{% block body_extra %}
+    <script src="{% static 'js/comment_csrf.js' %}"></script>
+    <script src="{% static 'js/campaign_search_pages.js' %}"></script>
+    <script src="{% static 'js/datepicker.js' %}"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 {% endblock %}
