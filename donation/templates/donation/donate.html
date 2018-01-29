@@ -1,7 +1,19 @@
-<div class="container">
-<h3>Donate</h3>
+{% load widget_tweaks %}
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2>Donate</h2>
+        <hr>
+    </div>
+</div>
+
 {% if stripe_error %}
-    <p>We're having trouble communicating with our payment processor. This error generated an email and sent it to our dev team. We're looking into the issue now, thanks!</p>
+    <div class="row">
+        <div class="col-lg-4">
+            <p>We're having trouble communicating with our payment processor. This error generated an email and sent it to our dev team. We're looking into the issue now, thanks!</p>
+        </div>
+    </div>
 {% else %}
     {% if page %}
         <form action="{% url 'page_donate' page_slug=page.page_slug %}" method="post" id="payment-form">
@@ -12,41 +24,153 @@
             <form action="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}" method="post" id="payment-form">
         {% endif %}
     {% endif %}
-        {% csrf_token %}
-            {{ form.as_p  }}
 
+    {% csrf_token %}
+
+    <div class="row mb-3">
+        <label for="{{ form.amount.id_for_label }}" class="col-lg-2 col-form-label"><h6>Amount</h6></label>
+        <div class="col-lg-2">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">$</span>
+                </div>
+                {% render_field form.amount class+="form-control" %}
+            </div>
+        </div>
+        <div class="col-lg-5" id="amount-group">
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="preset-label btn btn-purple">
+                    <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=5>$5
+                </label>
+                <label class="preset-label btn btn-purple">
+                    <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=10>$10
+                </label>
+                <label class="preset-label btn btn-purple">
+                    <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=25>$25
+                </label>
+                <label class="preset-label btn btn-purple">
+                    <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=50>$50
+                </label>
+                <label class="preset-label btn btn-purple">
+                    <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=100>$100
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div id="amount-errors"></div>
+
+    <div class="row">
+        <div class="col offset-lg-2">
+            <div class="form-check">
+                {% render_field form.monthly class+="form-check-input" %}
+                <label class="form-check-label" for="{{ form.monthly.id_for_label }}">
+                    Donate this amount <span class="font-weight-bold">every month</span>
+                </label>
+            </div>
             <p>Please <a href="{% url 'userprofile:billing' %}">add a credit card to your account</a> if you'd like to create a monthly donation for a Page.</p>
-            
-            <input type="checkbox" name="preset-amount" class="preset-amount" value=5 />$5<br />
-            <input type="checkbox" name="preset-amount" class="preset-amount" value=10 />$10<br />
-            <input type="checkbox" name="preset-amount" class="preset-amount" value=25 />$25<br />
-            <input type="checkbox" name="preset-amount" class="preset-amount" value=50 />$50<br />
-            <input type="checkbox" name="preset-amount" class="preset-amount" value=100 />$100<br />
+        </div>
+    </div>
 
-            <div id="amount-errors"></div>
 
+    <div class="form-group row">
+        <label for="{{ form.comment.id_for_label }}" class="col-lg-2 col-form-label"><h6>Comment</h6></label>
+        <div class="col-lg-6">
+            {% render_field form.comment class+="form-control" %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col offset-lg-2">
+            <div class="form-check">
+                {% render_field form.anonymous_amount class+="form-check-input" %}
+                <label class="form-check-label" for="{{ form.anonymous_amount.id_for_label }}">
+                    Hide your <span class="font-weight-bold">donation amount</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col offset-lg-2">
+            <div class="form-check">
+                {% render_field form.anonymous_donor class+="form-check-input" %}
+                <label class="form-check-label" for="{{ form.anonymous_donor.id_for_label }}">
+                    Hide your <span class="font-weight-bold">name</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3>Payment</h3>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-2">
+            <h6>Saved cards</h6>
+        </div>
+        <div class="col-lg-10">
             {% if cards %}
                 {% for x, c in cards.items %}
-                    <input type="radio" name="saved_card" class="saved-card" value="{{ c.id }}" {% if c.default == True %}checked="checked" {% endif %}/>{{ c.name }} ({{ c.last4 }})<br />
+                    <div class="form-check">
+                        <input type="radio" name="saved_card" id="{{ c.last4 }}" class="saved-card form-check-input" value="{{ c.id }}" {% if c.default == True %}checked{% endif %}/>
+                        <label class="form-check-label" for="{{ c.last4 }}">
+                           <i class="fal fa-fw fa-credit-card"></i> {{ c.last4 }}</span>{% if c.name %} - {{ c.name }}{% endif %}
+                        </label>
+                    </div>
                 {% endfor %}
             {% elif cards_error_authentication %}
             {% endif %}
-            <p><a id="new-card" href="">New card</a></p>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-2">
+            <h6>New card</h6>
+        </div>
+        <div class="col-lg-10">
+            <p><a id="new-card" href="">Add card</a></p>
             <div id="new-card-info" style="display:none;">
-                <p><label for="id_save_card">Save card:</label> <input type="checkbox" name="save_card" id="id_save_card" /></p>
                 <div id="card-element"></div>
                 <div id="card-errors" role="alert"></div>
+                <div class="form-check mt-2">
+                    <input type="checkbox" name="save_card" id="id_save_card" class="form-check-input" />
+                    <label class="form-check-label" for="id_save_card">
+                        Save this card for future use
+                    </label>
+                </div>
             </div>
-        {% if vote_participant %}
-            <input type="hidden" name="vote_participant" value="{{ vote_participant.pk }}">
-        {% endif %}
-        <button>Donate</button>
+        </div>
+    </div>
+
+    {% if vote_participant %}
+        <input type="hidden" name="vote_participant" value="{{ vote_participant.pk }}">
+    {% endif %}
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="row justify-content-between">
+                <div class="col-md-3 offset-lg-3 mb-3" id="cancel-col">
+                    <a class="btn btn-block btn-secondary" href="{% url 'page' page_slug=page.page_slug %}">Cancel</a>
+                </div>
+                <div class="col-md-3 mb-3" id="donate-col">
+                    <button class="btn btn-block btn-purple">Donate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     </form>
-</div>
+
     <script>
 
         $("input.preset-amount").on("change", function() {
             $("input.preset-amount").not(this).prop("checked", false);  
+            $("label.preset-label").not(this).removeClass("active");  
         });
 
         var stripe = Stripe('{{ api_pk }}');
@@ -73,7 +197,7 @@
         $(document).on('click', "#hide-new-card", function(event) {
             event.preventDefault();
             $("#new-card-info").hide();
-            $("#hide-new-card").text("New card");
+            $("#hide-new-card").text("Add card");
             $("#hide-new-card").attr("id", "new-card");
         });
     
@@ -128,4 +252,5 @@
                 };
         }
     </script>
+
 {% endif %}
