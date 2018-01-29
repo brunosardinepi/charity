@@ -21,11 +21,11 @@
                         <div class="col-md-auto comment-profile-picture-container">
                             {% if p.profile_picture %}
                                 <div class="{{ p.profile_picture|img_class:'small' }}">
-                                    <img src="{{ p.profile_picture.image.url }}" />
+                                    <img src="{{ p.profile_picture.image.url }}" alt="Page image" title="Page image" />
                                 </div>
                             {% else %}
                                 <div class="circular-square-sm">
-                                    <img src="{% static 'img/campaign_default.svg' %}" />
+                                    <img src="{% static 'img/campaign_default.svg' %}" alt="Default Page image" title="Default Page image" />
                                 </div>
                             {% endif %}
                         </div>
@@ -52,11 +52,11 @@
                         <div class="col-md-auto comment-profile-picture-container">
                             {% if c.profile_picture %}
                                 <div class="{{ c.profile_picture|img_class:'small' }}">
-                                    <img src="{{ c.profile_picture.image.url }}" />
+                                    <img src="{{ c.profile_picture.image.url }}" alt="Campaign image" title="Campaign image" />
                                 </div>
                             {% else %}
                                 <div class="circular-square-sm">
-                                    <img src="{% static 'img/campaign_default.svg' %}" />
+                                    <img src="{% static 'img/campaign_default.svg' %}" alt="Default Campaign image" title="Default Campaign image" />
                                 </div>
                             {% endif %}
                         </div>

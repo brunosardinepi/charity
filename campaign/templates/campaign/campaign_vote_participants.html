@@ -9,12 +9,12 @@
             {% if p.image %}
                 <div class="{{ p.image|img_class:'large' }}">
                     <a href="{{ p.image.url }}" data-lightbox="image-{{ p.pk }}">
-                        <img src="{{ p.image.url }}" />
+                        <img src="{{ p.image.url }}" alt="Vote participant image" title="Vote participant image" />
                     </a>
                 </div>
             {% else %}
                 <div class="circular-square">
-                    <img src="{% static 'img/user_default.svg' %}" />
+                    <img src="{% static 'img/user_default.svg' %}" alt="Default vote participant image" title="Default vote participant image" />
                 </div>
             {% endif %}
         </div>

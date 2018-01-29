@@ -72,12 +72,12 @@
             {% if userprofile.profile_picture %}
                 <div class="{{ userprofile.profile_picture|img_class:'large' }}">
                     <a href="{{ userprofile.profile_picture.image.url }}" data-lightbox="image">
-                        <img src="{{ userprofile.profile_picture.image.url }}" />
+                        <img src="{{ userprofile.profile_picture.image.url }}" alt="User profile image" title="User profile image" />
                     </a>
                 </div>
             {% else %}
                 <div class="circular-square">
-                    <img src="{% static 'img/user_default.svg' %}" />
+                    <img src="{% static 'img/user_default.svg' %}" alt="Default user profile image" title="Default user profile image" />
                 </div>
             {% endif %}
             <p><a href="{% url 'userprofile:user_image_upload' %}">Upload and Edit images</a></p>
