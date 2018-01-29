@@ -4,12 +4,6 @@
 {% load widget_tweaks %}
 
 
-{% block head_extra %}
-    <script src="{% static 'js/comment_csrf.js' %}"></script>
-    <script src="{% static 'js/comment.js' %}"></script>
-{% endblock %}
-
-
 <div class="row mb-3">
     <div class="col-md-auto">
         <h2><a name="comments">Comments</a></h2>
@@ -100,3 +94,8 @@
 {% else %}
     <p>There aren't any comments.</p>
 {% endif %}
+
+{% block body_extra %}
+    <script src="{% static 'js/comment_csrf.js' %}"></script>
+    <script src="{% static 'js/comment.js' %}"></script>
+{% endblock %}
