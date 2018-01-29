@@ -22,16 +22,16 @@
                 {% if d.user.userprofile.profile_picture %}
                     {% if d.anonymous_donor %}
                         <div class="circular-square-sm">
-                            <img src="{% static 'img/user_default.svg' %}" />
+                            <img src="{% static 'img/user_default.svg' %}" alt="Default user profile image" title="Default user profile image" />
                         </div>
                     {% else %}
                         <div class="{{ d.user.userprofile.profile_picture|img_class:'small' }}">
-                            <img src="{{ d.user.userprofile.profile_picture.image.url }}" />
+                            <img src="{{ d.user.userprofile.profile_picture.image.url }}" alt="User profile image" title="User profile image" />
                         </div>
                     {% endif %}
                 {% else %}
                     <div class="circular-square-sm">
-                        <img src="{% static 'img/user_default.svg' %}" />
+                        <img src="{% static 'img/user_default.svg' %}" alt="Default user profile image" title="Default user profile image" />
                     </div>
                 {% endif %}
             </div>

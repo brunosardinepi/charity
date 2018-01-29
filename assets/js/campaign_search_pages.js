@@ -27,3 +27,11 @@ $(document).on('keypress', '#q', function(event) {
         return false;
     }
 });
+
+$(document).on("submit", "form", function(event) {
+    if (!$("input[type='radio']:checked").length) {
+        event.preventDefault();
+        $("#results").append("<div class='col-md-8 offset-md-2 mt-1 mb-4'><div class='alert alert-danger' role='alert'>Please select a Page.</div></div>");
+    };
+});
+

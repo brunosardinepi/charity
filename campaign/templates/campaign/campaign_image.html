@@ -3,11 +3,11 @@
 
 {% if campaign.profile_picture %}
     <a href="{{ campaign.profile_picture.image.url }}" data-lightbox="profile-picture" data-title="<a href='/notes/abuse/image/campaign/{{ campaign.profile_picture.pk }}/'>Report image</a>">
-        <img src="{{ campaign.profile_picture.image.url }}" class="img-fluid img-thumbnail" />
+        <img src="{{ campaign.profile_picture.image.url }}" class="img-fluid img-thumbnail" alt="Campaign image" title="Campaign image" />
     </a>
 {% else %}
     <a href="{% static 'img/page_default.svg' %}" data-lightbox="profile-picture">
-        <img src="{% static 'img/page_default.svg' %}" class="img-fluid img-thumbnail" />
+        <img src="{% static 'img/page_default.svg' %}" class="img-fluid img-thumbnail" alt="Default Campaign image" title="Default Campaign image" />
     </a>
 {% endif %}
 
@@ -15,7 +15,7 @@
     {% for image in campaign.images %}
         {% if not image.profile_picture %}
             <a href="{{ image.image.url }}" data-lightbox="profile-picture" data-title="<a href='/notes/abuse/image/campaign/{{ campaign.profile_picture.pk }}/'>Report image</a>">
-                <img src="{{ image.image.url }}" class="img-fluid img-thumbnail" />
+                <img src="{{ image.image.url }}" class="img-fluid img-thumbnail" alt="Campaign image" title="Campaign image" />
             </a>
         {% endif %}
     {% endfor %}

@@ -11,9 +11,6 @@
 {% endblock %}
 
 {% block body_content %}
-    {% if campaign.type == "vote" %}
-        <h1>Voting for: {{ vote_participant.name }}</h1>
-    {% endif %}
     {% if request.user.is_authenticated %}
         {% include "donation/donate.html" %}
     {% else %}

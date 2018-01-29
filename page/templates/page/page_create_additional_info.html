@@ -5,22 +5,6 @@
 
 {% block title %}Create | {{ block.super }}{% endblock %}
 
-{% block head_extra %}
-    <script>
-        $(document).on("click", "#form-input", function(event) {
-            event.preventDefault();
-            var month = $("#id_birthday_month :selected");
-            var day = $("#id_birthday_day :selected");
-            var year = $("#id_birthday_year :selected");
-            if ((month.text() != "---") && (day.text() != "---") && (year.text() != "---")) {
-                $("#create-form").submit();
-            } else {
-                alert("Please fill in your birthday.");
-            };
-        });
-    </script>
-{% endblock %}
-
 {% block body_content %}
     <div class="row">
         <div class="col-10 offset-2 mb-4">
@@ -94,4 +78,8 @@
             </form>
         </div>
     </div>
+{% endblock %}
+
+{% block body_extra %}
+    <script src="{% static '/js/birthday_check.js' %}"></script>
 {% endblock %}

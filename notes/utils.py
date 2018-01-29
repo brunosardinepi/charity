@@ -54,7 +54,7 @@ def create_error(error, request, object):
         err.message,
         err.details
     )
-    email("gn9012@gmail.com", subject, body)
+    email("gn9012@gmail.com", subject, body, None)
 
     return err
 

@@ -12,11 +12,11 @@
                 {% if b.image_url %}
                     {% get_img_from_pk b.image_pk "user" as img %}
                     <div class="{{ img|img_class:'small' }}">
-                        <img src="{{ b.image_url }}" />
+                        <img src="{{ b.image_url }}" alt="Top donor image" title="Top donor image" />
                     </div>
                 {% else %}
                     <div class="circular-square-sm">
-                        <img src="{% static 'img/user_default.svg' %}" />
+                        <img src="{% static 'img/user_default.svg' %}" alt="Default donor image" title="Default donor image" />
                     </div>
                 {% endif %}
             </div>

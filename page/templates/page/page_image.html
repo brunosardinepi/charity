@@ -3,11 +3,11 @@
 
 {% if page.profile_picture %}
     <a href="{{ page.profile_picture.image.url }}" data-lightbox="profile-picture" data-title="<a href='/notes/abuse/image/page/{{ page.profile_picture.pk }}/'>Report image</a>">
-        <img src="{{ page.profile_picture.image.url }}" class="img-fluid img-thumbnail" />
+        <img src="{{ page.profile_picture.image.url }}" class="img-fluid img-thumbnail" alt="Page image" title="Page image" />
     </a>
 {% else %}
     <a href="{% static 'img/page_default.svg' %}" data-lightbox="profile-picture">
-        <img src="{% static 'img/page_default.svg' %}" class="img-fluid img-thumbnail" />
+        <img src="{% static 'img/page_default.svg' %}" class="img-fluid img-thumbnail" alt="Default Page image" title="Default Page image" />
     </a>
 {% endif %}
 
@@ -16,7 +16,7 @@
     {% for image in page.images %}
         {% if not image.profile_picture %}
             <a href="{{ image.image.url }}" data-lightbox="profile-picture" data-title="<a href='/notes/abuse/image/page/{{ image.pk }}/'>Report image</a>">
-                <img src="{{ image.image.url }}" class="img-fluid img-thumbnail" />
+                <img src="{{ image.image.url }}" class="img-fluid img-thumbnail" alt="Page image" title="Page image" />
             </a>
         {% endif %}
     {% endfor %}

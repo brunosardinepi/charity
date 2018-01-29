@@ -6,31 +6,6 @@
 
 {% block title %} Profile | {{ block.super }}{% endblock %}
 
-{% block head_extra %}
-    <script src="{% static 'js/comment_csrf.js' %}"></script>
-
-    <script>
-        $(document).on("click", ".set-default", function(event) {
-            event.preventDefault();
-            var url = "{% url 'donation:default_card' %}";
-            var id = $(this).closest("span").attr("id");
-            $.ajax({
-                url : url,
-                type : "POST",
-                traditional: true,
-                data : {
-                    id : id
-                },
-                success : function(json) {
-                    $(".default").html("<a class='set-default' href=''>Set default</a>");
-                    $("#default-" + json.id).text("Default");
-                }
-            });
-        });
-    </script>
-
-{% endblock %}
-
 {% block body_content %}
     <div class="row">
         <div class="col-lg-3">
@@ -144,4 +119,9 @@
         });
     </script>
 
+{% endblock %}
+
+{% block body_extra %}
+    <script src="{% static 'js/comment_csrf.js' %}"></script>
+    <script src="{% static 'js/default_card.js' %}"></script>
 {% endblock %}

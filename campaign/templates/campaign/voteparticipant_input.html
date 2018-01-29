@@ -5,13 +5,13 @@
 {% if widget.is_initial %}
     <div class="text-center mb-3">
         <div class="{{ widget.value.url|img_url_class:'large' }}">
-            <img src="{{ widget.value.url }}" />
+            <img src="{{ widget.value.url }}" alt="Vote participant image" title="Vote participant image" />
         </div>
     </div>
 {% else %}
     <div class="text-center mb-3">
         <div class="circular-square">
-            <img src="{% static 'img/user_default.svg' %}" />
+            <img src="{% static 'img/user_default.svg' %}" alt="Vote participant image" title="Vote participant image" />
         </div>
     </div>
 {% endif %}

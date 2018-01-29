@@ -4,13 +4,14 @@
 {% load static from staticfiles %}
 {% load widget_tweaks %}
 
+{% block meta %}<meta name="description" content="">{% endblock %}
 
 {% block title %}Login | {{ block.super }}{% endblock %}
 
 {% block body_content %}
     <div class="row">
         <div class="col-12 text-center">
-            <a href="{% url 'home' %}"><img id="logo-login" src="{% static 'img/logo.svg' %}" /></a>
+            <a href="{% url 'home' %}"><img id="logo-login" src="{% static 'img/logo.svg' %}" alt="PageFund logo" title="PageFund logo" /></a>
         </div>
     </div>
 

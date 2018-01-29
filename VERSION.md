@@ -10,10 +10,14 @@ Release date: TBD
 
 * Login design
 * Signup design
+* Alt tags and titles on images
+* Meta descriptions for static pages
+* Donate design
 
 ### Changes
 
 * Home design
+* Put all javascript at the end of files for faster page loads
 
 ### Fixes
 
