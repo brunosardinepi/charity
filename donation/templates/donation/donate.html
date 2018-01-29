@@ -29,7 +29,7 @@
 
     <div class="row mb-3">
         <label for="{{ form.amount.id_for_label }}" class="col-lg-2 col-form-label"><h6>Amount</h6></label>
-        <div class="col-lg-2">
+        <div class="col-lg-2 mb-2">
             <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text">$</span>
@@ -37,23 +37,25 @@
                 {% render_field form.amount class+="form-control" %}
             </div>
         </div>
-        <div class="col-lg-5" id="amount-group">
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                <label class="preset-label btn btn-purple">
+        <div class="col-lg-5 text-center" id="amount-group">
+            <div class="row mx-0">
+            <div class="btn-group btn-group-toggle" data-toggle="buttons" style="width:100%;">
+                <label class="preset-label btn btn-purple col-lg-auto btn-block">
                     <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=5>$5
                 </label>
-                <label class="preset-label btn btn-purple">
+                <label class="preset-label btn btn-purple col-lg-auto btn-block">
                     <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=10>$10
                 </label>
-                <label class="preset-label btn btn-purple">
+                <label class="preset-label btn btn-purple col-lg-auto btn-block">
                     <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=25>$25
                 </label>
-                <label class="preset-label btn btn-purple">
+                <label class="preset-label btn btn-purple col-lg-auto btn-block">
                     <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=50>$50
                 </label>
-                <label class="preset-label btn btn-purple">
+                <label class="preset-label btn btn-purple col-lg-auto btn-block">
                     <input type="checkbox" name="preset-amount" class="preset-amount" autocomplete="off" value=100>$100
                 </label>
+            </div>
             </div>
         </div>
     </div>
