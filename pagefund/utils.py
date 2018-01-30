@@ -18,6 +18,7 @@ def email(user_email, subject, body, template, substitutions):
             "page_manager_invitation": "d6a60dee-9e61-41e5-954e-0e049e95d0ed",
             "campaign_manager_invitation": "19f2f1f5-0559-4f27-a2c1-fd0fee5a3dc0",
             "new_campaign_created": "d5952e1d-3672-4876-97a1-7b5ee3c2fef7",
+            "new_campaign_created_admin": "cb6099ff-d8a0-4f8c-a73e-05cdd92feb78",
             "new_page_created": "0ba093a3-5628-4da9-b3e5-267f9f0313c4",
             "new_user_signup": "0f0ff154-4a0e-48eb-b073-d59447ac67e8",
             "page_bank_information_updated": "c988f1b2-ded9-476b-85a1-a7b1ec3a55e7",
