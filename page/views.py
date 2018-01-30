@@ -85,6 +85,7 @@ def page_create(request):
             page = form.save()
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
+
             if request.user.first_name and request.user.last_name and request.user.userprofile.birthday:
                 return redirect('page_create_bank_info', page_pk=page.pk)
             else:
@@ -194,8 +195,7 @@ class PageCreateBankInfo(View):
             page.save()
 
             substitutions = {
-                "name": request.user.first_name,
-                "pageurl": "{}/{}/".format(config.settings['site'], page.page_slug)
+                "-pagename-": page.name,
             }
             utils.email(request.user.email, "blank", "blank", "new_page_created", substitutions)
             return HttpResponseRedirect(page.get_absolute_url())

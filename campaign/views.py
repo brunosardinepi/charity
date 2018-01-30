@@ -112,7 +112,6 @@ class CampaignCreate(View):
                 }
                 email(request.user.email, "blank", "blank", "new_campaign_created", substitutions)
 
-
                 substitutions = {
                     "-campaignname-": campaign.name,
                     "-pagename-": campaign.page.name,
