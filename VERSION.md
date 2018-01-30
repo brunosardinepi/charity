@@ -14,6 +14,7 @@ Release date: TBD
 * Meta descriptions for static pages
 * Donate design
 * "How it works" section on "Get Started" page
+* robots.txt
 
 ### Changes
 
