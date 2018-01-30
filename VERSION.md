@@ -9,6 +9,7 @@ Release date: TBD
 ### Additions
 
 * FAQ design
+* Email design
 
 ### Changes
 

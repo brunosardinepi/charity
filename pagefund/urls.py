@@ -35,10 +35,7 @@ urlpatterns = [
     url(r'^create/$', TemplateView.as_view(template_name="create.html")),
     url(r'^features/$', TemplateView.as_view(template_name="features.html")),
     url(r'^how-it-works/$', TemplateView.as_view(template_name="how_it_works.html")),
-
-    url(r'^email/$', TemplateView.as_view(template_name="email.html")),
-    url(r'^email/donation/$', TemplateView.as_view(template_name="email_donation.html")),
-    url(r'^email/new-campaign-created-admin/$', TemplateView.as_view(template_name="email_new_campaign_created_admin.html")),
+    url(r'^email-templates/', include('email_templates.urls', namespace='email_templates')),
 
     url(r'^page/subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),
     url(r'^create/page/$', PageViews.page_create, name='page_create'),
