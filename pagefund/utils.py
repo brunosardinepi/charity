@@ -11,8 +11,9 @@ from sendgrid.helpers.mail import *
 from . import config, settings
 
 
-def email(user_email, subject, body, template):
+def email(user_email, subject, body, template, substitutions):
     if not settings.TESTING:
+        sg = sendgrid.SendGridAPIClient(apikey=config.settings["sendgrid_api_key"])
         templates = {
             "page_manager_invitation": "d6a60dee-9e61-41e5-954e-0e049e95d0ed",
             "campaign_manager_invitation": "19f2f1f5-0559-4f27-a2c1-fd0fee5a3dc0",
@@ -23,19 +24,41 @@ def email(user_email, subject, body, template):
             "pagefund_invitation": "09db718c-d1bb-446c-9cf5-67cd0adf0c97",
             "forgot_password": "3fcbedb0-d54b-49b3-885e-856bbbaf21c8",
             "note": "",
+            "donation": "5cbe8e19-d441-4fec-a880-464889239d86",
         }
-        sg = sendgrid.SendGridAPIClient(apikey=config.settings["sendgrid_api_key"])
-        from_email = Email("no-reply@page.fund")
-        to_email = Email(user_email)
-        subject = subject
-        content = Content("text/plain", body)
-        mail = Mail(from_email, subject, to_email, content)
-        if template:
-            mail.template_id = templates[template]
+
+        data = {
+          "personalizations": [
+            {
+              "to": [
+                {
+                  "email": user_email
+                }
+              ],
+              "substitutions": substitutions,
+              "subject": subject
+            },
+          ],
+          "from": {
+            "email": "no-reply@page.fund"
+          },
+          "content": [
+            {
+              "type": "text/html",
+              "value": body
+            }
+          ],
+          "template_id": templates[template]
+        }
         try:
-            response = sg.client.mail.send.post(request_body=mail.get())
+            response = sg.client.mail.send.post(request_body=data)
         except urllib.HTTPError as e:
+            print (e.read())
             exit()
+
+#        print(response.status_code)
+#        print(response.body)
+#        print(response.headers)
 
 def update_manager_permissions(post_data, obj):
     new_permissions = dict()

@@ -193,7 +193,11 @@ class PageCreateBankInfo(View):
                 page.stripe_bank_account_id = ext_acct.id
             page.save()
 
-            utils.email(request.user.email, "blank", "blank", "new_page_created")
+            substitutions = {
+                "name": request.user.first_name,
+                "pageurl": "{}/{}/".format(config.settings['site'], page.page_slug)
+            }
+            utils.email(request.user.email, "blank", "blank", "new_page_created", substitutions)
             return HttpResponseRedirect(page.get_absolute_url())
 
 

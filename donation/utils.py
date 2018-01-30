@@ -11,6 +11,7 @@ import stripe
 from .models import Donation
 from campaign.models import Campaign
 from page.models import Page
+from pagefund.utils import email
 from pagefund import config
 from plans.models import StripePlan
 from plans.utils import create_plan
@@ -263,6 +264,12 @@ def donate(request, form, page=None, campaign=None):
     if campaign is not None:
         campaign.save()
     page.save()
+
+#    substitutions = {
+#        "-name-": request.user.first_name,
+#        "-page-": page.name,
+#    }
+#    email(request.user.email, "blank", "blank", "donation", substitutions)
 
 def donation_statistics(obj):
     if obj.__class__ is Page:
