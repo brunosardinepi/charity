@@ -16,7 +16,7 @@ Release date: TBD
 
 ### Fixes
 
-* None
+* Emails weren't working correctly and SendGrid templates weren't formatted correctly
 
 
 ## Version 0.23.0
