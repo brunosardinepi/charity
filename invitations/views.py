@@ -15,7 +15,6 @@ from pagefund.utils import email
 @login_required(login_url='signup')
 def accept_invitation(request, invitation_pk, key):
     invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
-    print("invitation = {}".format(invitation))
     if invitation_is_good(request, invitation, key) == True:
         permissions = {
             'manager_edit': invitation.manager_edit,
@@ -41,6 +40,7 @@ def accept_invitation(request, invitation_pk, key):
             remove_invitation(invitation_pk, "manager", "True", "False")
             return HttpResponseRedirect(invitation.campaign.get_absolute_url())
     else:
+        # redirect to an error page
         print("invitation is bad")
 
 @login_required(login_url='signup')
@@ -77,8 +77,15 @@ def forgot_password_request(request):
 #                invitation.pk,
 #                invitation.key
 #            )
-            email(form.cleaned_data['email'], "blank", "blank", "forgot_password")
+#            email(form.cleaned_data['email'], "blank", "blank", "forgot_password")
 #            email(form.cleaned_data['email'], subject, body)
+
+            # send an email for the reset
+            substitutions = {
+                "-passwordreseturl-": "{}/password/reset/{}/{}/".format(config.settings['site'], invitation.pk, invitation.key),
+            }
+            email(form.cleaned_data['email'], "blank", "blank", "forgot_password", substitutions)
+
             return HttpResponseRedirect(reverse('home'))
     return render(request, 'forgot_password_request.html', {'form': form})
 
