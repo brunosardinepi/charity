@@ -229,7 +229,8 @@ def user_signed_up_(request, user, **kwargs):
         user.userprofile.stripe_customer_id = customer.id
         user.save()
 
-    email(user.email, "blank", "blank", "new_user_signup")
+    email(user.email, "blank", "blank", "new_user_signup", {})
+#    email(user.email, "blank", "blank", "new_user_signup")
 
 def create_random_string(length=30):
     if length <= 0:

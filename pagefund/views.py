@@ -83,9 +83,15 @@ def invite(request):
 #                    invitation.pk,
 #                    invitation.key
 #                )
-                email(form.cleaned_data['email'], "blank", "blank", "pagefund_invitation")
+#                email(form.cleaned_data['email'], "blank", "blank", "pagefund_invitation")
 #                email(form.cleaned_data['email'], subject, body, "pagefund_invitation")
                 # redirect the inviting person
+
+                substitutions = {
+                    "-signupurl-": "{}/invite/accept/{}/{}/".format(config.settings['site'], invitation.pk, invitation.key),
+                }
+                email(form.cleaned_data['email'], "blank", "blank", "pagefund_invitation", substitutions)
+
                 return HttpResponseRedirect(reverse('home'))
     return render(request, 'invite.html', {'form': form})
 
