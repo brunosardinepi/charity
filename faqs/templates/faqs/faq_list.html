@@ -5,18 +5,11 @@
 
 {% block body_content %}
     <h1>Frequently Asked Questions (FAQs)</h1>
-    <ul>
-        {% for faq in faqs %}
-        <li id="faq-{{ faq.pk }}">
-            {{ faq.question }}
-            <ul>
-                <li>{{ faq.answer|safe }}</li>
-                <li id="faq-{{ faq.pk }}" class="faq">
-                </li>
-            </ul>
-        </li>
-        {% endfor %}
-    </ul>
+    <hr>
+    {% for faq in faqs %}
+        <p class="mb-1 font-weight-bold">{{ faq.question }}</p>
+        <p class="mb-5">{{ faq.answer|safe }}</p>
+    {% endfor %}
 {% endblock %}
 
 {% block body_extra %}
