@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^about/$', TemplateView.as_view(template_name="about.html")),
     url(r'^terms-of-service/$', TemplateView.as_view(template_name="terms_of_service.html")),
     url(r'^privacy-policy/$', TemplateView.as_view(template_name="privacy_policy.html")),
+    url(r'^email/$', TemplateView.as_view(template_name="email.html")),
     url(r'^notes/', include('notes.urls', namespace='notes')),
     url(r'^create/$', TemplateView.as_view(template_name="create.html")),
     url(r'^features/$', TemplateView.as_view(template_name="features.html")),
