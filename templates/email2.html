@@ -1,3 +1,5 @@
+{% load static from staticfiles %}
+
 <!doctype html>
 <html lang="en">
     <head>
@@ -10,27 +12,26 @@
 
         <!-- css -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+        <link href="{% static 'css/main.css' %}?{% now 'U' %}" rel="stylesheet" type="text/css" />
     </head>
 
     <body>
         <main role="main" class="container">
-            <div class="row" style="margin-bottom:16px;margin-top:32px;">
+            <div class="row" style="margin-bottom:16px;">
                 <div class="col-12">
-                    <a href="https://page.fund" style="color:#990099;">
-                        <img src="https://page.fund/static/img/logo_email.svg" alt="PageFund logo" title="PageFund logo">
-                    </a>
+                    <img src="https://page.fund/static/img/logo.svg" alt="PageFund logo" title="PageFund logo" style="height:100px;">
                 </div>
             </div>
             <div class="row">
                 <div class="col-12">
-                    <h4>Subject</h4>
+                    <h1>Subject</h1>
                     <hr>
                 </div>
             </div>
             <div class="row">
                 <div class="col-12">
                     <p>Body</p>
-                    <p>Feel free to reach out to us at <a href="mailto:help@page.fund" style="color:#990099;">help@page.fund</a> if you have any questions.</p>
+                    <p>Feel free to reach out to us at <a href="mailto:help@page.fund">help@page.fund</a> if you have any questions.</p>
                     <p>Happy fundraising!</p>
                 </div>
             </div>

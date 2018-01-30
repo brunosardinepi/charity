@@ -31,11 +31,14 @@ urlpatterns = [
     url(r'^about/$', TemplateView.as_view(template_name="about.html")),
     url(r'^terms-of-service/$', TemplateView.as_view(template_name="terms_of_service.html")),
     url(r'^privacy-policy/$', TemplateView.as_view(template_name="privacy_policy.html")),
-    url(r'^email/$', TemplateView.as_view(template_name="email.html")),
     url(r'^notes/', include('notes.urls', namespace='notes')),
     url(r'^create/$', TemplateView.as_view(template_name="create.html")),
     url(r'^features/$', TemplateView.as_view(template_name="features.html")),
     url(r'^how-it-works/$', TemplateView.as_view(template_name="how_it_works.html")),
+
+    url(r'^email/$', TemplateView.as_view(template_name="email.html")),
+    url(r'^email/donation/$', TemplateView.as_view(template_name="email_donation.html")),
+    url(r'^email/new-campaign-created-admin/$', TemplateView.as_view(template_name="email_new_campaign_created_admin.html")),
 
     url(r'^page/subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),
     url(r'^create/page/$', PageViews.page_create, name='page_create'),
