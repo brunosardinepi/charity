@@ -10,7 +10,6 @@ from . import config
 from . import forms
 from .utils import email
 from campaign.models import Campaign
-#from django_comments.models import Comment
 from donation.models import Donation
 from invitations.models import GeneralInvitation
 from page.models import Page
@@ -72,21 +71,6 @@ def invite(request):
                 )
 
                 # create the email
-#                subject = "PageFund invitation!"
-#                body = "%s %s has invited you to join PageFund! <a href='%s/invite/accept/%s/%s/'>Click here to accept.</a> <a href='%s/invite/general/decline/%s/%s/'>Click here to decline.</a>" % (
-#                    request.user.first_name,
-#                    request.user.last_name,
-#                    config.settings['site'],
-#                    invitation.pk,
-#                    invitation.key,
-#                    config.settings['site'],
-#                    invitation.pk,
-#                    invitation.key
-#                )
-#                email(form.cleaned_data['email'], "blank", "blank", "pagefund_invitation")
-#                email(form.cleaned_data['email'], subject, body, "pagefund_invitation")
-                # redirect the inviting person
-
                 substitutions = {
                     "-signupurl-": "{}/invite/accept/{}/{}/".format(config.settings['site'], invitation.pk, invitation.key),
                 }
@@ -94,21 +78,3 @@ def invite(request):
 
                 return HttpResponseRedirect(reverse('home'))
     return render(request, 'invite.html', {'form': form})
-
-
-#class CommentPosted(View):
-#    def get(self, request):
-#        c = request.GET.get('c')
-#        if c:
-#            comment = Comment.objects.get(pk=c)
-#            if comment:
-#                obj = comment.content_object
-#                if obj.get_model() == "Page":
-#                    return HttpResponseRedirect("/{}/#c{}".format(obj.page_slug, comment.pk))
-#                elif obj.get_model() == "Campaign":
-#                    return HttpResponseRedirect("/{}/{}/{}/#c{}".format(
-#                        obj.page.page_slug,
-#                        obj.pk,
-#                        obj.campaign_slug,
-#                        comment.pk,
-#                    ))

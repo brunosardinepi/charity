@@ -240,7 +240,13 @@ class PageEditBankInfo(View):
                 acct.external_accounts.retrieve(page.stripe_bank_account_id).delete()
                 page.stripe_bank_account_id = ext_acct.id
             page.save()
-            utils.email(request.user.email, "blank", "blank", "page_bank_information_updated")
+
+
+            substitutions = {
+                "-pagename-": page.name,
+            }
+            utils.email(request.user.email, "blank", "blank", "page_bank_information_updated", substitutions)
+
             return redirect('page_dashboard_admin', page_slug=page.page_slug)
 
 
