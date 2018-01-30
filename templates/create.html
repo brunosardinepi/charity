@@ -9,42 +9,68 @@
 
 {% block body_content %}
     <div class="row">
-        <div class="col-12 text-center">
-            <h1>What do you want to create?</h1>
+        <div class="col-12 text-center mb-5">
+            <h1>I am...</h1>
         </div>
     </div>
+
+    <div class="row align-items-end text-center justify-content-around">
+        <div class="col-lg-4 mb-5">
+            <p>An organization owner or individual looking to raise extra funds for <span class="font-weight-bold">my organization</span> or <span class="font-weight-bold">myself</span>.</p>
+            <a href="{% url 'page_create' %}" class="btn btn-block btn-lg btn-purple">Create a Page</a>
+        </div>
+        <div class="col-lg-4 mb-5">
+            <p>An individual looking to raise extra funds on behalf of <span class="font-weight-bold">another organization</span> or <span class="font-weight-bold">individual</span>.</p>
+            <a href="{% url 'campaign_create' %}" class="btn btn-block btn-lg btn-teal">Create a Campaign</a>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2>How it works</h2>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <p><span class="purple font-weight-bold">Pages</span> are fixed locations for anyone that is looking to raise extra funds for their cause. Use a <span class="purple font-weight-bold">Page</span> to tell a story to the world, solicit direct donations, and post pictures, all in one place.</p>
+            <p><span class="teal font-weight-bold">Campaigns</span> are goal-based fundraisers designed for anyone to raise funds on behalf of any Page. <span class="teal font-weight-bold">Campaigns</span> don’t require any affiliation, are easy to setup, and funnel donations directly to the Page they are benefiting without having to exchange funds.</p>
+        </div>
+    </div>
+
     <div class="row">
-        <div class="col-6">
-            <h2 class="text-center">Pages</h2>
-            <p>Some information about Pages and what they do or whatever Page intro we want here:</p>
-            <ul>
-                <li>Facts</li>
-                <li>about</li>
-                <li>Pages</li>
-                <li>go</li>
-                <li>here</li>
-            </ul>
-            <p>A final word or something can go here.</p>
-            <div class="row justify-content-center">
-                <div class="col-5">
-                    <a href="{% url 'page_create' %}" class="btn btn-block btn-purple">Create Page</a>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    Step 1
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Select</h5>
+                    <p class="card-text"><a href="{% url 'page_create' %}">Create a Page</a> to raise funds for yourself or your organization.</p>
+                    <p class="card-text"><a href="{% url 'campaign_create' %}" class="teal">Create a Campaign</a> to raise funds for the causes you care most about.</p>
                 </div>
             </div>
         </div>
-        <div class="col-6">
-            <h2 class="text-center">Campaigns</h2>
-            <p>Some information about Campaigns and what they do or whatever Campaign intro we want here:</p>
-            <ul>
-                <li>Facts</li>
-                <li>about</li>
-                <li>Campaigns</li>
-                <li>go</li>
-                <li>here</li>
-            </ul>
-            <p>A final word or something can go here.</p>
-            <div class="row justify-content-center">
-                <div class="col-5">
-                    <a href="{% url 'campaign_create' %}" class="btn btn-block btn-teal">Create Campaign</a>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    Step 2
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Create</h5>
+                    <p class="card-text">Take a few seconds to fill out information about your Page or Campaign.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    Step 3
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Share</h5>
+                    <p class="card-text">You're all set! Share your Page or Campaign for visibility.</p>
                 </div>
             </div>
         </div>

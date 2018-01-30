@@ -284,8 +284,9 @@ class HomeTest(TestCase):
     def test_create(self):
         response = self.client.get('/create/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Create Page")
-        self.assertContains(response, "Create Campaign")
+        self.assertContains(response, "Create a Page")
+        self.assertContains(response, "Create a Campaign")
+        self.assertContains(response, "How it works")
 
     def test_invite_logged_out(self):
         response = self.client.get('/invite/')
