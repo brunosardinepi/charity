@@ -72,8 +72,16 @@ def invite(data):
                 manager_view_dashboard=form.cleaned_data['manager_view_dashboard'],
             )
 
-            # create the email
-            template = "page_manager_invitation"
+#            # create the email
+#            template = "page_manager_invitation"
+
+            # send an email for the invitation
+            substitutions = {
+                "-pagename-": page.name,
+                "-invitationurl-": "{}/invite/manager/accept/{}/{}/".format(config.settings['site'], invitation.pk, invitation.key),
+            }
+            email(form.cleaned_data['email'], "blank", "blank", "page_manager_invitation", substitutions)
+
         elif campaign:
             invitation = ManagerInvitation.objects.create(
                 invite_to=form.cleaned_data['email'],
@@ -86,21 +94,29 @@ def invite(data):
                 manager_view_dashboard=form.cleaned_data['manager_view_dashboard'],
             )
 
-            # create the email
-            subject = "Campaign invitation!"
-            body = "%s %s has invited you to become an admin of the '%s' Campaign. <a href='%s/invite/manager/accept/%s/%s/'>Click here to accept.</a> <a href='%s/invite/manager/decline/%s/%s/'>Click here to decline.</a>" % (
-                request.user.first_name,
-                request.user.last_name,
-                campaign.name,
-                config.settings['site'],
-                invitation.pk,
-                invitation.key,
-                config.settings['site'],
-                invitation.pk,
-                invitation.key
-            )
-            template = "campaign_manager_invitation"
-        email(form.cleaned_data['email'], "blank", "blank", template)
+#            # create the email
+#            subject = "Campaign invitation!"
+#            body = "%s %s has invited you to become an admin of the '%s' Campaign. <a href='%s/invite/manager/accept/%s/%s/'>Click here to accept.</a> <a href='%s/invite/manager/decline/%s/%s/'>Click here to decline.</a>" % (
+#                request.user.first_name,
+#                request.user.last_name,
+#                campaign.name,
+#                config.settings['site'],
+#                invitation.pk,
+#                invitation.key,
+#                config.settings['site'],
+#                invitation.pk,
+#                invitation.key
+#            )
+#            template = "campaign_manager_invitation"
+
+            # send an email for the invitation
+            substitutions = {
+                "-campaignname-": campaign.name,
+                "-invitationurl-": "{}/invite/manager/accept/{}/{}/".format(config.settings['site'], invitation.pk, invitation.key),
+            }
+            email(form.cleaned_data['email'], "blank", "blank", "campaign_manager_invitation", substitutions)
+
+#        email(form.cleaned_data['email'], "blank", "blank", template)
         # redirect the admin/manager to the Page
         status = True
     return status
@@ -116,6 +132,11 @@ def remove_invitation(invitation_pk, type, accepted, declined):
     invitation.save()
 
 def invitation_is_good(request, invitation, key):
+    print("key = {}".format(key))
+    print("invitation.key = {}".format(invitation.key))
+    print("request.user.email = {}".format(request.user.email))
+    print("invitation.invite_to = {}".format(invitation.invite_to))
+
     if (key == invitation.key) and (request.user.email == invitation.invite_to):
         return True
     else:

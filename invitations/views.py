@@ -15,6 +15,7 @@ from pagefund.utils import email
 @login_required(login_url='signup')
 def accept_invitation(request, invitation_pk, key):
     invitation = get_object_or_404(models.ManagerInvitation, pk=invitation_pk)
+    print("invitation = {}".format(invitation))
     if invitation_is_good(request, invitation, key) == True:
         permissions = {
             'manager_edit': invitation.manager_edit,
@@ -39,6 +40,8 @@ def accept_invitation(request, invitation_pk, key):
                     assign_perm(k, request.user, invitation.campaign)
             remove_invitation(invitation_pk, "manager", "True", "False")
             return HttpResponseRedirect(invitation.campaign.get_absolute_url())
+    else:
+        print("invitation is bad")
 
 @login_required(login_url='signup')
 def accept_general_invitation(request, invitation_pk, key):

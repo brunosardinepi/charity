@@ -97,7 +97,7 @@
                                 <tbody id="donation-history-body">
                                     {% for c in page.active_campaigns %}
                                         <tr>
-                                            <td>{{ c.name }}</td>
+                                            <td><a class="teal" href="{% url 'campaign' page_slug=c.page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a></td>
                                             <td>{{ c.end_date|naturaltime }}</td>
                                             <td>{{ c.donation_money|cents_to_dollars }}</td>
                                             <td>${{ c.goal }}</td>
