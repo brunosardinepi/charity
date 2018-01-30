@@ -2,6 +2,23 @@
 
 This is the version history for PageFund development.
 
+## Version 0.24.0
+
+Release date: TBD
+
+### Additions
+
+* FAQ design
+
+### Changes
+
+* None
+
+### Fixes
+
+* None
+
+
 ## Version 0.23.0
 
 Release date: 01/29/2018
