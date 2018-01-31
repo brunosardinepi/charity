@@ -11,6 +11,7 @@ Release date: TBD
 * FAQ design
 * Email design
 * Change password feature
+* Page verified check
 
 ### Changes
 
