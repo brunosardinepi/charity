@@ -232,7 +232,6 @@ class HomeTest(TestCase):
         self.assertContains(response, "Get started")
         self.assertContains(response, "Our Story")
         self.assertContains(response, "Features")
-        self.assertContains(response, "How it works")
 
     def test_home_logged_in(self):
         self.client.login(username='testuser', password='testpassword')
@@ -243,7 +242,6 @@ class HomeTest(TestCase):
         self.assertContains(response, "Get started")
         self.assertContains(response, "Our Story")
         self.assertContains(response, "Features")
-        self.assertContains(response, "How it works")
 
     def test_login(self):
         response = self.client.get('/accounts/login/')
