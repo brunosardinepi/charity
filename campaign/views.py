@@ -107,12 +107,24 @@ class CampaignCreate(View):
                 campaign.campaign_admins.add(request.user.userprofile)
                 campaign.campaign_subscribers.add(request.user.userprofile)
 
+                substitutions = {
+                    "-campaignname-": campaign.name,
+                }
+                email(request.user.email, "blank", "blank", "new_campaign_created", substitutions)
+
+                substitutions = {
+                    "-campaignname-": campaign.name,
+                    "-pagename-": campaign.page.name,
+                    "-campaignurl-": "{}/{}/{}/{}/".format(config.settings['site'], campaign.page.page_slug, campaign.pk, campaign.campaign_slug),
+                }
                 admins = page.admins.all()
                 for admin in admins:
-                    email(admin.user.email, "blank", "blank", "new_campaign_created")
+                    if admin.user != request.user:
+                        email(admin.user.email, "blank", "blank", "new_campaign_created_admin", substitutions)
                 managers = page.managers.all()
                 for manager in managers:
-                    email(admin.user.email, "blank", "blank", "new_campaign_created")
+                    if manager.user != request.user:
+                        email(manager.user.email, "blank", "blank", "new_campaign_created_admin", substitutions)
 
                 if campaign.type == 'vote':
                     return redirect('campaign_edit_vote', page_slug=page.page_slug, campaign_pk=campaign.pk, campaign_slug=campaign.campaign_slug)
@@ -450,7 +462,7 @@ class CampaignDashboardAdmin(View):
 class CampaignDashboardDonations(View):
     def get(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        if utils.has_dashboard_access(request.user, campaign, None):
+        if utils.has_dashboard_access(request.user, campaign, 'manager_view_dashboard'):
             return render(self.request, 'campaign/dashboard_donations.html', {
                 'campaign': campaign,
                 'donations': donation_statistics(campaign),

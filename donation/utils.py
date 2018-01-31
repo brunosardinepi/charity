@@ -11,6 +11,7 @@ import stripe
 from .models import Donation
 from campaign.models import Campaign
 from page.models import Page
+from pagefund.utils import email
 from pagefund import config
 from plans.models import StripePlan
 from plans.utils import create_plan
@@ -77,54 +78,53 @@ def card_check(request, id):
 def charge_source(c, page=None, campaign=None):
     if page is not None:
         charge = stripe.Charge.create(
-            amount=c["amount"],
-            currency="usd",
-            customer=c["customer_id"],
-            source=c["card_source"],
-            description="$%s donation to %s." % (c["form_amount"], page.name),
-            receipt_email=c["user_email"],
+            amount=c['amount'],
+            currency='usd',
+            customer=c['customer_id'],
+            source=c['card_source'],
+            description='$%s donation to %s.' % (int(c['amount'] / 100), page.name),
+            receipt_email=c['user_email'],
             destination={
-                "amount": c["final_amount"],
-                "account": page.stripe_account_id,
+                'amount': c['final_amount'],
+                'account': page.stripe_account_id,
             },
             metadata={
-                "anonymous_amount": c['anonymous_amount'],
-                "anonymous_donor": c['anonymous_donor'],
-                "comment": c['comment'],
-                "page": page.id,
-                "pf_user_pk": c["pf_user_pk"]
+                'anonymous_amount': c['anonymous_amount'],
+                'anonymous_donor': c['anonymous_donor'],
+                'comment': c['comment'],
+                'page': page.id,
+                'pf_user_pk': c['pf_user_pk']
             }
         )
     elif campaign is not None:
         metadata = {
-            "anonymous_amount": c['anonymous_amount'],
-            "anonymous_donor": c['anonymous_donor'],
-            "comment": c['comment'],
-            "campaign": campaign.id,
-            "page": campaign.page.id,
-            "pf_user_pk": c["pf_user_pk"],
+            'anonymous_amount': c['anonymous_amount'],
+            'anonymous_donor': c['anonymous_donor'],
+            'comment': c['comment'],
+            'campaign': campaign.id,
+            'page': campaign.page.id,
+            'pf_user_pk': c['pf_user_pk'],
         }
         try:
-            metadata["vote_participant"] = c["vote_participant"]
+            metadata['vote_participant'] = c['vote_participant']
         except KeyError:
             pass
         charge = stripe.Charge.create(
-                amount=c["amount"],
-                currency="usd",
-                customer=c["customer_id"],
-                source=c["card_source"],
-                description="$%s donation to %s via the %s campaign." % (c["form_amount"], campaign.page.name, campaign.name),
-                receipt_email=c["user_email"],
+                amount=c['amount'],
+                currency='usd',
+                customer=c['customer_id'],
+                source=c['card_source'],
+                description='$%s donation to %s via the %s campaign.' % (int(c['amount'] / 100), campaign.page.name, campaign.name),
+                receipt_email=c['user_email'],
                 destination={
-                    "amount": c["final_amount"],
-                    "account": campaign.page.stripe_account_id,
+                    'amount': c['final_amount'],
+                    'account': campaign.page.stripe_account_id,
                 },
                 metadata=metadata,
             )
     return charge
 
 def donate(request, form, page=None, campaign=None):
-#    amount = form.cleaned_data['amount'] * 100
     amount = form.cleaned_data['amount']
     preset_amount = request.POST.get('preset-amount')
     if amount:
@@ -151,7 +151,6 @@ def donate(request, form, page=None, campaign=None):
         c = {
             "amount": amount,
             "customer_id": customer.id,
-            "form_amount": form.cleaned_data["amount"],
             "user_email": request.user.email,
             "final_amount": final_amount,
             "anonymous_amount": form.cleaned_data['anonymous_amount'],
@@ -202,7 +201,7 @@ def donate(request, form, page=None, campaign=None):
                     amount=amount,
                     currency="usd",
                     source=request.POST.get('stripeToken'),
-                    description="$%s donation to %s via the %s campaign." % (form.cleaned_data['amount'], campaign.page.name, campaign.name),
+                    description="${} donation to {} via the {} campaign.".format(int(amount / 100), campaign.page.name, campaign.name),
                     destination={
                         "amount": final_amount,
                         "account": campaign.page.stripe_account_id,
@@ -217,7 +216,7 @@ def donate(request, form, page=None, campaign=None):
                     amount=amount,
                     currency="usd",
                     source=request.POST.get('stripeToken'),
-                    description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
+                    description="${} donation to {}.".format(int(amount / 100), page.name),
                     destination={
                         "amount": final_amount,
                         "account": page.stripe_account_id,
@@ -235,7 +234,7 @@ def donate(request, form, page=None, campaign=None):
                 amount=amount,
                 currency="usd",
                 source=request.POST.get('stripeToken'),
-                description="$%s donation to %s via the %s campaign." % (form.cleaned_data['amount'], campaign.page.name, campaign.name),
+                description="${} donation to {} via the {} campaign.".format(int(amount / 100), campaign.page.name, campaign.name),
                 destination={
                     "amount": final_amount,
                     "account": campaign.page.stripe_account_id,
@@ -250,7 +249,7 @@ def donate(request, form, page=None, campaign=None):
                 amount=amount,
                 currency="usd",
                 source=request.POST.get('stripeToken'),
-                description="$%s donation to %s." % (form.cleaned_data['amount'], page.name),
+                description="${} donation to {}.".format(int(amount / 100), page.name),
                 destination={
                     "amount": final_amount,
                     "account": page.stripe_account_id,
@@ -263,6 +262,17 @@ def donate(request, form, page=None, campaign=None):
     if campaign is not None:
         campaign.save()
     page.save()
+
+    substitutions = {
+        "-amount-": "${}".format(int(amount / 100)),
+    }
+
+    if campaign:
+        substitutions['-recipient-'] = campaign.name
+    else:
+        substitutions['-recipient-'] = page.name
+
+    email(request.user.email, "blank", "blank", "donation", substitutions)
 
 def donation_statistics(obj):
     if obj.__class__ is Page:

@@ -32,6 +32,12 @@ class ManagerInvitationTest(TestCase):
             password='iwillforgetthis'
         )
 
+        self.user3 = User.objects.create_user(
+            username='changemy',
+            email='change@my.password',
+            password='passwordpls'
+        )
+
         self.page = Page.objects.create(
             name='Test Page',
             page_slug='testpage',
@@ -54,18 +60,18 @@ class ManagerInvitationTest(TestCase):
 
         self.invitation2 = models.GeneralInvitation.objects.create(
             invite_to="nerd@tester.yo",
-            invite_from=self.user
+            invite_from=self.user,
         )
 
         self.forgotpasswordrequest = models.ForgotPasswordRequest.objects.create(
             email='i@forget.all',
-            expired=True
+            expired=True,
         )
 
         self.forgotpasswordrequest2 = models.ForgotPasswordRequest.objects.create(
             email='i@am.forgetful',
             expired=False,
-            completed=True
+            completed=True,
         )
 
     def test_invitation_exists(self):
@@ -152,11 +158,11 @@ class ManagerInvitationTest(TestCase):
 
     def test_forgot_password_reset(self):
         # click forgot password link and go to form
-        response = self.client.get('/forgot/')
+        response = self.client.get('/password/forgot/')
         self.assertEqual(response.status_code, 200)
 
         # put email in form and submit
-        response = self.client.post('/forgot/', {'email': 'i@forgot.it'})
+        response = self.client.post('/password/forgot/', {'email': 'i@forgot.it'})
         self.assertRedirects(response, '/', 302, 200)
 
         # click email link to go to password reset
@@ -170,7 +176,7 @@ class ManagerInvitationTest(TestCase):
             'password2': 'newpassword'
         }
         response = self.client.post('/password/reset/%s/%s/' % (invitation.pk, invitation.key), data)
-        self.assertRedirects(response, '/', 302, 200)
+        self.assertRedirects(response, '/profile/', 302, 200)
 
         # login with new passwords
         self.client.login(username='forgetful', password='newpassword')
@@ -192,3 +198,22 @@ class ManagerInvitationTest(TestCase):
         }
         response = self.client.post('/password/reset/%s/%s/' % (self.forgotpasswordrequest2.pk, self.forgotpasswordrequest2.key), data)
         self.assertRedirects(response, '/notes/error/password/reset/completed/', 302, 200)
+
+    def test_change_password_reset(self):
+        # click change password link and go to form
+        self.client.login(username='changemy', password='passwordpls')
+        response = self.client.get('/password/change/')
+        self.assertRedirects(response, '/profile/', 302, 200)
+
+        # click email link to go to password reset
+        invitation = models.ForgotPasswordRequest.objects.get(email='change@my.password', expired=False, completed=False)
+        response = self.client.get('/password/reset/%s/%s/' % (invitation.pk, invitation.key))
+        self.assertEqual(response.status_code, 200)
+
+        # set both passwords and submit
+        data = {
+            'password1': 'newpassword',
+            'password2': 'newpassword'
+        }
+        response = self.client.post('/password/reset/%s/%s/' % (invitation.pk, invitation.key), data)
+        self.assertRedirects(response, '/profile/', 302, 200)

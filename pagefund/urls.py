@@ -23,7 +23,8 @@ urlpatterns = [
     url(r'^invite/', include('invitations.urls', namespace='invitations')),
     url(r'^comments/', include('comments.urls', namespace='comments')),
     url(r'^donation/', include('donation.urls', namespace='donation')),
-    url(r'^forgot/$', InvitationsViews.forgot_password_request, name='forgot_password_request'),
+    url(r'^password/forgot/$', InvitationsViews.forgot_password_request, name='forgot_password_request'),
+    url(r'^password/change/$', InvitationsViews.change_password_request, name='change_password_request'),
     url(r'^password/reset/(?P<invitation_pk>\d+)/(?P<key>[\w-]+)/$', InvitationsViews.forgot_password_reset, name='forgot_password_reset'),
     url(r'^webhooks/', include('webhooks.urls', namespace='webhooks')),
     url(r'^plans/', include('plans.urls', namespace='plans')),
@@ -35,6 +36,7 @@ urlpatterns = [
     url(r'^create/$', TemplateView.as_view(template_name="create.html")),
     url(r'^features/$', TemplateView.as_view(template_name="features.html")),
     url(r'^how-it-works/$', TemplateView.as_view(template_name="how_it_works.html")),
+    url(r'^email-templates/', include('email_templates.urls', namespace='email_templates')),
 
     url(r'^page/subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),
     url(r'^create/page/$', PageViews.page_create, name='page_create'),

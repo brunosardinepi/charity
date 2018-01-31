@@ -1,0 +1,5 @@
+{% extends 'email_templates/_email.html' %}
+
+{% block subject %}{{ email_template.subject }}{% endblock %}
+
+{% block body %}{{ email_template.body|safe }}{% endblock %}

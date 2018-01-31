@@ -75,6 +75,7 @@ class PageTest(TestCase):
             description='This is a description for Test Page.',
             category='Animal',
             website='testpage.com',
+            verified=True,
         )
 
         self.page.admins.add(self.user.userprofile)
@@ -96,6 +97,17 @@ class PageTest(TestCase):
             description='Im in the office.',
             category='Animal',
             deleted=True,
+        )
+
+        self.page3 = models.Page.objects.create(
+            name='Friends',
+            type='Nonprofit',
+            page_slug='friends',
+            city='Houston',
+            state='Texas',
+            description='I am watching Friends.',
+            category='Animal',
+            verified=False,
         )
 
         self.campaign = CampaignModels.Campaign.objects.create(
@@ -184,7 +196,7 @@ class PageTest(TestCase):
         }
 
         response = self.client.post('/create/page/', data)
-        self.assertEqual(models.Page.objects.filter(deleted=False).count(), 1)
+        self.assertEqual(models.Page.objects.filter(deleted=False).count(), 2)
 
     def test_page_status_logged_out(self):
         request = self.factory.get('home')
@@ -287,9 +299,8 @@ class PageTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_page_edit_manager_perms(self):
-        request = self.factory.get('home')
-        request.user = self.user3
-        response = views.page_edit(request, self.page.page_slug)
+        self.client.login(username='bobdole', password='dogsarecool')
+        response = self.client.get('/{}/edit/'.format(self.page.page_slug))
 
         self.assertEqual(response.status_code, 200)
 
@@ -426,7 +437,7 @@ class PageTest(TestCase):
 
     def test_delete_page_manager_no_perms(self):
         self.client.login(username='batman', password='imbatman')
-        response = self.client.get('/%s/edit/' % self.page.page_slug)
+        response = self.client.get('/%s/delete/' % self.page.page_slug)
         self.assertEqual(response.status_code, 404)
 
     def test_page_invite_not_admin_not_manager(self):
@@ -857,3 +868,13 @@ class PageTest(TestCase):
         self.client.login(username='testuser', password='testpassword')
         response  = self.client.get('/{}/manage/campaigns/'.format(self.page.page_slug))
         self.assertEqual(response.status_code, 200)
+
+    def test_page_verified(self):
+        response = self.client.get('/{}/'.format(self.page.page_slug))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Verified')
+
+    def test_page_not_verified(self):
+        response = self.client.get('/{}/'.format(self.page3.page_slug))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Verified')

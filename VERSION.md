@@ -2,6 +2,27 @@
 
 This is the version history for PageFund development.
 
+## Version 0.24.0
+
+Release date: TBD
+
+### Additions
+
+* FAQ design
+* Email design
+* Change password feature
+* Page verified check
+
+### Changes
+
+* None
+
+### Fixes
+
+* Emails weren't working correctly and SendGrid templates weren't formatted correctly
+* Page and Campaign admin/manager permissions weren't working as expected
+
+
 ## Version 0.23.0
 
 Release date: 01/29/2018

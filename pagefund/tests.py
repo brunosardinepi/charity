@@ -358,8 +358,13 @@ class HomeTest(TestCase):
         self.assertRedirects(response, '/notes/error/invite/user-exists/', 302, 200)
 
     def test_forgot_password_request(self):
-        response = self.client.get('/forgot/')
+        response = self.client.get('/password/forgot/')
         self.assertEqual(response.status_code, 200)
+
+    def test_change_password_request(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/password/change/')
+        self.assertRedirects(response, '/profile/', 302, 200)
 
     def test_about(self):
         response = self.client.get('/about/')

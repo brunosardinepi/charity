@@ -85,6 +85,7 @@ def page_create(request):
             page = form.save()
             page.admins.add(request.user.userprofile)
             page.subscribers.add(request.user.userprofile)
+
             if request.user.first_name and request.user.last_name and request.user.userprofile.birthday:
                 return redirect('page_create_bank_info', page_pk=page.pk)
             else:
@@ -193,7 +194,10 @@ class PageCreateBankInfo(View):
                 page.stripe_bank_account_id = ext_acct.id
             page.save()
 
-            utils.email(request.user.email, "blank", "blank", "new_page_created")
+            substitutions = {
+                "-pagename-": page.name,
+            }
+            utils.email(request.user.email, "blank", "blank", "new_page_created", substitutions)
             return HttpResponseRedirect(page.get_absolute_url())
 
 
@@ -236,7 +240,13 @@ class PageEditBankInfo(View):
                 acct.external_accounts.retrieve(page.stripe_bank_account_id).delete()
                 page.stripe_bank_account_id = ext_acct.id
             page.save()
-            utils.email(request.user.email, "blank", "blank", "page_bank_information_updated")
+
+
+            substitutions = {
+                "-pagename-": page.name,
+            }
+            utils.email(request.user.email, "blank", "blank", "page_bank_information_updated", substitutions)
+
             return redirect('page_dashboard_admin', page_slug=page.page_slug)
 
 
@@ -493,7 +503,7 @@ class PageDashboardAdmin(View):
 class PageDashboardDonations(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        if utils.has_dashboard_access(request.user, page, None):
+        if utils.has_dashboard_access(request.user, page, 'manager_view_dashboard'):
             return render(self.request, 'page/dashboard_donations.html', {
                 'page': page,
                 'donations': donation_statistics(page),
@@ -504,7 +514,7 @@ class PageDashboardDonations(View):
 class PageDashboardCampaigns(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        if utils.has_dashboard_access(request.user, page, None):
+        if utils.has_dashboard_access(request.user, page, 'manager_view_dashboard'):
             return render(self.request, 'page/dashboard_campaigns.html', {
                 'page': page,
                 'donations': donation_statistics(page),

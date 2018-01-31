@@ -11,6 +11,18 @@
 
 {% block head_extra %}
     <link href="{% static 'css/lightbox.css' %}" rel="stylesheet">
+
+    <script>
+        $(document).on('click', '#verified', function(event) {
+            event.preventDefault();
+        });
+
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip({
+                'trigger': 'hover focus',
+            });
+        });
+    </script>
 {% endblock %}
 
 {% block body_content %}
