@@ -18,6 +18,7 @@ Release date: TBD
 ### Fixes
 
 * Emails weren't working correctly and SendGrid templates weren't formatted correctly
+* Page admin/manager permissions weren't working as expected
 
 
 ## Version 0.23.0

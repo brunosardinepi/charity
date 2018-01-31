@@ -503,7 +503,7 @@ class PageDashboardAdmin(View):
 class PageDashboardDonations(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        if utils.has_dashboard_access(request.user, page, None):
+        if utils.has_dashboard_access(request.user, page, 'manager_view_dashboard'):
             return render(self.request, 'page/dashboard_donations.html', {
                 'page': page,
                 'donations': donation_statistics(page),
@@ -514,7 +514,7 @@ class PageDashboardDonations(View):
 class PageDashboardCampaigns(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        if utils.has_dashboard_access(request.user, page, None):
+        if utils.has_dashboard_access(request.user, page, 'manager_view_dashboard'):
             return render(self.request, 'page/dashboard_campaigns.html', {
                 'page': page,
                 'donations': donation_statistics(page),

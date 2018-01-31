@@ -11,78 +11,74 @@
             {% include "page/dashboard_menu.html" %}
         </div>
         <div class="col-lg-9">
-            {% if request.user.userprofile in page.admins.all or "manager_view_dashboard" in page_perms %}
-                <h2>Donations</h2>
-                <hr>
-                <div class="row justify-content-center mt-5 mb-5">
-                    <div class="col-lg-4 mb-4 text-center">
-                        <p class="small m-0">Donated to Page</p>
-                        <h2 class="m-0">{{ donations.page_donations|cents_to_dollars }}</h2>
-                        <p class="small m-0">Avg: {{ donations.page_donations_avg|cents_to_dollars }}</p>
-                    </div>
-                    <div class="col-lg-4 mb-4 text-center">
-                        <p class="small m-0">Recurring Donations</p>
-                        <h2 class="m-0">{{ donations.plan_donations|cents_to_dollars }}</h2>
-                        <p class="small m-0">Avg: {{ donations.plan_donations_avg|cents_to_dollars }}</p>
-                    </div>
+            <h2>Donations</h2>
+            <hr>
+            <div class="row justify-content-center mt-5 mb-5">
+                <div class="col-lg-4 mb-4 text-center">
+                    <p class="small m-0">Donated to Page</p>
+                    <h2 class="m-0">{{ donations.page_donations|cents_to_dollars }}</h2>
+                    <p class="small m-0">Avg: {{ donations.page_donations_avg|cents_to_dollars }}</p>
                 </div>
-
-                <h2>Top Donors</h2>
-                <div class="row mt-3 mb-5">
-                    <div class="col-12">
-                        {% if page.top_donors %}
-                            <table class="table table-hover">
-                                <thead>
+                <div class="col-lg-4 mb-4 text-center">
+                    <p class="small m-0">Recurring Donations</p>
+                    <h2 class="m-0">{{ donations.plan_donations|cents_to_dollars }}</h2>
+                    <p class="small m-0">Avg: {{ donations.plan_donations_avg|cents_to_dollars }}</p>
+                </div>
+            </div>
+            <h2>Top Donors</h2>
+            <div class="row mt-3 mb-5">
+                <div class="col-12">
+                    {% if page.top_donors %}
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="purple">Donor</th>
+                                    <th class="purple">Total donated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for a, b in page.top_donors %}
                                     <tr>
-                                        <th class="purple">Donor</th>
-                                        <th class="purple">Total donated</th>
+                                        <td>{{ b.first_name }} {{ b.last_name }}</td>
+                                        <td>{{ b.amount|cents_to_dollars }}</td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {% for a, b in page.top_donors %}
-                                        <tr>
-                                            <td>{{ b.first_name }} {{ b.last_name }}</td>
-                                            <td>{{ b.amount|cents_to_dollars }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        {% else %}
-                            <p>Nobody has donated yet.</p>
-                        {% endif %}
-                    </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>Nobody has donated yet.</p>
+                    {% endif %}
                 </div>
-
-                <h2>Donation History</h2>
-                <div class="row mt-3 mb-5">
-                    <div class="col-12">
-                        {% if page.donations %}
-                            <table class="table table-hover">
-                                <thead>
+            </div>
+            <h2>Donation History</h2>
+            <div class="row mt-3 mb-5">
+                <div class="col-12">
+                    {% if page.donations %}
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="desc"><a class="sort" id="sort-date" href="">Date</a></th>
+                                    <th><a class="sort" id="sort-amount" href="">Amount</a></th>
+                                    <th><a class="sort" id="sort-campaign" href="">Campaign</a></th>
+                                    <th><a class="sort" id="sort-donor_first_name" href="">Donor</a></th>
+                                </tr>
+                            </thead>
+                            <tbody id="donation-history-body">
+                                {% for d in page.donations %}
                                     <tr>
-                                        <th class="desc"><a class="sort" id="sort-date" href="">Date</a></th>
-                                        <th><a class="sort" id="sort-amount" href="">Amount</a></th>
-                                        <th><a class="sort" id="sort-campaign" href="">Campaign</a></th>
-                                        <th><a class="sort" id="sort-donor_first_name" href="">Donor</a></th>
+                                        <td>{{ d.date|date:'N j, Y, g:i A' }}</td>
+                                        <td>{% if d.anonymous_amount %}Anonymous{% else %}{{ d.amount|cents_to_dollars }}{% endif %}</td>
+                                        <td>{% if d.campaign %}{{ d.campaign }}{% else %}--{% endif %}</td>
+                                        <td>{% if d.anonymous_donor == True %}Anonymous{% else %}{% if d.user %}{{ d.user.first_name }} {{ d.user.last_name }}{% else %}{{ d.donor_first_name }} {{ d.donor_last_name }}{% endif %}{% endif %}</td>
                                     </tr>
-                                </thead>
-                                <tbody id="donation-history-body">
-                                    {% for d in page.donations %}
-                                        <tr>
-                                            <td>{{ d.date|date:'N j, Y, g:i A' }}</td>
-                                            <td>{% if d.anonymous_amount %}Anonymous{% else %}{{ d.amount|cents_to_dollars }}{% endif %}</td>
-                                            <td>{% if d.campaign %}{{ d.campaign }}{% else %}--{% endif %}</td>
-                                            <td>{% if d.anonymous_donor == True %}Anonymous{% else %}{% if d.user %}{{ d.user.first_name }} {{ d.user.last_name }}{% else %}{{ d.donor_first_name }} {{ d.donor_last_name }}{% endif %}{% endif %}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        {% else %}
-                            <p>Nobody has donated yet.</p>
-                        {% endif %}
-                    </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>Nobody has donated yet.</p>
+                    {% endif %}
                 </div>
-            {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}
