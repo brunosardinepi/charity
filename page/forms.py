@@ -21,7 +21,6 @@ class PageForm(forms.ModelForm):
             'state',
             'zipcode',
             'type',
-            'ein',
             'category',
             'description',
             'website',
@@ -47,7 +46,6 @@ class PageEditForm(forms.ModelForm):
             'zipcode',
             'page_slug',
             'type',
-            'ein',
             'category',
             'description',
             'website',
@@ -90,6 +88,9 @@ class PageBankForm(forms.Form):
     account_number = forms.CharField(max_length=12)
     routing_number = forms.CharField(max_length=9)
 
+class PageBankEINForm(PageBankForm):
+    ein = forms.CharField(max_length=20)
+
 class PageAdditionalInfoForm(forms.Form):
     first_name = forms.CharField(max_length=255)
     last_name = forms.CharField(max_length=255)
@@ -102,3 +103,6 @@ class PageEditBankForm(forms.Form):
     account_holder_last_name = forms.CharField(max_length=255)
     account_number = forms.CharField(max_length=12)
     routing_number = forms.CharField(max_length=9)
+
+class PageEditBankEINForm(PageEditBankForm):
+    ein = forms.CharField(max_length=20)

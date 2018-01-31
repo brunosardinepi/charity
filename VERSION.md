@@ -12,7 +12,7 @@ Release date: TBD
 
 ### Changes
 
-* None
+* Form validation on Page creation process
 
 ### Fixes
 

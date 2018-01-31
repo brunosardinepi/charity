@@ -167,36 +167,15 @@
                     <label for="{{ form.type.id_for_label }}" class="col-md-2 col-form-label">
                         Type
                     </label>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         {% render_field form.type class+="form-control" aria-describedby="type-help" %}
                         <small id="type-help" class="form-text text-muted">
-                            Only nonprofits require an EIN.
+                            Nonprofits require an EIN. Other types do not.
                         </small>
                     </div>
                     {% if form.type.errors %}
                         <div class="col-md-10 offset-md-2 mt-1 mb-4">
                             {% for error in form.type.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <div id="ein-row" class="form-group row">
-                    <label for="{{ form.ein.id_for_label }}" class="col-md-2 col-form-label">
-                        EIN
-                    </label>
-                    <div class="col-md-4">
-                        {% render_field form.ein class+="form-control" aria-describedby="ein-help" %}
-                        <small id="ein-help" class="form-text text-muted">
-                            This is your Employer Identification Number (EIN), also known as a Federal Tax Identification Number.
-                        </small>
-                    </div>
-                    {% if form.ein.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.ein.errors %}
                                 <div class="alert alert-danger" role="alert">
                                     {{ error|escape }}
                                 </div>
@@ -271,8 +250,4 @@
             </form>
         </div>
     </div>
-{% endblock %}
-
-{% block body_extra %}
-    <script src="{% static 'js/ein.js' %}"></script>
 {% endblock %}

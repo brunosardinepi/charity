@@ -63,6 +63,29 @@
                     {% endif %}
                 </div>
 
+                {% if page.type == 'nonprofit' %}
+                    <div id="ein-row" class="form-group row">
+                        <label for="{{ form.ein.id_for_label }}" class="col-md-3 col-form-label">
+                            EIN
+                        </label>
+                        <div class="col-md-4">
+                            {% render_field form.ein class+="form-control" aria-describedby="ein-help" %}
+                            <small id="ein-help" class="form-text text-muted">
+                                This is your Employer Identification Number (EIN), also known as a Federal Tax Identification Number.
+                            </small>
+                        </div>
+                        {% if form.ein.errors %}
+                            <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                                {% for error in form.ein.errors %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ error|escape }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
                 <div class="form-group row">
                     <label for="{{ form.ssn.id_for_label }}" class="col-md-3 col-form-label">
                         Last 4 of SSN

@@ -361,6 +361,7 @@ class PageTest(TestCase):
             'account_holder_first_name': "Tester",
             'account_holder_last_name': "McGee",
             'ssn': "0000",
+            'ein': "000000001",
             'account_number': "000123456789",
             'routing_number': "110000000",
         }
@@ -390,7 +391,6 @@ class PageTest(TestCase):
             'description': 'I like flank steak.',
             'ssn': '0000',
             'tos_accepted': True,
-            'ein': '000000001',
             'address_line1': '123 Main St.',
             'zipcode': '12345'
         })

@@ -124,19 +124,25 @@ class PageCreateBankInfo(View):
             'account_holder_first_name': userprofile.user.first_name,
             'account_holder_last_name': userprofile.user.last_name,
         }
-        form = forms.PageBankForm(initial=initial)
+        if page.type == 'nonprofit':
+            form = forms.PageBankEINForm(initial=initial)
+        else:
+            form = forms.PageBankForm(initial=initial)
         return render(request, 'page/page_create_bank_info.html', {'page': page, 'form': form})
 
     def post(self, request, page_pk):
         page = get_object_or_404(Page, pk=page_pk)
-        form = forms.PageBankForm(request.POST)
+        if page.type == 'nonprofit':
+            form = forms.PageBankEINForm(request.POST)
+        else:
+            form = forms.PageBankForm(request.POST)
         if form.is_valid():
             if not settings.TESTING:
 
-                if page.type == 'personal':
-                    stripe_type = 'individual'
-                else:
+                if page.type == 'nonprofit':
                     stripe_type = 'company'
+                else:
+                    stripe_type = 'individual'
 
                 legal_entity = {
                     "business_name": page.name,
@@ -155,9 +161,11 @@ class PageCreateBankInfo(View):
                         "postal_code": page.zipcode,
                         "state": page.state
                     },
-                    "business_tax_id": page.ein,
                     "ssn_last_4": form.cleaned_data['ssn']
                 }
+
+                if page.type == 'nonprofit':
+                    legal_entity['business_tax_id'] = form.cleaned_data['ein']
 
                 user_ip = get_client_ip(request)
                 tos_acceptance = {
@@ -199,6 +207,8 @@ class PageCreateBankInfo(View):
             }
             utils.email(request.user.email, "blank", "blank", "new_page_created", substitutions)
             return HttpResponseRedirect(page.get_absolute_url())
+        else:
+            print("form.errors = {}".format(form.errors))
 
 
 class PageEditBankInfo(View):
@@ -209,12 +219,18 @@ class PageEditBankInfo(View):
             'account_holder_first_name': userprofile.user.first_name,
             'account_holder_last_name': userprofile.user.last_name,
         }
-        form = forms.PageEditBankForm(initial=initial)
+        if page.type == 'nonprofit':
+            form = forms.PageEditBankEINForm(initial=initial)
+        else:
+            form = forms.PageEditBankForm(initial=initial)
         return render(request, 'page/page_edit_bank_info.html', {'page': page, 'form': form})
 
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        form = forms.PageEditBankForm(request.POST)
+        if page.type == 'nonprofit':
+            form = forms.PageEditBankEINForm(request.POST)
+        else:
+            form = forms.PageEditBankForm(request.POST)
         if form.is_valid():
             if not settings.TESTING:
 

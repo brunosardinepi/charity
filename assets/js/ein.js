@@ -14,7 +14,7 @@ $(document).on("click", "#form-input", function(event) {
         if (ein.val().length) {
             $("#create-form").submit();
         } else {
-            alert("Please add your EIN.");
+            alert("Please add your EIN, or change the Page type to 'Personal'.");
         };
     } else {
         $("#create-form").submit();
