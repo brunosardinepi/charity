@@ -288,6 +288,13 @@ class HomeTest(TestCase):
         self.assertContains(response, "Create a Campaign")
         self.assertContains(response, "How it works")
 
+    def test_features(self):
+        response = self.client.get('/features/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Nonprofit verification")
+        self.assertContains(response, "Analytics")
+        self.assertContains(response, "Campaigns")
+
     def test_invite_logged_out(self):
         response = self.client.get('/invite/')
 
