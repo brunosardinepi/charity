@@ -287,9 +287,8 @@ class PageTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_page_edit_manager_perms(self):
-        request = self.factory.get('home')
-        request.user = self.user3
-        response = views.page_edit(request, self.page.page_slug)
+        self.client.login(username='bobdole', password='dogsarecool')
+        response = self.client.get('/{}/edit/'.format(self.page.page_slug))
 
         self.assertEqual(response.status_code, 200)
 
@@ -426,7 +425,7 @@ class PageTest(TestCase):
 
     def test_delete_page_manager_no_perms(self):
         self.client.login(username='batman', password='imbatman')
-        response = self.client.get('/%s/edit/' % self.page.page_slug)
+        response = self.client.get('/%s/delete/' % self.page.page_slug)
         self.assertEqual(response.status_code, 404)
 
     def test_page_invite_not_admin_not_manager(self):

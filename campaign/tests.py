@@ -298,9 +298,8 @@ class CampaignTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_campaign_edit_manager_perms(self):
-        request = self.factory.get('home')
-        request.user = self.user2
-        response = views.campaign_edit(request, self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug)
+        self.client.login(username='pizza', password='mehungry')
+        response = self.client.get('/%s/%s/%s/edit/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
         self.assertEqual(response.status_code, 200)
 
