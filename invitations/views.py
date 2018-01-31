@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.urls import reverse
@@ -71,20 +72,12 @@ def forgot_password_request(request):
         form = forms.ForgotPasswordRequestForm(request.POST)
         if form.is_valid():
             invitation = models.ForgotPasswordRequest.objects.create(email=form.cleaned_data['email'])
-#            subject = "Forgot password"
-#            body = "You submitted a request to reset your password. <a href='%s/password/reset/%s/%s/'>Click here to reset your password.</a>" % (
-#                config.settings['site'],
-#                invitation.pk,
-#                invitation.key
-#            )
-#            email(form.cleaned_data['email'], "blank", "blank", "forgot_password")
-#            email(form.cleaned_data['email'], subject, body)
 
             # send an email for the reset
             substitutions = {
                 "-passwordreseturl-": "{}/password/reset/{}/{}/".format(config.settings['site'], invitation.pk, invitation.key),
             }
-            email(form.cleaned_data['email'], "blank", "blank", "forgot_password", substitutions)
+            email(form.cleaned_data['email'], "blank", "blank", "reset_password", substitutions)
 
             return HttpResponseRedirect(reverse('home'))
     return render(request, 'forgot_password_request.html', {'form': form})
@@ -108,5 +101,20 @@ def forgot_password_reset(request, invitation_pk, key):
                     user = get_object_or_404(User, email=invitation.email)
                     user.set_password(form.cleaned_data['password1'])
                     user.save()
-                    return HttpResponseRedirect(reverse('home'))
+
+                    user = authenticate(request, username=user.username, password=form.cleaned_data['password1'])
+                    if user is not None:
+                        login(request, user)
+                        return redirect('userprofile:userprofile')
     return render(request, 'forgot_password_reset.html', {'form': form})
+
+def change_password_request(request):
+    invitation = models.ForgotPasswordRequest.objects.create(email=request.user.email)
+
+    # send an email for the reset
+    substitutions = {
+        "-passwordreseturl-": "{}/password/reset/{}/{}/".format(config.settings['site'], invitation.pk, invitation.key),
+    }
+    email(request.user.email, "blank", "blank", "reset_password", substitutions)
+
+    return redirect('userprofile:userprofile')

@@ -23,7 +23,7 @@ def email(user_email, subject, body, template, substitutions):
             "new_user_signup": "0f0ff154-4a0e-48eb-b073-d59447ac67e8",
             "page_bank_information_updated": "c988f1b2-ded9-476b-85a1-a7b1ec3a55e7",
             "pagefund_invitation": "09db718c-d1bb-446c-9cf5-67cd0adf0c97",
-            "forgot_password": "3fcbedb0-d54b-49b3-885e-856bbbaf21c8",
+            "reset_password": "3fcbedb0-d54b-49b3-885e-856bbbaf21c8",
             "note_abuse": "2dc1a02e-cf7c-4e47-9989-ae32aefe662b",
             "donation": "5cbe8e19-d441-4fec-a880-464889239d86",
         }
