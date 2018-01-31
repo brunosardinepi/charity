@@ -3,6 +3,109 @@
 
 {% block title %}Features | {{ block.super }}{% endblock %}
 
+{% block head_extra %}
+    <style type="text/css">
+        body {
+            font-size: 1.125rem;
+        }
+        .col-lg-4 svg {
+            color: #868e96;
+        }
+        h5 {
+            color: #33cc99;
+        }
+    </style>
+{% endblock %}
+
 {% block body_content %}
-    <h1>Features</h1>
+    <div class="row">
+        <div class="col-12">
+            <h1>Features</h1>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6 break-lg-left">
+            Picture
+        </div>
+        <div class="col-lg-6 break-lg-right">
+            <h4>Nonprofit verification</h4>
+            <p>Tweet at us from an official account or email <a href="mailto:help@page.fund">help@page.fund</a> with your name and title from your official email address. Simple as that!</p>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6 break-lg-right text-right">
+            <h4>Analytics</h4>
+            <p>Each Page and Campaign includes access to a powerful analytics engine that provides information on the amount and source of every donation, no matter how big or small. All for free!</p>
+        </div>
+        <div class="col-lg-6 break-lg-left">
+            Picture
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6 break-lg-left">
+            Picture
+        </div>
+        <div class="col-lg-6 break-lg-right">
+            <h4>Campaigns</h4>
+            <p>General Campaigns offer a standard donation model, while Voting Campaigns are a great way to generate a friendly competition. Use them if there are many people looking to help fundraise for a great cause.</p>
+        </div>
+    </div>
+
+    <div class="row mt-5 justify-content-center">
+        <div class="col-lg-4 text-center mb-5">
+            <i class="fal fa-share-alt font-size-4 mb-3"></i>
+            <h5>Share</h5>
+            <p>Share a Page or Campaign across the most popular social platforms </p>
+        </div>
+        <div class="col-lg-4 text-center mb-5">
+            <i class="fal fa-envelope font-size-4 mb-3"></i>
+            <h5>Easy management</h5>
+            <p>Invite others to help manage and administer any Page or Campaign</p>
+        </div>
+        <div class="col-lg-4 text-center mb-5"">
+            <i class="fal fa-repeat font-size-4 mb-3"></i>
+            <h5>Recurring donations</h5>
+            <p>Recurring donations for users who contribute the most often</p>
+        </div>
+        <div class="col-lg-4 text-center mb-5"">
+            <i class="fal fa-fast-forward font-size-4 mb-3"></i>
+            <h5>Fast</h5>
+            <p>Free, fast, and easy setup for all Pages, Campaigns, and user accounts</p>
+        </div>
+        <div class="col-lg-4 text-center mb-5"">
+            <i class="fal fa-list-alt font-size-4 mb-3"></i>
+            <h5>Donation tracking</h5>
+            <p>List of all contributions made throughout the year to 501(c)(3) organizations</p>
+        </div>
+        <div class="col-lg-4 text-center mb-5"">
+            <i class="fal fa-lock-alt font-size-4 mb-3"></i>
+            <h5>Security</h5>
+            <p>Advanced security to ensure the safety and reliability of all contributions</p>
+        </div>
+        <div class="col-lg-4 text-center mb-5"">
+            <i class="fal fa-dollar-sign font-size-4 mb-3"></i>
+            <h5>Best pricing</h5>
+            <p>PageFund is happy to provide competitive market pricing to ensure that more funds go directly to the causes that matter most</p>
+            <p>4.8% platform fee <a href="" class="tooltip-icon" data-toggle="tooltip" data-placement="right" title="This is how much PageFund charges"><i class="fal fa-question-circle text-secondary"></i></a></p>
+            <p>2.9% + $0.30 transaction fee <a href="" class="tooltip-icon" data-toggle="tooltip" data-placement="right" title="This is how much our payment processor charges"><i class="fal fa-question-circle text-secondary"></i></a></p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_extra %}
+    <script>
+        $(document).on('click', '.tooltip-icon', function(event) {
+            event.preventDefault();
+        });
+
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip({
+                'trigger': 'hover focus',
+            });
+        });
+    </script>
 {% endblock %}

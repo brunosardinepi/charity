@@ -33,6 +33,47 @@ a.purple:hover {
 a.teal:hover {
     color: #336666;
 }
+.font-size-125 {
+    font-size: 1.25rem;
+}
+.font-size-175 {
+    font-size: 1.75rem;
+}
+.font-size-4 {
+    font-size: 4rem;
+}
+
+/* Media Queries */
+@media (max-width: 991.99px) {
+    .break-lg-left {
+        order: 1;
+    }
+    .break-lg-right {
+        order: 2;
+        text-align: left !important;
+    }
+}
+@media (max-width: 767.99px) {
+    .comment-profile-picture-container,
+    .vote-participant-picture-container,
+    .search-result-picture-container {
+        display: none !important;
+    }
+    .vote-amount {
+        text-align: left;
+    }
+    .btn {
+        display: block;
+        width: 100%;
+    }
+}
+@media (min-width: 768px) {
+    .vote-amount {
+        text-align: right;
+    }
+}
+
+/* Login and signup */
 .facebook {
     background-color: #4267b2;
     border-color: #29487d;
@@ -57,34 +98,6 @@ a.teal:hover {
     background-color: #006dbf;
     border-color: #006dbf;
 }
-.font-size-125 {
-    font-size: 1.25rem;
-}
-.font-size-175 {
-    font-size: 1.75rem;
-}
-
-/* Media Queries */
-@media (max-width: 767.99px) {
-    .comment-profile-picture-container,
-    .vote-participant-picture-container,
-    .search-result-picture-container {
-        display: none !important;
-    }
-    .vote-amount {
-        text-align: left;
-    }
-    .btn {
-        display: block;
-        width: 100%;
-    }
-}
-@media (min-width: 768px) {
-    .vote-amount {
-        text-align: right;
-    }
-}
-
 
 /* Buttons - All */
 .btn {
