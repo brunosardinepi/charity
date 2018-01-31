@@ -19,7 +19,6 @@
                 <p><a class="teal" href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
                 {% if campaign.type == "vote" %}<p><a class="teal" href="{% url 'campaign_edit_vote' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit vote participants</a></p>{% endif %}
 
-
                 {% if campaign.managers_list %}
                     <h2 class="mt-5">Managers</h2>
                     <div class="row justify-content-center mt-3 mb-5">

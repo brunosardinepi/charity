@@ -13,19 +13,17 @@
         <div class="col-lg-9">
             <h2>Analytics</h2>
             <hr>
-            {% if request.user.userprofile in campaign.campaign_admins.all or "manager_view_dashboard" in campaign_perms %}
-                <div class="row mt-5 mb-5 justify-content-center">
-                    <div class="col-lg-3 text-center">
-                        <p class="small m-0">Total raised</p>
-                        <h2 class="m-0">{{ donations.total_donations|cents_to_dollars }}</h2>
-                        <p class="small m-0">Avg: {{ donations.total_donations_avg|cents_to_dollars }}</p>
-                    </div>
+            <div class="row mt-5 mb-5 justify-content-center">
+                <div class="col-lg-3 text-center">
+                    <p class="small m-0">Total raised</p>
+                    <h2 class="m-0">{{ donations.total_donations|cents_to_dollars }}</h2>
+                    <p class="small m-0">Avg: {{ donations.total_donations_avg|cents_to_dollars }}</p>
                 </div>
+            </div>
 
-                <section>
-                    <canvas id="myChart"></canvas>
-                </section>
-            {% endif %}
+            <section>
+                <canvas id="myChart"></canvas>
+            </section>
         </div>
     </div>
 {% endblock %}
@@ -33,57 +31,56 @@
 {% block body_extra %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
 
-
-<script>
-var ctx = document.getElementById("myChart").getContext('2d');
-var graph_dates = {{ graph_dates|safe }};
-var graph_donations = {{ graph_donations|safe }};
-var myChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: graph_dates,
-        datasets: [{
-            data: graph_donations,
-            backgroundColor: 'rgba(51, 204, 153, 0.2)',
-            hoverBackgroundColor: 'rgba(51, 204, 153, 0.5)',
-            borderColor: 'rgba(51, 204, 153, 1)',
-            borderWidth: 1
-        }]
-    },
-    options: {
-        title: {
-            display: true,
-            text: 'Donations for past 30 days',
-            fontSize: '16',
-            padding: '16',
-        },
-        tooltips: {
-            callbacks: {
-                label: function(tooltipItems, data) {
-                    return '$' + tooltipItems.yLabel.toString();
-                }
+    <script>
+        var ctx = document.getElementById("myChart").getContext('2d');
+        var graph_dates = {{ graph_dates|safe }};
+        var graph_donations = {{ graph_donations|safe }};
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: graph_dates,
+                datasets: [{
+                    data: graph_donations,
+                    backgroundColor: 'rgba(51, 204, 153, 0.2)',
+                    hoverBackgroundColor: 'rgba(51, 204, 153, 0.5)',
+                    borderColor: 'rgba(51, 204, 153, 1)',
+                    borderWidth: 1
+                }]
             },
-        },
-        legend: {
-            display: false
-        },
-        scales: {
-            xAxes: [{
-                gridLines: {
-                    display: false,
+            options: {
+                title: {
+                    display: true,
+                    text: 'Donations for past 30 days',
+                    fontSize: '16',
+                    padding: '16',
                 },
-            }],
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true,
-                    // Include a dollar sign in the ticks
-                    callback: function(value, index, values) {
-                        return '$' + value;
-                    }
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItems, data) {
+                            return '$' + tooltipItems.yLabel.toString();
+                        }
+                    },
+                },
+                legend: {
+                    display: false
+                },
+                scales: {
+                    xAxes: [{
+                        gridLines: {
+                            display: false,
+                        },
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            // Include a dollar sign in the ticks
+                            callback: function(value, index, values) {
+                                return '$' + value;
+                            }
+                        }
+                    }]
                 }
-            }]
-        }
-    }
-});
-</script>
+            }
+        });
+    </script>
 {% endblock %}

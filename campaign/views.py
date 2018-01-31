@@ -462,7 +462,7 @@ class CampaignDashboardAdmin(View):
 class CampaignDashboardDonations(View):
     def get(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        if utils.has_dashboard_access(request.user, campaign, None):
+        if utils.has_dashboard_access(request.user, campaign, 'manager_view_dashboard'):
             return render(self.request, 'campaign/dashboard_donations.html', {
                 'campaign': campaign,
                 'donations': donation_statistics(campaign),
