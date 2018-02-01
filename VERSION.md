@@ -10,6 +10,7 @@ Release date: TBD
 
 * Features page
 * All form inputs have a label for ARIA and SEO
+* Sitemap
 
 ### Changes
 
