@@ -1,4 +1,5 @@
 from allauth.account import views
+from allauth.socialaccount import views as social_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Sum
@@ -25,7 +26,7 @@ class LoginView(views.LoginView):
 class SignupView(views.SignupView):
     template_name = 'signup.html'
 
-class SocialSignupView(views.SignupView):
+class SocialSignupView(social_views.SignupView):
     template_name = 'social_signup.html'
 
 #class PasswordResetView(views.PasswordResetView):
