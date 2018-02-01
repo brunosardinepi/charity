@@ -35,6 +35,11 @@ def error_stripe_invalid_request(request, error_pk):
         'message': msg,
     })
 
+def error_campaign_vote_participants(request):
+    previous_page = request.META.get('HTTP_REFERER')
+    return render(request, 'notes/error_campaign_vote_participants.html', {
+        'previous_page': previous_page,
+    })
 
 class AbuseComment(View):
     def get(self, request, comment_pk):

@@ -167,6 +167,8 @@ class CampaignEditVote(View):
                     campaign_pk=campaign.pk,
                     campaign_slug=campaign.campaign_slug
                 )
+            else:
+                return redirect('notes:error_campaign_vote_participants')
         else:
             raise Http404
 

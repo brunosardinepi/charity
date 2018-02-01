@@ -1,0 +1,10 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %}Error | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+    <p>Please make sure you have at least <span class="font-weight-bold">two</span> vote participants and that each vote participant has a <span class="font-weight-bold">name</span>.</p>
+    <a class="btn btn-purple" href="{{ previous_page }}">Go back</a>
+{% endblock %}
+
