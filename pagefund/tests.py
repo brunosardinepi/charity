@@ -281,7 +281,7 @@ class HomeTest(TestCase):
 
     def test_social_signup(self):
         response = self.client.get('/accounts/social/signup/')
-        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, '/accounts/login/', 302, 200)
 
     def test_create(self):
         response = self.client.get('/create/')

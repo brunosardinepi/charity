@@ -17,6 +17,7 @@ Release date: TBD
 ### Fixes
 
 * HTML5 compliance
+* Twitter signup/login wasn't working
 
 
 ## Version 0.24.0
