@@ -18,6 +18,7 @@ Release date: TBD
 
 * HTML5 compliance
 * Twitter signup/login wasn't working
+* Logo wasn't showing up correctly in Gmail
 
 
 ## Version 0.24.0
