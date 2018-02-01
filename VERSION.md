@@ -14,6 +14,8 @@ Release date: TBD
 
 * Form validation site-wide
 * Vote participant edit design
+* Home page image width
+* Home page mobile breakpoints
 
 ### Fixes
 

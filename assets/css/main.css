@@ -54,6 +54,11 @@ a.teal:hover {
     }
 }
 @media (max-width: 767.99px) {
+    #nav-ul .list-inline-item {
+        display: block;
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
     .comment-profile-picture-container,
     .vote-participant-picture-container,
     .search-result-picture-container {
