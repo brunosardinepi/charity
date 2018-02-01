@@ -110,6 +110,35 @@ a.teal:hover {
     border-color: #006dbf;
 }
 
+/* Create */
+.page-banner,
+.campaign-banner {
+    height: 350px;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+.page-banner {
+    background: url('../img/placeholder_01.jpg');
+}
+.campaign-banner {
+    background: url('../img/placeholder_01.jpg');
+}
+.create-row {
+    height: 350px;
+}
+.create-text {
+   background: rgb(0, 0, 0);
+   background: rgba(0, 0, 0, 0.6);
+}
+.create-text h1,
+.create-text p {
+  color: #fff !important;
+  color: rgba(255,255,255, 1) !important;
+}
+
 /* Buttons - All */
 .btn {
     border-radius: 0 !important;

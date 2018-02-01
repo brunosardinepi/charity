@@ -81,7 +81,7 @@
             </div>
         </nav>
 
-        <main role="main" class="container{% if '1dashboard' in request.resolver_match.url_name %}-fluid{% endif %}">
+        <main role="main"{% if request.path != '/create/' %} class="container"{% endif %}>
             {% block body_content %}{% endblock %}
         </main>
 
