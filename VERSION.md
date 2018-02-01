@@ -16,6 +16,7 @@ Release date: TBD
 * Vote participant edit design
 * Home page image width
 * Home page mobile breakpoints
+* "Get started" design
 
 ### Fixes
 
