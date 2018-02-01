@@ -7,6 +7,18 @@
 
 {% block title %}Create | {{ block.super }}{% endblock %}
 
+{% block head_extra %}
+    <style type="text/css">
+        body {
+            font-size: 1.125rem;
+        }
+        .col-lg-4 svg {
+            color: #33cc99;
+        }
+    </style>
+{% endblock %}
+
+
 {% block body_content %}
     <div class="page-banner">
         <div class="container-fluid">
@@ -48,40 +60,23 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-header">
-                    Step 1
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Select</h5>
-                    <p class="card-text"><a href="{% url 'page_create' %}">Create a Page</a> to raise funds for yourself or your organization.</p>
-                    <p class="card-text"><a href="{% url 'campaign_create' %}" class="teal">Create a Campaign</a> to raise funds for the causes you care most about.</p>
-                </div>
-            </div>
+    <div class="row mt-5 pb-5">
+        <div class="col-lg-4 text-center mb-5 px-5">
+            <i class="fal fa-hand-pointer font-size-4 mb-3"></i>
+            <h5>Select</h5>
+            <p>Choose to <a href="{% url 'page_create' %}">create a Page</a> or <a href="{% url 'campaign_create' %}" class="teal">create a Campaign</a> to raise funds for the causes you care most about.</p>
         </div>
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-header">
-                    Step 2
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Create</h5>
-                    <p class="card-text">Take a few seconds to fill out information about your Page or Campaign.</p>
-                </div>
-            </div>
+
+        <div class="col-lg-4 text-center mb-5 px-5">
+            <i class="fal fa-list-alt font-size-4 mb-3"></i>
+            <h5>Create</h5>
+            <p>Take a few seconds to fill out information about your Page or Campaign.</p>
         </div>
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-header">
-                    Step 3
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Share</h5>
-                    <p class="card-text">You're all set! Share your Page or Campaign for visibility.</p>
-                </div>
-            </div>
+
+        <div class="col-lg-4 text-center mb-5 px-5">
+            <i class="fal fa-share-alt font-size-4 mb-3"></i>
+            <h5>Share</h5>
+            <p>You're all set! Share your Page or Campaign for visibility.</p>
         </div>
     </div>
     </div>

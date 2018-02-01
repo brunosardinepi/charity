@@ -111,20 +111,23 @@ a.teal:hover {
 }
 
 /* Create */
-.page-banner,
-.campaign-banner {
+.page-banner {
     height: 350px;
+    background: url('../img/placeholder_01.jpg');
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
     background-repeat: no-repeat;
 }
-.page-banner {
-    background: url('../img/placeholder_01.jpg');
-}
 .campaign-banner {
+    height: 350px;
     background: url('../img/placeholder_01.jpg');
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 .create-row {
     height: 350px;
