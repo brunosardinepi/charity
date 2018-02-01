@@ -2,13 +2,13 @@
 
 This is the version history for PageFund development.
 
-## Version 0.24.1
+## Version 0.25.0
 
 Release date: TBD
 
 ### Additions
 
-* None
+* Social signup design
 
 ### Changes
 

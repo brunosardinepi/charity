@@ -19,14 +19,14 @@ def home(request):
     donations = Donation.objects.all().aggregate(Sum('amount')).get('amount__sum')
     return render(request, 'home.html', {'donations': donations})
 
-
 class LoginView(views.LoginView):
     template_name = 'login.html'
-
 
 class SignupView(views.SignupView):
     template_name = 'signup.html'
 
+class SocialSignupView(views.SignupView):
+    template_name = 'social_signup.html'
 
 #class PasswordResetView(views.PasswordResetView):
 #    template_name = 'password_reset.html'
