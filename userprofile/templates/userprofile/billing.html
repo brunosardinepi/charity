@@ -33,12 +33,15 @@
                         {% csrf_token %}
                         <div class="form-row">
                             <div class="col-3">
+                                <label for="id_name" class="sr-only">Card name</label>
                                 <input class="form-control" type="text" name="name" value="{{ c.name }}" placeholder="My Visa" maxlength="100" id="id_name" />
                             </div>
                             <div class="col-1">
+                                <label for="id_exp_month" class="sr-only">Card expiration month</label>
                                 <input class="form-control" type="text" name="exp_month" value="{{ c.exp_month }}" placeholder="10" maxlength="2" id="id_exp_month" />
                             </div>
                             <div class="col-2">
+                                <label for="id_exp_year" class="sr-only">Card expiration year</label>
                                 <input class="form-control" type="text" name="exp_year" value="{{ c.exp_year }}" placeholder="2025" maxlength="4" id="id_exp_year" />
                             </div>
                             <div class="col-2 my-auto">

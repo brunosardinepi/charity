@@ -9,6 +9,7 @@ Release date: TBD
 ### Additions
 
 * Features page
+* All form inputs have a label for ARIA and SEO
 
 ### Changes
 
