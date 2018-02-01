@@ -66,7 +66,7 @@
                 } else {
                     // Otherwise, just insert the remove button as the
                     // last child element of the form's container:
-                    row.append('<a class="' + options.deleteCssClass + '" href="javascript:void(0)">' + options.deleteText +'</a>');
+                    row.append('<div class="col-md-2 d-flex align-items-center h100"><div class="row"><div class="col-12"><a class="' + options.deleteCssClass + '" href="javascript:void(0)">' + options.deleteText +'</a></div></div></div>');
                 }
                 // Check if we're under the minimum number of forms - not to display delete link at rendering
                 if (!showDeleteLinks()){
@@ -184,7 +184,7 @@
                 addButton = buttonRow.find('a');
             } else {
                 // Otherwise, insert it immediately after the last form:
-                $$.filter(':last').after('<a class="' + options.addCssClass + '" href="javascript:void(0)">' + options.addText + '</a>');
+                $$.filter(':last').after('<div class="row mb-5"><div class="col-md-7 offset-md-3 p-0"><a class="btn btn-block btn-purple ' + options.addCssClass + '" href="javascript:void(0)">' + options.addText + '</a></div></div>');
                 addButton = $$.filter(':last').next();
                 if (hideAddButton) addButton.hide();
             }
@@ -218,8 +218,8 @@
     $.fn.formset.defaults = {
         prefix: 'form',                  // The form prefix for your django formset
         formTemplate: null,              // The jQuery selection cloned to generate new form instances
-        addText: 'add another',          // Text for the add link
-        deleteText: 'remove',            // Text for the delete link
+        addText: 'Add vote participant',          // Text for the add link
+        deleteText: 'Delete',            // Text for the delete link
         addCssClass: 'add-row',          // CSS class applied to the add link
         deleteCssClass: 'delete-row',    // CSS class applied to the delete link
         formCssClass: 'dynamic-form',    // CSS class applied to each form in a formset

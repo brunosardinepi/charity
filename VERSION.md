@@ -13,6 +13,7 @@ Release date: TBD
 ### Changes
 
 * Form validation site-wide
+* Vote participant edit design
 
 ### Fixes
 

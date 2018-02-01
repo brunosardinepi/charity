@@ -66,6 +66,12 @@ a.teal:hover {
         display: block;
         width: 100%;
     }
+    #vote-cancel {
+        order: 2;
+    }
+    #vote-save {
+        order: 1;
+    }
 }
 @media (min-width: 768px) {
     .vote-amount {
