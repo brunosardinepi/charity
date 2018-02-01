@@ -12,7 +12,7 @@ Release date: TBD
 
 ### Changes
 
-* Form validation on Page creation process
+* Form validation site-wide
 
 ### Fixes
 
