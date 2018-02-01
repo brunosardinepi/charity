@@ -28,11 +28,15 @@
 
         <!-- css -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
-        <link href="{% static 'css/main.css' %}?{% now 'U' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'css/main.css' %}?{% now 'U' %}" rel="stylesheet" />
 
         <!-- scripts -->
         <script src="https://js.stripe.com/v3/"></script>
         <script defer src="{% static 'js/fontawesome-all.min.js' %}"></script>
+
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <![endif]-->
 
         {% block head_extra %}{% endblock %}
     </head>

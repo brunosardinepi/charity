@@ -2,29 +2,21 @@
 
 This is the version history for PageFund development.
 
-## Version 0.25.0
+## Version 0.24.1
 
-Release date: 02/01/2018
-
-33 files changed, 495 insertions(+), 179 deletions(-)
+Release date: TBD
 
 ### Additions
 
-* Features page
-* All form inputs have a label for ARIA and SEO
-* Sitemap
+* None
 
 ### Changes
 
-* Form validation site-wide
-* Vote participant edit design
-* Home page image width
-* Home page mobile breakpoints
-* "Get started" design
+* None
 
 ### Fixes
 
-* None
+* HTML5 compliance
 
 
 ## Version 0.24.0
