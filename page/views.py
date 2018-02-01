@@ -207,9 +207,6 @@ class PageCreateBankInfo(View):
             }
             utils.email(request.user.email, "blank", "blank", "new_page_created", substitutions)
             return HttpResponseRedirect(page.get_absolute_url())
-        else:
-            print("form.errors = {}".format(form.errors))
-
 
 class PageEditBankInfo(View):
     def get(self, request, page_slug):
@@ -219,38 +216,36 @@ class PageEditBankInfo(View):
             'account_holder_first_name': userprofile.user.first_name,
             'account_holder_last_name': userprofile.user.last_name,
         }
-        if page.type == 'nonprofit':
-            form = forms.PageEditBankEINForm(initial=initial)
-        else:
-            form = forms.PageEditBankForm(initial=initial)
+        form = forms.PageEditBankForm(initial=initial)
         return render(request, 'page/page_edit_bank_info.html', {'page': page, 'form': form})
 
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        if page.type == 'nonprofit':
-            form = forms.PageEditBankEINForm(request.POST)
-        else:
-            form = forms.PageEditBankForm(request.POST)
+        form = forms.PageEditBankForm(request.POST)
         if form.is_valid():
             if not settings.TESTING:
 
-                if page.type == 'personal':
-                    stripe_type = 'individual'
-                else:
+                if page.type == 'nonprofit':
                     stripe_type = 'company'
+                else:
+                    stripe_type = 'individual'
 
                 acct = stripe.Account.retrieve(page.stripe_account_id)
 
                 external_account = {
-                    "object": "bank_account",
-                    "country": "US",
-                    "account_number": form.cleaned_data['account_number'],
-                    "account_holder_name": "%s %s" % (request.user.first_name, request.user.last_name),
-                    "account_holder_type": stripe_type,
-                    "routing_number": form.cleaned_data['routing_number'],
-                    "default_for_currency": "true",
+                    'object': 'bank_account',
+                    'country': 'US',
+                    'currency': 'usd',
+                    'account_number': form.cleaned_data['account_number'],
+                    'account_holder_name': '%s %s' % (request.user.first_name, request.user.last_name),
+                    'account_holder_type': stripe_type,
+                    'routing_number': form.cleaned_data['routing_number'],
+                    'default_for_currency': 'true',
                 }
-                ext_acct = acct.external_accounts.create(external_account=external_account)
+                try:
+                    ext_acct = acct.external_accounts.create(external_account=external_account)
+                except Exception as e:
+                    print("exception = {}".format(e))
                 # delete the old account here
                 # so that we can set the new one as default first
                 acct.external_accounts.retrieve(page.stripe_bank_account_id).delete()

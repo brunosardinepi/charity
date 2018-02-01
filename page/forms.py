@@ -103,6 +103,3 @@ class PageEditBankForm(forms.Form):
     account_holder_last_name = forms.CharField(max_length=255)
     account_number = forms.CharField(max_length=12)
     routing_number = forms.CharField(max_length=9)
-
-class PageEditBankEINForm(PageEditBankForm):
-    ein = forms.CharField(max_length=20)
