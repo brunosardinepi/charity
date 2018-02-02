@@ -11,6 +11,7 @@ Release date: TBD
 * Social signup design
 * Error page for when Page or Campaign doesn't exist
 * Custom 404 and 500 pages
+* Success, warning, and error messages on form feedback
 
 ### Changes
 
