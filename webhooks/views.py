@@ -10,11 +10,25 @@ from django.views.decorators.http import require_POST
 
 import stripe
 
+from .models import Webhook
 from campaign.models import Campaign, VoteParticipant
 from donation.models import Donation
 from page.models import Page
 from plans.models import StripePlan
 
+
+@require_POST
+@csrf_exempt
+def webhooks_all(request):
+    event_json = json.loads(request.body.decode('utf-8'))
+    Webhook.objects.create(
+        event_id=event_json['id'],
+        object=event_json['object'],
+        created=event_json['created'],
+        type=event_json['type'],
+        event=event_json
+    )
+    return HttpResponse(status=200)
 
 @require_POST
 @csrf_exempt
