@@ -30,7 +30,7 @@ from invitations.utils import invite
 from page.models import Page
 from pagefund import config, utils
 from pagefund.image import image_is_valid
-from pagefund.utils import email
+from pagefund.utils import email, has_notification
 from userprofile import models as UserProfileModels
 from userprofile.utils import get_user_credit_cards
 
@@ -123,12 +123,14 @@ class CampaignCreate(View):
                 }
                 admins = page.admins.all()
                 for admin in admins:
-                    if admin.user != request.user:
-                        email(admin.user.email, "blank", "blank", "new_campaign_created_admin", substitutions)
+                    if has_notification(admin.user, "notification_email_campaign_created") == True:
+                        if admin.user != request.user:
+                            email(admin.user.email, "blank", "blank", "new_campaign_created_admin", substitutions)
                 managers = page.managers.all()
                 for manager in managers:
-                    if manager.user != request.user:
-                        email(manager.user.email, "blank", "blank", "new_campaign_created_admin", substitutions)
+                    if has_notification(manager.user, "notification_email_campaign_created") == True:
+                        if manager.user != request.user:
+                            email(manager.user.email, "blank", "blank", "new_campaign_created_admin", substitutions)
 
                 messages.success(request, 'Campaign created', fail_silently=True)
                 if campaign.type == 'vote':
