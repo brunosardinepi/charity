@@ -182,7 +182,7 @@ class Notifications(View):
                 setattr(userprofile, "%s" % o, False)
         userprofile.save()
         messages.success(request, 'Notifications updated')
-        return HttpResponseRedirect(request.user.userprofile.get_absolute_url())
+        return HttpResponseRedirect(reverse('userprofile:notifications'))
 
 
 def card_list(request):

@@ -34,13 +34,12 @@ class UserProfile(models.Model):
     notification_email_campaign_created = models.BooleanField(default=True)
     notification_email_page_manager = models.BooleanField(default=True)
     notification_email_campaign_manager = models.BooleanField(default=True)
-    notification_email_page_donation = models.BooleanField(default=True)
+    notification_email_donation = models.BooleanField(default=True)
     notification_email_recurring_donation = models.BooleanField(default=True)
-    notification_email_campaign_donation = models.BooleanField(default=True)
     notification_email_campaign_voted = models.BooleanField(default=True)
-    notification_email_campaign_ticket_purchased = models.BooleanField(default=True)
+#    notification_email_campaign_ticket_purchased = models.BooleanField(default=True)
     notification_email_campaign_goal_reached = models.BooleanField(default=True)
-    notification_email_campaign_ticket_sold_out = models.BooleanField(default=True)
+#    notification_email_campaign_ticket_sold_out = models.BooleanField(default=True)
     STATE_CHOICES = (
         ('AL', 'Alabama'),
         ('AK', 'Alaska'),
@@ -166,34 +165,34 @@ class UserProfile(models.Model):
             "value": self.notification_email_campaign_manager,
             "label": "Campaign manager invitation"
         }
-        notifications["notification_email_page_donation"] = {
-            "value": self.notification_email_page_donation,
-            "label": "Page donation"
+        notifications["notification_email_donation"] = {
+            "value": self.notification_email_donation,
+            "label": "Donation"
         }
         notifications["notification_email_recurring_donation"] = {
             "value": self.notification_email_recurring_donation,
             "label": "Recurring donation setup"
         }
-        notifications["notification_email_campaign_donation"] = {
-            "value": self.notification_email_campaign_donation,
-            "label": "Campaign donation"
-        }
+#        notifications["notification_email_campaign_donation"] = {
+#            "value": self.notification_email_campaign_donation,
+#            "label": "Campaign donation"
+#        }
         notifications["notification_email_campaign_voted"] = {
             "value": self.notification_email_campaign_voted,
             "label": "Voted in Campaign"
         }
-        notifications["notification_email_campaign_ticket_purchased"] = {
-            "value": self.notification_email_campaign_ticket_purchased,
-            "label": "Ticket purchased"
-        }
+#        notifications["notification_email_campaign_ticket_purchased"] = {
+#            "value": self.notification_email_campaign_ticket_purchased,
+#            "label": "Ticket purchased"
+#        }
         notifications["notification_email_campaign_goal_reached"] = {
             "value": self.notification_email_campaign_goal_reached,
             "label": "Campaign goal reached"
         }
-        notifications["notification_email_campaign_ticket_sold_out"] = {
-            "value": self.notification_email_campaign_ticket_sold_out,
-            "label": "Campaign tickets sold out"
-        }
+#        notifications["notification_email_campaign_ticket_sold_out"] = {
+#            "value": self.notification_email_campaign_ticket_sold_out,
+#            "label": "Campaign tickets sold out"
+#        }
         return notifications
 
     def plans(self):

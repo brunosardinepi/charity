@@ -151,3 +151,14 @@ def has_dashboard_access(user, obj, permission):
 
 def get_content_type(pk):
     return ContentType.objects.get(pk=pk)
+
+def has_notification(user, notification):
+    # get a list of the user's enabled notifications
+    # return True if notification is in list
+    # return False if notification is not in list
+
+    notification_preferences = user.userprofile.notification_preferences()
+    if notification_preferences[notification]['value'] == True:
+        return True
+    else:
+        return False
