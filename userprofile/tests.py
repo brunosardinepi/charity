@@ -10,10 +10,11 @@ from django.utils import timezone
 from . import forms
 from . import models
 from . import views
+from campaign.models import Campaign
 from donation.models import Donation
 from invitations.models import ManagerInvitation
 from page.models import Page
-from campaign.models import Campaign
+from pagefund.utils import has_notification
 
 
 class UserProfileTest(TestCase):
@@ -29,6 +30,26 @@ class UserProfileTest(TestCase):
             last_name='Doe',
         )
         self.user.userprofile.state = 'Kansas'
+        self.user.userprofile.save()
+
+        self.user2 = User.objects.create_user(
+            username='penandearbuds',
+            email='pen@and.earbuds',
+            password='postitnote',
+            first_name='Paper',
+            last_name='Towels',
+        )
+        self.user2.userprofile.notification_email_donation = True
+        self.user2.userprofile.notification_email_campaign_created = False
+        self.user2.userprofile.save()
+
+        self.user3 = User.objects.create_user(
+            username='clickthemouse',
+            email='click@the.mouse',
+            password='leftandright',
+            first_name='Space',
+            last_name='Heater',
+        )
 
         self.page = Page.objects.create(
             name="Buffalo",
@@ -255,20 +276,28 @@ class UserProfileTest(TestCase):
         self.assertNotIn(self.card, cards)
 
     def test_notification_preferences(self):
+        self.assertEqual(has_notification(self.user2, 'notification_email_donation'), True)
+        self.assertEqual(has_notification(self.user2, 'notification_email_campaign_created'), False)
+
+    def test_notification_preferences_default(self):
+        self.assertEqual(has_notification(self.user3, 'notification_email_donation'), True)
+        self.assertEqual(has_notification(self.user3, 'notification_email_campaign_created'), True)
+
+    def test_notification_preferences_update(self):
         self.client.login(username='testuser', password='testpassword')
 
-        data = {'notification_preferences[]': ['notification_email_page_donation']}
+        data = {'notification_preferences[]': ['notification_email_donation']}
         response = self.client.post('/profile/notifications/', data)
-        self.assertRedirects(response, '/profile/', 302, 200)
+        self.assertRedirects(response, '/profile/notifications/', 302, 200)
         response = self.client.get('/profile/notifications/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Notification Preferences")
         response = response.content.decode("utf-8")
         self.assertEqual(response.count("checked"), 1)
 
-        data = {'notification_preferences[]': ['notification_email_page_donation', 'notification_email_page_created']}
+        data = {'notification_preferences[]': ['notification_email_donation', 'notification_email_campaign_created']}
         response = self.client.post('/profile/notifications/', data)
-        self.assertRedirects(response, '/profile/', 302, 200)
+        self.assertRedirects(response, '/profile/notifications/', 302, 200)
         response = self.client.get('/profile/notifications/')
         response = response.content.decode("utf-8")
         self.assertEqual(response.count("checked"), 2)

@@ -16,7 +16,7 @@ Release date: TBD
 
 ### Changes
 
-* None
+* Hooked PageFund notification preferences into SendGrid email functions
 
 ### Fixes
 
