@@ -20,11 +20,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="description" content="">
 
-        <meta property="og:title" content="PageFund" />
-        <meta property="og:type" content="website" />
+        {% include "twitter_metadata.html" %}
+        {% include "og.html" %}
         <meta property="og:url" content="https://page.fund" />
-        <meta property="og:image" content="{% include 'snippets/og_image.txt' %}" />
-        <meta property="og:description" content="{% include 'snippets/og_description.txt' %}" />
 
         <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
         <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}">
