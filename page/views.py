@@ -40,12 +40,13 @@ from plans.models import StripePlan
 stripe.api_key = config.settings['stripe_api_sk']
 
 def page(request, page_slug):
-    page = get_object_or_404(Page, page_slug=page_slug)
-    template_params = {}
+    try:
+        page = Page.objects.get(page_slug=page_slug)
+    except Page.DoesNotExist:
+        return redirect('notes:error_page_does_not_exist')
 
-    if page.deleted == True:
-        raise Http404
-    else:
+    if page.deleted == False:
+        template_params = {}
         if request.user.is_authenticated():
             donate_form = DonateForm()
             template_params["form"] = CommentForm
@@ -67,6 +68,8 @@ def page(request, page_slug):
         template_params["subscribe_attr"] = subscribe_attr
         template_params["api_pk"] = config.settings['stripe_api_pk']
         return render(request, 'page/page.html', template_params)
+    else:
+        return redirect('notes:error_page_does_not_exist')
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
