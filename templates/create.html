@@ -8,6 +8,12 @@
 {% block title %}Create | {{ block.super }}{% endblock %}
 
 {% block head_extra %}
+    <meta property="og:title" content="PageFund" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://page.fund/create/" />
+    <meta property="og:image" content="{% include 'snippets/og_image.txt' %}" />
+    <meta property="og:description" content="{% include 'snippets/og_description.txt' %}" />
+
     <style>
         body {
             font-size: 1.125rem;
