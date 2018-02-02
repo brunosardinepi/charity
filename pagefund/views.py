@@ -3,7 +3,7 @@ from allauth.socialaccount import views as social_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Sum
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import redirect, render, reverse
 from django.views import View
 
@@ -79,3 +79,9 @@ def invite(request):
 
                 return HttpResponseRedirect(reverse('home'))
     return render(request, 'invite.html', {'form': form})
+
+def handler404(request):
+    return render(request, '404.html', status=404)
+
+def handler500(request):
+    return render(request, '500.html', status=500)
