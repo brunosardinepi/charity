@@ -29,9 +29,6 @@ class SignupView(views.SignupView):
 class SocialSignupView(social_views.SignupView):
     template_name = 'social_signup.html'
 
-#class PasswordResetView(views.PasswordResetView):
-#    template_name = 'password_reset.html'
-
 @login_required
 def invite(request):
     form = forms.GeneralInviteForm()

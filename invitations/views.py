@@ -84,7 +84,6 @@ def forgot_password_request(request):
             email(form.cleaned_data['email'], "blank", "blank", "reset_password", substitutions)
 
             messages.success(request, 'Password reset email sent', fail_silently=True)
-            return HttpResponseRedirect(reverse('home'))
     return render(request, 'forgot_password_request.html', {'form': form})
 
 def forgot_password_reset(request, invitation_pk, key):

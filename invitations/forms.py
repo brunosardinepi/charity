@@ -2,7 +2,7 @@ from django import forms
 
 
 class ForgotPasswordRequestForm(forms.Form):
-    email = forms.EmailField()
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'Email address'}))
 
 class ForgotPasswordResetForm(forms.Form):
     password1 = forms.CharField(max_length=255, label='Password')
