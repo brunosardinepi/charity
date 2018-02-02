@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^abuse/image/(?P<type>[\w-]+)/(?P<image_pk>\d+)/$', login_required(views.AbuseImage.as_view()), name='abuse_image'),
 
     url(r'^error/amount/none/$', views.error_amount_is_none, name='error_amount_is_none'),
+    url(r'^error/campaign/does-not-exist/$', views.error_campaign_does_not_exist, name='error_campaign_does_not_exist'),
     url(r'^error/campaign/vote-participants/$', views.error_campaign_vote_participants, name='error_campaign_vote_participants'),
     url(r'^error/image/size/$', views.error_image_size, name='error_image_size'),
     url(r'^error/image/type/$', views.error_image_type, name='error_image_type'),

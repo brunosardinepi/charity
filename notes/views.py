@@ -44,6 +44,9 @@ def error_campaign_vote_participants(request):
 def error_page_does_not_exist(request):
     return render(request, 'notes/error_page_does_not_exist.html')
 
+def error_campaign_does_not_exist(request):
+    return render(request, 'notes/error_campaign_does_not_exist.html')
+
 class AbuseComment(View):
     def get(self, request, comment_pk):
         comment = get_object_or_404(Comment, pk=comment_pk)

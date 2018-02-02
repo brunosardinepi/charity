@@ -35,10 +35,12 @@ from userprofile.utils import get_user_credit_cards
 
 
 def campaign(request, page_slug, campaign_pk, campaign_slug):
-    campaign = get_object_or_404(Campaign, pk=campaign_pk)
-    if campaign.deleted == True:
-        raise Http404
-    else:
+    try:
+        campaign = Campaign.objects.get(pk=campaign_pk)
+    except Campaign.DoesNotExist:
+        return redirect('notes:error_campaign_does_not_exist')
+
+    if campaign.deleted == False:
         template_params = {}
 
         if request.user.is_authenticated():
@@ -82,7 +84,8 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
         template_params["api_pk"] = config.settings['stripe_api_pk']
         template_params["subscribe_attr"] = subscribe_attr
         return render(request, 'campaign/campaign.html', template_params)
-
+    else:
+        return redirect('notes:error_campaign_does_not_exist')
 
 class CampaignCreate(View):
     def get(self, request, page_slug=None):
