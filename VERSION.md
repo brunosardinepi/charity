@@ -15,6 +15,7 @@ Release date: TBD
 * Logging all Stripe webhooks
 * Styling for "Forgot password request" and "Forgot password reset" pages
 * Form error messages on auth pages
+* Facebook and Twitter share buttons
 
 ### Changes
 

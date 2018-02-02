@@ -558,3 +558,7 @@ a.nav-link:hover {
         order: 2;
     }
 }
+
+.fb-share-button span {
+    vertical-align: top !important;
+}
