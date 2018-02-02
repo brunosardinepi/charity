@@ -32,7 +32,7 @@ def accept_invitation(request, invitation_pk, key):
                 if v == True:
                     assign_perm(k, request.user, invitation.page)
             remove_invitation(invitation_pk, "manager", "True", "False")
-            messages.success(request, 'Invitation accepted')
+            messages.success(request, 'Invitation accepted', fail_silently=True)
             return HttpResponseRedirect(invitation.page.get_absolute_url())
         elif invitation.campaign:
             invitation.campaign.campaign_managers.add(request.user.userprofile)
@@ -41,7 +41,7 @@ def accept_invitation(request, invitation_pk, key):
                 if v == True:
                     assign_perm(k, request.user, invitation.campaign)
             remove_invitation(invitation_pk, "manager", "True", "False")
-            messages.success(request, 'Invitation accepted')
+            messages.success(request, 'Invitation accepted', fail_silently=True)
             return HttpResponseRedirect(invitation.campaign.get_absolute_url())
     else:
         # redirect to an error page
@@ -64,7 +64,7 @@ def decline_invitation(request, type, invitation_pk, key):
 
     # if the user is logged in and declined the invitation, redirect them to their other pending invitations
     if request.user.is_authenticated:
-        messages.success(request, 'Invitation declined')
+        messages.success(request, 'Invitation declined', fail_silently=True)
         return HttpResponseRedirect(reverse('userprofile:pending_invitations'))
     # if the user isn't logged in and declined the invitation, redirect them to the homepage
     else:
@@ -83,7 +83,7 @@ def forgot_password_request(request):
             }
             email(form.cleaned_data['email'], "blank", "blank", "reset_password", substitutions)
 
-            messages.success(request, 'Password reset email sent')
+            messages.success(request, 'Password reset email sent', fail_silently=True)
             return HttpResponseRedirect(reverse('home'))
     return render(request, 'forgot_password_request.html', {'form': form})
 
@@ -110,7 +110,7 @@ def forgot_password_reset(request, invitation_pk, key):
                     user = authenticate(request, username=user.username, password=form.cleaned_data['password1'])
                     if user is not None:
                         login(request, user)
-                        messages.success(request, 'Password reset successfully')
+                        messages.success(request, 'Password reset successfully', fail_silently=True)
                         return redirect('userprofile:userprofile')
     return render(request, 'forgot_password_reset.html', {'form': form})
 
@@ -122,5 +122,5 @@ def change_password_request(request):
         "-passwordreseturl-": "{}/password/reset/{}/{}/".format(config.settings['site'], invitation.pk, invitation.key),
     }
     email(request.user.email, "blank", "blank", "reset_password", substitutions)
-    messages.success(request, 'Password reset email sent')
+    messages.success(request, 'Password reset email sent', fail_silently=True)
     return redirect('userprofile:userprofile')

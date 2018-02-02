@@ -130,7 +130,7 @@ class CampaignCreate(View):
                     if manager.user != request.user:
                         email(manager.user.email, "blank", "blank", "new_campaign_created_admin", substitutions)
 
-                messages.success(request, 'Campaign created')
+                messages.success(request, 'Campaign created', fail_silently=True)
                 if campaign.type == 'vote':
                     return redirect('campaign_edit_vote', page_slug=page.page_slug, campaign_pk=campaign.pk, campaign_slug=campaign.campaign_slug)
                 else:
@@ -167,7 +167,7 @@ class CampaignEditVote(View):
                     vote_participant.save()
                 for d in formset.deleted_objects:
                     d.delete()
-                messages.success(request, 'Campaign updated')
+                messages.success(request, 'Campaign updated', fail_silently=True)
                 return redirect('campaign_dashboard_admin',
                     page_slug=campaign.page.page_slug,
                     campaign_pk=campaign.pk,
@@ -225,7 +225,7 @@ def campaign_edit(request, page_slug, campaign_pk, campaign_slug):
             form = forms.CampaignEditForm(instance=campaign, data=request.POST)
             if form.is_valid():
                 form.save()
-                messages.success(request, 'Campaign updated')
+                messages.success(request, 'Campaign updated', fail_silently=True)
                 return redirect('campaign_dashboard_admin',
                     page_slug=campaign.page.page_slug,
                     campaign_pk=campaign.pk,
@@ -246,7 +246,7 @@ def campaign_delete(request, page_slug, campaign_pk, campaign_slug):
         campaign.campaign_slug = campaign.campaign_slug + "deleted" + timezone.now().strftime("%Y%m%d")
         campaign.save()
 
-        messages.success(request, 'Campaign deleted')
+        messages.success(request, 'Campaign deleted', fail_silently=True)
         return HttpResponseRedirect(campaign.page.get_absolute_url())
     else:
         raise Http404
@@ -268,7 +268,7 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
 
                 status = invite(data)
                 if status == True:
-                    messages.success(request, 'Invitation sent')
+                    messages.success(request, 'Invitation sent', fail_silently=True)
                     # redirect the admin/manager to the Campaign
                     return redirect('campaign_dashboard_admin',
                         page_slug=campaign.page.page_slug,
@@ -296,7 +296,7 @@ def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
         remove_perm('manager_image_edit', manager, campaign)
         remove_perm('manager_view_dashboard', manager, campaign)
 
-        messages.success(request, 'Manager removed')
+        messages.success(request, 'Manager removed', fail_silently=True)
         # redirect to campaign
         return HttpResponseRedirect(campaign.get_absolute_url())
     else:
@@ -372,7 +372,7 @@ class CampaignDonate(View):
             form = DonateUnauthenticatedForm(request.POST)
         if form.is_valid():
             donate(request=request, form=form, page=None, campaign=campaign)
-            messages.success(request, 'Donation successful')
+            messages.success(request, 'Donation successful', fail_silently=True)
             return HttpResponseRedirect(campaign.get_absolute_url())
 
 @login_required
@@ -468,7 +468,7 @@ class CampaignDashboardAdmin(View):
     def post(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
         utils.update_manager_permissions(request.POST.getlist('permissions[]'), campaign)
-        messages.success(request, 'Permissions updated')
+        messages.success(request, 'Permissions updated', fail_silently=True)
         return redirect('campaign_dashboard_admin',
             page_slug=campaign.page.page_slug,
             campaign_pk=campaign.pk,
