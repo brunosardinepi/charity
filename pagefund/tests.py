@@ -375,15 +375,11 @@ class HomeTest(TestCase):
         response = self.client.get('/password/change/')
         self.assertRedirects(response, '/profile/', 302, 200)
 
-    def test_about(self):
-        response = self.client.get('/about/')
-        self.assertEqual(response.status_code, 200)
-
     def test_terms_of_service(self):
         response = self.client.get('/terms-of-service/')
         self.assertEqual(response.status_code, 200)
 
-    def test_terms_of_service(self):
+    def test_privacy_policy(self):
         response = self.client.get('/privacy-policy/')
         self.assertEqual(response.status_code, 200)
 

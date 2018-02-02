@@ -2,7 +2,7 @@
 
 This is the version history for PageFund development.
 
-## Version 0.25.0
+## Version 0.26.0
 
 Release date: 02/02/2018
 
@@ -31,6 +31,31 @@ Release date: 02/02/2018
 * Twitter signup/login wasn't working
 * Logo wasn't showing up correctly in Gmail
 * Changed "Forgot password reset" inputs to password instead of plaintext
+
+
+## Version 0.25.0
+
+Release date: 02/01/2018
+
+33 files changed, 495 insertions(+), 179 deletions(-)
+
+### Additions
+
+* Features page
+* All form inputs have a label for ARIA and SEO
+* Sitemap
+
+### Changes
+
+* Form validation site-wide
+* Vote participant edit design
+* Home page image width
+* Home page mobile breakpoints
+* "Get started" design
+
+### Fixes
+
+* None
 
 
 ## Version 0.24.0
