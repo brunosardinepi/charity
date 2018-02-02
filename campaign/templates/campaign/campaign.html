@@ -10,7 +10,17 @@
 {% block title %} {{ campaign.name }} | {{ block.super }}{% endblock %}
 
 {% block head_extra %}
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{ campaign.name }} | PageFund" />
+    <meta property="og:description" content="{{ campaign.description|truncatechars:300 }}" />
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo_lg.svg' %}" />
+
     <link href="{% static 'css/lightbox.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block pre_nav %}
+    {% include "facebook_share.html" %}
 {% endblock %}
 
 {% block body_content %}
