@@ -14,6 +14,7 @@ Release date: TBD
 * Success, warning, and error messages on form feedback
 * Logging all Stripe webhooks
 * Styling for "Forgot password request" and "Forgot password reset" pages
+* Form error messages on auth pages
 
 ### Changes
 
