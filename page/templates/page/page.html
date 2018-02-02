@@ -26,59 +26,59 @@
 {% endblock %}
 
 {% block body_content %}
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-md-7">
-                {% include "page/page_image.html" %}
-            </div>
-            <div class="col-md-5 page-info">
 
-                {% include "page/page_actions.html" %}
+    {% include "messages.html" %}
 
-                <div class="row">
-                    <div class="col-xl-6">
-                        {% include "page/page_info.html" %}
-                    </div>
-                    <div class="col-xl-6">
-                        {% include "page/page_subactions.html" %}
-                    </div>
-                    {% if page.website %}
-                        <div class="col-12">
-                            <p><i class="fal fa-fw fa-desktop"></i> {{ page.website }}</p>
-                        </div>
-                    {% endif %}
+    <div class="row mb-5">
+        <div class="col-md-7">
+            {% include "page/page_image.html" %}
+        </div>
+        <div class="col-md-5 page-info">
+
+            {% include "page/page_actions.html" %}
+
+            <div class="row">
+                <div class="col-xl-6">
+                    {% include "page/page_info.html" %}
                 </div>
-
-            </div>
-        </div>
-        {% if page.description %}
-            <div class="row mb-5">
-                <div class="col">
-                    {% include "page/page_about.html" %}
+                <div class="col-xl-6">
+                    {% include "page/page_subactions.html" %}
                 </div>
+                {% if page.website %}
+                    <div class="col-12">
+                        <p><i class="fal fa-fw fa-desktop"></i> {{ page.website }}</p>
+                    </div>
+                {% endif %}
             </div>
-        {% endif %}
-        <div class="row mb-5">
-            <div class="col-lg-12">
-                {% include "page/page_campaigns.html" %}
-            </div>
-        </div>
 
-        <div class="row justify-content-between mb-5">
-            <div class="col-lg-8">
-                {% include "page/page_donations.html" %}
-            </div>
-            <div class="col-lg-4">
-                {% include "page/page_top_donors.html" %}
-            </div>
         </div>
-        <div class="row justify-content-center mb-5">
+    </div>
+    {% if page.description %}
+        <div class="row mb-5">
             <div class="col">
-                {% include "comments/comments.html" with obj=page %}
+                {% include "page/page_about.html" %}
             </div>
+        </div>
+    {% endif %}
+    <div class="row mb-5">
+        <div class="col-lg-12">
+            {% include "page/page_campaigns.html" %}
         </div>
     </div>
 
+    <div class="row justify-content-between mb-5">
+        <div class="col-lg-8">
+            {% include "page/page_donations.html" %}
+        </div>
+        <div class="col-lg-4">
+            {% include "page/page_top_donors.html" %}
+        </div>
+    </div>
+    <div class="row justify-content-center mb-5">
+        <div class="col">
+            {% include "comments/comments.html" with obj=page %}
+        </div>
+    </div>
 {% endblock %}
 
 {% block body_extra %}

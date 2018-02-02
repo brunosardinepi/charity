@@ -8,6 +8,7 @@ from collections import OrderedDict
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib import messages
 from django.db.models.functions import Lower
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
@@ -260,7 +261,7 @@ class PageEditBankInfo(View):
                 "-pagename-": page.name,
             }
             utils.email(request.user.email, "blank", "blank", "page_bank_information_updated", substitutions)
-
+            messages.success(request, 'Bank information updated')
             return redirect('page_dashboard_admin', page_slug=page.page_slug)
 
 
@@ -273,6 +274,7 @@ def page_edit(request, page_slug):
             form = forms.PageEditForm(instance=page, data=request.POST)
             if form.is_valid():
                 form.save()
+                messages.success(request, 'Page updated')
                 return redirect('page_dashboard_admin', page_slug=page.page_slug)
     else:
         raise Http404
@@ -303,6 +305,7 @@ def page_delete(request, page_slug):
             account = stripe.Account.retrieve(page.stripe_account_id)
             account.delete()
 
+        messages.success(request, 'Page deleted')
         return HttpResponseRedirect(reverse('home'))
     else:
         raise Http404
@@ -341,8 +344,8 @@ def page_invite(request, page_slug):
 
                 status = invite(data)
                 if status == True:
+                    messages.success(request, 'Invitation sent')
                     # redirect the admin/manager to the Page
-#                    utils.email(form.cleaned_data["email"], "", "", "new_page_created")
                     return redirect('page_dashboard_admin', page_slug=page.page_slug)
         return render(request, 'page/page_invite.html', {'form': form, 'page': page})
     # the user isn't an admin or a manager, so they can't invite someone
@@ -364,6 +367,8 @@ def remove_manager(request, page_slug, manager_pk):
         remove_perm('manager_invite', manager, page)
         remove_perm('manager_image_edit', manager, page)
         remove_perm('manager_view_dashboard', manager, page)
+
+        messages.success(request, 'Manager removed')
         # redirect to page admin
         return redirect('page_dashboard_admin', page_slug=page.page_slug)
     else:
@@ -406,6 +411,7 @@ class PageDonate(View):
             form = DonateUnauthenticatedForm(request.POST)
         if form.is_valid():
             donate(request=request, form=form, page=page, campaign=None)
+            messages.success(request, 'Donation successful')
             return HttpResponseRedirect(page.get_absolute_url())
 
 @login_required
@@ -512,6 +518,7 @@ class PageDashboardAdmin(View):
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
         utils.update_manager_permissions(request.POST.getlist('permissions[]'), page)
+        messages.success(request, 'Permissions updated')
         return redirect('page_dashboard_admin', page_slug=page.page_slug)
 
 class PageDashboardDonations(View):

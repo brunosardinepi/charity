@@ -6,6 +6,9 @@
 {% block title %}Settings | {{ block.super }}{% endblock %}
 
 {% block body_content %}
+
+    {% include "messages.html" %}
+
     <div class="row">
         <div class="col-lg-3">
             {% include "campaign/dashboard_menu.html" %}
