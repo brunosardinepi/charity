@@ -116,6 +116,14 @@ class CampaignCreate(View):
                 }
                 email(request.user.email, "blank", "blank", "new_campaign_created", substitutions)
 
+                date = timezone.now().strftime("%Y-%m-%d %I:%M:%S %Z")
+                utils.email("gn9012@gmail.com", "blank", "blank", "admin_new_campaign", {
+                    '-user-': request.user.email,
+                    '-page-': campaign.page.name,
+                    '-campaign-': campaign.name,
+                    '-date-': date,
+                })
+
                 substitutions = {
                     "-campaignname-": campaign.name,
                     "-pagename-": campaign.page.name,
@@ -132,7 +140,6 @@ class CampaignCreate(View):
                         if manager.user != request.user:
                             email(manager.user.email, "blank", "blank", "new_campaign_created_admin", substitutions)
 
-                messages.success(request, 'Campaign created', fail_silently=True)
                 if campaign.type == 'vote':
                     return redirect('campaign_edit_vote', page_slug=page.page_slug, campaign_pk=campaign.pk, campaign_slug=campaign.campaign_slug)
                 else:

@@ -181,6 +181,12 @@ def user_signed_up_(request, user, **kwargs):
 
     email(user.email, "blank", "blank", "new_user_signup", {})
 
+    date = timezone.now().strftime("%Y-%m-%d %I:%M:%S %Z")
+    email("gn9012@gmail.com", "blank", "blank", "admin_new_user_signup", {
+        '-email-': user.email,
+        '-date-': date,
+    })
+
 def create_random_string(length=30):
     if length <= 0:
         length = 30

@@ -210,6 +210,13 @@ class PageCreateBankInfo(View):
                 "-pagename-": page.name,
             }
             utils.email(request.user.email, "blank", "blank", "new_page_created", substitutions)
+
+            date = timezone.now().strftime("%Y-%m-%d %I:%M:%S %Z")
+            utils.email("gn9012@gmail.com", "blank", "blank", "admin_new_page", {
+                '-user-': request.user.email,
+                '-page-': page.name,
+                '-date-': date,
+            })
             return HttpResponseRedirect(page.get_absolute_url())
 
 class PageEditBankInfo(View):
