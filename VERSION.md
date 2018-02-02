@@ -13,6 +13,7 @@ Release date: TBD
 * Custom 404 and 500 pages
 * Success, warning, and error messages on form feedback
 * Logging all Stripe webhooks
+* Styling for "Forgot password request" and "Forgot password reset" pages
 
 ### Changes
 
@@ -23,6 +24,7 @@ Release date: TBD
 * HTML5 compliance
 * Twitter signup/login wasn't working
 * Logo wasn't showing up correctly in Gmail
+* Changed "Forgot password reset" inputs to password instead of plaintext
 
 
 ## Version 0.24.0

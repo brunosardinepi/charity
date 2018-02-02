@@ -5,8 +5,8 @@ class ForgotPasswordRequestForm(forms.Form):
     email = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'Email address'}))
 
 class ForgotPasswordResetForm(forms.Form):
-    password1 = forms.CharField(max_length=255, label='Password')
-    password2 = forms.CharField(max_length=255, label='Password (again)')
+    password1 = forms.CharField(max_length=255, label='Password', widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
+    password2 = forms.CharField(max_length=255, label='Confirm password', widget=forms.PasswordInput(attrs={'placeholder': 'Confirm password'}))
 
     def clean(self):
         data = self.cleaned_data
