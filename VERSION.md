@@ -9,6 +9,8 @@ Release date: TBD
 ### Additions
 
 * Social signup design
+* Error page for when Page or Campaign doesn't exist
+* Custom 404 and 500 pages
 
 ### Changes
 
