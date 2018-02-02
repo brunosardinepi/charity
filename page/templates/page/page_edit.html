@@ -6,7 +6,7 @@
 {% block title %}Edit | {{ block.super }}{% endblock %}
 
 {% block body_content %}
-    <div class="row">
+    <div class="row pb-5">
         <div class="col-lg-3">
             {% include "page/dashboard_menu.html" %}
         </div>
@@ -248,8 +248,4 @@
             </form>
         </div>
     </div>
-{% endblock %}
-
-{% block body_extra %}
-    <script src="{% static 'js/ein.js' %}"></script>
 {% endblock %}

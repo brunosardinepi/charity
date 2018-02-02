@@ -10,64 +10,75 @@
 {% block title %} {{ campaign.name }} | {{ block.super }}{% endblock %}
 
 {% block head_extra %}
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{ campaign.name }} | PageFund" />
+    <meta property="og:description" content="{{ campaign.description|truncatechars:300 }}" />
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo_lg.svg' %}" />
+
     <link href="{% static 'css/lightbox.css' %}" rel="stylesheet">
 {% endblock %}
 
+{% block pre_nav %}
+    {% include "facebook_share.html" %}
+    {% include "twitter_share.html" %}
+{% endblock %}
+
 {% block body_content %}
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-md-7">
-                {% include "campaign/campaign_image.html" %}
-            </div>
-            <div class="col-md-5 page-info">
-                {% include "campaign/campaign_actions.html" %}
-                <div class="row">
-                    <div class="col-xl-6">
-                        {% include "campaign/campaign_info.html" %}
-                    </div>
-                    <div class="col-xl-6">
-                        {% include "campaign/campaign_subactions.html" %}
-                    </div>
-                    {% if campaign.website %}
-                        <div class="col-12">
-                            <p><i class="fal fa-fw fa-desktop"></i> {{ campaign.website }}</p>
-                        </div>
-                    {% endif %}
-                </div>
 
-            </div>
+    {% include "messages.html" %}
+
+    <div class="row mb-5">
+        <div class="col-md-7">
+            {% include "campaign/campaign_image.html" %}
         </div>
-        {% if campaign.description %}
-            <div class="row mb-5">
-                <div class="col">
-                    {% include "campaign/campaign_about.html" %}
+        <div class="col-md-5 page-info">
+            {% include "campaign/campaign_actions.html" %}
+            <div class="row">
+                <div class="col-xl-6">
+                    {% include "campaign/campaign_info.html" %}
                 </div>
-            </div>
-        {% endif %}
-
-        {% if campaign.vote_participants %}
-            <div class="row mb-5">
-                <div class="col">
-                    {% include "campaign/campaign_vote_participants.html" %}
+                <div class="col-xl-6">
+                    {% include "campaign/campaign_subactions.html" %}
                 </div>
+                {% if campaign.website %}
+                    <div class="col-12">
+                        <p><i class="fal fa-fw fa-desktop"></i> {{ campaign.website }}</p>
+                    </div>
+                {% endif %}
             </div>
-        {% endif %}
 
-        <div class="row justify-content-between mb-5">
-            <div class="col-lg-8">
-                {% include "campaign/campaign_donations.html" %}
-            </div>
-            <div class="col-lg-4">
-                {% include "campaign/campaign_top_donors.html" %}
-            </div>
-        </div>
-        <div class="row justify-content-center mb-5">
-            <div class="col">
-                {% include "comments/comments.html" with obj=campaign %}
-            </div>
         </div>
     </div>
+    {% if campaign.description %}
+        <div class="row mb-5">
+            <div class="col">
+                {% include "campaign/campaign_about.html" %}
+            </div>
+        </div>
+    {% endif %}
 
+    {% if campaign.vote_participants %}
+        <div class="row mb-5">
+            <div class="col">
+                {% include "campaign/campaign_vote_participants.html" %}
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row justify-content-between mb-5">
+        <div class="col-lg-8">
+            {% include "campaign/campaign_donations.html" %}
+        </div>
+        <div class="col-lg-4">
+            {% include "campaign/campaign_top_donors.html" %}
+        </div>
+    </div>
+    <div class="row justify-content-center mb-5">
+        <div class="col">
+            {% include "comments/comments.html" with obj=campaign %}
+        </div>
+    </div>
 {% endblock %}
 
 {% block body_extra %}

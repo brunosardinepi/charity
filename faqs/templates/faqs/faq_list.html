@@ -3,6 +3,14 @@
 
 {% block title %}FAQ | {{ block.super }}{% endblock %}
 
+{% block head_extra %}
+    <meta property="og:title" content="PageFund" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://page.fund/faq/" />
+    <meta property="og:image" content="{% include 'snippets/og_image.txt' %}" />
+    <meta property="og:description" content="{% include 'snippets/og_description.txt' %}" />
+{% endblock %}
+
 {% block body_content %}
     <h1>Frequently Asked Questions (FAQs)</h1>
     <hr>

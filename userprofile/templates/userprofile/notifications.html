@@ -4,6 +4,9 @@
 {% block title %} Profile | {{ block.super }}{% endblock %}
 
 {% block body_content %}
+
+    {% include "messages.html" %}
+
     <div class="row">
         <div class="col-lg-3">
             {% include "userprofile/profile_menu.html" %}
@@ -11,6 +14,7 @@
         <div class="col-lg-9">
             <h2>Notification Preferences</h2>
             <hr>
+            <p>When selected, you'll receive an email each time one of the following occurs:</p>
             <form method="POST" action="{% url 'userprofile:notifications' %}">
                 {% csrf_token %}
                 {% for k,n in userprofile.notification_preferences.items %}

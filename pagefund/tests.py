@@ -222,7 +222,7 @@ class HomeTest(TestCase):
 
     def test_admin(self):
         response = self.client.get('/admin/')
-        self.assertEqual(response.status_code, 404)
+        self.assertRedirects(response, '/notes/error/page/does-not-exist/', 302, 200)
 
     def test_home_logged_out(self):
         response = self.client.get('/')

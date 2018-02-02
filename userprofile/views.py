@@ -2,6 +2,7 @@ import json
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -55,6 +56,8 @@ def userprofile(request):
                 userprofile.state = form.cleaned_data["state"]
                 request.user.save()
                 userprofile.save()
+
+                messages.success(request, 'Profile updated')
                 return HttpResponseRedirect(userprofile.get_absolute_url())
         return render(request, 'userprofile/profile.html', {
             'userprofile': userprofile,
@@ -134,6 +137,9 @@ def add_card(request):
                     stripe_card_id=card_source.id,
                     stripe_card_fingerprint=card_source.fingerprint
                 )
+                messages.success(request, 'Card added')
+            else:
+                messages.error(request, 'Card already exists')
             return HttpResponseRedirect(reverse('userprofile:billing'))
 
 @login_required
@@ -150,11 +156,13 @@ def update_card(request):
                     stripe_card.exp_month = request.POST.get('exp_month')
                     stripe_card.exp_year = request.POST.get('exp_year')
                     stripe_card.save()
+                messages.success(request, 'Card saved')
             elif "delete" in request.POST:
                 card.delete()
                 if not settings.TESTING:
                     customer = stripe.Customer.retrieve(request.user.userprofile.stripe_customer_id)
                     customer.sources.retrieve(card.stripe_card_id).delete()
+                messages.success(request, 'Card deleted')
             return HttpResponseRedirect(reverse('userprofile:billing'))
 
 class Notifications(View):
@@ -173,7 +181,8 @@ class Notifications(View):
             else:
                 setattr(userprofile, "%s" % o, False)
         userprofile.save()
-        return HttpResponseRedirect(request.user.userprofile.get_absolute_url())
+        messages.success(request, 'Notifications updated')
+        return HttpResponseRedirect(reverse('userprofile:notifications'))
 
 
 def card_list(request):

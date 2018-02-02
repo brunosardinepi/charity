@@ -163,7 +163,7 @@ class ManagerInvitationTest(TestCase):
 
         # put email in form and submit
         response = self.client.post('/password/forgot/', {'email': 'i@forgot.it'})
-        self.assertRedirects(response, '/', 302, 200)
+        self.assertEqual(response.status_code, 200)
 
         # click email link to go to password reset
         invitation = models.ForgotPasswordRequest.objects.get(email='i@forgot.it', expired=False, completed=False)

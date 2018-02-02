@@ -8,6 +8,12 @@
 {% block title %}Create | {{ block.super }}{% endblock %}
 
 {% block head_extra %}
+    <meta property="og:title" content="PageFund" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://page.fund/create/" />
+    <meta property="og:image" content="{% include 'snippets/og_image.txt' %}" />
+    <meta property="og:description" content="{% include 'snippets/og_description.txt' %}" />
+
     <style>
         body {
             font-size: 1.125rem;
@@ -23,7 +29,7 @@
     <div class="page-banner">
         <div class="container-fluid">
             <div class="create-row row justify-content-end">
-                <div class="create-text col-md-4 my-auto ml-4 mr-4 p-4">
+                <div class="create-text col-lg-3 my-auto ml-4 mr-4 p-4">
                     <h1>Pages</h1>
                     <p>Pages are for an organization owner or individual looking to raise extra funds for <span class="font-weight-bold">their organization</span> or <span class="font-weight-bold">themselves</span>.</p>
                     <a href="{% url 'page_create' %}" class="btn btn-block btn-lg btn-purple">Create a Page</a>
@@ -35,7 +41,7 @@
     <div class="campaign-banner">
         <div class="container-fluid">
             <div class="create-row row justify-content-start">
-                <div class="create-text col-md-4 my-auto ml-4 mr-4 p-4">
+                <div class="create-text col-lg-3 my-auto ml-4 mr-4 p-4">
                     <h1>Campaigns</h1>
                     <p>Campaigns are for an individual looking to raise extra funds on behalf of <span class="font-weight-bold">another organization</span> or <span class="font-weight-bold">individual</span>.</p>
                     <a href="{% url 'campaign_create' %}" class="btn btn-block btn-lg btn-teal">Create a Campaign</a>

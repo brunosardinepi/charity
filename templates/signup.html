@@ -8,12 +8,17 @@
 
 {% block title %}Sign up | {{ block.super }}{% endblock %}
 
+{% block head_extra %}
+    <meta property="og:title" content="PageFund" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://page.fund/accounts/signup/" />
+    <meta property="og:image" content="{% include 'snippets/og_image.txt' %}" />
+    <meta property="og:description" content="{% include 'snippets/og_description.txt' %}" />
+{% endblock %}
+
 {% block body_content %}
-    <div class="row">
-        <div class="col-12 text-center">
-            <a href="{% url 'home' %}"><img id="logo-login" src="{% static 'img/logo.svg' %}" alt="PageFund logo" title="PageFund logo" /></a>
-        </div>
-    </div>
+
+    {% include "base_logo.html" %}
 
     <div class="row mt-3 mb-3">
         <div class="col-lg-12 text-center">
@@ -26,11 +31,30 @@
             <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
                 {% csrf_token %}
 
+                {% if form.non_field_errors %}
+                    <div class="row justify-content-center">
+                        {% for error in form.non_field_errors %}
+                            <div class="col-lg-10 alert alert-danger" role="alert">
+                                {{ error|escape }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
                 <div class="row justify-content-center">
                     <label for="{{ form.email.id_for_label }}" class="sr-only">Email</label>
                     <div class="form-group col-lg-10">
                         {% render_field form.email class+="form-control" %}
                     </div>
+                    {% if form.email.errors %}
+                        <div class="col-lg-10 mt-1 mb-4">
+                            {% for error in form.email.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="row mb-3 justify-content-center">
@@ -38,6 +62,15 @@
                     <div class="form-group col-lg-10">
                         {% render_field form.email2 class+="form-control" %}
                     </div>
+                    {% if form.email2.errors %}
+                        <div class="col-lg-10 mt-1 mb-4">
+                            {% for error in form.email2.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="row justify-content-center">
@@ -45,6 +78,15 @@
                     <div class="form-group col-lg-10">
                         {% render_field form.password1 class+="form-control" %}
                     </div>
+                    {% if form.password1.errors %}
+                        <div class="col-lg-10 mt-1 mb-4">
+                            {% for error in form.password1.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="row justify-content-center">
@@ -52,6 +94,15 @@
                     <div class="form-group col-lg-10">
                         {% render_field form.password2 class+="form-control" %}
                     </div>
+                    {% if form.password2.errors %}
+                        <div class="col-lg-10 mt-1 mb-4">
+                            {% for error in form.password2.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
 
                 {% if redirect_field_value %}

@@ -1,0 +1,16 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %}Error | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-12">
+            <h1>Page not found</h1>
+            <hr>
+            <p>Sorry, that Page doesn't exist! Try <a href="{% url 'search:search' %}">searching</a> for the Page you're looking for.</p>
+            <p>If you need help, please <a href="mailto:help@page.fund">email</a> us.</p>
+        </div>
+    </div>
+{% endblock %}
+

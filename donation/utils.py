@@ -11,7 +11,7 @@ import stripe
 from .models import Donation
 from campaign.models import Campaign
 from page.models import Page
-from pagefund.utils import email
+from pagefund.utils import email, has_notification
 from pagefund import config
 from plans.models import StripePlan
 from plans.utils import create_plan
@@ -272,7 +272,8 @@ def donate(request, form, page=None, campaign=None):
     else:
         substitutions['-recipient-'] = page.name
 
-    email(request.user.email, "blank", "blank", "donation", substitutions)
+    if has_notification(request.user, "notification_email_donation") == True:
+        email(request.user.email, "blank", "blank", "donation", substitutions)
 
 def donation_statistics(obj):
     if obj.__class__ is Page:

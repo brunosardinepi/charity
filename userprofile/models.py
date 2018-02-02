@@ -29,18 +29,8 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     birthday = models.DateField(blank=True, null=True)
     stripe_customer_id = models.CharField(max_length=255, blank=True)
-    notification_email_pagefund_news = models.BooleanField(default=True)
-    notification_email_page_created = models.BooleanField(default=True)
     notification_email_campaign_created = models.BooleanField(default=True)
-    notification_email_page_manager = models.BooleanField(default=True)
-    notification_email_campaign_manager = models.BooleanField(default=True)
-    notification_email_page_donation = models.BooleanField(default=True)
-    notification_email_recurring_donation = models.BooleanField(default=True)
-    notification_email_campaign_donation = models.BooleanField(default=True)
-    notification_email_campaign_voted = models.BooleanField(default=True)
-    notification_email_campaign_ticket_purchased = models.BooleanField(default=True)
-    notification_email_campaign_goal_reached = models.BooleanField(default=True)
-    notification_email_campaign_ticket_sold_out = models.BooleanField(default=True)
+    notification_email_donation = models.BooleanField(default=True)
     STATE_CHOICES = (
         ('AL', 'Alabama'),
         ('AK', 'Alaska'),
@@ -146,53 +136,13 @@ class UserProfile(models.Model):
 
     def notification_preferences(self):
         notifications = OrderedDict()
-        notifications["notification_email_pagefund_news"] = {
-            "value": self.notification_email_pagefund_news,
-            "label": "PageFund news"
-        }
-        notifications["notification_email_page_created"] = {
-            "value": self.notification_email_page_created,
-            "label": "Page created"
-        }
         notifications["notification_email_campaign_created"] = {
             "value": self.notification_email_campaign_created,
-            "label": "Campaign created"
+            "label": "A Campaign is created for your Page"
         }
-        notifications["notification_email_page_manager"] = {
-            "value": self.notification_email_page_manager,
-            "label": "Page manager invitation"
-        }
-        notifications["notification_email_campaign_manager"] = {
-            "value": self.notification_email_campaign_manager,
-            "label": "Campaign manager invitation"
-        }
-        notifications["notification_email_page_donation"] = {
-            "value": self.notification_email_page_donation,
-            "label": "Page donation"
-        }
-        notifications["notification_email_recurring_donation"] = {
-            "value": self.notification_email_recurring_donation,
-            "label": "Recurring donation setup"
-        }
-        notifications["notification_email_campaign_donation"] = {
-            "value": self.notification_email_campaign_donation,
-            "label": "Campaign donation"
-        }
-        notifications["notification_email_campaign_voted"] = {
-            "value": self.notification_email_campaign_voted,
-            "label": "Voted in Campaign"
-        }
-        notifications["notification_email_campaign_ticket_purchased"] = {
-            "value": self.notification_email_campaign_ticket_purchased,
-            "label": "Ticket purchased"
-        }
-        notifications["notification_email_campaign_goal_reached"] = {
-            "value": self.notification_email_campaign_goal_reached,
-            "label": "Campaign goal reached"
-        }
-        notifications["notification_email_campaign_ticket_sold_out"] = {
-            "value": self.notification_email_campaign_ticket_sold_out,
-            "label": "Campaign tickets sold out"
+        notifications["notification_email_donation"] = {
+            "value": self.notification_email_donation,
+            "label": "You make a donation"
         }
         return notifications
 
@@ -230,6 +180,12 @@ def user_signed_up_(request, user, **kwargs):
         user.save()
 
     email(user.email, "blank", "blank", "new_user_signup", {})
+
+    date = timezone.now().strftime("%Y-%m-%d %I:%M:%S %Z")
+    email("gn9012@gmail.com", "blank", "blank", "admin_new_user_signup", {
+        '-email-': user.email,
+        '-date-': date,
+    })
 
 def create_random_string(length=30):
     if length <= 0:

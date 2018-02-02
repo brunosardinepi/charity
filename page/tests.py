@@ -182,6 +182,10 @@ class PageTest(TestCase):
         pages = models.Page.objects.all()
         self.assertIn(self.page, pages)
 
+    def test_page_no_exist(self):
+        response = self.client.get('/not-a-page/')
+        self.assertRedirects(response, '/notes/error/page/does-not-exist/', 302, 200)
+
     def test_page_creation_time(self):
         page = models.Page.objects.create(name='time tester')
         now = timezone.now()
@@ -658,8 +662,8 @@ class PageTest(TestCase):
         self.assertFalse(self.user4.has_perm('manager_image_edit', self.page))
 
     def test_delete_page_view(self):
-        response = self.client.get('/%s/' % self.page2.page_slug)
-        self.assertEqual(response.status_code, 404)
+        response = self.client.get('/{}/'.format(self.page2.page_slug))
+        self.assertRedirects(response, '/notes/error/page/does-not-exist/', 302, 200)
 
     def test_upload_admin(self):
         self.client.login(username='testuser', password='testpassword')

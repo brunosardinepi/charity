@@ -9,15 +9,26 @@ Release date: TBD
 ### Additions
 
 * Social signup design
+* Error page for when Page or Campaign doesn't exist
+* Custom 404 and 500 pages
+* Success, warning, and error messages on form feedback
+* Logging all Stripe webhooks
+* Styling for "Forgot password request" and "Forgot password reset" pages
+* Form error messages on auth pages
+* Facebook and Twitter share buttons
+* Open Graph metadata
 
 ### Changes
 
-* None
+* Hooked PageFund notification preferences into SendGrid email functions
+* Removed login/logout messages
 
 ### Fixes
 
 * HTML5 compliance
 * Twitter signup/login wasn't working
+* Logo wasn't showing up correctly in Gmail
+* Changed "Forgot password reset" inputs to password instead of plaintext
 
 
 ## Version 0.24.0

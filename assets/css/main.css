@@ -84,6 +84,19 @@ a.teal:hover {
     }
 }
 
+/* Alerts */
+.alert-error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    hr {
+        border-top-color: #f1b0b7;
+    }
+    .alert-link {
+        color: #491217;
+    }
+}
+
 /* Login and signup */
 .facebook {
     background-color: #4267b2;
@@ -544,4 +557,8 @@ a.nav-link:hover {
     #cancel-col {
         order: 2;
     }
+}
+
+.fb-share-button span {
+    vertical-align: top !important;
 }

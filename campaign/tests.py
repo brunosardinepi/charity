@@ -186,6 +186,10 @@ class CampaignTest(TestCase):
         campaigns = models.Campaign.objects.all()
         self.assertIn(self.campaign, campaigns)
 
+    def test_campaign_no_exist(self):
+        response = self.client.get('/page/3/campaign/')
+        self.assertRedirects(response, '/notes/error/campaign/does-not-exist/', 302, 200)
+
     def test_campaign_creation_time(self):
         campaign = models.Campaign.objects.create(
             name='time tester',
@@ -708,7 +712,7 @@ class CampaignTest(TestCase):
 
     def test_delete_campaign_view(self):
         response = self.client.get('/%s/%s/%s/' % (self.page.page_slug, self.campaign2.pk, self.campaign2.campaign_slug))
-        self.assertEqual(response.status_code, 404)
+        self.assertRedirects(response, '/notes/error/campaign/does-not-exist/', 302, 200)
 
     def test_upload_admin(self):
         self.client.login(username='testuser', password='testpassword')
