@@ -13,7 +13,7 @@ Release date: TBD
 
 ### Changes
 
-* None
+* Minify JS and CSS
 
 ### Fixes
 

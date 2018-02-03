@@ -1,5 +1,1 @@
-$(function() {
-    $("#id_end_date").datepicker({
-        minDate: 0,
-    });
-});
+$(function(){$("#id_end_date").datepicker({minDate:0,})})

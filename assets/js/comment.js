@@ -1,11 +1,1 @@
-$(document).ready(function() {
-    $('#newComment').on('shown.bs.modal', function () {
-        $('#id_comment').trigger('focus');
-    });
-});
-
-$(document).on("click", "#submit-comment", function(event) {
-    if ($("#comment-text").val()) {
-        $("#comment-form").submit();
-    };
-});
+$(document).ready(function(){$('#newComment').on('shown.bs.modal',function(){$('#id_comment').trigger('focus')})});$(document).on("click","#submit-comment",function(event){if($("#comment-text").val()){$("#comment-form").submit()}})
