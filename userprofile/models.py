@@ -14,6 +14,8 @@ from django.urls import reverse
 from django.utils import timezone
 
 from allauth.account.signals import user_signed_up
+from sendgrid.helpers.mail import *
+import sendgrid
 import stripe
 
 from donation.models import Donation
@@ -178,6 +180,15 @@ def user_signed_up_(request, user, **kwargs):
 
         user.userprofile.stripe_customer_id = customer.id
         user.save()
+
+        data = [
+          {
+            'email': user.email,
+            'source': 'signup',
+          }
+        ]
+        sg = sendgrid.SendGridAPIClient(apikey=config.settings["sendgrid_api_key"])
+        response = sg.client.contactdb.recipients.post(request_body=data)
 
     email(user.email, "blank", "blank", "new_user_signup", {})
 

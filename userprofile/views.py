@@ -9,6 +9,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views import View
 
+from sendgrid.helpers.mail import *
+import sendgrid
 import stripe
 
 from . import forms
@@ -56,6 +58,19 @@ def userprofile(request):
                 userprofile.state = form.cleaned_data["state"]
                 request.user.save()
                 userprofile.save()
+
+                try:
+                    data = [
+                      {
+                        'email': request.user.email,
+                        'first_name': request.user.first_name,
+                        'last_name': request.user.last_name,
+                      }
+                    ]
+                    sg = sendgrid.SendGridAPIClient(apikey=config.settings["sendgrid_api_key"])
+                    response = sg.client.contactdb.recipients.patch(request_body=data)
+                except:
+                    pass
 
                 messages.success(request, 'Profile updated')
                 return HttpResponseRedirect(userprofile.get_absolute_url())

@@ -9,6 +9,7 @@ Release date: TBD
 ### Additions
 
 * Accessbility for disabled users
+* Add users to SendGrid contact list when they sign up
 
 ### Changes
 
