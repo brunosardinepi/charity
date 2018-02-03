@@ -17,7 +17,7 @@ Release date: TBD
 
 ### Fixes
 
-* None
+* Navigation buttons were off-center
 
 
 ## Version 0.26.0

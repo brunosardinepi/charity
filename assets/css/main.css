@@ -313,7 +313,7 @@ nav {
 a.nav-link {
 /*    color: rgba(0,0,0,.75); */
     color: #333333;
-    padding-right: 2rem !important;
+/*    padding-right: 2rem !important; */
     font-size: 1rem;
     text-transform: uppercase;
 }
