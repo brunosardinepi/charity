@@ -15,7 +15,7 @@
 
 <div class="row mb-3">
     <div class="col-lg-auto pr-0">
-        <h4>{{ campaign.donation_money|cents_to_dollars }} of ${{ campaign.goal }} goal</h4>
+        <h2 class="font-size-15">{{ campaign.donation_money|cents_to_dollars }} of ${{ campaign.goal }} goal</h2>
     </div>
     <div class="col my-auto">
         <span class="small">raised by {{ campaign.unique_donors }} donor{{ campaign.unique_donors|pluralize }}</span>

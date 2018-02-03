@@ -2,19 +2,14 @@
 
 
 <div class="row align-items-center">
-    <div class="col-auto pr-0">
-        <h1>{{ page.name }}</h1>
+    <div class="col-12 pr-0">
+        <h1>{{ page.name }}{% if page.verified == True %} <a class="font-size-15" id="verified" href="#" data-toggle="tooltip" data-placement="right" title="Verified"><i class="fa fa-badge-check" style="color:#33cc99;"></i><span class="sr-only">Verified</span></a>{% endif %}</h1>
     </div>
-    {% if page.verified == True %}
-        <div class="col-2">
-            <h4 class="mb-0"><a id="verified" href="" data-toggle="tooltip" data-placement="right" title="Verified"><i class="fa fa-badge-check" style="color:#33cc99;"></i><span class="sr-only">Verified</span></a></h4>
-        </div>
-    {% endif %}
 </div>
 
 <div class="row mt-3 mb-1">
     <div class="col">
-        <h5 style="font-weight: normal;">{{ page.donation_money|cents_to_dollars }} raised by {{ page.unique_donors }} donors</h5>
+        <p class="font-size-125">{{ page.donation_money|cents_to_dollars }} raised by {{ page.unique_donors }} donors</p>
     </div>
 </div>
 

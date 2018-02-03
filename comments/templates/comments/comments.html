@@ -20,7 +20,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="newCommentLabel">New comment</h5>
+                <p class="font-size-125 modal-title" id="newCommentLabel">New comment</p>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -51,11 +51,11 @@
             <div class="col-md-auto comment-profile-picture-container">
                 {% if c.user.userprofile.profile_picture %}
                     <div class="{{ c.user.userprofile.profile_picture|img_class:'small' }}">
-                        <img src="{{ c.user.userprofile.profile_picture.image.url }}" alt="User profile image" title="User profile image" />
+                        <img src="{{ c.user.userprofile.profile_picture.image.url }}" alt="User profile image" />
                     </div>
                 {% else %}
                     <div class="circular-square-sm">
-                        <img src="{% static 'img/user_default.svg' %}" alt="Default user profile image" title="Default user profile image" />
+                        <img src="{% static 'img/user_default.svg' %}" alt="Default user profile image" />
                     </div>
                 {% endif %}
             </div>
