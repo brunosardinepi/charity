@@ -85,7 +85,7 @@
             </div>
         </nav>
 
-        <main role="main"{% if request.path != '/create/' %} class="container"{% endif %}>
+        <main role="main"{% if request.path != '/create/' and request.path != '/features/' %} class="container"{% endif %}>
             {% block body_content %}{% endblock %}
         </main>
 

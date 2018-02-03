@@ -19,79 +19,85 @@
 {% endblock %}
 
 {% block body_content %}
-    <div class="row">
-        <div class="col-12">
-            <h1>Features</h1>
-            <hr>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1>Features</h1>
+                <hr>
+            </div>
         </div>
     </div>
 
-    <div class="row pt-5 pb-5">
-        <div class="col-lg-6 break-lg-left text-center mb-3">
-            <img src="{% static 'img/verification.svg' %}" alt="Verification" />
+    <div class="container-fluid">
+        <div class="row features-banner">
+            <div class="col-lg-4 text-center">
+                <img src="{% static 'img/verification.svg' %}" alt="Verification" />
+            </div>
+            <div class="col-lg-6 mt-4">
+                <h2 class="font-size-15">Nonprofit verification</h2>
+                <p>Tweet at us from an official account or email <a href="mailto:help@page.fund">help@page.fund</a> with your name and title from your official email address. Simple as that!</p>
+            </div>
         </div>
-        <div class="col-lg-6 break-lg-right">
-            <h2 class="font-size-15">Nonprofit verification</h2>
-            <p>Tweet at us from an official account or email <a href="mailto:help@page.fund">help@page.fund</a> with your name and title from your official email address. Simple as that!</p>
+
+        <div class="row features-banner banner-gray">
+            <div class="col-lg-4 text-center">
+                <img src="{% static 'img/analytics.svg' %}" alt="Analytics" />
+            </div>
+            <div class="col-lg-6 mt-4">
+                <h2 class="font-size-15">Analytics</h2>
+                <p>Each Page and Campaign includes access to a powerful analytics engine that provides information on the amount and source of every donation, no matter how big or small. All for free!</p>
+            </div>
+        </div>
+
+        <div class="row features-banner">
+            <div class="col-lg-4 text-center">
+                <img src="{% static 'img/voting.svg' %}" alt="Voting" />
+            </div>
+            <div class="col-lg-6 mt-4">
+                <h2 class="font-size-15">Campaigns</h2>
+                <p>General Campaigns offer a standard donation model, while Voting Campaigns are a great way to generate a friendly competition. Use them if there are many people looking to help fundraise for a great cause.</p>
+            </div>
         </div>
     </div>
 
-    <div class="row pt-5 pb-5">
-        <div class="col-lg-6 break-lg-right text-right">
-            <h2 class="font-size-15">Analytics</h2>
-            <p>Each Page and Campaign includes access to a powerful analytics engine that provides information on the amount and source of every donation, no matter how big or small. All for free!</p>
-        </div>
-        <div class="col-lg-6 break-lg-left text-center mb-3">
-            <img src="{% static 'img/analytics.svg' %}" alt="Analytics" />
-        </div>
-    </div>
-
-    <div class="row pt-5 pb-5">
-        <div class="col-lg-6 break-lg-left text-center mb-3">
-            <img src="{% static 'img/voting.svg' %}" alt="Voting" />
-        </div>
-        <div class="col-lg-6 break-lg-right">
-            <h2 class="font-size-15">Campaigns</h2>
-            <p>General Campaigns offer a standard donation model, while Voting Campaigns are a great way to generate a friendly competition. Use them if there are many people looking to help fundraise for a great cause.</p>
-        </div>
-    </div>
-
-    <div class="row mt-5 justify-content-center">
-        <div class="col-lg-4 text-center mb-5">
-            <i class="fal fa-share-alt font-size-4 mb-3"></i>
-            <h3 class="font-size-125">Share</h3>
-            <p>Share a Page or Campaign across the most popular social platforms </p>
-        </div>
-        <div class="col-lg-4 text-center mb-5">
-            <i class="fal fa-envelope font-size-4 mb-3"></i>
-            <h3 class="font-size-125">Easy management</h3>
-            <p>Invite others to help manage and administer any Page or Campaign</p>
-        </div>
-        <div class="col-lg-4 text-center mb-5">
-            <i class="fal fa-repeat font-size-4 mb-3"></i>
-            <h3 class="font-size-125">Recurring donations</h3>
-            <p>Recurring donations for users who contribute the most often</p>
-        </div>
-        <div class="col-lg-4 text-center mb-5">
-            <i class="fal fa-fast-forward font-size-4 mb-3"></i>
-            <h3 class="font-size-125">Fast</h3>
-            <p>Free, fast, and easy setup for all Pages, Campaigns, and user accounts</p>
-        </div>
-        <div class="col-lg-4 text-center mb-5">
-            <i class="fal fa-list font-size-4 mb-3"></i>
-            <h3 class="font-size-125">Donation tracking</h3>
-            <p>List of all contributions made throughout the year to 501(c)(3) organizations</p>
-        </div>
-        <div class="col-lg-4 text-center mb-5">
-            <i class="fal fa-lock-alt font-size-4 mb-3"></i>
-            <h3 class="font-size-125">Security</h3>
-            <p>Advanced security to ensure the safety and reliability of all contributions</p>
-        </div>
-        <div class="col-lg-4 text-center mb-5">
-            <i class="fal fa-dollar-sign font-size-4 mb-3"></i>
-            <h3 class="font-size-125">Best pricing</h3>
-            <p>PageFund is happy to provide competitive market pricing to ensure that more funds go directly to the causes that matter most</p>
-            <p>PageFund charges a 4.8% platform fee. Our payment processor charges a 2.9% + $0.30 transaction fee.</p>
+    <div class="container">
+        <div class="row mt-5 justify-content-center">
+            <div class="col-lg-4 text-center mb-5">
+                <i class="fal fa-share-alt font-size-4 mb-3"></i>
+                <h3 class="font-size-125">Share</h3>
+                <p>Share a Page or Campaign across the most popular social platforms </p>
+            </div>
+            <div class="col-lg-4 text-center mb-5">
+                <i class="fal fa-envelope font-size-4 mb-3"></i>
+                <h3 class="font-size-125">Easy management</h3>
+                <p>Invite others to help manage and administer any Page or Campaign</p>
+            </div>
+            <div class="col-lg-4 text-center mb-5">
+                <i class="fal fa-repeat font-size-4 mb-3"></i>
+                <h3 class="font-size-125">Recurring donations</h3>
+                <p>Recurring donations for users who contribute the most often</p>
+            </div>
+            <div class="col-lg-4 text-center mb-5">
+                <i class="fal fa-fast-forward font-size-4 mb-3"></i>
+                <h3 class="font-size-125">Fast</h3>
+                <p>Free, fast, and easy setup for all Pages, Campaigns, and user accounts</p>
+            </div>
+            <div class="col-lg-4 text-center mb-5">
+                <i class="fal fa-list font-size-4 mb-3"></i>
+                <h3 class="font-size-125">Donation tracking</h3>
+                <p>List of all contributions made throughout the year to 501(c)(3) organizations</p>
+            </div>
+            <div class="col-lg-4 text-center mb-5">
+                <i class="fal fa-lock-alt font-size-4 mb-3"></i>
+                <h3 class="font-size-125">Security</h3>
+                <p>Advanced security to ensure the safety and reliability of all contributions</p>
+            </div>
+            <div class="col-lg-4 text-center mb-5">
+                <i class="fal fa-dollar-sign font-size-4 mb-3"></i>
+                <h3 class="font-size-125">Best pricing</h3>
+                <p>PageFund is happy to provide competitive market pricing to ensure that more funds go directly to the causes that matter most</p>
+                <p>PageFund charges a 4.8% platform fee. Our payment processor charges a 2.9% + $0.30 transaction fee.</p>
+            </div>
         </div>
     </div>
 {% endblock %}
