@@ -275,6 +275,11 @@ def donate(request, form, page=None, campaign=None):
     if has_notification(request.user, "notification_email_donation") == True:
         email(request.user.email, "blank", "blank", "donation", substitutions)
 
+    date = timezone.now().strftime("%Y-%m-%d %I:%M:%S %Z")
+    substitutions['-user-'] = request.user.email
+    substitutions['-date-'] = date
+    email("gn9012@gmail.com", "blank", "blank", "admin_new_donation", substitutions)
+
 def donation_statistics(obj):
     if obj.__class__ is Page:
         total_donations = Donation.objects.filter(page=obj).aggregate(Sum('amount')).get('amount__sum')

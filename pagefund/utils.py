@@ -29,6 +29,7 @@ def email(user_email, subject, body, template, substitutions):
             'admin_new_user_signup': '0122d455-720c-4ee3-b5eb-70185fae4579',
             'admin_new_page': '41206bb2-1b0b-4b76-9240-08b02ac847a8',
             'admin_new_campaign': 'cabaff4b-9c8e-4965-8b80-2485688d6b5d',
+            'admin_new_donation': '4abfaf11-3ab0-45bd-ba85-44330b8ca9c1',
         }
 
         data = {
