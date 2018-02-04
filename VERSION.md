@@ -10,6 +10,7 @@ Release date: TBD
 
 * All Campaigns page for Pages
 * All donations page for Pages and Campaigns
+* Invite design
 
 ### Changes
 
