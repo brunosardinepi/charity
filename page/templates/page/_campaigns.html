@@ -1,0 +1,36 @@
+{% load static from staticfiles %}
+{% load donation_extras %}
+{% load humanize %}
+{% load lib_extras %}
+
+
+<div class="row mb-3">
+    <div class="col-md-auto comment-profile-picture-container">
+        {% if c.profile_picture %}
+            <div class="{{ c.profile_picture|img_class:'small' }}">
+                <img src="{{ c.profile_picture.image.url }}" alt="Campaign image" />
+            </div>
+        {% else %}
+            <div class="circular-square-sm">
+                <img src="{% static 'img/campaign_default.svg' %}" alt="Default Campaign image" />
+            </div>
+        {% endif %}
+    </div>
+    <div class="col">
+        <div class="row pt-2">
+            <div class="col-md-auto">
+                <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a>
+            </div>
+            <div class="col-md-auto">
+                <span class="comment-date small"><i class="fal fa-clock"></i> ends {{ c.end_date|naturaltime }}<span>
+            </div>
+            <div class="col-md-5 ml-auto">
+                <div class="progress">
+                    <div {% if c.donation_money|progress_value < c.goal%}class="progress-bar-gray"{% else %}class="progress-bar-teal"{% endif%} role="progressbar" style="width: {{ c|progress_width }}%" aria-valuenow="{{ c.donation_money|progress_value }}" aria-valuemin="0" aria-valuemax="{{ c.goal }}"></div>
+                </div>
+                <span class="small d-block text-right">{{ c.donation_money|cents_to_dollars }} of ${{ c.goal }} goal</span>
+            </div>
+        </div>
+    </div>
+</div>
+

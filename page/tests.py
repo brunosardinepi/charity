@@ -114,7 +114,7 @@ class PageTest(TestCase):
             name='Test Campaign',
             campaign_slug='testcampaign',
             page=self.page,
-            type='event',
+            type='general',
             description='This is a description for Test Campaign.',
             goal='11',
             end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
@@ -124,9 +124,21 @@ class PageTest(TestCase):
             name='Another One',
             campaign_slug='anotherone',
             page=self.page,
-            type='event',
+            type='general',
             description='My cat died yesterday',
             goal='12',
+            end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
+        )
+
+        self.campaign3 = CampaignModels.Campaign.objects.create(
+            name='Ross',
+            campaign_slug='rgeller',
+            page=self.page,
+            type='vote',
+            description='rachel',
+            goal='3433',
+            is_active=False,
+            deleted=False,
             end_date=datetime.datetime(2099, 8, 15, 8, 15, 12, 0, pytz.UTC),
         )
 
@@ -781,7 +793,7 @@ class PageTest(TestCase):
 
     def test_dashboard_average_campaign_duration(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/{}/manage/'.format(self.page.page_slug))
+        response = self.client.get('/{}/manage/campaigns/'.format(self.page.page_slug))
 
         self.assertContains(response, "{} days".format(campaign_average_duration(self.page)), status_code=200)
 
@@ -882,3 +894,9 @@ class PageTest(TestCase):
         response = self.client.get('/{}/'.format(self.page3.page_slug))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'Verified')
+
+    def test_page_campaigns_all(self):
+        response = self.client.get('/{}/campaigns/'.format(self.page.page_slug))
+        self.assertContains(response, self.campaign.name)
+        self.assertContains(response, self.campaign2.name)
+        self.assertNotContains(response, self.campaign3.name)

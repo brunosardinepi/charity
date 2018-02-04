@@ -44,6 +44,7 @@ urlpatterns = [
     url(r'^create/(?P<page_pk>\d+)/bank/$', login_required(PageViews.PageCreateBankInfo.as_view()), name='page_create_bank_info'),
     url(r'^(?P<page_slug>[\w-]+)/edit/bank/$', login_required(PageViews.PageEditBankInfo.as_view()), name='page_edit_bank_info'),
     url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),
+    url(r'^(?P<page_slug>[\w-]+)/campaigns/$', PageViews.PageCampaigns.as_view(), name='page_campaigns'),
     url(r'^(?P<page_slug>[\w-]+)/manage/$', login_required(PageViews.PageDashboard.as_view()), name='page_dashboard'),
     url(r'^(?P<page_slug>[\w-]+)/manage/admin/$', login_required(PageViews.PageDashboardAdmin.as_view()), name='page_dashboard_admin'),
     url(r'^(?P<page_slug>[\w-]+)/manage/donations/$', login_required(PageViews.PageDashboardDonations.as_view()), name='page_dashboard_donations'),

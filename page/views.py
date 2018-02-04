@@ -577,3 +577,11 @@ class PageDashboardImages(View):
         else:
             raise Http404
 
+class PageCampaigns(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        campaigns = Campaign.objects.filter(page=page, is_active=True, deleted=False).order_by('end_date')
+        return render(self.request, 'page/page_campaigns_all.html', {
+            'page': page,
+            'campaigns': campaigns,
+        })

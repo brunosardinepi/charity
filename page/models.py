@@ -209,7 +209,7 @@ class Page(models.Model):
             return None
 
     def active_campaigns(self):
-        return Campaign.objects.filter(page=self, is_active=True, deleted=False).order_by('end_date')
+        return Campaign.objects.filter(page=self, is_active=True, deleted=False).order_by('end_date')[:5]
 
     def inactive_campaigns(self):
         return Campaign.objects.filter(page=self, is_active=False, deleted=False).order_by('-end_date')

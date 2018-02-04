@@ -2,13 +2,13 @@
 
 This is the version history for PageFund development.
 
-## Version 0.27.1
+## Version 0.28.0
 
 Release date: TBD
 
 ### Additions
 
-* None
+* All Campaigns page for Pages
 
 ### Changes
 
