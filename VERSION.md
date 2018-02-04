@@ -9,6 +9,7 @@ Release date: TBD
 ### Additions
 
 * All Campaigns page for Pages
+* All donations page for Pages and Campaigns
 
 ### Changes
 

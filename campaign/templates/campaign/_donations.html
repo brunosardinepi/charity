@@ -1,0 +1,66 @@
+{% load humanize %}
+{% load staticfiles %}
+{% load donation_extras %}
+{% load lib_extras %}
+
+
+<div class="row donation mb-3">
+    <div class="col-md-auto comment-profile-picture-container">
+        {% if d.user.userprofile.profile_picture %}
+            {% if d.anonymous_donor %}
+                <div class="circular-square-sm">
+                    <img src="{% static 'img/user_default.svg' %}" alt="Default user image" title="Default user image" />
+                </div>
+            {% else %}
+                <div class="{{ d.user.userprofile.profile_picture|img_class:'small' }}">
+                    <img src="{{ d.user.userprofile.profile_picture.image.url }}" alt="User image" title="User image" />
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="circular-square-sm">
+                <img src="{% static 'img/user_default.svg' %}" alt="Default user image" title="Default user image" />
+            </div>
+        {% endif %}
+    </div>
+    <div class="col-md-9 {% if not d.comment %}d-flex align-items-center h100{% endif %}">
+        <div class="row">
+            <div class="col-12">
+                <span class="font-weight-bold">
+                    {% if not d.anonymous_donor %}
+                        {% if d.user %}
+                            {{ d.user.first_name }} {{ d.user.last_name }}
+                        {% else %}
+                            {{ d.donor_first_name }} {{ d.donor_last_name }}
+                        {% endif %}
+                    {% else %}
+                        An anonymous donor
+                    {% endif %}
+                </span>
+
+                donated
+
+                <span class="teal font-weight-bold">
+                    {% if not d.anonymous_amount %}
+                        {{ d.amount|cents_to_dollars }}
+                    {% else %}
+                        an anonymous amount
+                    {% endif %}
+                </span>
+
+                {% if d.campaign_participant %}
+                    for <span class="teal">{{ d.campaign_participant }}</span>
+                {% endif %}
+
+                <p class="comment-date small">
+                    <i class="fal fa-clock"></i> {{ d.date|naturaltime }}
+                </p>
+            </div>
+
+            <div class="col-12">
+                {% if d.comment %}
+                    <p class="comment-content">{{ d.comment }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

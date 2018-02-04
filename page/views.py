@@ -585,3 +585,12 @@ class PageCampaigns(View):
             'page': page,
             'campaigns': campaigns,
         })
+
+class PageDonations(View):
+    def get(self, request, page_slug):
+        page = get_object_or_404(Page, page_slug=page_slug)
+        donations = Donation.objects.filter(page=page).order_by('-date')
+        return render(self.request, 'page/page_donations_all.html', {
+            'page': page,
+            'donations': donations,
+        })

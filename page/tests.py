@@ -900,3 +900,9 @@ class PageTest(TestCase):
         self.assertContains(response, self.campaign.name)
         self.assertContains(response, self.campaign2.name)
         self.assertNotContains(response, self.campaign3.name)
+
+    def test_page_donations_all(self):
+        response = self.client.get('/{}/donations/'.format(self.page.page_slug))
+        self.assertContains(response, int(self.donation.amount / 100))
+        self.assertContains(response, int(self.donation2.amount / 100))
+        self.assertContains(response, int(self.donation3.amount / 100))

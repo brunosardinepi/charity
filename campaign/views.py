@@ -516,3 +516,13 @@ class CampaignDashboardImages(View):
                 return HttpResponse('')
         else:
             raise Http404
+
+class CampaignDonations(View):
+    def get(self, request, page_slug, campaign_pk, campaign_slug):
+        campaign = get_object_or_404(Campaign, pk=campaign_pk)
+        donations = Donation.objects.filter(campaign=campaign).order_by('-date')
+        return render(self.request, 'campaign/campaign_donations_all.html', {
+            'campaign': campaign,
+            'donations': donations,
+        })
+

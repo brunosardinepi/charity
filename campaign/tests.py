@@ -911,3 +911,11 @@ class CampaignTest(TestCase):
         ))
         self.assertEqual(response.status_code, 200)
 
+    def test_campaign_donations_all(self):
+        response = self.client.get('/{}/{}/{}/donations/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
+        self.assertContains(response, int(self.donation.amount / 100))
+        self.assertContains(response, int(self.donation2.amount / 100))
+        self.assertContains(response, int(self.donation3.amount / 100))
+        self.assertContains(response, int(self.donation4.amount / 100))
+        self.assertNotContains(response, int(self.donation5.amount / 100))
+        self.assertNotContains(response, int(self.donation6.amount / 100))

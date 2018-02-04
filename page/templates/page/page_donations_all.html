@@ -1,0 +1,41 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+{% load guardian_tags %}
+{% load donation_extras %}
+
+{% block meta %}
+    <meta name="description" content="{{ page.description|truncatechars:300 }}">
+{% endblock %}
+
+{% block title %}{{ page.name }} | {{ block.super }}{% endblock %}
+
+{% block head_extra %}
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{ page.name }} | PageFund" />
+    <meta property="og:description" content="{{ page.description|truncatechars:300 }}" />
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo_lg.svg' %}" />
+{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-12">
+            <h1><a href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a></h1>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row mt-3 mb-3">
+        <div class="col-12">
+            <h2 class="font-size-15">All donations</h2>
+        </div>
+    </div>
+
+    {% if donations %}
+        {% for d in donations %}
+            {% include "page/_donations.html" %}
+        {% endfor %}
+    {% else %}
+        <p>There aren't any donations.</p>
+    {% endif %}
+{% endblock %}
