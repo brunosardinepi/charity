@@ -289,6 +289,7 @@ class HomeTest(TestCase):
         self.assertContains(response, "Create a Page")
         self.assertContains(response, "Create a Campaign")
         self.assertContains(response, "How it works")
+        self.assertContains(response, "Select")
 
     def test_features(self):
         response = self.client.get('/features/')
@@ -296,6 +297,7 @@ class HomeTest(TestCase):
         self.assertContains(response, "Nonprofit verification")
         self.assertContains(response, "Analytics")
         self.assertContains(response, "Campaigns")
+        self.assertContains(response, "Share")
 
     def test_invite_logged_out(self):
         response = self.client.get('/invite/')

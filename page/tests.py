@@ -237,9 +237,7 @@ class PageTest(TestCase):
         self.assertContains(response, self.page.website, status_code=200)
 
     def test_page_status_logged_in(self):
-        request = self.factory.get('home')
-        request.user = self.user
-        response = views.page(request, self.page.page_slug)
+        response = self.client.get('/{}/'.format(self.page.page_slug))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.page.name, status_code=200)
@@ -259,15 +257,15 @@ class PageTest(TestCase):
         self.assertContains(response, self.page.website, status_code=200)
 
     def test_page_admin_logged_out(self):
-        response = self.client.get('/%s/' % self.page.page_slug)
+        response = self.client.get('/{}/'.format(self.page.page_slug))
 
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Manage", status_code=200)
 
     def test_page_admin_logged_in(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/%s/' % self.page.page_slug)
 
+        response = self.client.get('/%s/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Manage", status_code=200)
 
