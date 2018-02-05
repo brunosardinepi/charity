@@ -2,6 +2,23 @@
 
 This is the version history for PageFund development.
 
+## Version 0.28.4
+
+Release date: TBD
+
+### Additions
+
+* Loading animation while processing a donation
+
+### Changes
+
+* None
+
+### Fixes
+
+* None
+
+
 ## Version 0.28.3
 
 Release date: 02/05/2018
