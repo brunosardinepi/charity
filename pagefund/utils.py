@@ -57,7 +57,6 @@ def email(user_email, subject, body, template, substitutions):
           ],
           "template_id": templates[template]
         }
-        print("data = {}".format(data))
         try:
             response = sg.client.mail.send.post(request_body=data)
         except urllib.HTTPError as e:

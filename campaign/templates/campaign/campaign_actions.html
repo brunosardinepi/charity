@@ -26,7 +26,8 @@
     <div class="row mb-3">
         <div class="col-12">
             {% if campaign.is_active %}
-                <a href="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}" role="button" class="btn btn-teal btn-block btn-lg">Donate</a>
+                {% if not campaign.page.stripe_bank_account_id %}<span class="small">Donations are disabled until the parent Page adds a bank account.</span>{% endif %}
+                <a href="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}" role="button" class="btn btn-teal btn-block btn-lg{% if not campaign.page.stripe_bank_account_id %} disabled" aria-disabled="true"{% else %}"{% endif %}>Donate</a>
             {% else %}
                 <p>This campaign has ended.</p>
             {% endif %}
