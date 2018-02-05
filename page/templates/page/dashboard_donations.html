@@ -14,12 +14,12 @@
             <h2>Donations</h2>
             <hr>
             <div class="row justify-content-center mt-5 mb-5">
-                <div class="col-lg-4 mb-4 text-center">
+                <div class="col-md-4 mb-4 text-center">
                     <p class="small m-0">Donated to Page</p>
                     <h2 class="m-0">{{ donations.page_donations|cents_to_dollars }}</h2>
                     <p class="small m-0">Avg: {{ donations.page_donations_avg|cents_to_dollars }}</p>
                 </div>
-                <div class="col-lg-4 mb-4 text-center">
+                <div class="col-md-4 mb-4 text-center">
                     <p class="small m-0">Recurring Donations</p>
                     <h2 class="m-0">{{ donations.plan_donations|cents_to_dollars }}</h2>
                     <p class="small m-0">Avg: {{ donations.plan_donations_avg|cents_to_dollars }}</p>

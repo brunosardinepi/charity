@@ -28,7 +28,11 @@
                 <span class="font-weight-bold">
                     {% if not d.anonymous_donor %}
                         {% if d.user %}
-                            {{ d.user.first_name }} {{ d.user.last_name }}
+                            {% if d.user.first_name %}
+                                {{ d.user.first_name }} {{ d.user.last_name }}
+                            {% else %}
+                                {{ d.user.email }}
+                            {% endif %}
                         {% else %}
                             {{ d.donor_first_name }} {{ d.donor_last_name }}
                         {% endif %}

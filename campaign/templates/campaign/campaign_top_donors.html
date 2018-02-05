@@ -23,7 +23,13 @@
             <div class="col">
                 <div class="row comment-info">
                     <div class="col">
-                        <span class="comment-user-name">{{ b.first_name }} {{ b.last_name }}</span>
+                        <span class="comment-user-name">
+                            {% if b.first_name %}
+                                {{ b.first_name }} {{ b.last_name }}
+                            {% else %}
+                                {{ b.email }}
+                            {% endif %}
+                        </span>
                     </div>
                 </div>
 

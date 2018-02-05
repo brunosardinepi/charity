@@ -6,7 +6,7 @@
 {% block title %}Dashboard | {{ block.super }}{% endblock %}
 
 {% block body_content %}
-    <div class="row">
+    <div class="row pb-5">
         <div class="col-lg-3">
             {% include "page/dashboard_menu.html" %}
         </div>
@@ -14,22 +14,22 @@
             <h2>Analytics</h2>
             <hr>
             <div class="row mt-5 mb-5">
-                <div class="col-lg-3 mb-4 text-center">
+                <div class="col-md-3 mb-4 text-center">
                     <p class="small m-0">Total raised</p>
                     <h2 class="m-0">{{ donations.total_donations|cents_to_dollars }}</h2>
                     <p class="small m-0">Avg: {{ donations.total_donations_avg|cents_to_dollars }}</p>
                 </div>
-                <div class="col-lg-3 mb-4 text-center">
+                <div class="col-md-3 mb-4 text-center">
                     <p class="small m-0">Donated to Page</p>
                     <h2 class="m-0">{{ donations.page_donations|cents_to_dollars }}</h2>
                     <p class="small m-0">Avg: {{ donations.page_donations_avg|cents_to_dollars }}</p>
                 </div>
-                <div class="col-lg-3 mb-4 text-center">
+                <div class="col-md-3 mb-4 text-center">
                     <p class="small m-0">Donated to Campaigns</p>
                     <h2 class="m-0">{{ donations.campaign_donations|cents_to_dollars }}</h2>
                     <p class="small m-0">Avg: {{ donations.campaign_donations_avg|cents_to_dollars }}</p>
                 </div>
-                <div class="col-lg-3 mb-4 text-center">
+                <div class="col-md-3 mb-4 text-center">
                     <p class="small m-0">Recurring donations</p>
                     <h2 class="m-0">{{ donations.plan_donations|cents_to_dollars }}</h2>
                     <p class="small m-0">Avg: {{ donations.plan_donations_avg|cents_to_dollars }}</p>

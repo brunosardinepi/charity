@@ -18,12 +18,12 @@
             <h2>Campaigns</h2>
             <hr>
             <div class="row justify-content-center mt-5 mb-5">
-                <div class="col-lg-4 mb-4 text-center">
+                <div class="col-md-4 mb-4 text-center">
                     <p class="small m-0">Donated to Campaigns</p>
                     <h2 class="m-0">{{ donations.campaign_donations|cents_to_dollars }}</h2>
                     <p class="small m-0">Avg: {{ donations.campaign_donations_avg|cents_to_dollars }}</p>
                 </div>
-                <div class="col-lg-4 mb-4 text-center">
+                <div class="col-md-4 mb-4 text-center">
                     <p class="small m-0">Average Campaign Duration</p>
                     <h2 class="m-0">{{ campaign_average_duration }} days</h2>
                 </div>
