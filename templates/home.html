@@ -20,6 +20,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="description" content="">
 
+        {% include "structured_data.html" %}
         {% include "twitter_metadata.html" %}
         {% include "og.html" %}
         <meta property="og:url" content="https://page.fund" />
@@ -54,19 +55,6 @@
                     window.location.hash = '';
                 }
             };
-        </script>
-        <script type="application/ld+json">
-            {
-                "@context": "http://schema.org",
-                "@type": "Organization",
-                "url": "https://page.fund",
-                "name": "PageFund",
-                "email": "help@page.fund",
-                "contactPoint": {
-                  "email": "help@page.fund",
-                  "contactType": "Customer service"
-                }
-            }
         </script>
 
         <!--[if lt IE 9]>
