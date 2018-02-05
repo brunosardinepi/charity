@@ -272,11 +272,14 @@ def donate(request, form, page=None, campaign=None):
     else:
         substitutions['-recipient-'] = page.name
 
-    if has_notification(request.user, "notification_email_donation") == True:
-        email(request.user.email, "blank", "blank", "donation", substitutions)
+    if request.user.is_authenticated():
+        if has_notification(request.user, "notification_email_donation") == True:
+            email(request.user.email, "blank", "blank", "donation", substitutions)
+        substitutions['-user-'] = request.user.email
+    else:
+        substitutions['-user-'] = "unauthenticated user '{} {}'".format(form.cleaned_data['first_name'], form.cleaned_data['last_name'])
 
     date = timezone.now().strftime("%Y-%m-%d %I:%M:%S %Z")
-    substitutions['-user-'] = request.user.email
     substitutions['-date-'] = date
     email("gn9012@gmail.com", "blank", "blank", "admin_new_donation", substitutions)
 

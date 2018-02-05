@@ -175,6 +175,8 @@
 
     var form = document.getElementById('payment-form');
     form.addEventListener('submit', function(event) {
+        $('#overlay').addClass('overlay');
+        $('#overlay-inside').append("<i class='fas fa-spinner fa-2x fa-pulse'></i>");
         event.preventDefault();
 
         stripe.createToken(card).then(function(result) {
@@ -194,21 +196,22 @@
         hiddenInput.setAttribute("name", "stripeToken");
         hiddenInput.setAttribute("value", token.id);
         form.appendChild(hiddenInput);
-//        form.submit();
         submitCheck();
     }
 
         function submitCheck() {
-                if (($("input.preset-amount:checked").length == 0) && ($("#id_amount").val().length == 0)) {
-                    console.log("nothing is checked and amount is empty");
-                    $("#amount-errors").html("<div class='row'><div class='col-lg-10 offset-lg-2'><div class='alert alert-danger' role='alert'>Please select an amount to donate.</div></div></div>");
-                } else {
-                    console.log("something is either checked or the amount is not empty");
-                    $("#amount-errors").html("");
-                    var form = document.getElementById("payment-form");
-                    form.submit();
-                };
+            if (($("input.preset-amount:checked").length == 0) && ($("#id_amount").val().length == 0)) {
+                console.log("nothing is checked and amount is empty");
+                $("#amount-errors").html("<div class='row'><div class='col-lg-10 offset-lg-2'><div class='alert alert-danger' role='alert'>Please select an amount to donate.</div></div></div>");
+            } else {
+                console.log("something is either checked or the amount is not empty");
+                $("#amount-errors").html("");
+                var form = document.getElementById("payment-form");
+                form.submit();
+            };
         }
 
 </script>
+
+{% include "loading.html" %}
 {% endif %}
