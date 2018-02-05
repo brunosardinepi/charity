@@ -13,10 +13,12 @@ Release date: TBD
 ### Changes
 
 * Changed login/signup buttons to links to match the rest of the nav
+* Nav breaks a little earlier for less no-man's land
 
 ### Fixes
 
 * Footer links weren't stacking properly on mobile
+* Navbar on mobile wasn't showing the stacked hamburger bars
 
 
 ## Version 0.28.0
