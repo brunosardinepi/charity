@@ -1,4 +1,5 @@
 from django.test import Client, TestCase
+from django.utils import timezone
 
 import stripe
 
@@ -25,5 +26,6 @@ class WebhookTest(TestCase):
     def test_webhooks(self):
         stripe.api_key = config.settings['stripe_api_sk']
         coupon = stripe.Coupon.retrieve('1')
-        coupon.metadata['test'] = 'test'
+        now = timezone.now()
+        coupon.metadata['test'] = now.strftime('%Y-%m-%d')
         coupon.save()
