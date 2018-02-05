@@ -187,16 +187,22 @@
 
     <script>
 
+        // make sure only one of the preset amounts can be selected
         $("input.preset-amount").on("change", function() {
-            $("input.preset-amount").not(this).prop("checked", false);  
-            $("label.preset-label").not(this).removeClass("active");  
+            $("input.preset-amount").not(this).prop("checked", false);
+            $("label.preset-label").not(this).removeClass("active");
         });
 
+        // stripe elements setup
         var stripe = Stripe('{{ api_pk }}');
         var elements = stripe.elements();
+
+        // create an instance of an element
+        // mount it to the element container
         var card = elements.create('card');
         card.mount("#card-element");
 
+        // validate user input as it's typed
         card.addEventListener('change', function(event) {
             var displayError = document.getElementById('card-errors');
             if (event.error) {
@@ -206,6 +212,7 @@
             }
         });
 
+        // option for user to add a new card
         $(document).on('click', "#new-card", function(event) {
             event.preventDefault();
             $("#new-card-info").show();
@@ -213,6 +220,7 @@
             $("#new-card").attr("id", "hide-new-card");
         });
 
+        // option for usre to remove the new card
         $(document).on('click', "#hide-new-card", function(event) {
             event.preventDefault();
             $("#new-card-info").hide();
@@ -221,7 +229,11 @@
         });
     
         $(document).on('submit', "#payment-form", function(event) {
+            $('#overlay').addClass('overlay');
+            $('#overlay-inside').append("<i class='fas fa-spinner fa-2x fa-pulse'></i>");
             event.preventDefault();
+
+            // add metadata for user's name
             if (document.getElementById("id_anonymous_donor").checked) {
                 var extraDetails = {};
             } else {
@@ -230,41 +242,45 @@
                 };
             };
 
+            // check if the user is using a saved card or new card
             if ($("#hide-new-card").length > 0) {
-                console.log("hide-new-card length");
-                console.log($("#hide-new-card").length);
+                // user has selected to add a new card
                 $("input.saved-card").prop("checked", false);
+
+                // create the stripe token
                 stripe.createToken(card, extraDetails).then(function(result) {
+                    // check for error and inform the user
                     if (result.error) {
                         var errorElement = document.getElementById('card-errors');
                         errorElement.textContent = result.error.message;
                     } else {
+                        // send the token to server
                         stripeTokenHandler(result.token);
                     }
                 });
             } else if ($("#new-card").length > 0) {
-                console.log("new-card length");
+                // user is using a saved card
                 submitCheck();
             };
         });
 
         function stripeTokenHandler(token) {
+            // add the token to the form and submit it
             var form = document.getElementById("payment-form");
             var hiddenInput = document.createElement("input");
             hiddenInput.setAttribute("type", "hidden");
             hiddenInput.setAttribute("name", "stripeToken");
             hiddenInput.setAttribute("value", token.id);
             form.appendChild(hiddenInput);
-//            form.submit();
             submitCheck();
         }
 
+        // check to make sure there is a preset amount checked
+        // or an amount typed in
         function submitCheck() {
                 if (($("input.preset-amount:checked").length == 0) && ($("#id_amount").val().length == 0)) {
-                    console.log("nothing is checked and amount is empty");
                     $("#amount-errors").html("Please select an amount to donate.");
                 } else {
-                    console.log("something is either checked or the amount is not empty");
                     $("#amount-errors").html("");
                     var form = document.getElementById("payment-form");
                     form.submit();
@@ -272,4 +288,7 @@
         }
     </script>
 
+<div id="overlay">
+    <div id="overlay-inside"></div>
+</div>
 {% endif %}
