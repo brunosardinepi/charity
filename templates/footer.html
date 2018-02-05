@@ -1,11 +1,11 @@
 <footer class="footer">
     <div class="container">
         <div class="row">
-            <div class="col-md-auto">
-                <span>&copy; {% now "Y" %} PageFund, Inc.</span>
+            <div class="col-md-auto copyright">
+                &copy; {% now "Y" %} PageFund, Inc.
             </div>
             <div class="col">
-                <ul class="list-inline">
+                <ul id="footer-links" class="list-inline">
                     <li class="list-inline-item"><a {% if campaign %}class="teal" {% endif %}href="{% url 'faqs:faq_list' %}">FAQ</a></li>
                     <li class="list-inline-item"><a {% if campaign %}class="teal" {% endif %}href="/terms-of-service/">Terms of Service</a></li>
                     <li class="list-inline-item"><a {% if campaign %}class="teal" {% endif %}href="/privacy-policy/">Privacy Policy</a></li>
@@ -13,7 +13,7 @@
                 </ul>
             </div>
             <div class="col-md-auto">
-                <ul class="list-inline">
+                <ul id="footer-social" class="list-inline">
                     <li class="list-inline-item"><a {% if campaign %}class="teal" {% endif %}href="https://www.facebook.com/pagefund/" target="_blank"><i class="fab fa-facebook-f fa-lg"></i><span class="sr-only">PageFund Facebook</span></a></li>
                     <li class="list-inline-item"><a {% if campaign %}class="teal" {% endif %}href="https://www.instagram.com/pagefund/" target="_blank"><i class="fab fa-instagram fa-lg"></i><span class="sr-only">PageFund Instagram</span></a></li>
                     <li class="list-inline-item"><a {% if campaign %}class="teal" {% endif %}href="https://twitter.com/pagefundinc" target="_blank"><i class="fab fa-twitter fa-lg"></i><span class="sr-only">PageFund Twitter</span></a></li>

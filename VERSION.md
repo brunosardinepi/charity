@@ -2,9 +2,28 @@
 
 This is the version history for PageFund development.
 
-## Version 0.28.0
+## Version 0.28.1
 
 Release date: TBD
+
+### Additions
+
+* None
+
+### Changes
+
+* Changed login/signup buttons to links to match the rest of the nav
+
+### Fixes
+
+* Footer links weren't stacking properly on mobile
+
+
+## Version 0.28.0
+
+Release date: 02/04/2018
+
+36 files changed, 924 insertions(+), 450 deletions(-)
 
 ### Additions
 
