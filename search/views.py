@@ -66,7 +66,7 @@ def create_search_result_html(r, sponsored, trending):
 
     html += (
         "</div>"
-        "<div class='col d-flex align-items-center h100'>"
+        "<div class='trending col d-flex align-items-center h100'>"
     )
 
     if sponsored == True:
