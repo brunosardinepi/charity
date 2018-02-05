@@ -16,6 +16,7 @@ Release date: TBD
 
 * Features design redo
 * Moved Page creation process from three steps to two
+* Disabled donate button if Page doesn't have bank information
 
 ### Fixes
 
