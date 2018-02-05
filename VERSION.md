@@ -6,6 +6,8 @@ This is the version history for PageFund development.
 
 Release date: 02/04/2018
 
+5 files changed, 38 insertions(+)
+
 ### Additions
 
 * Tests for Stripe webhooks
