@@ -84,8 +84,8 @@ class CommentTest(TestCase):
     def test_comment_page(self):
         data = {'comment': "I am anonymous!"}
         response = self.client.post('/comments/post/{}/{}/'.format(ContentType.objects.get_for_model(self.page).pk, self.page.pk), data)
-        # can i redirect to a 404 page?
-#        self.assertRedirects(response, '/accounts/login/?next=/comments/page/%s/comment/' % self.page.pk, 302, 200)
+        self.assertRedirects(response, '/accounts/login/?next=/comments/post/{}/{}/'.format(ContentType.objects.get_for_model(self.page).pk, self.page.pk), 302, 200)
+
         response = self.client.get('/{}/'.format(self.page.page_slug))
         self.assertNotContains(response, "I am anonymous!", status_code=200)
 
@@ -102,3 +102,13 @@ class CommentTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Hello my name is Testy McTestface.")
         self.assertContains(response, "{} {}".format(self.user.first_name, self.user.last_name))
+
+    def test_comment_page_loggedout(self):
+        response = self.client.get('/{}/'.format(self.page.page_slug))
+        self.assertContains(response, 'You must be logged in to comment.')
+
+    def test_comment_page_loggedin(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/'.format(self.page.page_slug))
+        self.assertNotContains(response, 'You must be logged in to comment.')
+

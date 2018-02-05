@@ -8,11 +8,13 @@
     <div class="col-md-auto">
         <h2><a name="comments">Comments</a></h2>
     </div>
-    <div class="col d-flex align-items-center h100">
-        <button type="button" class="btn {% if obj|content_type == 'page' %}btn-outline-purple{% elif obj|content_type == 'campaign' %}btn-outline-teal{% endif %}" data-toggle="modal" data-target="#newComment">
-            <i class="fal fa-plus"></i> New comment
-        </button>
-    </div>
+    {% if request.user.is_authenticated %}
+        <div class="col d-flex align-items-center h100">
+            <button type="button" class="btn {% if obj|content_type == 'page' %}btn-outline-purple{% elif obj|content_type == 'campaign' %}btn-outline-teal{% endif %}" data-toggle="modal" data-target="#newComment">
+                <i class="fal fa-plus"></i> New comment
+            </button>
+        </div>
+    {% endif %}
 </div>
 
 
@@ -43,6 +45,13 @@
     </div>
 </div>
 
+{% if not request.user.is_authenticated %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <p>You must be logged in to comment.</p>
+        </div>
+    </div>
+{% endif %}
 
 {% if obj.comments.all %}
     {% for c in obj.comments.all reversed %}
