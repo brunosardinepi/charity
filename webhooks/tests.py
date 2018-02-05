@@ -27,5 +27,5 @@ class WebhookTest(TestCase):
         stripe.api_key = config.settings['stripe_api_sk']
         coupon = stripe.Coupon.retrieve('1')
         now = timezone.now()
-        coupon.metadata['test'] = now.strftime('%Y-%m-%d')
+        coupon.metadata['test'] = now.strftime('%Y-%m-%d %H:%M:%S %Z')
         coupon.save()
