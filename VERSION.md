@@ -13,6 +13,7 @@ Release date: TBD
 ### Changes
 
 * Design for medium devices like iPads
+* Disabled donate button on Campaigns if Page doesn't have a bank account
 
 ### Fixes
 
