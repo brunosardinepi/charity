@@ -14,6 +14,7 @@ from .models import Webhook
 from campaign.models import Campaign, VoteParticipant
 from donation.models import Donation
 from page.models import Page
+from pagefund.utils import email
 from plans.models import StripePlan
 
 
@@ -184,4 +185,11 @@ def customer_subscription_deleted(request):
     plan = get_object_or_404(StripePlan, stripe_subscription_id=subscription_id)
     plan.delete()
 
+    return HttpResponse(status=200)
+
+@require_POST
+@csrf_exempt
+def webhooks_test(request):
+    # send test email
+    email("gn9012@gmail.com", "blank", "blank", "admin_webhook_test", {})
     return HttpResponse(status=200)

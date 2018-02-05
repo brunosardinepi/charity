@@ -1,6 +1,9 @@
 from django.test import Client, TestCase
 
+import stripe
+
 from .models import Webhook
+from pagefund import config
 
 
 class WebhookTest(TestCase):
@@ -18,3 +21,9 @@ class WebhookTest(TestCase):
     def test_webhook_exists(self):
         webhooks = Webhook.objects.all()
         self.assertIn(self.webhook, webhooks)
+
+    def test_webhooks(self):
+        stripe.api_key = config.settings['stripe_api_sk']
+        coupon = stripe.Coupon.retrieve('1')
+        coupon.metadata['test'] = 'test'
+        coupon.save()

@@ -31,6 +31,7 @@ def email(user_email, subject, body, template, substitutions):
             'admin_new_campaign': 'cabaff4b-9c8e-4965-8b80-2485688d6b5d',
             'admin_new_donation': '4abfaf11-3ab0-45bd-ba85-44330b8ca9c1',
             'note_error': 'e25c4a89-353a-434d-b24e-321cfd626113',
+            'admin_webhook_test': '4ff6e428-bd27-4591-a4bc-9f6f6ca0c7d2',
         }
 
         data = {
