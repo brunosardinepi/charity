@@ -82,8 +82,13 @@ class ManagerInviteForm(forms.Form):
     manager_view_dashboard = forms.BooleanField(required=False, label='View dashboard')
 
 class PageBankForm(forms.Form):
-    account_holder_first_name = forms.CharField(max_length=255)
-    account_holder_last_name = forms.CharField(max_length=255)
+    first_name = forms.CharField(max_length=255)
+    last_name = forms.CharField(max_length=255)
+
+    YEAR_CHOICES = list(range(1900, datetime.now().year))[::-1]
+    birthday = forms.DateField(required=False, widget=CustomSelectDateWidget(years=YEAR_CHOICES))
+#    account_holder_first_name = forms.CharField(max_length=255)
+#    account_holder_last_name = forms.CharField(max_length=255)
     ssn = forms.CharField(max_length=4, label="Last 4 of SSN")
     account_number = forms.CharField(max_length=12)
     routing_number = forms.CharField(max_length=9)
@@ -91,15 +96,12 @@ class PageBankForm(forms.Form):
 class PageBankEINForm(PageBankForm):
     ein = forms.CharField(max_length=20)
 
-class PageAdditionalInfoForm(forms.Form):
+class PageEditBankForm(forms.Form):
     first_name = forms.CharField(max_length=255)
     last_name = forms.CharField(max_length=255)
-
-    YEAR_CHOICES = list(range(1900, datetime.now().year))[::-1]
-    birthday = forms.DateField(required=False, widget=CustomSelectDateWidget(years=YEAR_CHOICES))
-
-class PageEditBankForm(forms.Form):
-    account_holder_first_name = forms.CharField(max_length=255)
-    account_holder_last_name = forms.CharField(max_length=255)
+    ssn = forms.CharField(max_length=4, label="Last 4 of SSN")
     account_number = forms.CharField(max_length=12)
     routing_number = forms.CharField(max_length=9)
+
+class PageEditBankEINForm(PageEditBankForm):
+    ein = forms.CharField(max_length=20)

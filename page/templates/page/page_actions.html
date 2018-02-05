@@ -15,7 +15,8 @@
 
 <div class="row mb-3">
     <div class="col-12 mb-3">
-        <a href="{% url 'page_donate' page_slug=page.page_slug %}" role="button" class="btn btn-purple btn-block btn-lg">Donate</a>
+        {% if not page.stripe_bank_account_id %}<span class="small">Donations are disabled until this Page adds a bank account.</span>{% endif %}
+        <a href="{% url 'page_donate' page_slug=page.page_slug %}" role="button" class="btn btn-purple btn-block btn-lg{% if not page.stripe_bank_account_id %} disabled" aria-disabled="true"{% else %}"{% endif %}>Donate</a>
     </div>
     <div class="col-12">
         <a href="{% url 'campaign_create' page_slug=page.page_slug %}" role="button" class="btn btn-outline-teal btn-block btn-lg">Create campaign</a>

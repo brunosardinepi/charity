@@ -15,6 +15,7 @@ Release date: TBD
 ### Changes
 
 * Features design redo
+* Moved Page creation process from three steps to two
 
 ### Fixes
 

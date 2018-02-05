@@ -21,40 +21,20 @@ def error_email(error):
     body += "at {}. Full message: {}".format(date, message)
     email("gn9012@gmail.com", "ERROR: Stripe", body)
 
-def create_error(error, request, object):
-    details = ""
-    if isinstance(object, Page):
-        details += "\naddress_line1 = {};".format(object.address_line1)
-        details += "\naddress_line2 = {};".format(object.address_line2)
-        details += "\ncity = {};".format(object.city)
-        details += "\ndescription = {};".format(object.description)
-        details += "\nein = {};".format(object.ein)
-        details += "\nname = {};".format(object.name)
-        details += "\npage_slug = {};".format(object.page_slug)
-        details += "\ntos_accepted = {};".format(object.tos_accepted)
-        details += "\nwebsite = {};".format(object.website)
-        details += "\nzipcode = {};".format(object.zipcode)
-        details += "\ncategory = {};".format(object.category)
-        details += "\nstate = {};".format(object.state)
-        details += "\ntype = {};".format(object.type)
-
+def create_error(error, request):
     err = Note.objects.create(
         date = timezone.now(),
-        details = details,
         message = str(error),
         user = request.user,
         type = 'error',
     )
 
-    subject = "PageFund ERROR"
-    body = "Error {} occured at {} for user {}. Message: {}; Details: {}".format(
-        err.pk,
-        err.date,
-        err.user.email,
-        err.message,
-        err.details
-    )
-    email("gn9012@gmail.com", subject, body, None, {})
+    substitutions = {
+        '-pk-': str(err.pk),
+        '-user-': err.user.email,
+        '-message-': err.message,
+    }
+    email("gn9012@gmail.com", "blank", "blank", "note_error", substitutions)
 
     return err
 

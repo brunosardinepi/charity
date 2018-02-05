@@ -363,19 +363,12 @@ class PageTest(TestCase):
         }
         response = self.client.post('/create/page/', data)
         page = models.Page.objects.get(page_slug="my-test-page")
-        self.assertRedirects(response, '/create/{}/additional/'.format(page.pk), 302, 200)
-
-        data_additional = {
-            'first_name': "Tester",
-            'last_name': "McGee",
-            'birthday': "1988-10-18",
-        }
-        response = self.client.post('/create/{}/additional/'.format(page.pk), data_additional)
         self.assertRedirects(response, '/create/{}/bank/'.format(page.pk), 302, 200)
 
         data_bank = {
-            'account_holder_first_name': "Tester",
-            'account_holder_last_name': "McGee",
+            'first_name': "Tester",
+            'last_name': "McGee",
+            'birthday': '1987-10-12',
             'ssn': "0000",
             'ein': "000000001",
             'account_number': "000123456789",
@@ -405,7 +398,6 @@ class PageTest(TestCase):
             'state': 'GA',
             'category': 'animal',
             'description': 'I like flank steak.',
-            'ssn': '0000',
             'tos_accepted': True,
             'address_line1': '123 Main St.',
             'zipcode': '12345'
@@ -420,8 +412,121 @@ class PageTest(TestCase):
         self.assertEqual(page.category, "animal")
         self.assertEqual(page.description, "I like flank steak.")
 
+    def test_pageform_bad(self):
+        form = forms.PageForm({
+            'type': 'personal',
+            'city': 'Atlanta',
+            'state': 'GA',
+            'category': 'animal',
+            'description': 'I like flank steak.',
+            'tos_accepted': True,
+            'address_line1': '123 Main St.',
+            'zipcode': '12345'
+        })
+        self.assertFalse(form.is_valid())
+
     def test_pageform_blank(self):
         form = forms.PageForm({})
+        self.assertFalse(form.is_valid())
+
+    def test_pagebankform(self):
+        form = forms.PageBankForm({
+            'first_name': 'Tom',
+            'last_name': 'Walker',
+            'ssn': '0000',
+            'account_number': '000123456789',
+            'routing_number': '111100000',
+        })
+        self.assertTrue(form.is_valid())
+
+    def test_pagebankform_bad(self):
+        form = forms.PageBankForm({
+            'last_name': 'Walker',
+            'ssn': '0000',
+            'ein': '000000001',
+            'account_number': '000123456789',
+            'routing_number': '111100000',
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_pagebankform_blank(self):
+        form = forms.PageBankForm()
+        self.assertFalse(form.is_valid())
+
+    def test_pagebankeinform(self):
+        form = forms.PageBankForm({
+            'first_name': 'Tom',
+            'last_name': 'Walker',
+            'ssn': '0000',
+            'ein': '000000001',
+            'account_number': '000123456789',
+            'routing_number': '111100000',
+        })
+        self.assertTrue(form.is_valid())
+
+    def test_pagebankeinform_bad(self):
+        form = forms.PageBankForm({
+            'last_name': 'Walker',
+            'ssn': '0000',
+            'what': 'hello',
+            'ein': '000000001',
+            'account_number': '000123456789',
+            'routing_number': '111100000',
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_pagebankeinform_blank(self):
+        form = forms.PageBankForm()
+        self.assertFalse(form.is_valid())
+
+    def test_pageeditbankform(self):
+        form = forms.PageEditBankForm({
+            'first_name': 'Tom',
+            'last_name': 'Walker',
+            'ssn': '0000',
+            'account_number': '000123456789',
+            'routing_number': '111100000',
+        })
+        self.assertTrue(form.is_valid())
+
+    def test_pageeditbankform_bad(self):
+        form = forms.PageEditBankForm({
+            'last_name': 'Walker',
+            'ssn': '0000',
+            'ein': '000000001',
+            'account_number': '000123456789',
+            'routing_number': '111100000',
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_pageeditbankform_blank(self):
+        form = forms.PageEditBankForm()
+        self.assertFalse(form.is_valid())
+
+    def test_pageeditbankeinform(self):
+        form = forms.PageEditBankEINForm({
+            'first_name': 'Tom',
+            'last_name': 'Walker',
+            'ssn': '0000',
+            'ein': '000000001',
+            'account_number': '000123456789',
+            'routing_number': '111100000',
+        })
+        self.assertTrue(form.is_valid())
+
+    def test_pageeditbankeinform_bad(self):
+        form = forms.PageEditBankEINForm({
+            'last_name': 'Walker',
+            'ssn': '0000',
+            'ein': '000000001',
+            'what': 'hello',
+            'account_number': '000123456789',
+            'routing_number': '111100000',
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_pageeditbankeinform_blank(self):
+        form = forms.PageEditBankEINForm()
         self.assertFalse(form.is_valid())
 
     def test_deletepageform(self):

@@ -30,6 +30,7 @@ def email(user_email, subject, body, template, substitutions):
             'admin_new_page': '41206bb2-1b0b-4b76-9240-08b02ac847a8',
             'admin_new_campaign': 'cabaff4b-9c8e-4965-8b80-2485688d6b5d',
             'admin_new_donation': '4abfaf11-3ab0-45bd-ba85-44330b8ca9c1',
+            'note_error': 'e25c4a89-353a-434d-b24e-321cfd626113',
         }
 
         data = {
@@ -55,6 +56,7 @@ def email(user_email, subject, body, template, substitutions):
           ],
           "template_id": templates[template]
         }
+        print("data = {}".format(data))
         try:
             response = sg.client.mail.send.post(request_body=data)
         except urllib.HTTPError as e:

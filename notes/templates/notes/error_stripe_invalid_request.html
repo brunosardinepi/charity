@@ -1,10 +1,16 @@
 {% extends '_layout.html' %}
 {% load static from staticfiles %}
 
-{% block title %} Error | {{ block.super }}{% endblock %}
+{% block title %}Error | {{ block.super }}{% endblock %}
 
 {% block body_content %}
-    <p>Invalid parameters were supplied to Stripe's API.</p>
-    <p>Stripe response: {{ message }}</p>
+    <div class="row">
+        <div class="col-12">
+            <h1>Invalid request</h1>
+            <hr>
+            <p>This request failed with an error from our payment processor. We've received a copy of this error and our currently reviewing it.</p>
+            <p>If you need help, please <a href="mailto:help@page.fund">email</a> us.</p>
+        </div>
+    </div>
 {% endblock %}
 

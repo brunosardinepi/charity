@@ -18,5 +18,5 @@ urlpatterns = [
     url(r'^error/page/does-not-exist/$', views.error_page_does_not_exist, name='error_page_does_not_exist'),
     url(r'^error/password/reset/expired/$', views.error_forgotpasswordreset_expired, name='error_forgotpasswordreset_expired'),
     url(r'^error/password/reset/completed/$', views.error_forgotpasswordreset_completed, name='error_forgotpasswordreset_completed'),
-    url(r'^error/invalid-request/(?P<error_pk>\d+)/$', views.error_stripe_invalid_request, name='error_stripe_invalid_request'),
+    url(r'^error/invalid-request/$', views.error_stripe_invalid_request, name='error_stripe_invalid_request'),
 ]
