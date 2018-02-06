@@ -15,238 +15,31 @@
             <p>All fields are required unless stated otherwise.</p>
         </div>
         <div class="col-12">
+
+            {{ wizard.form.media }}
+            <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
+
             <form id="create-form" action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+                {{ wizard.management_form }}
 
-                {% if form.non_field_errors %}
-                    <div class="alert alert-danger" role="alert">
-                        {{ form.non_field_errors }}
-                    </div>
+                {% if wizard.form.forms %}
+                    formset maybe?
+                    {{ wizard.form.management_form }}
+                    {% for form in wizard.form.forms %}
+                        {{ form }}
+                    {% endfor %}
+                {% else %}
+                    normal form
+                    {{ wizard.form }}
                 {% endif %}
 
-                <div class="form-group row">
-                    <label for="{{ form.name.id_for_label }}" class="col-md-2 col-form-label">
-                        Page name
-                    </label>
-                    <div class="col-md-5">
-                        {% render_field form.name class+="form-control" aria-describedby="name-help"%}
-                        <small id="name-help" class="form-text text-muted">
-                            This is how your name will be displayed on PageFund.
-                        </small>
-                    </div>
-                    {% if form.name.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.name.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
+                {% if wizard.steps.prev %}
+                    <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}">first step</button>
+                    <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">prev step</button>
+                {% endif %}
 
-                <div class="form-group row">
-                    <label for="{{ form.website.id_for_label }}" class="col-md-2 col-form-label">
-                        Your website
-                    </label>
-                    <div class="col-md-5">
-                        {% render_field form.website class+="form-control" aria-describedby="website-help" %}
-                        <small id="website-help" class="form-text text-muted">
-                            Optional
-                        </small>
-                    </div>
-                    {% if form.website.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.website.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <hr>
-
-                <div class="form-group row">
-                    <label for="{{ form.address_line1.id_for_label }}" class="col-md-2 col-form-label">
-                        Address
-                    </label>
-                    <div class="col-md-6">
-                       {% render_field form.address_line1 class+="form-control" %}
-                    </div>
-                    {% if form.address_line1.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.address_line1.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <div class="form-group row">
-                    <label for="{{ form.address_line2.id_for_label }}" class="col-md-2 col-form-label">
-                        Address (continued)
-                    </label>
-                    <div class="col-md-6">
-                        {% render_field form.address_line2 class+="form-control" aria-describedby="address_line2-help" %}
-                        <small id="address_line2-help" class="form-text text-muted">
-                            Apartment, suite, floor, etc.
-                        </small>
-                    </div>
-                    {% if form.address_line2.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.address_line2.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <div class="form-group row">
-                    <label for="{{ form.city.id_for_label }}" class="col-md-2 col-form-label">
-                        City
-                    </label>
-                    <div class="col-md-4">
-                       {% render_field form.city class+="form-control" %}
-                    </div>
-                    {% if form.city.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.city.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <div class="form-group row">
-                    <label for="{{ form.state.id_for_label }}" class="col-md-2 col-form-label">
-                        State
-                    </label>
-                    <div class="col-md-3">
-                        {% render_field form.state class+="form-control" %}
-                    </div>
-                    {% if form.state.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.state.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <div class="form-group row">
-                    <label for="{{ form.zipcode.id_for_label }}" class="col-md-2 col-form-label">
-                        ZIP code
-                    </label>
-                    <div class="col-md-2">
-                        {% render_field form.zipcode class+="form-control" %}
-                    </div>
-                    {% if form.zipcode.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.zipcode.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <hr>
-
-                <div class="form-group row">
-                    <label for="{{ form.type.id_for_label }}" class="col-md-2 col-form-label">
-                        Type
-                    </label>
-                    <div class="col-md-4">
-                        {% render_field form.type class+="form-control" aria-describedby="type-help" %}
-                        <small id="type-help" class="form-text text-muted">
-                            Nonprofits require an EIN. Other types do not.
-                        </small>
-                    </div>
-                    {% if form.type.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.type.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <div class="form-group row">
-                    <label for="{{ form.category.id_for_label }}" class="col-md-2 col-form-label">
-                        Category
-                    </label>
-                    <div class="col-md-5">
-                        {% render_field form.category class+="form-control" %}
-                    </div>
-                    {% if form.category.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.category.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <div class="form-group row">
-                    <label for="{{ form.description.id_for_label }}" class="col-md-2 col-form-label">
-                        Description
-                    </label>
-                    <div class="col-md-8">
-                        {% render_field form.description class+="form-control" aria-describedby="description-help"%}
-                        <small id="description-help" class="form-text text-muted">
-                            Optional
-                        </small>
-                    </div>
-                    {% if form.description.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.description.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <hr>
-
-                <div class="form-group row">
-                    <div class="col-md-2">Terms of Service</div>
-                    <div class="col-md-10">
-                        <div class="form-check">
-                           {% render_field form.tos_accepted class+="form-check-input" %}
-                            <label class="form-check-label" for="{{ form.tos_accepted.id_for_label }}">
-                                Please check this box to agree to our <a href="/terms-of-service/">Terms of Service</a>.
-                            </label>
-                        </div>
-                    </div>
-                    {% if form.tos_accepted.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
-                            {% for error in form.tos_accepted.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <input id="form-input" class="offset-md-2 btn btn-purple mt-3" type="submit" value="Continue" />
+                <input id="form-input" type="submit" value="Continue" />
             </form>
         </div>
     </div>

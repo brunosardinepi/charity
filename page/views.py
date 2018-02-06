@@ -18,6 +18,7 @@ from django.utils import timezone
 from django.views import View
 
 import stripe
+from formtools.wizard.views import SessionWizardView
 from guardian.shortcuts import assign_perm, get_user_perms, remove_perm
 
 from . import forms
@@ -79,6 +80,93 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+class PageWizard(SessionWizardView):
+    form_list = [forms.PageForm1, forms.PageForm2]
+    def done(self, form_list, **kwargs):
+        # put the form results into a dict
+        form = self.get_all_cleaned_data()
+
+        # make the Page object but don't save it
+        # until we make the stripe transaction
+        page = Page(
+            address_line1 = form['address_line1'],
+            address_line2 = form['address_line2'],
+            city = form['city'],
+            description = form['description'],
+            name = form['name'],
+            stripe_account_id = '',
+            stripe_bank_account_id = '',
+            tos_accepted = form['tos_accepted'],
+            website = form['website'],
+            zipcode = form['zipcode'],
+            category = form['category'],
+            state = form['state'],
+            type = form['type'],
+        )
+
+        # conditionally add EIN
+        try:
+            page.ein = form['ein']
+        except KeyError:
+            pass
+
+        # only make the stripe account if we're live
+        if not settings.TESTING:
+            # set the stripe type based on page type
+            if page.type == 'nonprofit':
+                stripe_type = 'company'
+            else:
+                stripe_type = 'individual'
+
+            # create stripe data for the account
+            legal_entity = {
+                "business_name": page.name,
+                "type": stripe_type,
+                "address": {
+                    "city": page.city,
+                    "line1": page.address_line1,
+                    "line2": page.address_line2,
+                    "postal_code": page.zipcode,
+                    "state": page.state
+                },
+            }
+
+            user_ip = get_client_ip(self.request)
+            tos_acceptance = {
+                "date": timezone.now(),
+                "ip": user_ip
+            }
+
+            # create the stripe account
+            # and save the page if all goes well
+            try:
+                account = stripe.Account.create(
+                    business_name=page.name,
+                    country="US",
+                    email=self.request.user.email,
+                    legal_entity=legal_entity,
+                    type="custom",
+                    tos_acceptance=tos_acceptance
+                )
+                page.stripe_account_id = account.id
+                # stripe processed it so we can save the page now
+                page.save()
+                # add the user as an admin and subscriber
+                page.admins.add(self.request.user.userprofile)
+                page.subscribers.add(self.request.user.userprofile)
+            # catch stripe exceptions
+            # and alert the user and me about it
+            # note that the page doesn't get created if this happens
+            except stripe.error.InvalidRequestError as e:
+                error = create_error(e, self.request, page)
+#                page.delete()
+                return redirect('notes:error_stripe_invalid_request', error_pk=error.pk)
+
+        return HttpResponseRedirect(page.get_absolute_url())
+#        return render(self.request, 'page/page_create_done.html', {
+#            'form_data': [form.cleaned_data for form in form_list],
+#        })
 
 @login_required(login_url='signup')
 def page_create(request):

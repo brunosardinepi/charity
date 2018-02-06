@@ -38,7 +38,8 @@ urlpatterns = [
     url(r'^email-templates/', include('email_templates.urls', namespace='email_templates')),
 
     url(r'^page/subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),
-    url(r'^create/page/$', PageViews.page_create, name='page_create'),
+#    url(r'^create/page/$', PageViews.page_create, name='page_create'),
+    url(r'^create/page/$', login_required(PageViews.PageWizard.as_view(template_name="page/page_create.html")), name='page_create'),
 #    url(r'^create/(?P<page_pk>\d+)/additional/$', login_required(PageViews.PageCreateAdditionalInfo.as_view()), name='page_create_additional_info'),
     url(r'^create/(?P<page_pk>\d+)/bank/$', login_required(PageViews.PageCreateBankInfo.as_view()), name='page_create_bank_info'),
     url(r'^(?P<page_slug>[\w-]+)/edit/bank/$', login_required(PageViews.PageEditBankInfo.as_view()), name='page_edit_bank_info'),

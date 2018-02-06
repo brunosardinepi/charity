@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'comments',
     'email_templates',
+    'formtools',
 ]
 
 MIDDLEWARE = [

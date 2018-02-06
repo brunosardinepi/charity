@@ -6,24 +6,24 @@ from . import models
 from userprofile.widgets import CustomSelectDateWidget
 
 
-class PageForm(forms.ModelForm):
+class PageForm1(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(PageForm, self).__init__(*args, **kwargs)
+        super(PageForm1, self).__init__(*args, **kwargs)
         self.fields['tos_accepted'].required = True
 
     class Meta:
         model = models.Page
         fields = [
             'name',
+            'website',
+            'type',
+            'category',
+            'description',
             'address_line1',
             'address_line2',
             'city',
             'state',
             'zipcode',
-            'type',
-            'category',
-            'description',
-            'website',
             'tos_accepted',
         ]
         widgets = {
@@ -33,6 +33,18 @@ class PageForm(forms.ModelForm):
             'address_line2': forms.TextInput(attrs={'placeholder': 'Suite 200'}),
             'description': forms.Textarea(attrs={'placeholder': 'We are an amazing group that does amazing things!'}),
         }
+
+class PageForm2(forms.Form):
+    first_name = forms.CharField(max_length=255)
+    last_name = forms.CharField(max_length=255)
+    YEAR_CHOICES = list(range(1900, datetime.now().year))[::-1]
+    birthday = forms.DateField(required=False, widget=CustomSelectDateWidget(years=YEAR_CHOICES))
+
+class PageForm3(forms.Form):
+    ssn = forms.CharField(max_length=4, label="Last 4 of SSN")
+    ein = forms.CharField(max_length=20)
+    account_number = forms.CharField(max_length=12)
+    routing_number = forms.CharField(max_length=9)
 
 class PageEditForm(forms.ModelForm):
     class Meta:
