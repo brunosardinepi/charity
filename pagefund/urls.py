@@ -9,8 +9,11 @@ from . import config
 from . import views
 from campaign import views as CampaignViews
 from invitations import views as InvitationsViews
+from page.forms import PageForm1, PageForm2, PageForm3, PageForm4
 from page import views as PageViews
 
+
+forms = [PageForm1, PageForm2, PageForm3, PageForm4]
 
 urlpatterns = [
     url(r'^{}/'.format(config.settings['admin']), admin.site.urls),
@@ -39,7 +42,13 @@ urlpatterns = [
 
     url(r'^page/subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),
 #    url(r'^create/page/$', PageViews.page_create, name='page_create'),
-    url(r'^create/page/$', login_required(PageViews.PageWizard.as_view(template_name="page/page_create.html")), name='page_create'),
+    url(r'^create/page/$', login_required(PageViews.PageWizard.as_view(
+        forms,
+        condition_dict={
+            '2': PageViews.show_message_form_condition,
+        },
+        template_name="page/page_create.html")),
+        name='page_create'),
 #    url(r'^create/(?P<page_pk>\d+)/additional/$', login_required(PageViews.PageCreateAdditionalInfo.as_view()), name='page_create_additional_info'),
     url(r'^create/(?P<page_pk>\d+)/bank/$', login_required(PageViews.PageCreateBankInfo.as_view()), name='page_create_bank_info'),
     url(r'^(?P<page_slug>[\w-]+)/edit/bank/$', login_required(PageViews.PageEditBankInfo.as_view()), name='page_edit_bank_info'),

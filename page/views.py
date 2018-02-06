@@ -81,8 +81,13 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
+def show_message_form_condition(wizard):
+    # try to get the cleaned data of step 0
+    cleaned_data = wizard.get_cleaned_data_for_step('0') or {}
+    # check if type is nonprofit
+    return cleaned_data.get('type') == 'nonprofit'
+
 class PageWizard(SessionWizardView):
-    form_list = [forms.PageForm1, forms.PageForm2]
     def done(self, form_list, **kwargs):
         # put the form results into a dict
         form = self.get_all_cleaned_data()
@@ -160,69 +165,9 @@ class PageWizard(SessionWizardView):
             # note that the page doesn't get created if this happens
             except stripe.error.InvalidRequestError as e:
                 error = create_error(e, self.request, page)
-#                page.delete()
                 return redirect('notes:error_stripe_invalid_request', error_pk=error.pk)
 
         return HttpResponseRedirect(page.get_absolute_url())
-#        return render(self.request, 'page/page_create_done.html', {
-#            'form_data': [form.cleaned_data for form in form_list],
-#        })
-
-@login_required(login_url='signup')
-def page_create(request):
-    form = forms.PageForm()
-    if request.method == 'POST':
-        form = forms.PageForm(request.POST)
-        if form.is_valid():
-            page = form.save()
-            page.admins.add(request.user.userprofile)
-            page.subscribers.add(request.user.userprofile)
-
-            if not settings.TESTING:
-                # set the stripe type based on page type
-                if page.type == 'nonprofit':
-                    stripe_type = 'company'
-                else:
-                    stripe_type = 'individual'
-
-                # create stripe data for the account
-                legal_entity = {
-                    "business_name": page.name,
-                    "type": stripe_type,
-                    "address": {
-                        "city": page.city,
-                        "line1": page.address_line1,
-                        "line2": page.address_line2,
-                        "postal_code": page.zipcode,
-                        "state": page.state
-                    },
-                }
-
-                user_ip = get_client_ip(request)
-                tos_acceptance = {
-                    "date": timezone.now(),
-                    "ip": user_ip
-                }
-
-                try:
-                    account = stripe.Account.create(
-                        business_name=page.name,
-                        country="US",
-                        email=request.user.email,
-                        legal_entity=legal_entity,
-                        type="custom",
-                        tos_acceptance=tos_acceptance
-                    )
-                except stripe.error.InvalidRequestError as e:
-                    error = create_error(e, request, page)
-                    page.delete()
-                    return redirect('notes:error_stripe_invalid_request', error_pk=error.pk)
-
-                page.stripe_account_id = account.id
-                page.save()
-
-            return redirect('page_create_bank_info', page_pk=page.pk)
-    return render(request, 'page/page_create.html', {'form': form})
 
 class PageCreateBankInfo(View):
     def get(self, request, page_pk):

@@ -41,8 +41,10 @@ class PageForm2(forms.Form):
     birthday = forms.DateField(required=False, widget=CustomSelectDateWidget(years=YEAR_CHOICES))
 
 class PageForm3(forms.Form):
-    ssn = forms.CharField(max_length=4, label="Last 4 of SSN")
     ein = forms.CharField(max_length=20)
+
+class PageForm4(forms.Form):
+    ssn = forms.CharField(max_length=4, label="Last 4 of SSN")
     account_number = forms.CharField(max_length=12)
     routing_number = forms.CharField(max_length=9)
 
