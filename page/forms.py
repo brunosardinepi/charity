@@ -115,8 +115,6 @@ class PageBankEINForm(PageBankForm):
     ein = forms.CharField(max_length=20)
 
 class PageEditBankForm(forms.Form):
-    first_name = forms.CharField(max_length=255)
-    last_name = forms.CharField(max_length=255)
     ssn = forms.CharField(max_length=4, label="Last 4 of SSN")
     account_number = forms.CharField(max_length=12)
     routing_number = forms.CharField(max_length=9)

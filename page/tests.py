@@ -203,17 +203,6 @@ class PageTest(TestCase):
         now = timezone.now()
         self.assertLess(page.created_on, now)
 
-    def test_duplicate_page_slug(self):
-        self.client.login(username='testuser', password='testpassword')
-
-        data = {
-            'name': "Tester2",
-            'page_slug': "testpage"
-        }
-
-        response = self.client.post('/create/page/', data)
-        self.assertEqual(models.Page.objects.filter(deleted=False).count(), 2)
-
     def test_page_status_logged_out(self):
         request = self.factory.get('home')
         request.user = AnonymousUser()
@@ -341,7 +330,7 @@ class PageTest(TestCase):
 
     def test_page_create_logged_out(self):
         response = self.client.get('/create/page/')
-        self.assertRedirects(response, '/accounts/signup/?next=/create/page/', 302, 200)
+        self.assertRedirects(response, '/accounts/login/?next=/create/page/', 302, 200)
 
     def test_page_create_logged_in(self):
         self.client.login(username='testuser', password='testpassword')
@@ -358,38 +347,38 @@ class PageTest(TestCase):
             'category': "other",
             'website': "test.com",
             'tos_accepted': True,
+            'page_wizard-current_step': 'business',
         }
         response = self.client.post('/create/page/', data)
-        page = models.Page.objects.get(page_slug="my-test-page")
-        self.assertRedirects(response, '/create/{}/bank/'.format(page.pk), 302, 200)
-
-        data_bank = {
-            'first_name': "Tester",
-            'last_name': "McGee",
-            'birthday': '1987-10-12',
-            'ssn': "0000",
-            'ein': "000000001",
-            'account_number': "000123456789",
-            'routing_number': "110000000",
-        }
-        response = self.client.post('/create/{}/bank/'.format(page.pk), data_bank)
-        self.assertRedirects(response, '/{}/'.format(page.page_slug), 302, 200)
-
-        self.client.login(username='harrypotter', password='imawizard')
-        response = self.client.get('/create/page/')
         self.assertEqual(response.status_code, 200)
 
-        data['name'] = "My Other Test Page"
-        data['type'] = "personal"
+        data = {
+            'first_name': "Myname",
+            'last_name': "Iswhat",
+            'birthday': "1990-01-01",
+            'page_wizard-current_step': 'personal',
+        }
         response = self.client.post('/create/page/', data)
-        page = models.Page.objects.get(page_slug="my-other-test-page")
-        self.assertRedirects(response, '/create/{}/bank/'.format(page.pk), 302, 200)
+        self.assertEqual(response.status_code, 200)
 
-        response = self.client.post('/create/{}/bank/'.format(page.pk), data_bank)
-        self.assertRedirects(response, '/{}/'.format(page.page_slug), 302, 200)
+        data = {
+            'ein': "000000001",
+            'page_wizard-current_step': 'ein',
+        }
+        response = self.client.post('/create/page/', data)
+        self.assertEqual(response.status_code, 200)
 
-    def test_pageform(self):
-        form = forms.PageForm({
+        data = {
+            'ssn': "0000",
+            'account_number': "000123456789",
+            'routing_number': "111111100",
+            'page_wizard-current_step': 'account',
+        }
+        response = self.client.post('/create/page/', data)
+        self.assertEqual(response.status_code, 200)
+
+    def test_pageform1(self):
+        form = forms.PageForm1({
             'name': 'Ribeye Steak',
             'type': 'personal',
             'city': 'Atlanta',
@@ -410,8 +399,8 @@ class PageTest(TestCase):
         self.assertEqual(page.category, "animal")
         self.assertEqual(page.description, "I like flank steak.")
 
-    def test_pageform_bad(self):
-        form = forms.PageForm({
+    def test_pageform1_bad(self):
+        form = forms.PageForm1({
             'type': 'personal',
             'city': 'Atlanta',
             'state': 'GA',
@@ -423,64 +412,59 @@ class PageTest(TestCase):
         })
         self.assertFalse(form.is_valid())
 
-    def test_pageform_blank(self):
-        form = forms.PageForm({})
+    def test_pageform1_blank(self):
+        form = forms.PageForm1({})
         self.assertFalse(form.is_valid())
 
-    def test_pagebankform(self):
-        form = forms.PageBankForm({
+    def test_pageform2(self):
+        form = forms.PageForm2({
             'first_name': 'Tom',
             'last_name': 'Walker',
+            'birthday': '1990-01-01',
+        })
+        self.assertTrue(form.is_valid())
+
+    def test_pageform2_bad(self):
+        form = forms.PageForm2({
+            'last_name': 'Walker',
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_pageform2_blank(self):
+        form = forms.PageForm2()
+        self.assertFalse(form.is_valid())
+
+    def test_pageform3(self):
+        form = forms.PageForm3({
+            'ein': 'Tom',
+        })
+        self.assertTrue(form.is_valid())
+
+    def test_pageform3_bad_blank(self):
+        form = forms.PageForm3()
+        self.assertFalse(form.is_valid())
+
+    def test_pageform4(self):
+        form = forms.PageForm4({
             'ssn': '0000',
             'account_number': '000123456789',
             'routing_number': '111100000',
         })
         self.assertTrue(form.is_valid())
 
-    def test_pagebankform_bad(self):
-        form = forms.PageBankForm({
-            'last_name': 'Walker',
-            'ssn': '0000',
-            'ein': '000000001',
+    def test_pageform4_bad(self):
+        form = forms.PageForm4({
             'account_number': '000123456789',
             'routing_number': '111100000',
         })
         self.assertFalse(form.is_valid())
 
-    def test_pagebankform_blank(self):
-        form = forms.PageBankForm()
-        self.assertFalse(form.is_valid())
-
-    def test_pagebankeinform(self):
-        form = forms.PageBankForm({
-            'first_name': 'Tom',
-            'last_name': 'Walker',
-            'ssn': '0000',
-            'ein': '000000001',
-            'account_number': '000123456789',
-            'routing_number': '111100000',
-        })
-        self.assertTrue(form.is_valid())
-
-    def test_pagebankeinform_bad(self):
-        form = forms.PageBankForm({
-            'last_name': 'Walker',
-            'ssn': '0000',
-            'what': 'hello',
-            'ein': '000000001',
-            'account_number': '000123456789',
-            'routing_number': '111100000',
-        })
-        self.assertFalse(form.is_valid())
-
-    def test_pagebankeinform_blank(self):
-        form = forms.PageBankForm()
+    def test_pageform4_blank(self):
+        form = forms.PageForm4()
         self.assertFalse(form.is_valid())
 
     def test_pageeditbankform(self):
         form = forms.PageEditBankForm({
-            'first_name': 'Tom',
-            'last_name': 'Walker',
             'ssn': '0000',
             'account_number': '000123456789',
             'routing_number': '111100000',
@@ -489,9 +473,6 @@ class PageTest(TestCase):
 
     def test_pageeditbankform_bad(self):
         form = forms.PageEditBankForm({
-            'last_name': 'Walker',
-            'ssn': '0000',
-            'ein': '000000001',
             'account_number': '000123456789',
             'routing_number': '111100000',
         })
@@ -503,8 +484,6 @@ class PageTest(TestCase):
 
     def test_pageeditbankeinform(self):
         form = forms.PageEditBankEINForm({
-            'first_name': 'Tom',
-            'last_name': 'Walker',
             'ssn': '0000',
             'ein': '000000001',
             'account_number': '000123456789',
@@ -514,10 +493,7 @@ class PageTest(TestCase):
 
     def test_pageeditbankeinform_bad(self):
         form = forms.PageEditBankEINForm({
-            'last_name': 'Walker',
             'ssn': '0000',
-            'ein': '000000001',
-            'what': 'hello',
             'account_number': '000123456789',
             'routing_number': '111100000',
         })

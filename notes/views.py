@@ -27,13 +27,8 @@ def error_image_type(request):
 def error_amount_is_none(request):
     return render(request, 'notes/error_amount_is_none.html')
 
-def error_stripe_invalid_request(request, error_pk):
-    error = get_object_or_404(Note, pk=error_pk)
-    msg = error.message
-    msg = msg.split(": ", 1)[1]
-    return render(request, 'notes/error_stripe_invalid_request.html', {
-        'message': msg,
-    })
+def error_stripe_invalid_request(request):
+    return render(request, 'notes/error_stripe_invalid_request.html')
 
 def error_campaign_vote_participants(request):
     previous_page = request.META.get('HTTP_REFERER')
@@ -87,12 +82,3 @@ class AbuseImage(View):
             create_note(request, image, 'abuse')
         # idk where to redirect this to. maybe a thank you page
         return redirect('home')
-
-
-def error_stripe_invalid_request(request, error_pk):
-    error = get_object_or_404(Note, pk=error_pk)
-    msg = error.message
-    msg = msg.split(": ", 1)[1]
-    return render(request, 'notes/error_stripe_invalid_request.html', {
-        'message': msg,
-    })

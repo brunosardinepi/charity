@@ -214,15 +214,10 @@ class PageWizard(SessionWizardView):
 class PageEditBankInfo(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        userprofile = get_object_or_404(UserProfile, user=request.user)
-        initial = {
-            'first_name': userprofile.user.first_name,
-            'last_name': userprofile.user.last_name,
-        }
         if page.type == 'nonprofit':
-            form = forms.PageEditBankEINForm(initial=initial)
+            form = forms.PageEditBankEINForm()
         else:
-            form = forms.PageEditBankForm(initial=initial)
+            form = forms.PageEditBankForm()
         return render(request, 'page/page_edit_bank_info.html', {'page': page, 'form': form})
 
     def post(self, request, page_slug):
@@ -247,8 +242,6 @@ class PageEditBankInfo(View):
                 # update stripe information
                 if account['legal_entity']['ssn_last_4_provided'] == False:
                     account.legal_entity.ssn_last_4 = form.cleaned_data['ssn']
-                account.legal_entity.first_name = form.cleaned_data['first_name']
-                account.legal_entity.last_name = form.cleaned_data['last_name']
                 if page.type == 'nonprofit':
                     account.legal_entity.business_tax_id = form.cleaned_data['ein']
 
@@ -256,6 +249,7 @@ class PageEditBankInfo(View):
                 try:
                     account.save()
                 except stripe.error.InvalidRequestError as e:
+                    print("e = {}".format(e))
                     error = create_error(e, request)
                     return redirect('notes:error_stripe_invalid_request')
 
@@ -265,7 +259,7 @@ class PageEditBankInfo(View):
                     'country': 'US',
                     'currency': 'usd',
                     'account_number': form.cleaned_data['account_number'],
-                    'account_holder_name': '%s %s' % (form.cleaned_data['first_name'], form.cleaned_data['last_name']),
+#                    'account_holder_name': '%s %s' % (form.cleaned_data['first_name'], form.cleaned_data['last_name']),
                     'account_holder_type': stripe_type,
                     'routing_number': form.cleaned_data['routing_number'],
                     'default_for_currency': 'true',
