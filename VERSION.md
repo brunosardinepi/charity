@@ -2,6 +2,23 @@
 
 This is the version history for PageFund development.
 
+## Version 0.28.6
+
+Release date: TBD
+
+### Additions
+
+* None
+
+### Changes
+
+* None
+
+### Fixes
+
+* Scaling on donation graphs when there were no donations showed odd/long decimals in the y axis steps
+
+
 ## Version 0.28.5
 
 Release date: 02/06/2018

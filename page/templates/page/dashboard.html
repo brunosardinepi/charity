@@ -88,6 +88,8 @@
                     yAxes: [{
                         ticks: {
                             beginAtZero: true,
+                            suggestedMin: 0,
+                            suggestedMax: 100,
                             // Include a dollar sign in the ticks
                             callback: function(value, index, values) {
                                 return '$' + value;
