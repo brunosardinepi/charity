@@ -75,3 +75,9 @@ def convert_to_pct(obj):
     if not obj:
         obj = 0
     return "{}%".format(int(obj * 100))
+
+@register.simple_tag
+def create_width(this_step, total_steps):
+    # steps start at 1, so bring it down to 0 for the progress bar
+    this_step -= 1
+    return (this_step / total_steps) * 100

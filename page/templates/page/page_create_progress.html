@@ -1,0 +1,6 @@
+{% load lib_extras %}
+
+
+<div class="progress" style="height: 2px;">
+    <div class="progress-bar-teal" role="progressbar" style="width: {% create_width wizard.steps.step1 wizard.steps.count %}%" aria-valuenow="{{ wizard.steps.step1 }}" aria-valuemin="0" aria-valuemax="{{ wizard.steps.count }}"></div>
+</div>

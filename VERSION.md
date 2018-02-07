@@ -2,6 +2,23 @@
 
 This is the version history for PageFund development.
 
+## Version 0.28.5
+
+Release date: 02/06/2018
+
+### Additions
+
+* Progress bar on Page create process
+
+### Changes
+
+* None
+
+### Fixes
+
+* None
+
+
 ## Version 0.28.4
 
 Release date: 02/06/2018
