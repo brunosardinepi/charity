@@ -6,6 +6,8 @@ This is the version history for PageFund development.
 
 Release date: 02/06/2018
 
+7 files changed, 33 insertions(+), 4 deletions(-)
+
 ### Additions
 
 * Progress bar on Page create process
