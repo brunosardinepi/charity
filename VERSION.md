@@ -13,6 +13,7 @@ Release date: TBD
 ### Changes
 
 * Password requirements for PCI
+* Create design
 
 ### Fixes
 
