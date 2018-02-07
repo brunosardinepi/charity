@@ -110,19 +110,15 @@ class PageWizard(SessionWizardView):
             type = form['type'],
         )
 
-        # conditionally add EIN
-        try:
-            page.ein = form['ein']
-        except KeyError:
-            pass
-
         # only make the stripe account if we're live
         if not settings.TESTING:
             # set the stripe type based on page type
             if page.type == 'nonprofit':
                 stripe_type = 'company'
+                page.ein = form['ein']
             else:
                 stripe_type = 'individual'
+                page.ein = ''
 
             # create stripe data for the account
             legal_entity = {
@@ -135,6 +131,15 @@ class PageWizard(SessionWizardView):
                     "postal_code": page.zipcode,
                     "state": page.state
                 },
+                'ssn_last_4': form['ssn'],
+                'first_name': form['first_name'],
+                'last_name': form['last_name'],
+                "dob": {
+                    "day": form['birthday'].day,
+                    "month": form['birthday'].month,
+                    "year": form['birthday'].year,
+                },
+                'business_tax_id': page.ein,
             }
 
             user_ip = get_client_ip(self.request)
@@ -154,7 +159,20 @@ class PageWizard(SessionWizardView):
                     type="custom",
                     tos_acceptance=tos_acceptance
                 )
+
+                external_account = {
+                    "object": "bank_account",
+                    "country": "US",
+                    "account_number": form['account_number'],
+                    "account_holder_name": "%s %s" % (form['first_name'], form['last_name']),
+                    "account_holder_type": stripe_type,
+                    "routing_number": form['routing_number'],
+                    "default_for_currency": "true",
+                }
+                ext_account = account.external_accounts.create(external_account=external_account)
+
                 page.stripe_account_id = account.id
+                page.stripe_bank_account_id = ext_account.id
                 # stripe processed it so we can save the page now
                 page.save()
                 # add the user as an admin and subscriber
@@ -167,80 +185,24 @@ class PageWizard(SessionWizardView):
                 error = create_error(e, self.request, page)
                 return redirect('notes:error_stripe_invalid_request', error_pk=error.pk)
 
+            # send emails
+            # placed outside of stripe try block because it's ok if these fail
+            try:
+                substitutions = {
+                    "-pagename-": page.name,
+                }
+                utils.email(request.user.email, "blank", "blank", "new_page_created", substitutions)
+
+                date = timezone.now().strftime("%Y-%m-%d %I:%M:%S %Z")
+                utils.email("gn9012@gmail.com", "blank", "blank", "admin_new_page", {
+                    '-user-': request.user.email,
+                    '-page-': page.name,
+                    '-date-': date,
+                })
+            except:
+                pass
+
         return HttpResponseRedirect(page.get_absolute_url())
-
-class PageCreateBankInfo(View):
-    def get(self, request, page_pk):
-        page = get_object_or_404(Page, pk=page_pk)
-        userprofile = get_object_or_404(UserProfile, user=request.user)
-        initial = {
-            'account_holder_first_name': userprofile.user.first_name,
-            'account_holder_last_name': userprofile.user.last_name,
-        }
-        if page.type == 'nonprofit':
-            form = forms.PageBankEINForm(initial=initial)
-        else:
-            form = forms.PageBankForm(initial=initial)
-        return render(request, 'page/page_create_bank_info.html', {'page': page, 'form': form})
-
-    def post(self, request, page_pk):
-        page = get_object_or_404(Page, pk=page_pk)
-        if page.type == 'nonprofit':
-            form = forms.PageBankEINForm(request.POST)
-        else:
-            form = forms.PageBankForm(request.POST)
-        if form.is_valid():
-            if not settings.TESTING:
-                if page.type == 'nonprofit':
-                    stripe_type = 'company'
-                else:
-                    stripe_type = 'individual'
-
-                account = stripe.Account.retrieve(page.stripe_account_id)
-
-                account.legal_entity.ssn_last_4 = form.cleaned_data['ssn']
-                account.legal_entity.first_name = form.cleaned_data['first_name']
-                account.legal_entity.last_name = form.cleaned_data['last_name']
-                account.legal_entity.dob.day = form.cleaned_data['birthday'].day
-                account.legal_entity.dob.month = form.cleaned_data['birthday'].month
-                account.legal_entity.dob.year = form.cleaned_data['birthday'].year
-
-                if page.type == 'nonprofit':
-                    account.legal_entity.business_tax_id = form.cleaned_data['ein']
-
-                account.save()
-
-                try:
-                    external_account = {
-                        "object": "bank_account",
-                        "country": "US",
-                        "account_number": form.cleaned_data['account_number'],
-                        "account_holder_name": "%s %s" % (form.cleaned_data['first_name'], form.cleaned_data['last_name']),
-                        "account_holder_type": stripe_type,
-                        "routing_number": form.cleaned_data['routing_number'],
-                        "default_for_currency": "true",
-                    }
-                    ext_account = account.external_accounts.create(external_account=external_account)
-                except stripe.error.InvalidRequestError as e:
-                    error = create_error(e, request, page)
-                    page.delete()
-                    return redirect('notes:error_stripe_invalid_request', error_pk=error.pk)
-
-                page.stripe_bank_account_id = ext_account.id
-                page.save()
-
-            substitutions = {
-                "-pagename-": page.name,
-            }
-            utils.email(request.user.email, "blank", "blank", "new_page_created", substitutions)
-
-            date = timezone.now().strftime("%Y-%m-%d %I:%M:%S %Z")
-            utils.email("gn9012@gmail.com", "blank", "blank", "admin_new_page", {
-                '-user-': request.user.email,
-                '-page-': page.name,
-                '-date-': date,
-            })
-            return HttpResponseRedirect(page.get_absolute_url())
 
 class PageEditBankInfo(View):
     def get(self, request, page_slug):
