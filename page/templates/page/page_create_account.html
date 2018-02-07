@@ -9,11 +9,14 @@
 {% block title %}Create | {{ block.super }}{% endblock %}
 
 {% block body_content %}
-    <div class="row pb-5">
-        <div class="col-10 offset-2 mb-4">
+    <div class="row">
+        <div class="col-12 mt-4 mb-3">
             <h1>Create a Page</h1>
-            <p>All fields are required unless stated otherwise.</p>
+            <hr>
         </div>
+    </div>
+
+    <div class="row pb-5">
         <div class="col-12">
 
             {{ wizard.form.media }}
@@ -22,32 +25,59 @@
                 {% csrf_token %}
                 {{ wizard.management_form }}
 
-
-                <div class="row">
-                    <div class="col-lg-6">
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ form.non_field_errors }}
                     </div>
-                    <div class="col-lg-6">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                    </div>
-                </div>
-
-
-
-
-
-                {% if wizard.form.forms %}
-                    {{ wizard.form.management_form }}
-                    {% for form in wizard.form.forms %}
-                        {{ form }}
-                    {% endfor %}
-                {% else %}
-                    {{ wizard.form }}
                 {% endif %}
 
-                <input id="form-input" type="submit" value="Continue" />
+                        <div class="form-row">
+                            <div class="form-group col-md-3">
+                                <label for="{{ form.ssn.id_for_label }}">
+                                    Last 4 digits of your SSN
+                                </label>
+                                {% render_field form.ssn class+="form-control" %}
+                                {% if form.ssn.errors %}
+                                    {% for error in form.ssn.errors %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ error|escape }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="{{ form.account_number.id_for_label }}">
+                                   Bank account number
+                                </label>
+                                {% render_field form.account_number class+="form-control" %}
+                                {% if form.account_number.errors %}
+                                    {% for error in form.account_number.errors %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ error|escape }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="{{ form.routing_number.id_for_label }}">
+                                    Bank routing number
+                                </label>
+                                {% render_field form.routing_number class+="form-control" %}
+                                {% if form.routing_number.errors %}
+                                    {% for error in form.routing_number.errors %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ error|escape }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                <input id="form-input" class="btn btn-purple" type="submit" value="Continue" />
             </form>
         </div>
     </div>

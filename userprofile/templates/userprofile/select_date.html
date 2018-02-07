@@ -1,11 +1,11 @@
 <div class="form-row">
     {% for widget in widget.subwidgets %}
-        {% if widget.name == "birthday_month" %}
-            <div class="col-5">
-        {% elif widget.name == "birthday_day" %}
-            <div class="col-3">
+        {% if widget.name == "personal-birthday_month" %}
+            <div class="form-group col-5">
+        {% elif widget.name == "personal-birthday_day" %}
+            <div class="form-group col-3">
         {% else %}
-            <div class="col-4">
+            <div class="form-group col-4">
         {% endif %}
             <select class="form-control" aria-label="{{ widget.name }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
                 {% for group_name, group_choices, group_index in widget.optgroups %}

@@ -10,9 +10,9 @@
 
 {% block body_content %}
     <div class="row pb-5">
-        <div class="col-10 offset-2 mb-4">
+        <div class="col-12 mt-4 mb-3">
             <h1>Create a Page</h1>
-            <p>All fields are required unless stated otherwise.</p>
+            <hr>
         </div>
         <div class="col-12">
 
@@ -22,32 +22,170 @@
                 {% csrf_token %}
                 {{ wizard.management_form }}
 
-
-                <div class="row">
-                    <div class="col-lg-6">
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ form.non_field_errors }}
                     </div>
-                    <div class="col-lg-6">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                    </div>
-                </div>
-
-
-
-
-
-                {% if wizard.form.forms %}
-                    {{ wizard.form.management_form }}
-                    {% for form in wizard.form.forms %}
-                        {{ form }}
-                    {% endfor %}
-                {% else %}
-                    {{ wizard.form }}
                 {% endif %}
 
-                <input id="form-input" type="submit" value="Continue" />
+                <div class="row">
+                    <div class="col-lg-6">
+
+                        <div class="form-row">
+                            <div class="form-group col-12">
+                                <label for="{{ form.name.id_for_label }}">
+                                    Page name
+                                </label>
+                                {% render_field form.name class+="form-control" %}
+                                {% if form.name.errors %}
+                                    {% for error in form.name.errors %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ error|escape }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-12">
+                                <label for="{{ form.type.id_for_label }}">
+                                    Type
+                                </label>
+                                {% render_field form.type class+="form-control" %}
+                                {% if form.type.errors %}
+                                    {% for error in form.type.errors %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ error|escape }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-12">
+                                <label for="{{ form.category.id_for_label }}">
+                                    Category
+                                </label>
+                                {% render_field form.category class+="form-control" %}
+                                {% if form.category.errors %}
+                                    {% for error in form.category.errors %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ error|escape }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-lg-6">
+
+                        <div class="form-row">
+                            <div class="form-group col-12">
+                                <label for="{{ form.description.id_for_label }}">
+                                    Description
+                                </label>
+                                {% render_field form.description class+="form-control" %}
+                                {% if form.description.errors %}
+                                    {% for error in form.description.errors %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ error|escape }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row mb-4 mt-5">
+                    <div class="col-12">
+
+                        <div class="form-row">
+                            <div class="form-group col-md-8">
+                                <label for="{{ form.address_line1.id_for_label }}">Address</label>
+                                {% render_field form.address_line1 class+="form-control" %}
+                                {% if form.address_line1.errors %}
+                                    {% for error in form.address_line1.errors %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ error|escape }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+    
+                            <div class="form-group col-md-4">
+                                <label for="{{ form.address_line2.id_for_label }}">Address 2</label>
+                                {% render_field form.address_line2 class+="form-control" %}
+                                {% if form.address_line2.errors %}
+                                    {% for error in form.address_line2.errors %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ error|escape }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="{{ form.city.id_for_label }}">City</label>
+                                {% render_field form.city class+="form-control" %}
+                                {% if form.city.errors %}
+                                    {% for error in form.city.errors %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ error|escape }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="{{ form.state.id_for_label }}">State</label>
+                                {% render_field form.state class+="form-control" %}
+                                {% if form.state.errors %}
+                                    {% for error in form.state.errors %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ error|escape }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="{{ form.zipcode.id_for_label }}">Zip</label>
+                                {% render_field form.zipcode class+="form-control" %}
+                                {% if form.zipcode.errors %}
+                                    {% for error in form.zipcode.errors %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ error|escape }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-check">
+                            {% render_field form.tos_accepted class+="form-check-input" %}
+                            <label class="form-check-label" for="{{ form.tos_accepted.id_for_label }}">
+                                Please check this box to agree to our <a href="/terms-of-service/">Terms of Service</a>.
+                            </label>
+                        </div>
+                        {% if form.tos_accepted.errors %}
+                            <div class="col-12 mt-1 mb-4">
+                                {% for error in form.tos_accepted.errors %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ error|escape }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+                <input id="form-input" class="btn btn-purple" type="submit" value="Continue" />
             </form>
         </div>
     </div>

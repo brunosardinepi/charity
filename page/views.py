@@ -111,7 +111,6 @@ class PageWizard(SessionWizardView):
             stripe_account_id = '',
             stripe_bank_account_id = '',
             tos_accepted = form['tos_accepted'],
-            website = form['website'],
             zipcode = form['zipcode'],
             category = form['category'],
             state = form['state'],

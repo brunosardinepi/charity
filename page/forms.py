@@ -15,7 +15,6 @@ class PageForm1(forms.ModelForm):
         model = models.Page
         fields = [
             'name',
-            'website',
             'type',
             'category',
             'description',
@@ -27,26 +26,31 @@ class PageForm1(forms.ModelForm):
             'tos_accepted',
         ]
         widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'PageFund'}),
-            'website': forms.TextInput(attrs={'placeholder': 'https://page.fund'}),
+            'name': forms.TextInput(attrs={'placeholder': 'Page name'}),
             'address_line1': forms.TextInput(attrs={'placeholder': '123 Main St.'}),
-            'address_line2': forms.TextInput(attrs={'placeholder': 'Suite 200'}),
-            'description': forms.Textarea(attrs={'placeholder': 'We are an amazing group that does amazing things!'}),
+            'address_line2': forms.TextInput(attrs={'placeholder': 'Suite 200 (optional)'}),
+            'city': forms.TextInput(attrs={'placeholder': 'City'}),
+            'zipcode': forms.TextInput(attrs={'placeholder': '12345'}),
+            'description': forms.Textarea(attrs={
+                'placeholder': 'Tell the world about your Page! (optional)',
+                'rows': 8,
+            }),
         }
 
+
 class PageForm2(forms.Form):
-    first_name = forms.CharField(max_length=255)
-    last_name = forms.CharField(max_length=255)
+    first_name = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'placeholder': 'First name'}))
+    last_name = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'placeholder': 'Last name'}))
     YEAR_CHOICES = list(range(1900, datetime.now().year))[::-1]
     birthday = forms.DateField(required=False, widget=CustomSelectDateWidget(years=YEAR_CHOICES))
 
 class PageForm3(forms.Form):
-    ein = forms.CharField(max_length=20)
+    ein = forms.CharField(max_length=20, widget=forms.TextInput(attrs={'placeholder': '000000001'}))
 
 class PageForm4(forms.Form):
-    ssn = forms.CharField(max_length=4, label="Last 4 of SSN")
-    account_number = forms.CharField(max_length=12)
-    routing_number = forms.CharField(max_length=9)
+    ssn = forms.CharField(max_length=4, label="Last 4 of SSN", widget=forms.TextInput(attrs={'placeholder': '0000'}))
+    account_number = forms.CharField(max_length=12, widget=forms.TextInput(attrs={'placeholder': '000123456789'}))
+    routing_number = forms.CharField(max_length=9, widget=forms.TextInput(attrs={'placeholder': '110000000'}))
 
 class PageEditForm(forms.ModelForm):
     class Meta:

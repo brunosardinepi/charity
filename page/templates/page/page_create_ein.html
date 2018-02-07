@@ -9,12 +9,15 @@
 {% block title %}Create | {{ block.super }}{% endblock %}
 
 {% block body_content %}
-    <div class="row pb-5">
-        <div class="col-10 offset-2 mb-4">
+    <div class="row">
+        <div class="col-12 mt-4 mb-3">
             <h1>Create a Page</h1>
-            <p>All fields are required unless stated otherwise.</p>
+            <hr>
         </div>
-        <div class="col-12">
+    </div>
+
+    <div class="row pb-5">
+        <div class="col-8">
 
             {{ wizard.form.media }}
 
@@ -22,32 +25,34 @@
                 {% csrf_token %}
                 {{ wizard.management_form }}
 
-
-                <div class="row">
-                    <div class="col-lg-6">
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ form.non_field_errors }}
                     </div>
-                    <div class="col-lg-6">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                    </div>
-                </div>
-
-
-
-
-
-                {% if wizard.form.forms %}
-                    {{ wizard.form.management_form }}
-                    {% for form in wizard.form.forms %}
-                        {{ form }}
-                    {% endfor %}
-                {% else %}
-                    {{ wizard.form }}
                 {% endif %}
 
-                <input id="form-input" type="submit" value="Continue" />
+                <div class="row">
+                    <div class="col-12">
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="{{ form.ein.id_for_label }}">
+                                    EIN
+                                </label>
+                                {% render_field form.ein class+="form-control" %}
+                                {% if form.ein.errors %}
+                                    {% for error in form.ein.errors %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ error|escape }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <input id="form-input" class="btn btn-purple" type="submit" value="Continue" />
             </form>
         </div>
     </div>
