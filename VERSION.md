@@ -12,7 +12,7 @@ Release date: TBD
 
 ### Changes
 
-* None
+* Password requirements for PCI
 
 ### Fixes
 

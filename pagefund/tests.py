@@ -52,14 +52,14 @@ class SignupTest(TestCase):
         user_signed_up.connect(handler)
 
         data = {
-            'first_name': 'Testing',
-            'last_name': 'Signup',
-            'birthday': '11/12/90',
-            'state': 'CO',
+#            'first_name': 'Testing',
+#            'last_name': 'Signup',
+#            'birthday': '11/12/90',
+#            'state': 'CO',
             'email': 'mytestemail@gmail.com',
             'email2': 'mytestemail@gmail.com',
-            'password1': 'mytestpassword',
-            'password2': 'mytestpassword',
+            'password1': 'mytestpassword2',
+            'password2': 'mytestpassword2',
         }
         response = self.client.post('/accounts/signup/', data)
 
@@ -264,8 +264,8 @@ class HomeTest(TestCase):
         data = {
             'email': 'mytestemail@gmail.com',
             'email2': 'mytestemail@gmail.com',
-            'password1': 'mytestpassword',
-            'password2': 'mytestpassword',
+            'password1': 'mytestpassword1',
+            'password2': 'mytestpassword1',
         }
         response = self.client.post('/accounts/signup/', data)
         self.assertRedirects(response, '/', 302, 200)
@@ -322,14 +322,14 @@ class HomeTest(TestCase):
         response = self.client.get('/invite/accept/%s/%s/' % (invitation.pk, invitation.key))
         self.assertRedirects(response, '/accounts/signup/?next=/invite/accept/%s/%s/' % (invitation.pk, invitation.key), 302, 200)
         data = {
-            'first_name': 'Bob',
-            'last_name': 'Walker',
+#            'first_name': 'Bob',
+#            'last_name': 'Walker',
             'email': 'my@best.friend',
             'email2': 'my@best.friend',
-            'state': 'IL',
-            'password1': 'verybadpass',
-            'password2': 'verybadpass',
-            'birthday': '1990-01-02'
+#            'state': 'IL',
+            'password1': 'verybadpass5',
+            'password2': 'verybadpass5',
+#            'birthday': '1990-01-02'
         }
         response = self.client.post('/accounts/signup/?next=/invite/accept/%s/%s/' % (invitation.pk, invitation.key), data)
         self.assertRedirects(response, '/invite/accept/%s/%s/' % (invitation.pk, invitation.key), 302, 302)
@@ -504,8 +504,7 @@ class AccountTests(TestCase):
             resp,
             'form',
             'password1',
-            ['This password is too short.'
-             ' It must contain at least 9 characters.'])
+            ['Your password must be at least 7 characters and contain at least 1 number.'])
 
 
 class BaseSignupFormTests(TestCase):

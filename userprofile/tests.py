@@ -141,6 +141,27 @@ class UserProfileTest(TestCase):
         cards = models.StripeCard.objects.all()
         self.assertIn(self.card, cards)
 
+    def test_password_requirements(self):
+        response = self.client.get('/accounts/signup/')
+        self.assertEqual(response.status_code, 200)
+        data = {
+            'email': 'test2@test.test',
+            'email2': 'test2@test.test',
+            'password1': 'dog',
+            'password2': 'dog',
+        }
+        response = self.client.post('/accounts/signup/', data)
+        self.assertEqual(response.status_code, 200)
+        user = User.objects.filter(email='test2@test.test')
+        self.assertEqual(user.count(), 0)
+
+        data['password1'] = 'imadog2'
+        data['password2'] = 'imadog2'
+        response = self.client.post('/accounts/signup/', data)
+        self.assertRedirects(response, '/', 302, 200)
+        user = User.objects.filter(email='test2@test.test')
+        self.assertEqual(user.count(), 1)
+
     def test_userprofile_page(self):
         self.client.login(username='testuser', password='testpassword')
         response = self.client.get('/profile/')
