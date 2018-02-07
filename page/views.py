@@ -41,6 +41,11 @@ from plans.models import StripePlan
 
 stripe.api_key = config.settings['stripe_api_sk']
 
+TEMPLATES = {"business": "page/page_create_business.html",
+             "personal": "page/page_create_personal.html",
+             "ein": "page/page_create_ein.html",
+             "account": "page/page_create_account.html"}
+
 def page(request, page_slug):
     try:
         page = Page.objects.get(page_slug=page_slug)
@@ -83,11 +88,14 @@ def get_client_ip(request):
 
 def show_message_form_condition(wizard):
     # try to get the cleaned data of step 0
-    cleaned_data = wizard.get_cleaned_data_for_step('0') or {}
+    cleaned_data = wizard.get_cleaned_data_for_step('business') or {}
     # check if type is nonprofit
     return cleaned_data.get('type') == 'nonprofit'
 
 class PageWizard(SessionWizardView):
+    def get_template_names(self):
+        return [TEMPLATES[self.steps.current]]
+
     def done(self, form_list, **kwargs):
         # put the form results into a dict
         form = self.get_all_cleaned_data()

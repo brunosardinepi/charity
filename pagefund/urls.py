@@ -13,7 +13,10 @@ from page.forms import PageForm1, PageForm2, PageForm3, PageForm4
 from page import views as PageViews
 
 
-forms = [PageForm1, PageForm2, PageForm3, PageForm4]
+FORMS = [("business", PageForm1),
+         ("personal", PageForm2),
+         ("ein", PageForm3),
+         ("account", PageForm4)]
 
 urlpatterns = [
     url(r'^{}/'.format(config.settings['admin']), admin.site.urls),
@@ -43,11 +46,8 @@ urlpatterns = [
     url(r'^page/subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),
 #    url(r'^create/page/$', PageViews.page_create, name='page_create'),
     url(r'^create/page/$', login_required(PageViews.PageWizard.as_view(
-        forms,
-        condition_dict={
-            '2': PageViews.show_message_form_condition,
-        },
-        template_name="page/page_create.html")),
+        FORMS,
+        condition_dict={ 'ein': PageViews.show_message_form_condition })),
         name='page_create'),
 #    url(r'^create/(?P<page_pk>\d+)/additional/$', login_required(PageViews.PageCreateAdditionalInfo.as_view()), name='page_create_additional_info'),
 #    url(r'^create/(?P<page_pk>\d+)/bank/$', login_required(PageViews.PageCreateBankInfo.as_view()), name='page_create_bank_info'),

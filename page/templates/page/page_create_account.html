@@ -17,26 +17,34 @@
         <div class="col-12">
 
             {{ wizard.form.media }}
-            <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
 
             <form id="create-form" action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ wizard.management_form }}
 
+
+                <div class="row">
+                    <div class="col-lg-6">
+                    </div>
+                    <div class="col-lg-6">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                    </div>
+                </div>
+
+
+
+
+
                 {% if wizard.form.forms %}
-                    formset maybe?
                     {{ wizard.form.management_form }}
                     {% for form in wizard.form.forms %}
                         {{ form }}
                     {% endfor %}
                 {% else %}
-                    normal form
                     {{ wizard.form }}
-                {% endif %}
-
-                {% if wizard.steps.prev %}
-                    <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}">first step</button>
-                    <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">prev step</button>
                 {% endif %}
 
                 <input id="form-input" type="submit" value="Continue" />
