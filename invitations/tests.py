@@ -172,8 +172,8 @@ class ManagerInvitationTest(TestCase):
 
         # set both passwords and submit
         data = {
-            'password1': 'newpassword',
-            'password2': 'newpassword'
+            'password1': 'newpassword1',
+            'password2': 'newpassword1'
         }
         response = self.client.post('/password/reset/%s/%s/' % (invitation.pk, invitation.key), data)
         self.assertRedirects(response, '/profile/', 302, 200)
@@ -212,8 +212,8 @@ class ManagerInvitationTest(TestCase):
 
         # set both passwords and submit
         data = {
-            'password1': 'newpassword',
-            'password2': 'newpassword'
+            'password1': 'newpassword4',
+            'password2': 'newpassword4'
         }
         response = self.client.post('/password/reset/%s/%s/' % (invitation.pk, invitation.key), data)
         self.assertRedirects(response, '/profile/', 302, 200)

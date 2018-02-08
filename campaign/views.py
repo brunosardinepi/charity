@@ -19,7 +19,6 @@ import stripe
 
 from . import forms
 from .models import Campaign, CampaignImage, VoteParticipant
-from .utils import email_new_campaign
 from comments.forms import CommentForm
 from donation.forms import BaseDonate, DonateForm, DonateUnauthenticatedForm
 from donation.models import Donation

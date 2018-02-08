@@ -23,6 +23,7 @@ Release date: TBD
 * Word wrap on long text
 * File upload permissions
 * 404 pages for invitation failures
+* Campaigns that had ended were still showing up in search results
 
 
 ## Version 0.28.5
