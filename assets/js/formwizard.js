@@ -1,0 +1,1 @@
+$(document).on('click','#prev',function(){console.log('pressed prev');$('input').removeAttr('required')})

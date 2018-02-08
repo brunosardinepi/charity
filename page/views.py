@@ -189,8 +189,8 @@ class PageWizard(SessionWizardView):
             # and alert the user and me about it
             # note that the page doesn't get created if this happens
             except stripe.error.InvalidRequestError as e:
-                error = create_error(e, self.request)
-                return redirect('notes:error_stripe_invalid_request', error_pk=error.pk)
+                create_error(e, self.request)
+                return redirect('notes:error_stripe_invalid_request')
 
             # send emails
             # placed outside of stripe try block because it's ok if these fail

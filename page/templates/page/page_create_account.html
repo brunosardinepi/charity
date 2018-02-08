@@ -17,7 +17,7 @@
     </div>
 
     <div class="row pb-5">
-        <div class="col-12">
+        <div class="col-8">
 
             {{ wizard.form.media }}
 
@@ -31,54 +31,65 @@
                     </div>
                 {% endif %}
 
-                        <div class="form-row">
-                            <div class="form-group col-md-3">
-                                <label for="{{ form.ssn.id_for_label }}">
-                                    Last 4 digits of your SSN
-                                </label>
-                                {% render_field form.ssn class+="form-control" %}
-                                {% if form.ssn.errors %}
-                                    {% for error in form.ssn.errors %}
-                                        <div class="alert alert-danger" role="alert">
-                                            {{ error|escape }}
-                                        </div>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-4">
-                                <label for="{{ form.account_number.id_for_label }}">
-                                   Bank account number
-                                </label>
-                                {% render_field form.account_number class+="form-control" %}
-                                {% if form.account_number.errors %}
-                                    {% for error in form.account_number.errors %}
-                                        <div class="alert alert-danger" role="alert">
-                                            {{ error|escape }}
-                                        </div>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-4">
-                                <label for="{{ form.routing_number.id_for_label }}">
-                                    Bank routing number
-                                </label>
-                                {% render_field form.routing_number class+="form-control" %}
-                                {% if form.routing_number.errors %}
-                                    {% for error in form.routing_number.errors %}
-                                        <div class="alert alert-danger" role="alert">
-                                            {{ error|escape }}
-                                        </div>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                        </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="{{ form.ssn.id_for_label }}">
+                            Last 4 digits of your SSN
+                        </label>
+                        {% render_field form.ssn class+="form-control" %}
+                        {% if form.ssn.errors %}
+                            {% for error in form.ssn.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="{{ form.account_number.id_for_label }}">
+                           Bank account number
+                        </label>
+                        {% render_field form.account_number class+="form-control" %}
+                        {% if form.account_number.errors %}
+                            {% for error in form.account_number.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="{{ form.routing_number.id_for_label }}">
+                            Bank routing number
+                        </label>
+                        {% render_field form.routing_number class+="form-control" %}
+                        {% if form.routing_number.errors %}
+                            {% for error in form.routing_number.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error|escape }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
 
-                <input id="form-input" class="btn btn-purple" type="submit" value="Continue" />
+                <div class="row mt-3 justify-content-start">
+                    <div class="col-md-2">
+                        <button id="prev" class="btn-block btn btn-outline-secondary" name="wizard_goto_step" value="{{ wizard.steps.prev }}">Back</button>
+                    </div>
+                    <div class="col-md-2">
+                        <button id="form-input" class="btn-block btn btn-purple" type="submit">Create</button>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
+{% endblock %}
+
+{% block body_extra %}
+    <script src="{% static 'js/formwizard.js' %}"></script>
 {% endblock %}
