@@ -870,7 +870,7 @@ class CampaignTest(TestCase):
             self.campaign.page.page_slug,
             self.campaign.pk,
             self.campaign.campaign_slug), data)
-        self.assertRedirects(response, '/{}/{}/{}/manage/admin/'.format(
+        self.assertRedirects(response, '/{}/{}/{}/'.format(
             self.page.page_slug,
             self.campaign.pk,
             self.campaign.campaign_slug), 302, 200)

@@ -338,44 +338,49 @@ class PageTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         data = {
-            'name': "My Test Page",
-            'address_line1': "123 Main St.",
-            'city': "Houston",
-            'state': "TX",
-            'zipcode': "77008",
-            'type': "nonprofit",
-            'category': "other",
-            'website': "test.com",
-            'tos_accepted': True,
+            'business-name': "My Test Page",
+            'business-address_line1': "123 Main St.",
+            'business-city': "Houston",
+            'business-state': "TX",
+            'business-zipcode': "77008",
+            'business-type': "nonprofit",
+            'business-category': "other",
+            'business-website': "test.com",
+            'business-tos_accepted': True,
             'page_wizard-current_step': 'business',
         }
         response = self.client.post('/create/page/', data)
         self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'This field is required.')
 
         data = {
-            'first_name': "Myname",
-            'last_name': "Iswhat",
-            'birthday': "1990-01-01",
+            'personal-first_name': "Myname",
+            'personal-last_name': "Iswhat",
+            'personal-birthday_month': '6',
+            'personal-birthday_day': '14',
+            'personal-birthday_year': '1990',
             'page_wizard-current_step': 'personal',
         }
         response = self.client.post('/create/page/', data)
         self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'This field is required.')
 
         data = {
-            'ein': "000000001",
+            'ein-ein': "000000001",
             'page_wizard-current_step': 'ein',
         }
         response = self.client.post('/create/page/', data)
         self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'This field is required.')
 
         data = {
-            'ssn': "0000",
-            'account_number': "000123456789",
-            'routing_number': "111111100",
+            'account-ssn': "0000",
+            'account-account_number': "000123456789",
+            'account-routing_number': "111111100",
             'page_wizard-current_step': 'account',
         }
         response = self.client.post('/create/page/', data)
-        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, '/my-test-page/', 302, 200)
 
     def test_pageform1(self):
         form = forms.PageForm1({
