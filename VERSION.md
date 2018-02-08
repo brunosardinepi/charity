@@ -19,6 +19,7 @@ Release date: TBD
 ### Fixes
 
 * Scaling on donation graphs when there were no donations showed odd/long decimals in the y axis steps
+* Word wrap on long text
 
 
 ## Version 0.28.5
