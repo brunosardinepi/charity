@@ -217,3 +217,9 @@ class ManagerInvitationTest(TestCase):
         }
         response = self.client.post('/password/reset/%s/%s/' % (invitation.pk, invitation.key), data)
         self.assertRedirects(response, '/profile/', 302, 200)
+
+    def test_forgot_password_no_user(self):
+        data = { 'email': 'asdfasd@asdfasdf.com' }
+        response = self.client.post('/password/forgot/', data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'No user with that email exists')

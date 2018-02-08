@@ -80,15 +80,19 @@ def forgot_password_request(request):
     if request.method == "POST":
         form = forms.ForgotPasswordRequestForm(request.POST)
         if form.is_valid():
-            invitation = models.ForgotPasswordRequest.objects.create(email=form.cleaned_data['email'])
+            user_email = form.cleaned_data['email']
+            if User.objects.filter(email=user_email).exists():
+                invitation = models.ForgotPasswordRequest.objects.create(email=user_email)
 
-            # send an email for the reset
-            substitutions = {
-                "-passwordreseturl-": "{}/password/reset/{}/{}/".format(config.settings['site'], invitation.pk, invitation.key),
-            }
-            email(form.cleaned_data['email'], "blank", "blank", "reset_password", substitutions)
+                # send an email for the reset
+                substitutions = {
+                    "-passwordreseturl-": "{}/password/reset/{}/{}/".format(config.settings['site'], invitation.pk, invitation.key),
+                }
+                email(user_email, "blank", "blank", "reset_password", substitutions)
 
-            messages.success(request, 'Password reset email sent', fail_silently=True)
+                messages.success(request, 'Password reset email sent', fail_silently=True)
+            else:
+                messages.error(request, 'No user with that email exists', fail_silently=True)
     return render(request, 'forgot_password_request.html', {'form': form})
 
 def forgot_password_reset(request, invitation_pk, key):

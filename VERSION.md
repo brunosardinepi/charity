@@ -26,6 +26,7 @@ Release date: TBD
 * File upload permissions
 * 404 pages for invitation failures
 * Campaigns that had ended were still showing up in search results
+* Can't send password reset if user doesn't exist
 
 
 ## Version 0.28.5
