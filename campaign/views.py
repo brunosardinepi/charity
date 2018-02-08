@@ -176,7 +176,7 @@ class CampaignEditVote(View):
                 for d in formset.deleted_objects:
                     d.delete()
                 messages.success(request, 'Campaign updated', fail_silently=True)
-                return redirect('campaign_dashboard_admin',
+                return redirect('campaign',
                     page_slug=campaign.page.page_slug,
                     campaign_pk=campaign.pk,
                     campaign_slug=campaign.campaign_slug
