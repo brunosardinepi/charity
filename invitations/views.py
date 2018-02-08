@@ -1,7 +1,10 @@
+import re
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.urls import reverse
@@ -100,19 +103,26 @@ def forgot_password_reset(request, invitation_pk, key):
                 return redirect('notes:error_forgotpasswordreset_completed')
             else:
                 if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key):
-                    invitation.expired = True
-                    invitation.completed = True
-                    invitation.save()
+                    password = form.cleaned_data['password1']
+                    if re.match(r'^(?=.*\d).{7,}$', password):
+                        user = get_object_or_404(User, email=invitation.email)
+                        user.set_password(password)
+                        user.save()
 
-                    user = get_object_or_404(User, email=invitation.email)
-                    user.set_password(form.cleaned_data['password1'])
-                    user.save()
+                        invitation.expired = True
+                        invitation.completed = True
+                        invitation.save()
 
-                    user = authenticate(request, username=user.username, password=form.cleaned_data['password1'])
-                    if user is not None:
-                        login(request, user)
-                        messages.success(request, 'Password reset successfully', fail_silently=True)
-                        return redirect('userprofile:userprofile')
+                        user = authenticate(request, username=user.username, password=password)
+                        if user is not None:
+                            login(request, user)
+                            messages.success(request, 'Password reset successfully', fail_silently=True)
+                            return redirect('userprofile:userprofile')
+                    else:
+                        messages.error(request,
+                            'Your password must be at least 7 characters and contain at least 1 number.',
+                            fail_silently=True
+                        )
     return render(request, 'forgot_password_reset.html', {'form': form})
 
 def change_password_request(request):
