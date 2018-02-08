@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.urls import reverse
 from guardian.shortcuts import assign_perm
@@ -45,7 +45,7 @@ def accept_invitation(request, invitation_pk, key):
             return HttpResponseRedirect(invitation.campaign.get_absolute_url())
     else:
         # redirect to an error page
-        print("invitation is bad")
+        raise Http404
 
 @login_required(login_url='signup')
 def accept_general_invitation(request, invitation_pk, key):
@@ -53,6 +53,8 @@ def accept_general_invitation(request, invitation_pk, key):
     if invitation_is_good(request, invitation, key) == True:
         remove_invitation(invitation_pk, "general", "True", "False")
         return HttpResponseRedirect(reverse('home'))
+    else:
+        raise Http404
 
 def decline_invitation(request, type, invitation_pk, key):
     if type == 'manager':

@@ -22,6 +22,7 @@ Release date: TBD
 * Scaling on donation graphs when there were no donations showed odd/long decimals in the y axis steps
 * Word wrap on long text
 * File upload permissions
+* 404 pages for invitation failures
 
 
 ## Version 0.28.5
