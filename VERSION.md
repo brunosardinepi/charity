@@ -15,11 +15,13 @@ Release date: TBD
 * Password requirements for PCI
 * Create design
 * Donate emails going out on webhooks
+* Can't select today as the end date
 
 ### Fixes
 
 * Scaling on donation graphs when there were no donations showed odd/long decimals in the y axis steps
 * Word wrap on long text
+* File upload permissions
 
 
 ## Version 0.28.5
