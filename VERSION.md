@@ -14,6 +14,7 @@ Release date: TBD
 
 * Password requirements for PCI
 * Create design
+* Donate emails going out on webhooks
 
 ### Fixes
 

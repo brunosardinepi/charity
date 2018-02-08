@@ -5,6 +5,7 @@ import pytz
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
@@ -14,7 +15,7 @@ from .models import Webhook
 from campaign.models import Campaign, VoteParticipant
 from donation.models import Donation
 from page.models import Page
-from pagefund.utils import email
+from pagefund.utils import email, has_notification
 from plans.models import StripePlan
 
 
@@ -114,6 +115,24 @@ def charge_succeeded(request):
                 stripe_charge_id=stripe_charge_id,
                 user=user,
              )
+
+        substitutions = {
+            "-amount-": "${}".format(int(amount / 100)),
+        }
+
+        if campaign:
+            substitutions['-recipient-'] = campaign.name
+        else:
+            substitutions['-recipient-'] = page.name
+
+        if has_notification(user, "notification_email_donation") == True:
+            email(user.email, "blank", "blank", "donation", substitutions)
+
+        substitutions['-user-'] = user.email
+        date = timezone.now().strftime("%Y-%m-%d %I:%M:%S %Z")
+        substitutions['-date-'] = date
+        email("gn9012@gmail.com", "blank", "blank", "admin_new_donation", substitutions)
+
     else:
         if vote_participant is not None:
             Donation.objects.create(
@@ -142,6 +161,11 @@ def charge_succeeded(request):
                 donor_first_name=first_name,
                 donor_last_name=last_name,
              )
+
+        substitutions['-user-'] = "unauthenticated user '{} {}'".format(first_name, last_name)
+        date = timezone.now().strftime("%Y-%m-%d %I:%M:%S %Z")
+        substitutions['-date-'] = date
+        email("gn9012@gmail.com", "blank", "blank", "admin_new_donation", substitutions)
 
     return HttpResponse(status=200)
 
