@@ -6,6 +6,8 @@ This is the version history for PageFund development.
 
 Release date: TBD
 
+28 files changed, 258 insertions(+), 236 deletions(-)
+
 ### Additions
 
 * None
