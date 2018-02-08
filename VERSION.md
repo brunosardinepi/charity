@@ -2,6 +2,30 @@
 
 This is the version history for PageFund development.
 
+## Version 0.28.6
+
+Release date: TBD
+
+### Additions
+
+* None
+
+### Changes
+
+* Password requirements for PCI
+* Create design
+* Donate emails going out on webhooks
+* Can't select today as the end date
+
+### Fixes
+
+* Scaling on donation graphs when there were no donations showed odd/long decimals in the y axis steps
+* Word wrap on long text
+* File upload permissions
+* 404 pages for invitation failures
+* Campaigns that had ended were still showing up in search results
+
+
 ## Version 0.28.5
 
 Release date: 02/06/2018

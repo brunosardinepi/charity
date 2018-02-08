@@ -13,11 +13,9 @@ class CampaignForm(forms.ModelForm):
             'goal',
             'end_date',
             'description',
-            'website',
         ]
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Fun Run for the Cure'}),
-            'website': forms.TextInput(attrs={'placeholder': 'http://funrunforthecure.com'}),
             'description': forms.Textarea(attrs={'placeholder': 'Help us raise money during our Fun Run for the Cure!'}),
             'goal': forms.NumberInput(attrs={'placeholder': '5000'}),
         }

@@ -26,81 +26,56 @@
 
     <div class="row mb-5">
         <div class="col-12">
+            {% if form.non_field_errors %}
+                <div class="row justify-content-center">
+                    {% for error in form.non_field_errors %}
+                        <div class="col-lg-12 alert alert-danger" role="alert">
+                            {{ error|escape }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        <div class="row justify-content-center">
+                            <div class="col-lg-12 alert alert-danger" role="alert">
+                                {{ error|escape }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+
             <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
                 {% csrf_token %}
 
-                {% if form.non_field_errors %}
-                    <div class="row justify-content-center">
-                        {% for error in form.non_field_errors %}
-                            <div class="col-lg-10 alert alert-danger" role="alert">
-                                {{ error|escape }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-
                 <div class="row justify-content-center">
-                    <label for="{{ form.email.id_for_label }}" class="sr-only">Email</label>
-                    <div class="form-group col-lg-10">
-                        {% render_field form.email class+="form-control" %}
+                    <div class="form-group col-lg-12">
+                        {% render_field form.email class+="form-control" aria-label="Email" %}
                     </div>
-                    {% if form.email.errors %}
-                        <div class="col-lg-10 mt-1 mb-4">
-                            {% for error in form.email.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
                 </div>
 
                 <div class="row mb-3 justify-content-center">
-                    <label for="{{ form.email2.id_for_label }}" class="sr-only">Email again</label>
-                    <div class="form-group col-lg-10">
-                        {% render_field form.email2 class+="form-control" %}
+                    <div class="form-group col-lg-12">
+                        {% render_field form.email2 class+="form-control" aria-label="Email again"%}
                     </div>
-                    {% if form.email2.errors %}
-                        <div class="col-lg-10 mt-1 mb-4">
-                            {% for error in form.email2.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
                 </div>
 
                 <div class="row justify-content-center">
-                    <label for="{{ form.password1.id_for_label }}" class="sr-only">Password</label>
-                    <div class="form-group col-lg-10">
-                        {% render_field form.password1 class+="form-control" %}
+                    <div class="form-group col-lg-12">
+                        {% render_field form.password1 class+="form-control" aria-label="Password" %}
                     </div>
-                    {% if form.password1.errors %}
-                        <div class="col-lg-10 mt-1 mb-4">
-                            {% for error in form.password1.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
                 </div>
 
                 <div class="row justify-content-center">
-                    <label for="{{ form.password2.id_for_label }}" class="sr-only">Password again</label>
-                    <div class="form-group col-lg-10">
-                        {% render_field form.password2 class+="form-control" %}
+                    <div class="form-group col-lg-12">
+                        {% render_field form.password2 aria-label="Password again" class+="form-control" %}
+                        <small id="password1-help" class="form-text text-muted">
+                            Your password must be at least 7 characters and contain at least 1 number.
+                        </small>
                     </div>
-                    {% if form.password2.errors %}
-                        <div class="col-lg-10 mt-1 mb-4">
-                            {% for error in form.password2.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    {{ error|escape }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
                 </div>
 
                 {% if redirect_field_value %}
@@ -108,7 +83,7 @@
                 {% endif %}
 
                 <div class="row justify-content-center">
-                    <div class="col-lg-10">
+                    <div class="col-lg-12">
                         <button class="btn btn-purple btn-block" type="submit">Sign up</button>
                     </div>
                 </div>
@@ -120,7 +95,7 @@
     {% if socialaccount_providers %}
         {% for socialaccount_provider in socialaccount_providers %}
             <div class="row mb-1 justify-content-center">
-                <div class="col-lg-10">
+                <div class="col-lg-12 signup py-0">
                     {% if socialaccount_provider.name|lower == 'google' %}
                         <a href="{% provider_login_url "google" %}" class="btn btn-block btn-primary google">
                             <i class="fab fa-fw fa-google"></i> Sign up with Google

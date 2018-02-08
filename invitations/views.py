@@ -1,8 +1,11 @@
+import re
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.core.exceptions import ValidationError
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.urls import reverse
 from guardian.shortcuts import assign_perm
@@ -45,7 +48,7 @@ def accept_invitation(request, invitation_pk, key):
             return HttpResponseRedirect(invitation.campaign.get_absolute_url())
     else:
         # redirect to an error page
-        print("invitation is bad")
+        raise Http404
 
 @login_required(login_url='signup')
 def accept_general_invitation(request, invitation_pk, key):
@@ -53,6 +56,8 @@ def accept_general_invitation(request, invitation_pk, key):
     if invitation_is_good(request, invitation, key) == True:
         remove_invitation(invitation_pk, "general", "True", "False")
         return HttpResponseRedirect(reverse('home'))
+    else:
+        raise Http404
 
 def decline_invitation(request, type, invitation_pk, key):
     if type == 'manager':
@@ -98,19 +103,26 @@ def forgot_password_reset(request, invitation_pk, key):
                 return redirect('notes:error_forgotpasswordreset_completed')
             else:
                 if (int(invitation_pk) == int(invitation.pk)) and (key == invitation.key):
-                    invitation.expired = True
-                    invitation.completed = True
-                    invitation.save()
+                    password = form.cleaned_data['password1']
+                    if re.match(r'^(?=.*\d).{7,}$', password):
+                        user = get_object_or_404(User, email=invitation.email)
+                        user.set_password(password)
+                        user.save()
 
-                    user = get_object_or_404(User, email=invitation.email)
-                    user.set_password(form.cleaned_data['password1'])
-                    user.save()
+                        invitation.expired = True
+                        invitation.completed = True
+                        invitation.save()
 
-                    user = authenticate(request, username=user.username, password=form.cleaned_data['password1'])
-                    if user is not None:
-                        login(request, user)
-                        messages.success(request, 'Password reset successfully', fail_silently=True)
-                        return redirect('userprofile:userprofile')
+                        user = authenticate(request, username=user.username, password=password)
+                        if user is not None:
+                            login(request, user)
+                            messages.success(request, 'Password reset successfully', fail_silently=True)
+                            return redirect('userprofile:userprofile')
+                    else:
+                        messages.error(request,
+                            'Your password must be at least 7 characters and contain at least 1 number.',
+                            fail_silently=True
+                        )
     return render(request, 'forgot_password_reset.html', {'form': form})
 
 def change_password_request(request):
