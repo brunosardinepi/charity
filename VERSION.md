@@ -2,6 +2,23 @@
 
 This is the version history for PageFund development.
 
+## Version 0.28.7
+
+Release date: TBD
+
+### Additions
+
+* Back button on form wizard for Page creation
+
+### Changes
+
+* None
+
+### Fixes
+
+* None
+
+
 ## Version 0.28.6
 
 Release date: 02/07/2018
