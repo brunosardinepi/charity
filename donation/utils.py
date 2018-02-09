@@ -178,9 +178,11 @@ def donate(request, form, page=None, campaign=None):
         if saved_card:
             print('saved_card detected')
             try:
+                print('trying saved_card to int conversion')
                 saved_card = int(saved_card)
             except ValueError:
                 # not an int, possible tampering
+                print('exception, couldnt convert to int')
                 saved_card = None
             card_source = card_check(request, saved_card)
             if card_source is not False:
