@@ -23,6 +23,7 @@ Release date: TBD
 * #424 donation error: detecting if a payment method is being used
 * #426 campaign error: goal can't be negative
 * #428 donation error: admin emails for donations for unauthenticated users
+* #401 page error: delete the page on our end is ok if there is a balance in stripe
 
 
 ## Version 0.28.6
