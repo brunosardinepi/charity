@@ -19,6 +19,7 @@ Release date: TBD
 * #420 donation error: existing cards, adding a new card, saving new card
 * #421 donation error: miscommunication between saved cards and new card
 * #422 donation error: creating a monthly donation when the user already has a monthly donation for that page
+* #423 donation error: hide overlay until donation is being processed so errors will still show up
 
 
 ## Version 0.28.6

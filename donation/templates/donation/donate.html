@@ -286,7 +286,7 @@
         // or an amount typed in
         function submitCheck() {
                 if (($("input.preset-amount:checked").length == 0) && ($("#id_amount").val().length == 0)) {
-                    $("#amount-errors").html("Please select an amount to donate.");
+                    $("#amount-errors").html("<div class='alert alert-danger' role='alert'>Please select an amount to donate.</div>");
                 } else {
                     $("#amount-errors").html("");
 
