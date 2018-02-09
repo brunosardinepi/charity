@@ -121,6 +121,7 @@
         <div class="col-12">
             <h3>Payment</h3>
             <hr>
+            <div id="payment-errors"></div>
         </div>
     </div>
 
@@ -215,22 +216,30 @@
         // option for user to add a new card
         $(document).on('click', "#new-card", function(event) {
             event.preventDefault();
+            $('.saved-card').removeAttr('checked');
             $("#new-card-info").show();
             $("#new-card").text("Cancel new card");
             $("#new-card").attr("id", "hide-new-card");
         });
 
-        // option for usre to remove the new card
-        $(document).on('click', "#hide-new-card", function(event) {
-            event.preventDefault();
+        // hiding stripe elements
+        function hideCard() {
             $("#new-card-info").hide();
             $("#hide-new-card").text("Add card");
             $("#hide-new-card").attr("id", "new-card");
+        };
+
+        $(document).on('click', '.saved-card', function() {
+            hideCard();
+        });
+
+        // option for user to remove the new card
+        $(document).on('click', "#hide-new-card", function(event) {
+            event.preventDefault();
+            hideCard();
         });
     
         $(document).on('submit', "#payment-form", function(event) {
-            $('#overlay').addClass('overlay');
-            $('#overlay-inside').append("<i class='fas fa-spinner fa-2x fa-pulse'></i>");
             event.preventDefault();
 
             // add metadata for user's name
@@ -278,13 +287,25 @@
         // check to make sure there is a preset amount checked
         // or an amount typed in
         function submitCheck() {
-                if (($("input.preset-amount:checked").length == 0) && ($("#id_amount").val().length == 0)) {
-                    $("#amount-errors").html("Please select an amount to donate.");
+            if (($("input.preset-amount:checked").length == 0) && ($("#id_amount").val().length == 0)) {
+                $("#amount-errors").html("<div class='alert alert-danger' role='alert'>Please select an amount to donate.</div>");
+            } else {
+                $("#amount-errors").html("");
+
+                // make sure user either has selected a saved card
+                // or has input a new card.
+                // error if these are blank
+                if (($("input[name='saved_card']:checked").length == 0) && ($("#hide-new-card").length == 0)) {
+                    $("#payment-errors").html("<div class='alert alert-danger' role='alert'>Please select a payment method.</div>");
                 } else {
-                    $("#amount-errors").html("");
+                    $("#payment-errors").html("");
+                    $('#overlay').addClass('overlay');
+                    $('#overlay-inside').append("<i class='fas fa-spinner fa-2x fa-pulse'></i>");
+
                     var form = document.getElementById("payment-form");
                     form.submit();
                 };
+            };
         }
     </script>
 

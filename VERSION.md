@@ -3,7 +3,31 @@
 This is the version history for PageFund development.
 
 
-## Version 0.29.0
+## Version 0.28.7
+
+Release date: 02/09/2018
+
+### Additions
+
+* None
+
+### Changes
+
+* None
+
+### Fixes
+
+* #420 donation error: existing cards, adding a new card, saving new card
+* #421 donation error: miscommunication between saved cards and new card
+* #422 donation error: creating a monthly donation when the user already has a monthly donation for that page
+* #423 donation error: hide overlay until donation is being processed so errors will still show up
+* #424 donation error: detecting if a payment method is being used
+* #426 campaign error: goal can't be negative
+* #428 donation error: admin emails for donations for unauthenticated users
+* #401 page error: delete the page on our end is ok if there is a balance in stripe
+
+
+## Version 0.28.6
 
 Release date: 02/08/2018
 

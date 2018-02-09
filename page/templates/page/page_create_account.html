@@ -32,11 +32,11 @@
                 {% endif %}
 
                 <div class="form-row">
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-lg-3">
                         <label for="{{ form.ssn.id_for_label }}">
                             Last 4 digits of your SSN
                         </label>
-                        {% render_field form.ssn class+="form-control" %}
+                        {% render_field form.ssn class+="form-control" autocomplete="off" %}
                         {% if form.ssn.errors %}
                             {% for error in form.ssn.errors %}
                                 <div class="alert alert-danger" role="alert">
@@ -47,11 +47,11 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-lg-4">
                         <label for="{{ form.account_number.id_for_label }}">
                            Bank account number
                         </label>
-                        {% render_field form.account_number class+="form-control" %}
+                        {% render_field form.account_number class+="form-control" autocomplete="off" %}
                         {% if form.account_number.errors %}
                             {% for error in form.account_number.errors %}
                                 <div class="alert alert-danger" role="alert">
@@ -62,11 +62,11 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-lg-4">
                         <label for="{{ form.routing_number.id_for_label }}">
                             Bank routing number
                         </label>
-                        {% render_field form.routing_number class+="form-control" %}
+                        {% render_field form.routing_number class+="form-control" autocomplete="off" %}
                         {% if form.routing_number.errors %}
                             {% for error in form.routing_number.errors %}
                                 <div class="alert alert-danger" role="alert">
@@ -77,14 +77,9 @@
                     </div>
                 </div>
 
-                <div class="row mt-3 justify-content-start">
-                    <div class="col-md-2">
-                        <button id="prev" class="btn-block btn btn-outline-secondary" name="wizard_goto_step" value="{{ wizard.steps.prev }}">Back</button>
-                    </div>
-                    <div class="col-md-2">
-                        <button id="form-input" class="btn-block btn btn-purple" type="submit">Create</button>
-                    </div>
-                </div>
+                <hr>
+                <button id="form-input" class="mb-3 btn btn-purple" type="submit">Create</button>
+                <button id="prev" class="mb-3 btn btn-outline-secondary" name="wizard_goto_step" value="{{ wizard.steps.prev }}">Back</button>
             </form>
         </div>
     </div>

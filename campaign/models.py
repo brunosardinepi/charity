@@ -6,6 +6,7 @@ from collections import OrderedDict
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.files.images import get_image_dimensions
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models.signals import post_delete
 from django.db.models import Sum
@@ -32,7 +33,9 @@ class Campaign(models.Model):
     deleted_on = models.DateTimeField(blank=True, null=True)
     description = models.TextField(blank=True)
     end_date = models.DateTimeField()
-    goal = models.IntegerField()
+    goal = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(2147483647)]
+    )
     is_active = models.BooleanField(default=True)
     name = models.CharField(max_length=255, db_index=True)
     page = models.ForeignKey('page.Page', on_delete=models.CASCADE, related_name='campaigns')
