@@ -215,22 +215,29 @@
         // option for user to add a new card
         $(document).on('click', "#new-card", function(event) {
             event.preventDefault();
+            $('.saved-card').removeAttr('checked');
             $("#new-card-info").show();
             $("#new-card").text("Cancel new card");
             $("#new-card").attr("id", "hide-new-card");
         });
 
-        // option for usre to remove the new card
-        $(document).on('click', "#hide-new-card", function(event) {
-            event.preventDefault();
+        function hideCard() {
             $("#new-card-info").hide();
             $("#hide-new-card").text("Add card");
             $("#hide-new-card").attr("id", "new-card");
+        };
+
+        $(document).on('click', '.saved-card', function() {
+            hideCard();
+        });
+
+        // option for user to remove the new card
+        $(document).on('click', "#hide-new-card", function(event) {
+            event.preventDefault();
+            hideCard();
         });
     
         $(document).on('submit', "#payment-form", function(event) {
-            $('#overlay').addClass('overlay');
-            $('#overlay-inside').append("<i class='fas fa-spinner fa-2x fa-pulse'></i>");
             event.preventDefault();
 
             // add metadata for user's name
@@ -282,6 +289,10 @@
                     $("#amount-errors").html("Please select an amount to donate.");
                 } else {
                     $("#amount-errors").html("");
+
+                    $('#overlay').addClass('overlay');
+                    $('#overlay-inside').append("<i class='fas fa-spinner fa-2x fa-pulse'></i>");
+
                     var form = document.getElementById("payment-form");
                     form.submit();
                 };

@@ -175,8 +175,6 @@
 
     var form = document.getElementById('payment-form');
     form.addEventListener('submit', function(event) {
-        $('#overlay').addClass('overlay');
-        $('#overlay-inside').append("<i class='fas fa-spinner fa-2x fa-pulse'></i>");
         event.preventDefault();
 
         stripe.createToken(card).then(function(result) {
@@ -206,6 +204,10 @@
             } else {
                 console.log("something is either checked or the amount is not empty");
                 $("#amount-errors").html("");
+
+                $('#overlay').addClass('overlay');
+                $('#overlay-inside').append("<i class='fas fa-spinner fa-2x fa-pulse'></i>");
+
                 var form = document.getElementById("payment-form");
                 form.submit();
             };
