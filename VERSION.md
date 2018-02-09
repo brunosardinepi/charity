@@ -16,7 +16,7 @@ Release date: TBD
 
 ### Fixes
 
-* None
+* #420 donation error: existing cards, adding a new card, saving new card
 
 
 ## Version 0.28.6
