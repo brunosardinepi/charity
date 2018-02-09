@@ -22,6 +22,7 @@ Release date: TBD
 * #423 donation error: hide overlay until donation is being processed so errors will still show up
 * #424 donation error: detecting if a payment method is being used
 * #426 campaign error: goal can't be negative
+* #428 donation error: admin emails for donations for unauthenticated users
 
 
 ## Version 0.28.6

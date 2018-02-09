@@ -133,6 +133,7 @@ def charge_succeeded(request):
         substitutions['-date-'] = date
         email("gn9012@gmail.com", "blank", "blank", "admin_new_donation", substitutions)
 
+    # user is not logged in
     else:
         if vote_participant is not None:
             Donation.objects.create(
@@ -162,7 +163,16 @@ def charge_succeeded(request):
                 donor_last_name=last_name,
              )
 
-        substitutions['-user-'] = "unauthenticated user '{} {}'".format(first_name, last_name)
+        substitutions = {
+            "-amount-": "${}".format(int(amount / 100)),
+            '-user-': "unauthenticated user '{} {}'".format(first_name, last_name),
+        }
+
+        if campaign:
+            substitutions['-recipient-'] = campaign.name
+        else:
+            substitutions['-recipient-'] = page.name
+
         date = timezone.now().strftime("%Y-%m-%d %I:%M:%S %Z")
         substitutions['-date-'] = date
         email("gn9012@gmail.com", "blank", "blank", "admin_new_donation", substitutions)
