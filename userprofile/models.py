@@ -13,7 +13,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 
-from allauth.account.signals import user_signed_up
+from allauth.account.signals import email_confirmed
 from sendgrid.helpers.mail import *
 import sendgrid
 import stripe
@@ -169,9 +169,12 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     instance.userprofile.save()
 
-@receiver(user_signed_up, dispatch_uid="user_signed_up")
-def user_signed_up_(request, user, **kwargs):
+@receiver(email_confirmed, dispatch_uid="email_confirmed")
+def email_confirmed_(request, email_address, **kwargs):
+    email_address = str(email_address)
+    email_address = email_address.split(' ')[0]
     if not settings.TESTING:
+        user = User.objects.get(email=email_address)
         metadata = {'user_pk': user.pk}
         customer = stripe.Customer.create(
             email=user.email,
