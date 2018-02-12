@@ -36,7 +36,7 @@ class EmailView(views.EmailView):
     template_name = 'userprofile/email.html'
 
 class ConfirmEmailView(views.ConfirmEmailView):
-    template_name = 'userprofile/email_confirm.html'
+    template_name = 'email_confirm.html'
 
 @login_required
 def invite(request):
