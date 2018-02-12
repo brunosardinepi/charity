@@ -32,6 +32,12 @@ class SocialSignupView(social_views.SignupView):
 class EmailVerificationSentView(views.EmailVerificationSentView):
     template_name = 'verification_sent.html'
 
+class EmailView(views.EmailView):
+    template_name = 'userprofile/email.html'
+
+class ConfirmEmailView(views.ConfirmEmailView):
+    template_name = 'userprofile/email_confirm.html'
+
 @login_required
 def invite(request):
     form = forms.GeneralInviteForm()
@@ -49,35 +55,38 @@ def invite(request):
             # check if the user has already been invited by this person
             # expired should be False, otherwise the previous invitation has expired and we are OK with them getting a new one
             # accepted/declined are irrelevant if the invite has expired, so we don't check these
-            try:
-                invitation = GeneralInvitation.objects.get(
-                    invite_to=form.cleaned_data['email'],
-                    invite_from=request.user,
-                    expired=False
-                )
-            except GeneralInvitation.DoesNotExist:
-                invitation = None
+#            try:
+#                invitation = GeneralInvitation.objects.get(
+#                    invite_to=form.cleaned_data['email'],
+#                    invite_from=request.user,
+#                    expired=False
+#                )
+#            except GeneralInvitation.DoesNotExist:
+#                invitation = None
 
             # if this user has already been invited, redirect the person inviting them
             # need to notify them that the person has already been invited
-            if invitation:
+#            if invitation:
                 # this user has already been invited, so do nothing
-                return HttpResponseRedirect(reverse('home'))
+#                return HttpResponseRedirect(reverse('home'))
             # if the user hasn't been invited already, create the invite and send it to them
-            else:
+#            else:
                 # create the invitation object and set the permissions
-                invitation = GeneralInvitation.objects.create(
-                    invite_to=form.cleaned_data['email'],
-                    invite_from=request.user,
-                )
+#                invitation = GeneralInvitation.objects.create(
+#                    invite_to=form.cleaned_data['email'],
+#                    invite_from=request.user,
+#                )
 
                 # create the email
-                substitutions = {
-                    "-signupurl-": "{}/invite/accept/{}/{}/".format(config.settings['site'], invitation.pk, invitation.key),
-                }
-                email(form.cleaned_data['email'], "blank", "blank", "pagefund_invitation", substitutions)
+#                substitutions = {
+#                    "-signupurl-": "{}/invite/accept/{}/{}/".format(config.settings['site'], invitation.pk, invitation.key),
+#                }
+#                email(form.cleaned_data['email'], "blank", "blank", "pagefund_invitation", substitutions)
 
-                return HttpResponseRedirect(reverse('home'))
+            # create the email
+            email(form.cleaned_data['email'], "blank", "blank", "pagefund_invitation", {})
+
+            return HttpResponseRedirect(reverse('home'))
     return render(request, 'invite.html', {'form': form})
 
 def handler404(request):

@@ -1,0 +1,44 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+{% load donation_extras %}
+{% load page_extras %}
+{% load userprofile_extras %}
+{% load lib_extras %}
+{% load widget_tweaks %}
+
+{% block title %}Email | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+
+    {% include "messages.html" %}
+
+    <div class="row">
+        <div class="col-lg-3">
+            {% include "userprofile/profile_menu.html" %}
+        </div>
+        <div class="col-lg-6">
+            <h2>Email</h2>
+            <hr>
+
+            {% if user.emailaddress_set.all %}
+                <form action="{% url 'account_email' %}" class="email_list" method="post">
+                    {% csrf_token %}
+                
+                    {% for emailaddress in user.emailaddress_set.all %}
+                        <div class="ctrlHolder">
+                            {% if emailaddress.verified %}
+                                <span class="verified">Email Verified</span>
+                            {% else %}
+                                <span class="unverified">Email Unverified</span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    
+                    <div class="buttonHolder">
+                        <button class="secondaryAction" type="submit" name="action_send" >Re-send Verification</button>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

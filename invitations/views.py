@@ -50,14 +50,14 @@ def accept_invitation(request, invitation_pk, key):
         # redirect to an error page
         raise Http404
 
-@login_required(login_url='signup')
-def accept_general_invitation(request, invitation_pk, key):
-    invitation = get_object_or_404(models.GeneralInvitation, pk=invitation_pk)
-    if invitation_is_good(request, invitation, key) == True:
-        remove_invitation(invitation_pk, "general", "True", "False")
-        return HttpResponseRedirect(reverse('home'))
-    else:
-        raise Http404
+#@login_required(login_url='signup')
+#def accept_general_invitation(request, invitation_pk, key):
+#    invitation = get_object_or_404(models.GeneralInvitation, pk=invitation_pk)
+#    if invitation_is_good(request, invitation, key) == True:
+#        remove_invitation(invitation_pk, "general", "True", "False")
+#        return HttpResponseRedirect(reverse('home'))
+#    else:
+#        raise Http404
 
 def decline_invitation(request, type, invitation_pk, key):
     if type == 'manager':

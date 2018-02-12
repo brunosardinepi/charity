@@ -158,7 +158,7 @@ class UserProfileTest(TestCase):
         data['password1'] = 'imadog2'
         data['password2'] = 'imadog2'
         response = self.client.post('/accounts/signup/', data)
-        self.assertRedirects(response, '/', 302, 200)
+        self.assertRedirects(response, '/accounts/confirm-email/', 302, 200)
         user = User.objects.filter(email='test2@test.test')
         self.assertEqual(user.count(), 1)
 

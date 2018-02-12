@@ -32,6 +32,8 @@ def email(user_email, subject, body, template, substitutions):
             'admin_new_donation': '4abfaf11-3ab0-45bd-ba85-44330b8ca9c1',
             'note_error': 'e25c4a89-353a-434d-b24e-321cfd626113',
             'admin_webhook_test': '4ff6e428-bd27-4591-a4bc-9f6f6ca0c7d2',
+            'email_confirmation': '969cdbf5-a4f1-4fb3-a1bc-91dfee474506',
+            'email_confirmation_signup': '969cdbf5-a4f1-4fb3-a1bc-91dfee474506',
         }
 
         data = {
@@ -62,10 +64,6 @@ def email(user_email, subject, body, template, substitutions):
         except urllib.HTTPError as e:
             print (e.read())
             exit()
-
-#        print(response.status_code)
-#        print(response.body)
-#        print(response.headers)
 
 def update_manager_permissions(post_data, obj):
     new_permissions = dict()

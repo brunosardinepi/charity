@@ -178,7 +178,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_EMAIL_SUBJECT_PREFIX = ''
 #ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
-#ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION  = True
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION  = True
 ACCOUNT_LOGIN_ON_PASSWORD_RESET = True
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_LOGOUT_REDIRECT_URL = 'home'
@@ -189,6 +189,7 @@ ACCOUNT_USERNAME_REQUIRED = False
 # testing
 TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
 
+DEFAULT_FROM_EMAIL = 'no-reply@page.fund'
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = config.settings['sendgrid_username']
 EMAIL_HOST_PASSWORD = config.settings['sendgrid_password']

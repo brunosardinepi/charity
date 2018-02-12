@@ -24,7 +24,6 @@ from sendgrid.helpers.mail import *
 from . import views
 from campaign.models import Campaign
 from donation.models import Donation
-from invitations.models import GeneralInvitation
 from page.models import Page
 from pagefund import config
 
@@ -268,7 +267,7 @@ class HomeTest(TestCase):
             'password2': 'mytestpassword1',
         }
         response = self.client.post('/accounts/signup/', data)
-        self.assertRedirects(response, '/', 302, 200)
+        self.assertRedirects(response, '/accounts/confirm-email/', 302, 200)
 
         user = User.objects.filter(email='mytestemail@gmail.com')
         self.assertEqual(len(user), 1)
@@ -318,49 +317,20 @@ class HomeTest(TestCase):
         response = self.client.post('/invite/', {'email': 'my@best.friend'})
         self.assertRedirects(response, '/', 302, 200)
         self.client.logout()
-        invitation = GeneralInvitation.objects.get(invite_to='my@best.friend')
-        response = self.client.get('/invite/accept/%s/%s/' % (invitation.pk, invitation.key))
-        self.assertRedirects(response, '/accounts/signup/?next=/invite/accept/%s/%s/' % (invitation.pk, invitation.key), 302, 200)
+
+        response = self.client.get('/accounts/signup/')
         data = {
-#            'first_name': 'Bob',
-#            'last_name': 'Walker',
             'email': 'my@best.friend',
             'email2': 'my@best.friend',
-#            'state': 'IL',
             'password1': 'verybadpass5',
             'password2': 'verybadpass5',
-#            'birthday': '1990-01-02'
         }
-        response = self.client.post('/accounts/signup/?next=/invite/accept/%s/%s/' % (invitation.pk, invitation.key), data)
-        self.assertRedirects(response, '/invite/accept/%s/%s/' % (invitation.pk, invitation.key), 302, 302)
+        response = self.client.post('/accounts/signup/', data)
+        self.assertRedirects(response, '/accounts/confirm-email/', 302, 200)
 
         users = User.objects.all()
         user = User.objects.get(email='my@best.friend')
         self.assertIn(user, users)
-
-        invitation = GeneralInvitation.objects.get(invite_to='my@best.friend')
-        self.assertEqual(invitation.expired, True)
-        self.assertEqual(invitation.accepted, True)
-        self.assertEqual(invitation.declined, False)
-
-    def test_invite_decline_no_account(self):
-        self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/invite/')
-
-        self.assertEqual(response.status_code, 200)
-        response = self.client.post('/invite/', {
-            'email': 'myother@best.friend',
-            'template': 'pagefund_invitation',
-        })
-        self.assertRedirects(response, '/', 302, 200)
-        self.client.logout()
-        invitation = GeneralInvitation.objects.get(invite_to='myother@best.friend')
-        response = self.client.get('/invite/general/decline/%s/%s/' % (invitation.pk, invitation.key))
-
-        invitation = GeneralInvitation.objects.get(invite_to='myother@best.friend')
-        self.assertEqual(invitation.expired, True)
-        self.assertEqual(invitation.accepted, False)
-        self.assertEqual(invitation.declined, True)
 
     def test_invite_user_exists(self):
         self.client.login(username='testuser', password='testpassword')

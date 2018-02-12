@@ -25,6 +25,22 @@
     </div>
 
     <div class="row justify-content-center">
+        <div class="col-6">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="row justify-content-center">
+                        <div class="col-auto text-center">
+                            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-secondary{% endif %}" role="alert">
+                                {{ message }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
         <div class="col-4 text-center">
             <p>We've sent you a confirmation email to verify your email address. Click the link in the email to confirm your account. Feel free to reach out to us at <a href="mailto:help@page.fund">help@page.fund</a> if you have any questions.</p>
         </div>

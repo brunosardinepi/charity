@@ -1,5 +1,5 @@
 <div class="list-group">
-    <a href="{% url 'userprofile:userprofile' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'userprofile' or request.resolver_match.url_name == 'user_image_upload' %} active{% endif %}">
+    <a href="{% url 'userprofile:userprofile' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'userprofile' or request.resolver_match.url_name == 'user_image_upload' or request.resolver_match.url_name == 'account_confirm_email' %} active{% endif %}">
         Personal
     </a>
     <a href="{% url 'userprofile:pages_campaigns' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'pages_campaigns' %} active{% endif %}">
