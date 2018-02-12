@@ -29,6 +29,9 @@ class SignupView(views.SignupView):
 class SocialSignupView(social_views.SignupView):
     template_name = 'social_signup.html'
 
+class EmailVerificationSentView(views.EmailVerificationSentView):
+    template_name = 'verification_sent.html'
+
 @login_required
 def invite(request):
     form = forms.GeneralInviteForm()

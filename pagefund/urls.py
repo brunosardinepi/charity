@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^accounts/login/', views.LoginView.as_view(), name='login'),
     url(r'^accounts/signup/', views.SignupView.as_view(), name='signup'),
     url(r'^accounts/social/signup/', views.SocialSignupView.as_view(), name='social_signup'),
+    url(r'^accounts/confirm-email/$', views.EmailVerificationSentView.as_view(), name='email_verification_sent'),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^profile/', include('userprofile.urls', namespace='userprofile')),
     url(r'^search/', include('search.urls', namespace='search')),
