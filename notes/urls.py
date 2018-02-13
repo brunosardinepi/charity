@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^error/campaign/vote-participants/$', views.error_campaign_vote_participants, name='error_campaign_vote_participants'),
     url(r'^error/image/size/$', views.error_image_size, name='error_image_size'),
     url(r'^error/image/type/$', views.error_image_type, name='error_image_type'),
+    url(r'^error/invite/manager-exists/$', views.error_invite_manager_exists, name='error_invite_manager_exists'),
     url(r'^error/invite/user-exists/$', views.error_invite_user_exists, name='error_invite_user_exists'),
     url(r'^error/page/does-not-exist/$', views.error_page_does_not_exist, name='error_page_does_not_exist'),
     url(r'^error/password/reset/expired/$', views.error_forgotpasswordreset_expired, name='error_forgotpasswordreset_expired'),

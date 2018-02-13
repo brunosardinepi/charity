@@ -367,6 +367,15 @@ def page_invite(request, page_slug):
         if request.method == 'POST':
             form = forms.ManagerInviteForm(request.POST)
             if form.is_valid():
+
+                # check if the person we are inviting is already a manager/admin
+                try:
+                    user = User.objects.get(email=form.cleaned_data['email'])
+                    if user.userprofile in page.admins.all() or user.userprofile in page.managers.all():
+                        return redirect('notes:error_invite_manager_exists')
+                except User.DoesNotExist:
+                    pass
+
                 data = {
                     "request": request,
                     "form": form,

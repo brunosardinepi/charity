@@ -18,6 +18,9 @@ def error_forgotpasswordreset_completed(request):
 def error_image_size(request):
     return render(request, 'notes/error_image_size.html')
 
+def error_invite_manager_exists(request):
+    return render(request, 'notes/error_invite_manager_exists.html')
+
 def error_invite_user_exists(request):
     return render(request, 'notes/error_invite_user_exists.html')
 

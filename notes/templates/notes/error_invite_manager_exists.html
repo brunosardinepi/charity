@@ -1,0 +1,15 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %} Error | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-12">
+            <h1>Existing user</h1>
+            <hr>
+            <p>That user is already an administrator of this Page or Campaign.</p>
+            <p>If you need help, please <a href="mailto:help@page.fund">email</a> us.</p>
+        </div>
+    </div>
+{% endblock %}

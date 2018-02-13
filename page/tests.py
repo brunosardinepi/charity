@@ -582,7 +582,7 @@ class PageTest(TestCase):
 
         # user is already a manager
         response = self.client.post('/%s/managers/invite/' % self.page.page_slug, data)
-        self.assertRedirects(response, '/{}/manage/admin/'.format(self.page.page_slug), 302, 200)
+        self.assertRedirects(response, '/notes/error/invite/manager-exists/', 302, 200)
 
         # user already has an invite
         data['email'] = self.user2.email

@@ -19,6 +19,7 @@ Release date: TBD
 ### Fixes
 
 * Manager permissions on Pages/Campaigns
+* Prevent users from inviting people who are on PageFund or are already admins of Pages/Campaigns
 
 
 ## Version 0.28.7

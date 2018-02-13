@@ -266,6 +266,15 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
         if request.method == 'POST':
             form = forms.ManagerInviteForm(request.POST)
             if form.is_valid():
+
+                # check if the person we are inviting is already a manager/admin
+                try:
+                    user = User.objects.get(email=form.cleaned_data['email'])
+                    if user.userprofile in campaign.campaign_admins.all() or user.userprofile in campaign.campaign_managers.all():
+                        return redirect('notes:error_invite_manager_exists')
+                except User.DoesNotExist:
+                    pass
+
                 data = {
                     "request": request,
                     "form": form,

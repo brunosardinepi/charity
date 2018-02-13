@@ -496,10 +496,7 @@ class CampaignTest(TestCase):
             self.campaign.campaign_slug
             ), data)
 
-        self.assertRedirects(response, '/{}/{}/{}/manage/admin/'.format(
-            self.page.page_slug,
-            self.campaign.pk,
-            self.campaign.campaign_slug), 302, 200)
+        self.assertRedirects(response, '/notes/error/invite/manager-exists/', 302, 200)
 
         # user already has an invite
         data['email'] = self.user3.email
