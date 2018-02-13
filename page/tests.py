@@ -258,7 +258,7 @@ class PageTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Manage", status_code=200)
 
-        response = self.client.get('/%s/manage/' % self.page.page_slug)
+        response = self.client.get('/%s/manage/admin/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
 
     def test_page_manager_logged_in(self):
@@ -268,7 +268,7 @@ class PageTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Manage")
 
-        response = self.client.get('/%s/manage/' % self.page.page_slug)
+        response = self.client.get('/%s/manage/admin/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
 
     def test_page_edit_logged_out(self):
@@ -601,9 +601,6 @@ class PageTest(TestCase):
         response = self.client.get('/invite/manager/accept/%s/%s/' % (invitation.pk, invitation.key))
         self.assertRedirects(response, invitation.page.get_absolute_url(), 302, 200)
 
-        response = self.client.get('/%s/manage/' % invitation.page.page_slug)
-        self.assertEqual(response.status_code, 200)
-
         response = self.client.get('/%s/manage/admin/' % invitation.page.page_slug)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Edit Page", status_code=200)
@@ -630,9 +627,6 @@ class PageTest(TestCase):
         response = self.client.get('/invite/manager/accept/{}/{}/'.format(invitation.pk, invitation.key))
         self.assertRedirects(response, invitation.page.get_absolute_url(), 302, 200)
 
-        response = self.client.get('/{}/manage/'.format(invitation.page.page_slug))
-        self.assertEqual(response.status_code, 200)
-
         response = self.client.get('/{}/manage/admin/'.format(invitation.page.page_slug))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Edit Page")
@@ -650,9 +644,6 @@ class PageTest(TestCase):
         response = self.client.post('/{}/manage/'.format(self.page.page_slug), data)
 
         self.client.login(username='newguy', password='imnewhere')
-        response = self.client.get('/{}/manage/'.format(self.page.page_slug))
-        self.assertEqual(response.status_code, 200)
-
         response = self.client.get('/{}/manage/admin/'.format(invitation.page.page_slug))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Edit Page")
@@ -787,7 +778,7 @@ class PageTest(TestCase):
 
     def test_dashboard_total_donations(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/{}/manage/'.format(self.page.page_slug))
+        response = self.client.get('/{}/manage/analytics/'.format(self.page.page_slug))
 
         total_donations = Donation.objects.filter(page=self.page).aggregate(Sum('amount')).get('amount__sum')
         total_donations_count = Donation.objects.filter(page=self.page).count()
@@ -797,7 +788,7 @@ class PageTest(TestCase):
 
     def test_dashboard_page_donations(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/{}/manage/'.format(self.page.page_slug))
+        response = self.client.get('/{}/manage/analytics/'.format(self.page.page_slug))
 
         page_donations = Donation.objects.filter(page=self.page, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
         page_donations_count = Donation.objects.filter(page=self.page, campaign__isnull=True).count()
@@ -807,7 +798,7 @@ class PageTest(TestCase):
 
     def test_dashboard_campaign_donations(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/{}/manage/'.format(self.page.page_slug))
+        response = self.client.get('/{}/manage/analytics/'.format(self.page.page_slug))
 
         campaign_donations = Donation.objects.filter(page=self.page, campaign__isnull=False).aggregate(Sum('amount')).get('amount__sum')
         campaign_donations_count = Donation.objects.filter(page=self.page, campaign__isnull=False).count()
@@ -817,7 +808,7 @@ class PageTest(TestCase):
 
     def test_dashboard_plan_donations(self):
         self.client.login(username='testuser', password='testpassword')
-        response = self.client.get('/{}/manage/'.format(self.page.page_slug))
+        response = self.client.get('/{}/manage/analytics/'.format(self.page.page_slug))
 
         plan_donations = StripePlan.objects.filter(page=self.page, campaign__isnull=True).aggregate(Sum('amount')).get('amount__sum')
         plan_donations_count = StripePlan.objects.filter(page=self.page, campaign__isnull=True).count()

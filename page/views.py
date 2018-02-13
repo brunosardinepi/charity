@@ -514,10 +514,10 @@ class PageAjaxDonations(View):
                 data = sorted(data.values(), key=operator.itemgetter('{}'.format(column)))
         return HttpResponse(json.dumps(data), content_type="application/json")
 
-class PageDashboard(View):
+class PageDashboardAnalytics(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        if utils.has_dashboard_access(request.user, page, None):
+        if utils.has_dashboard_access(request.user, page, 'manager_view_dashboard'):
             graph = donation_graph(page, 30)
             graph_dates = []
             graph_donations = []
@@ -526,7 +526,7 @@ class PageDashboard(View):
                 graph_donations.append(int(v/100))
             graph_dates = list(reversed(graph_dates))
             graph_donations = list(reversed(graph_donations))
-            return render(self.request, 'page/dashboard.html', {
+            return render(self.request, 'page/dashboard_analytics.html', {
                 'page': page,
                 'donations': donation_statistics(page),
                 'graph_dates': graph_dates,
