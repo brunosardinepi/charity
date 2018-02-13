@@ -12,7 +12,6 @@ from . import forms
 from .utils import email
 from campaign.models import Campaign
 from donation.models import Donation
-from invitations.models import GeneralInvitation
 from page.models import Page
 
 
@@ -48,37 +47,6 @@ def invite(request):
                     return redirect('notes:error_invite_user_exists')
             except User.DoesNotExist:
                 pass
-
-            # check if the user has already been invited by this person
-            # expired should be False, otherwise the previous invitation has expired and we are OK with them getting a new one
-            # accepted/declined are irrelevant if the invite has expired, so we don't check these
-#            try:
-#                invitation = GeneralInvitation.objects.get(
-#                    invite_to=form.cleaned_data['email'],
-#                    invite_from=request.user,
-#                    expired=False
-#                )
-#            except GeneralInvitation.DoesNotExist:
-#                invitation = None
-
-            # if this user has already been invited, redirect the person inviting them
-            # need to notify them that the person has already been invited
-#            if invitation:
-                # this user has already been invited, so do nothing
-#                return HttpResponseRedirect(reverse('home'))
-            # if the user hasn't been invited already, create the invite and send it to them
-#            else:
-                # create the invitation object and set the permissions
-#                invitation = GeneralInvitation.objects.create(
-#                    invite_to=form.cleaned_data['email'],
-#                    invite_from=request.user,
-#                )
-
-                # create the email
-#                substitutions = {
-#                    "-signupurl-": "{}/invite/accept/{}/{}/".format(config.settings['site'], invitation.pk, invitation.key),
-#                }
-#                email(form.cleaned_data['email'], "blank", "blank", "pagefund_invitation", substitutions)
 
             # create the email
             email(form.cleaned_data['email'], "blank", "blank", "pagefund_invitation", {})

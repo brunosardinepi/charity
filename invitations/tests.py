@@ -58,11 +58,6 @@ class ManagerInvitationTest(TestCase):
             manager_view_dashboard=True,
         )
 
-        self.invitation2 = models.GeneralInvitation.objects.create(
-            invite_to="nerd@tester.yo",
-            invite_from=self.user,
-        )
-
         self.forgotpasswordrequest = models.ForgotPasswordRequest.objects.create(
             email='i@forget.all',
             expired=True,
@@ -77,9 +72,6 @@ class ManagerInvitationTest(TestCase):
     def test_invitation_exists(self):
         m_invitations = models.ManagerInvitation.objects.all()
         self.assertIn(self.invitation, m_invitations)
-
-        g_invitations = models.GeneralInvitation.objects.all()
-        self.assertIn(self.invitation2, g_invitations)
 
     def test_accept_manager_invitation_logged_out(self):
         response = self.client.get('/invite/manager/accept/%s/%s/' % (self.invitation.pk, self.invitation.key))
@@ -145,16 +137,11 @@ class ManagerInvitationTest(TestCase):
     def test_remove_invitation(self):
         m_invitations = models.ManagerInvitation.objects.filter(expired=False)
         self.assertIn(self.invitation, m_invitations)
-        g_invitations = models.GeneralInvitation.objects.filter(expired=False)
-        self.assertIn(self.invitation2, g_invitations)
 
         views.remove_invitation(self.invitation.pk, 'manager', 'True', 'False')
-        views.remove_invitation(self.invitation2.pk, 'general', 'True', 'False')
 
         m_invitations = models.ManagerInvitation.objects.filter(expired=False)
         self.assertNotIn(self.invitation, m_invitations)
-        g_invitations = models.GeneralInvitation.objects.filter(expired=False)
-        self.assertNotIn(self.invitation2, g_invitations)
 
     def test_forgot_password_reset(self):
         # click forgot password link and go to form
