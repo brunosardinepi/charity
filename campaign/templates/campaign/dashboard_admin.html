@@ -53,7 +53,7 @@
                                                 <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_invite" {% if 'manager_invite' in campaign_perms %}checked{% endif %} /></td>
                                                 <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_image_edit" {% if 'manager_image_edit' in campaign_perms %}checked{% endif %} /></td>
                                                 <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_view_dashboard" {% if 'manager_view_dashboard' in campaign_perms %}checked{% endif %} /></td>
-                                                <td class="text-center"><a class="teal" href="{% url 'remove_manager' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug manager_pk=manager.pk %}">Remove<a/></td>
+                                                <td class="text-center"><a class="teal" href="{% url 'campaign_remove_manager' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug manager_pk=manager.user.pk %}">Remove<a/></td>
                                         {% endfor %}
                                     </tbody>
                                 </table>
@@ -63,19 +63,17 @@
                     </div>
                 {% endif %}
             {% else %}
-                <p><a class="teal" href="{% url 'remove_manager' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug manager_pk=request.user.pk %}">Remove self as manager<a/></p>
+                <p><a class="teal" href="{% url 'campaign_remove_manager' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug manager_pk=request.user.pk %}">Remove self as manager<a/></p>
                 {% get_obj_perms request.user for campaign as "campaign_perms" %}
                 {% if "manager_edit" in campaign_perms %}
                     <p><a class="teal" href="{% url 'campaign_edit' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
+                    {% if campaign.type == "vote" %}<p><a class="teal" href="{% url 'campaign_edit_vote' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit vote participants</a></p>{% endif %}
                 {% endif %}
                 {% if "manager_delete" in campaign_perms %}
                     <p><a class="teal delete-campaign" href="{% url 'campaign_delete' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
                 {% endif %}
                 {% if "manager_invite" in campaign_perms %}
                     <p><a class="teal" href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
-                {% endif %}
-                {% if "manager_image_edit" in campaign_perms %}
-                    <p><a class="teal" href="{% url 'campaign_dashboard_images' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Upload and Edit images</a></p>
                 {% endif %}
             {% endif %}
 

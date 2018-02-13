@@ -18,7 +18,7 @@ Release date: TBD
 
 ### Fixes
 
-* None
+* Manager permissions on Pages/Campaigns
 
 
 ## Version 0.28.7

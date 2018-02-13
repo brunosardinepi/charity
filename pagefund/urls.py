@@ -47,13 +47,10 @@ urlpatterns = [
     url(r'^email-templates/', include('email_templates.urls', namespace='email_templates')),
 
     url(r'^page/subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),
-#    url(r'^create/page/$', PageViews.page_create, name='page_create'),
     url(r'^create/page/$', login_required(PageViews.PageWizard.as_view(
         FORMS,
         condition_dict={ 'ein': PageViews.show_message_form_condition })),
         name='page_create'),
-#    url(r'^create/(?P<page_pk>\d+)/additional/$', login_required(PageViews.PageCreateAdditionalInfo.as_view()), name='page_create_additional_info'),
-#    url(r'^create/(?P<page_pk>\d+)/bank/$', login_required(PageViews.PageCreateBankInfo.as_view()), name='page_create_bank_info'),
     url(r'^(?P<page_slug>[\w-]+)/edit/bank/$', login_required(PageViews.PageEditBankInfo.as_view()), name='page_edit_bank_info'),
     url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),
     url(r'^(?P<page_slug>[\w-]+)/campaigns/$', PageViews.PageCampaigns.as_view(), name='page_campaigns'),
@@ -82,7 +79,7 @@ urlpatterns = [
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/edit/$', CampaignViews.campaign_edit, name='campaign_edit'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/donations/$', CampaignViews.CampaignDonations.as_view(), name='campaign_donations'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/delete/$', CampaignViews.campaign_delete, name='campaign_delete'),
-    url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/manage/$', login_required(CampaignViews.CampaignDashboard.as_view()), name='campaign_dashboard'),
+    url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/manage/analytics/$', login_required(CampaignViews.CampaignDashboardAnalytics.as_view()), name='campaign_dashboard_analytics'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/manage/admin/$', login_required(CampaignViews.CampaignDashboardAdmin.as_view()), name='campaign_dashboard_admin'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/manage/donations/$', login_required(CampaignViews.CampaignDashboardDonations.as_view()), name='campaign_dashboard_donations'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/manage/images/$', login_required(CampaignViews.CampaignDashboardImages.as_view()), name='campaign_dashboard_images'),
@@ -90,7 +87,7 @@ urlpatterns = [
     url(r'^campaign/image/(?P<image_pk>\d+)/delete/$', CampaignViews.campaign_image_delete, name='campaign_image_delete'),
     url(r'^campaign/image/(?P<image_pk>\d+)/profile-picture/$', CampaignViews.campaign_profile_update, name='campaign_profile_update'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/managers/invite/$', CampaignViews.campaign_invite, name='campaign_invite'),
-    url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/managers/(?P<manager_pk>\d+)/remove/$', CampaignViews.remove_manager, name='remove_manager'),
+    url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/managers/(?P<manager_pk>\d+)/remove/$', CampaignViews.remove_manager, name='campaign_remove_manager'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/$', CampaignViews.campaign, name='campaign'),
 
     url(r'^robots.txt$', TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),

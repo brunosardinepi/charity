@@ -175,7 +175,6 @@ class CampaignEditVote(View):
                     vote_participant.save()
                 for d in formset.deleted_objects:
                     d.delete()
-                messages.success(request, 'Campaign updated', fail_silently=True)
                 return redirect('campaign',
                     page_slug=campaign.page.page_slug,
                     campaign_pk=campaign.pk,
@@ -240,7 +239,7 @@ def campaign_edit(request, page_slug, campaign_pk, campaign_slug):
                     campaign_slug=campaign.campaign_slug
                 )
     else:
-        raise Http404
+        return redirect('notes:error_permissions')
     return render(request, 'campaign/campaign_edit.html', {'campaign': campaign, 'form': form})
 
 @login_required
@@ -257,7 +256,7 @@ def campaign_delete(request, page_slug, campaign_pk, campaign_slug):
         messages.success(request, 'Campaign deleted', fail_silently=True)
         return HttpResponseRedirect(campaign.page.get_absolute_url())
     else:
-        raise Http404
+        return redirect('notes:error_permissions')
 
 @login_required
 def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
@@ -287,7 +286,7 @@ def campaign_invite(request, page_slug, campaign_pk, campaign_slug):
     # the user isn't an admin or a manager, so they can't invite someone
     # the only way someone got here was by typing the url manually
     else:
-        raise Http404
+        return redirect('notes:error_permissions')
 
 @login_required
 def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
@@ -306,9 +305,9 @@ def remove_manager(request, page_slug, campaign_pk, campaign_slug, manager_pk):
 
         messages.success(request, 'Manager removed', fail_silently=True)
         # redirect to campaign
-        return HttpResponseRedirect(campaign.get_absolute_url())
+        return redirect('campaign_dashboard_admin', page_slug=campaign.page.page_slug, campaign_pk=campaign.pk, campaign_slug=campaign.campaign_slug)
     else:
-        raise Http404
+        return redirect('notes:error_permissions')
 
 @login_required
 def campaign_image_delete(request, image_pk):
@@ -317,7 +316,7 @@ def campaign_image_delete(request, image_pk):
         image.delete()
         return HttpResponse('')
     else:
-        raise Http404
+        return redirect('notes:error_permissions')
 
 @login_required
 def campaign_profile_update(request, image_pk):
@@ -334,7 +333,7 @@ def campaign_profile_update(request, image_pk):
         image.save()
         return HttpResponse('')
     else:
-        raise Http404
+        return redirect('notes:error_permissions')
 
 
 class CampaignDonate(View):
@@ -440,10 +439,10 @@ class CampaignAjaxDonations(View):
         return HttpResponse(json.dumps(data), content_type="application/json")
 
 
-class CampaignDashboard(View):
+class CampaignDashboardAnalytics(View):
     def get(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
-        if utils.has_dashboard_access(request.user, campaign, None):
+        if utils.has_dashboard_access(request.user, campaign, 'manager_view_dashboard'):
             graph = donation_graph(campaign, 30)
             graph_dates = []
             graph_donations = []
@@ -452,14 +451,14 @@ class CampaignDashboard(View):
                 graph_donations.append(int(v/100))
             graph_dates = list(reversed(graph_dates))
             graph_donations = list(reversed(graph_donations))
-            return render(self.request, 'campaign/dashboard.html', {
+            return render(self.request, 'campaign/dashboard_analytics.html', {
                 'campaign': campaign,
                 'donations': donation_statistics(campaign),
                 'graph_dates': graph_dates,
                 'graph_donations': graph_donations,
             })
         else:
-            raise Http404
+            return redirect('notes:error_permissions')
 
 class CampaignDashboardAdmin(View):
     def get(self, request, page_slug, campaign_pk, campaign_slug):
@@ -471,7 +470,7 @@ class CampaignDashboardAdmin(View):
                 'invitations': invitations,
             })
         else:
-            raise Http404
+            return redirect('notes:error_permissions')
 
     def post(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
@@ -492,7 +491,7 @@ class CampaignDashboardDonations(View):
                 'donations': donation_statistics(campaign),
             })
         else:
-            raise Http404
+            return redirect('notes:error_permissions')
 
 class CampaignDashboardImages(View):
     def get(self, request, page_slug, campaign_pk, campaign_slug):
@@ -502,7 +501,7 @@ class CampaignDashboardImages(View):
             images = CampaignImage.objects.filter(campaign=campaign)
             return render(self.request, 'campaign/dashboard_images.html', {'campaign': campaign, 'images': images })
         else:
-            raise Http404
+            return redirect('notes:error_permissions')
 
     def post(self, request, page_slug, campaign_pk, campaign_slug):
         campaign = get_object_or_404(Campaign, pk=campaign_pk)
@@ -514,7 +513,7 @@ class CampaignDashboardImages(View):
             else:
                 return HttpResponse('')
         else:
-            raise Http404
+            return redirect('notes:error_permissions')
 
 class CampaignDonations(View):
     def get(self, request, page_slug, campaign_pk, campaign_slug):

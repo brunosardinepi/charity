@@ -2,11 +2,11 @@
     <a href="{% url 'campaign' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}" class="list-group-item list-group-item-dark">
         {{ campaign.name }}
     </a>
-    <a href="{% url 'campaign_dashboard' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'campaign_dashboard' %} active-teal{% endif %}">
-        Analytics
-    </a>
     <a href="{% url 'campaign_dashboard_admin' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'campaign_dashboard_admin' or 'campaign_edit' in request.resolver_match.url_name or 'campaign_invite' in request.resolver_match.url_name %} active-teal{% endif %}">
         Settings
+    </a>
+    <a href="{% url 'campaign_dashboard_analytics' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'campaign_dashboard_analytics' %} active-teal{% endif %}">
+        Analytics
     </a>
     <a href="{% url 'campaign_dashboard_donations' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'campaign_dashboard_donations' %} active-teal{% endif %}">
         Donations
