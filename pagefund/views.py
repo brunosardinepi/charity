@@ -32,9 +32,6 @@ class SocialSignupView(social_views.SignupView):
 class EmailVerificationSentView(views.EmailVerificationSentView):
     template_name = 'verification_sent.html'
 
-class EmailView(views.EmailView):
-    template_name = 'userprofile/email.html'
-
 class ConfirmEmailView(views.ConfirmEmailView):
     template_name = 'email_confirm.html'
 

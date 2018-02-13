@@ -20,7 +20,7 @@ FORMS = [("business", PageForm1),
 
 urlpatterns = [
     url(r'^{}/'.format(config.settings['admin']), admin.site.urls),
-    url(r'^accounts/email/', views.EmailView.as_view(), name='email'),
+    url(r'^accounts/email/', TemplateView.as_view(template_name='404.html')),
     url(r'^accounts/login/', views.LoginView.as_view(), name='login'),
     url(r'^accounts/signup/', views.SignupView.as_view(), name='signup'),
     url(r'^accounts/social/signup/', views.SocialSignupView.as_view(), name='social_signup'),

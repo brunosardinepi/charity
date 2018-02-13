@@ -3,6 +3,23 @@
 This is the version history for PageFund development.
 
 
+## Version 0.29.0
+
+Release date: TBD
+
+### Additions
+
+* Account confirmation on signup
+
+### Changes
+
+* Removed General Invitation model
+
+### Fixes
+
+* None
+
+
 ## Version 0.28.7
 
 Release date: 02/09/2018
