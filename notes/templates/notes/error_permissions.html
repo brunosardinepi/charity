@@ -1,0 +1,16 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+
+{% block title %}Error | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-12">
+            <h1>Insufficient permissions</h1>
+            <hr>
+            <p>Sorry, you don't have permissions to perform this action. Please contact the Page or Campaign owner if you feel that this is a mistake.</p>
+            <p>If you need help, please <a href="mailto:help@page.fund">email</a> us.</p>
+        </div>
+    </div>
+{% endblock %}
+

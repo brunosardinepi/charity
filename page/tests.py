@@ -278,7 +278,7 @@ class PageTest(TestCase):
     def test_page_edit_not_admin(self):
         self.client.login(username='harrypotter', password='imawizard')
         response = self.client.get('/%s/edit/' % self.page.page_slug)
-        self.assertEqual(response.status_code, 404)
+        self.assertRedirects(response, '/notes/error/permissions/', 302, 200)
 
     def test_page_edit_admin(self):
         data = {
@@ -310,7 +310,7 @@ class PageTest(TestCase):
     def test_page_edit_manager_no_perms(self):
         self.client.login(username='batman', password='imbatman')
         response = self.client.get('/%s/edit/' % self.page.page_slug)
-        self.assertEqual(response.status_code, 404)
+        self.assertRedirects(response, '/notes/error/permissions/', 302, 200)
 
     def test_page_not_subscribed(self):
         request = self.factory.get('home')
@@ -527,7 +527,7 @@ class PageTest(TestCase):
     def test_delete_page_not_admin(self):
         self.client.login(username='harrypotter', password='imawizard')
         response = self.client.get('/%s/delete/' % self.page.page_slug)
-        self.assertEqual(response.status_code, 404)
+        self.assertRedirects(response, '/notes/error/permissions/', 302, 200)
 
     def test_delete_page_manager_perms(self):
         self.client.login(username='bobdole', password='dogsarecool')
@@ -538,12 +538,12 @@ class PageTest(TestCase):
     def test_delete_page_manager_no_perms(self):
         self.client.login(username='batman', password='imbatman')
         response = self.client.get('/%s/delete/' % self.page.page_slug)
-        self.assertEqual(response.status_code, 404)
+        self.assertRedirects(response, '/notes/error/permissions/', 302, 200)
 
     def test_page_invite_not_admin_not_manager(self):
         self.client.login(username='harrypotter', password='imawizard')
         response = self.client.get('/%s/managers/invite/' % self.page.page_slug)
-        self.assertEqual(response.status_code, 404)
+        self.assertRedirects(response, '/notes/error/permissions/', 302, 200)
 
     def test_page_invite_admin_not_manager(self):
         request = self.factory.get('home')
@@ -557,7 +557,7 @@ class PageTest(TestCase):
     def test_page_invite_not_admin_manager_no_perms(self):
         self.client.login(username='batman', password='imbatman')
         response = self.client.get('/%s/managers/invite/' % self.page.page_slug)
-        self.assertEqual(response.status_code, 404)
+        self.assertRedirects(response, '/notes/error/permissions/', 302, 200)
 
     def test_page_invite_not_admin_manager_perms(self):
         request = self.factory.get('home')
@@ -675,7 +675,7 @@ class PageTest(TestCase):
     def test_remove_manager_logged_in_not_admin(self):
         self.client.login(username='harrypotter', password='imawizard')
         response = self.client.get('/%s/managers/%s/remove/' % (self.page.page_slug, self.user3.pk))
-        self.assertEqual(response.status_code, 404)
+        self.assertRedirects(response, '/notes/error/permissions/', 302, 200)
 
     def test_remove_manager_logged_in_admin(self):
         self.client.login(username='testuser', password='testpassword')
@@ -765,12 +765,12 @@ class PageTest(TestCase):
     def test_upload_manager_no_perms(self):
         self.client.login(username='batman', password='imbatman')
         response = self.client.get('/%s/manage/images/' % self.page.page_slug)
-        self.assertEqual(response.status_code, 404)
+        self.assertRedirects(response, '/notes/error/permissions/', 302, 200)
 
     def test_upload_logged_in_no_perms(self):
         self.client.login(username='newguy', password='imnewhere')
         response = self.client.get('/%s/manage/images/' % self.page.page_slug)
-        self.assertEqual(response.status_code, 404)
+        self.assertRedirects(response, '/notes/error/permissions/', 302, 200)
 
     def test_upload_logged_out(self):
         response = self.client.get('/%s/manage/images/' % self.page.page_slug)

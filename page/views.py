@@ -307,7 +307,7 @@ def page_edit(request, page_slug):
                 messages.success(request, 'Page updated', fail_silently=True)
                 return redirect('page_dashboard_admin', page_slug=page.page_slug)
     else:
-        raise Http404
+        return redirect('notes:error_permissions')
     return render(request, 'page/page_edit.html', {'page': page, 'form': form})
 
 @login_required
@@ -340,7 +340,7 @@ def page_delete(request, page_slug):
 
         return HttpResponseRedirect(reverse('home'))
     else:
-        raise Http404
+        return redirect('notes:error_permissions')
 
 @login_required
 def subscribe(request, page_pk, action=None):
@@ -383,7 +383,7 @@ def page_invite(request, page_slug):
     # the user isn't an admin or a manager, so they can't invite someone
     # the only way someone got here was by typing the url manually
     else:
-        raise Http404
+        return redirect('notes:error_permissions')
 
 @login_required
 def remove_manager(request, page_slug, manager_pk):
@@ -404,7 +404,7 @@ def remove_manager(request, page_slug, manager_pk):
         # redirect to page admin
         return redirect('page_dashboard_admin', page_slug=page.page_slug)
     else:
-        raise Http404
+        return redirect('notes:error_permissions')
 
 class PageDonate(View):
     def get(self, request, page_slug):
@@ -453,7 +453,7 @@ def page_image_delete(request, image_pk):
         image.delete()
         return HttpResponse('')
     else:
-        raise Http404
+        return redirect('notes:error_permissions')
 
 @login_required
 def page_profile_update(request, image_pk):
@@ -470,7 +470,7 @@ def page_profile_update(request, image_pk):
         image.save()
         return HttpResponse('')
     else:
-        raise Http404
+        return redirect('notes:error_permissions')
 
 class PageAjaxDonations(View):
     def post(self, request):
@@ -533,7 +533,7 @@ class PageDashboardAnalytics(View):
                 'graph_donations': graph_donations,
             })
         else:
-            raise Http404
+            return redirect('notes:error_permissions')
 
 class PageDashboardAdmin(View):
     def get(self, request, page_slug):
@@ -545,7 +545,7 @@ class PageDashboardAdmin(View):
                 'invitations': invitations,
             })
         else:
-            raise Http404
+            return redirect('notes:error_permissions')
 
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
@@ -562,7 +562,7 @@ class PageDashboardDonations(View):
                 'donations': donation_statistics(page),
             })
         else:
-            raise Http404
+            return redirect('notes:error_permissions')
 
 class PageDashboardCampaigns(View):
     def get(self, request, page_slug):
@@ -576,7 +576,7 @@ class PageDashboardCampaigns(View):
                 'campaign_success_pct': campaign_success_pct(page),
             })
         else:
-            raise Http404
+            return redirect('notes:error_permissions')
 
 class PageDashboardImages(View):
     def get(self, request, page_slug):
@@ -588,7 +588,7 @@ class PageDashboardImages(View):
                 'images': images,
             })
         else:
-            raise Http404
+            return redirect('notes:error_permissions')
 
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
@@ -600,7 +600,7 @@ class PageDashboardImages(View):
             else:
                 return HttpResponse('')
         else:
-            raise Http404
+            return redirect('notes:error_permissions')
 
 class PageCampaigns(View):
     def get(self, request, page_slug):
