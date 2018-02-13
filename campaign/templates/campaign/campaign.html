@@ -5,17 +5,24 @@
 
 {% block meta %}
     <meta name="description" content="{{ campaign.description|truncatechars:300 }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="description" content="{{ campaign.description|truncatechars:300 }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@pagefundinc">
+    <meta name="twitter:creator" content="@pagefundinc">
+    <meta name="twitter:title" content="PageFund">
+    <meta name="twitter:description" content="{{ campaign.description|truncatechars:300 }}">
+    <meta name="twitter:image" content="{% include 'snippets/og_image.txt' %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{ campaign.name }} | PageFund" />
+    <meta property="og:description" content="{{ campaign.description|truncatechars:300 }}" />
+    <meta property="og:image" content="{% include 'snippets/og_image.txt' %}" />
 {% endblock %}
 
 {% block title %} {{ campaign.name }} | {{ block.super }}{% endblock %}
 
 {% block head_extra %}
-    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="{{ campaign.name }} | PageFund" />
-    <meta property="og:description" content="{{ campaign.description|truncatechars:300 }}" />
-    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo_lg.svg' %}" />
-
     <link href="{% static 'css/lightbox.css' %}" rel="stylesheet">
 {% endblock %}
 

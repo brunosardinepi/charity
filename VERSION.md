@@ -20,6 +20,7 @@ Release date: TBD
 
 * Manager permissions on Pages/Campaigns
 * Prevent users from inviting people who are on PageFund or are already admins of Pages/Campaigns
+* Added opengraph and twitter metadata to Pages and Campaigns
 
 
 ## Version 0.28.7
