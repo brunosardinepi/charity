@@ -14,6 +14,7 @@ Release date: TBD
 ### Changes
 
 * Removed General Invitation model
+* Linked id_amount and preset-amount to toggle as opposites
 
 ### Fixes
 

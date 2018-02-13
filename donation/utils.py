@@ -44,7 +44,6 @@ def set_default_card(request, id):
 def create_card(request, customer):
     # create customer card
     card_source = customer.sources.create(source=request.POST.get('stripeToken'))
-    print('card_source create result = {}'.format(card_source))
     card = StripeCard.objects.create(
         user=request.user.userprofile,
         stripe_card_id=card_source.id,
@@ -56,28 +55,22 @@ def create_card(request, customer):
 def get_card_source(request):
     # get the stripe customer
     customer = stripe.Customer.retrieve("%s" % request.user.userprofile.stripe_customer_id)
-    print('customer = {}'.format(customer))
     # get the customer's cards in our db
     customer_cards = request.user.userprofile.stripecard_set.all()
-    print('customer_card = {}'.format(customer_cards))
     card_check = stripe.Token.retrieve(request.POST.get('stripeToken'))
-    print('card_check = {}'.format(card_check))
     customer_card_dict = {}
     # look through the customer's existing cards
     # and if this card already exists, use it
     if customer_cards:
         for c in customer_cards:
             if c.stripe_card_fingerprint == card_check['card']['fingerprint']:
-                print('this existing card is the new one. card source is not None')
                 card_source = c.stripe_card_id
                 break
             # if the card doesn't exist, set to None
             else:
-                print('this existing card isnt the new one. card source is None')
                 card_source = None
     # if the card doesn't exist, set to None
     else:
-        print('user had no cards, so this card doesnt exist. card source is None')
         card_source = None
     return customer, card_source
 
@@ -90,7 +83,6 @@ def card_check(request, id):
         return False
 
 def charge_source(c, page=None, campaign=None):
-    print('c = {}'.format(c))
     if page is not None:
         charge = stripe.Charge.create(
             amount=c['amount'],
@@ -176,13 +168,10 @@ def donate(request, form, page=None, campaign=None):
         if request.POST.get('vote_participant'):
             c["vote_participant"] = request.POST.get('vote_participant')
         if saved_card:
-            print('saved_card detected')
             try:
-                print('trying saved_card to int conversion')
                 saved_card = int(saved_card)
             except ValueError:
                 # not an int, possible tampering
-                print('exception, couldnt convert to int')
                 saved_card = None
             card_source = card_check(request, saved_card)
             if card_source is not False:
@@ -197,16 +186,13 @@ def donate(request, form, page=None, campaign=None):
                 # this is a one-time donation, charge the card
                 charge = charge_source(c, page, campaign)
         elif request.POST.get('save_card'):
-            print('user entered a new card and wants to save it')
             customer, card_source = get_card_source(request)
             # if card doesn't exist already,
             # create a new one
             if card_source is None:
                 card = create_card(request, customer)
-                print('new card object = {}'.format(card))
                 c["card_source"] = card.stripe_card_id
             else:
-                print('found the card_source in the existing cards. updated c')
                 c["card_source"] = card_source
 
             # check if the user wants this to be a monthly payment
@@ -219,7 +205,6 @@ def donate(request, form, page=None, campaign=None):
                 # this is a one-time donation, charge the card
                 charge = charge_source(c, page, campaign)
         else:
-            print('no saved card, and new card will not be saved')
             if campaign is not None:
                 metadata["campaign"] = campaign.id
                 metadata["page"] = campaign.page.id

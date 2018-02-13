@@ -1,3 +1,4 @@
+{% load static from staticfiles %}
 {% load widget_tweaks %}
 
 
@@ -187,13 +188,6 @@
     </form>
 
     <script>
-
-        // make sure only one of the preset amounts can be selected
-        $("input.preset-amount").on("change", function() {
-            $("input.preset-amount").not(this).prop("checked", false);
-            $("label.preset-label").not(this).removeClass("active");
-        });
-
         // stripe elements setup
         var stripe = Stripe('{{ api_pk }}');
         var elements = stripe.elements();
@@ -311,3 +305,7 @@
 
     {% include "loading.html" %}
 {% endif %}
+
+{% block body_extra %}
+    <script src="{% static 'js/donate.js' %}"></script>
+{% endblock %}
