@@ -335,10 +335,9 @@ def page_delete(request, page_slug):
             try:
                 account = stripe.Account.retrieve(page.stripe_account_id)
                 account.delete()
-            except InvalidRequestError:
+            except stripe.error.InvalidRequestError:
                 pass
 
-        messages.success(request, 'Page deleted', fail_silently=True)
         return HttpResponseRedirect(reverse('home'))
     else:
         raise Http404
