@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^accounts/email/', TemplateView.as_view(template_name='404.html')),
     url(r'^accounts/login/', views.LoginView.as_view(), name='login'),
     url(r'^accounts/signup/', views.SignupView.as_view(), name='signup'),
+    url(r'^accounts/social/connections/', views.ConnectionsView.as_view(), name='socialaccount_connections'),
     url(r'^accounts/social/signup/', views.SocialSignupView.as_view(), name='social_signup'),
     url(r'^accounts/confirm-email/$', views.EmailVerificationSentView.as_view(), name='email_verification_sent'),
     url(r"^accounts/confirm-email/(?P<key>[-:\w]+)/$", views.ConfirmEmailView.as_view(), name='account_confirm_email'),

@@ -3,6 +3,23 @@
 This is the version history for PageFund development.
 
 
+## Version 0.29.1
+
+Release date: 02/13/2018
+
+### Additions
+
+* None
+
+### Changes
+
+* None
+
+### Fixes
+
+* Managing social accounts in profile
+
+
 ## Version 0.29.0
 
 Release date: 02/13/2018

@@ -11,6 +11,9 @@
     <a href="{% url 'userprofile:billing' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'billing' %} active{% endif %}">
         Billing
     </a>
+    <a href="{% url 'socialaccount_connections' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'socialaccount_connections' %} active{% endif %}">
+        Social accounts
+    </a>
     <a href="{% url 'userprofile:notifications' %}" class="list-group-item list-group-item-action{% if request.resolver_match.url_name == 'notifications' %} active{% endif %}">
         Notifications
     </a>

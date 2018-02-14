@@ -172,7 +172,7 @@ class CampaignTest(TestCase):
         )
 
         self.donation6 = models.Donation.objects.create(
-            amount=8365,
+            amount=836598,
             anonymous_amount=True,
             anonymous_donor=True,
             comment='What is happening',

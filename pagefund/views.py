@@ -34,6 +34,9 @@ class EmailVerificationSentView(views.EmailVerificationSentView):
 class ConfirmEmailView(views.ConfirmEmailView):
     template_name = 'email_confirm.html'
 
+class ConnectionsView(social_views.ConnectionsView):
+    template_name = 'userprofile/social_connections.html'
+
 @login_required
 def invite(request):
     form = forms.GeneralInviteForm()
