@@ -155,6 +155,12 @@ class PageWizard(SessionWizardView):
                 "ip": user_ip
             }
 
+            payout_schedule = {
+                'delay_days': 'minimum',
+                'interval': 'weekly',
+                'weekly_anchor': 'monday',
+            }
+
             # create the stripe account
             # and save the page if all goes well
             try:
@@ -164,7 +170,9 @@ class PageWizard(SessionWizardView):
                     email=self.request.user.email,
                     legal_entity=legal_entity,
                     type="custom",
-                    tos_acceptance=tos_acceptance
+                    tos_acceptance=tos_acceptance,
+                    payout_schedule=payout_schedule,
+                    statement_descriptor='PageFund',
                 )
 
                 external_account = {

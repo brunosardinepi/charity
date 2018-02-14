@@ -3,6 +3,23 @@
 This is the version history for PageFund development.
 
 
+## Version 0.29.2
+
+Release date: TBD
+
+### Additions
+
+* None
+
+### Changes
+
+* Payout interval set to every Monday
+
+### Fixes
+
+* None
+
+
 ## Version 0.29.1
 
 Release date: 02/13/2018
