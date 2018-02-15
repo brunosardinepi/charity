@@ -9,7 +9,7 @@ Release date: TBD
 
 ### Additions
 
-* None
+* Create Stripe customer on user login if user doesn't already have Stripe customer account
 
 ### Changes
 
