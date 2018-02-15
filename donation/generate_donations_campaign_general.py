@@ -7,10 +7,10 @@ fixture = []
 model = "donation.Donation"
 initial_date = datetime.datetime(2018, 1, 1, 0, 0, 0, 0, tzinfo=datetime.timezone.utc)
 page_pks = [20]
-campaign_pks = [19, 20]
+campaign_pks = [20]
 user_pks = [33, 24, 32]
 
-for x in range(1,101):
+for x in range(101,201):
     amount = random.randint(100,10000)
     date = initial_date + datetime.timedelta(days=random.randint(0,50))
     page = random.choice(page_pks)
