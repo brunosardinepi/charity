@@ -12,7 +12,6 @@ def get_user_credit_cards(userprofile):
     if not settings.TESTING:
         try:
             sc = stripe.Customer.retrieve(userprofile.stripe_customer_id).sources.all(object='card')
-            print(sc)
             for c in sc:
                 card = get_object_or_404(models.StripeCard, stripe_card_id=c.id)
                 cards[card.id] = {
