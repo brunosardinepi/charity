@@ -29,7 +29,7 @@ from comments.forms import CommentForm
 from donation.forms import DonateForm, DonateUnauthenticatedForm
 from donation.models import Donation
 from donation.utils import donate, donation_graph, donation_history, donation_statistics
-from notes.utils import create_error, error_email
+from notes.utils import create_error
 from invitations.models import ManagerInvitation
 from invitations.utils import invite
 from userprofile.models import UserProfile
@@ -197,7 +197,7 @@ class PageWizard(SessionWizardView):
             # and alert the user and me about it
             # note that the page doesn't get created if this happens
             except stripe.error.InvalidRequestError as e:
-                create_error(e, self.request)
+                create_error(e, request)
                 return redirect('notes:error_stripe_invalid_request')
 
             # send emails
@@ -435,13 +435,7 @@ class PageDonate(View):
                 template_params["cards"] = cards
             except Exception as e:
                 template_params["stripe_error"] = True
-                error = {
-                    "e": e,
-                    "user": request.user.pk,
-                    "page": page.pk,
-                    "campaign": None,
-                }
-                error_email(error)
+                create_error(e, request)
         else:
             form = DonateUnauthenticatedForm()
 

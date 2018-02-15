@@ -1,11 +1,15 @@
 from allauth.account import views
+from allauth.account.signals import user_logged_in
 from allauth.socialaccount import views as social_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.dispatch import receiver
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import redirect, render, reverse
 from django.views import View
+
+import stripe
 
 from . import config
 from . import forms
@@ -14,6 +18,8 @@ from campaign.models import Campaign
 from donation.models import Donation
 from page.models import Page
 
+
+stripe.api_key = config.settings['stripe_api_sk']
 
 def home(request):
     donations = Donation.objects.all().aggregate(Sum('amount')).get('amount__sum')
@@ -62,3 +68,17 @@ def handler404(request):
 
 def handler500(request):
     return render(request, '500.html', status=500)
+
+@receiver(user_logged_in)
+def stripe_customer_check(request, user, **kwargs):
+    try:
+        customer = stripe.Customer.retrieve(request.user.userprofile.stripe_customer_id)
+    except stripe.error.InvalidRequestError:
+        metadata = {'user_pk': request.user.pk}
+        customer = stripe.Customer.create(
+            email=request.user.email,
+            metadata=metadata
+        )
+
+        request.user.userprofile.stripe_customer_id = customer.id
+        request.user.save()

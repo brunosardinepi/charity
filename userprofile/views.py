@@ -17,7 +17,7 @@ from . import forms
 from .models import StripeCard, UserImage, UserProfile
 from .utils import get_last4_donation, get_user_credit_cards
 from donation.models import Donation
-from notes.utils import error_email
+from notes.utils import create_error
 from invitations.models import ManagerInvitation
 from page import models as PageModels
 from pagefund import config, settings
@@ -34,13 +34,8 @@ def userprofile(request):
         except Exception as e:
             cards = None
             stripe_error = True
-            error = {
-                "e": e,
-                "user": request.user.pk,
-                "page": "profile",
-                "campaign": None,
-            }
-            error_email(error)
+            print(e)
+            create_error(e, request)
 
         data = {
             'first_name': request.user.first_name,
@@ -254,13 +249,7 @@ class Billing(View):
             except Exception as e:
                 cards = None
                 stripe_error = True
-                error = {
-                    "e": e,
-                    "user": request.user.pk,
-                    "page": "profile",
-                    "campaign": None,
-                }
-                error_email(error)
+                create_error(e, request)
 
         return render(request, 'userprofile/billing.html', {
             'userprofile': userprofile,
