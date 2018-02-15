@@ -28,15 +28,6 @@ from pagefund.image import image_is_valid
 def userprofile(request):
     userprofile = get_object_or_404(UserProfile, user_id=request.user.id)
     if userprofile.user == request.user:
-        try:
-            cards = get_user_credit_cards(userprofile)
-            stripe_error = None
-        except Exception as e:
-            cards = None
-            stripe_error = True
-            print(e)
-            create_error(e, request)
-
         data = {
             'first_name': request.user.first_name,
             'last_name': request.user.last_name,
@@ -72,8 +63,6 @@ def userprofile(request):
         return render(request, 'userprofile/profile.html', {
             'userprofile': userprofile,
             'form': form,
-            'cards': cards,
-            'stripe_error': stripe_error,
             'api_pk': config.settings['stripe_api_pk'],
         })
     else:
