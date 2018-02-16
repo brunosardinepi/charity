@@ -76,6 +76,7 @@ class PageTest(TestCase):
             category='Animal',
             website='testpage.com',
             verified=True,
+            stripe_verified=True,
         )
 
         self.page.admins.add(self.user.userprofile)
@@ -97,6 +98,7 @@ class PageTest(TestCase):
             description='Im in the office.',
             category='Animal',
             deleted=True,
+            stripe_verified=True,
         )
 
         self.page3 = models.Page.objects.create(
@@ -108,6 +110,19 @@ class PageTest(TestCase):
             description='I am watching Friends.',
             category='Animal',
             verified=False,
+            stripe_verified=True,
+        )
+
+        self.page4 = models.Page.objects.create(
+            name='Snowboarding',
+            type='Other',
+            page_slug='snowboarding',
+            city='PyeongChang',
+            state='KS',
+            description='I am watching the Olympics.',
+            category='Animal',
+            verified=False,
+            stripe_verified=False,
         )
 
         self.campaign = CampaignModels.Campaign.objects.create(
@@ -972,12 +987,19 @@ class PageTest(TestCase):
 
     def test_page_campaigns_all(self):
         response = self.client.get('/{}/campaigns/'.format(self.page.page_slug))
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.campaign.name)
         self.assertContains(response, self.campaign2.name)
         self.assertNotContains(response, self.campaign3.name)
 
     def test_page_donations_all(self):
         response = self.client.get('/{}/donations/'.format(self.page.page_slug))
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, int(self.donation.amount / 100))
         self.assertContains(response, int(self.donation2.amount / 100))
         self.assertContains(response, int(self.donation3.amount / 100))
+
+    def test_page_not_stripe_verified(self):
+        response = self.client.get('/{}/'.format(self.page4.page_slug))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This Page is still waiting to clear our payment processor's verification process.")

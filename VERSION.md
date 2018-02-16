@@ -10,6 +10,7 @@ Release date: TBD
 ### Additions
 
 * Create Stripe customer on user login if user doesn't already have Stripe customer account
+* Stripe verification check for Pages
 
 ### Changes
 
