@@ -59,12 +59,14 @@ class CampaignTest(TestCase):
         self.page = Page.objects.create(
             name='Test Page',
             page_slug='testpage',
+            stripe_verified=True,
         )
         self.page.admins.add(self.user.userprofile)
 
         self.page2 = Page.objects.create(
             name='uihasdlkjahsd',
             page_slug='uhaslduhaskjd',
+            stripe_verified=True,
         )
 
         self.campaign = models.Campaign.objects.create(

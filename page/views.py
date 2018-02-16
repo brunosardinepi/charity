@@ -53,28 +53,37 @@ def page(request, page_slug):
         return redirect('notes:error_page_does_not_exist')
 
     if page.deleted == False:
-        template_params = {}
-        if request.user.is_authenticated():
-            donate_form = DonateForm()
-            template_params["form"] = CommentForm
+        if page.stripe_verified == True:
+            template_params = {}
+            if request.user.is_authenticated():
+                donate_form = DonateForm()
+                template_params["form"] = CommentForm
+            else:
+                donate_form = DonateUnauthenticatedForm()
+
+            try:
+                user_subscription_check = page.subscribers.get(user_id=request.user.pk)
+            except UserProfile.DoesNotExist:
+                user_subscription_check = None
+
+            if user_subscription_check:
+                subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe"}
+            else:
+                subscribe_attr = {"name": "subscribe", "value": "Subscribe"}
+
+            template_params["page"] = page
+            template_params["donate_form"] = donate_form
+            template_params["subscribe_attr"] = subscribe_attr
+            template_params["api_pk"] = config.settings['stripe_api_pk']
+            return render(request, 'page/page.html', template_params)
         else:
-            donate_form = DonateUnauthenticatedForm()
-
-        try:
-            user_subscription_check = page.subscribers.get(user_id=request.user.pk)
-        except UserProfile.DoesNotExist:
-            user_subscription_check = None
-
-        if user_subscription_check:
-            subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe"}
-        else:
-            subscribe_attr = {"name": "subscribe", "value": "Subscribe"}
-
-        template_params["page"] = page
-        template_params["donate_form"] = donate_form
-        template_params["subscribe_attr"] = subscribe_attr
-        template_params["api_pk"] = config.settings['stripe_api_pk']
-        return render(request, 'page/page.html', template_params)
+            if request.user.is_authenticated():
+                if request.user.userprofile in page.admins.all() or request.user.userprofile in page.managers.all():
+                    return render(request, 'page/page_unverified.html', {'page': page})
+                else:
+                    return redirect('notes:error_page_does_not_exist')
+            else:
+                return redirect('notes:error_page_does_not_exist')
     else:
         return redirect('notes:error_page_does_not_exist')
 

@@ -124,6 +124,7 @@ class PageTest(TestCase):
             verified=False,
             stripe_verified=False,
         )
+        self.page4.admins.add(self.user.userprofile)
 
         self.campaign = CampaignModels.Campaign.objects.create(
             name='Test Campaign',
@@ -1000,6 +1001,10 @@ class PageTest(TestCase):
         self.assertContains(response, int(self.donation3.amount / 100))
 
     def test_page_not_stripe_verified(self):
+        response = self.client.get('/{}/'.format(self.page4.page_slug))
+        self.assertRedirects(response, '/notes/error/page/does-not-exist/', 302, 200)
+
+        self.client.login(username='testuser', password='testpassword')
         response = self.client.get('/{}/'.format(self.page4.page_slug))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "This Page is still waiting to clear our payment processor's verification process.")
