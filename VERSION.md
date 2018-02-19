@@ -16,6 +16,7 @@ Release date: TBD
 * Removed "print donations" for users
 * Split user campaigns into active/past
 * Expanded bank account number to 20 digits
+* Shortened the Stripe verification poller from 1 hour to 2 minutes
 
 ### Fixes
 
