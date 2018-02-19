@@ -120,12 +120,20 @@ class UserProfile(models.Model):
     def invitations(self):
         return ManagerInvitation.objects.filter(invite_from=self.user, expired=False)
 
-    def my_campaigns(self):
-        admin_campaigns = self.campaign_admins.filter(deleted=False)
-        manager_campaigns = self.campaign_managers.filter(deleted=False)
-        subscribed_campaigns = self.campaign_subscribers.filter(deleted=False)
+    def active_campaigns(self):
+        admin_campaigns = self.campaign_admins.filter(deleted=False, is_active=True)
+        manager_campaigns = self.campaign_managers.filter(deleted=False, is_active=True)
+        subscribed_campaigns = self.campaign_subscribers.filter(deleted=False, is_active=True)
         campaigns = list(chain(admin_campaigns, manager_campaigns, subscribed_campaigns))
-        campaigns = sorted(set(campaigns),key=lambda x: x.name)
+        campaigns = sorted(set(campaigns),key=lambda x: x.end_date)
+        return campaigns
+
+    def inactive_campaigns(self):
+        admin_campaigns = self.campaign_admins.filter(deleted=False, is_active=False)
+        manager_campaigns = self.campaign_managers.filter(deleted=False, is_active=False)
+        subscribed_campaigns = self.campaign_subscribers.filter(deleted=False, is_active=False)
+        campaigns = list(chain(admin_campaigns, manager_campaigns, subscribed_campaigns))
+        campaigns = sorted(set(campaigns),key=lambda x: x.end_date)
         return campaigns
 
     def my_pages(self):

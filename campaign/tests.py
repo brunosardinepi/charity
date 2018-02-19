@@ -904,6 +904,7 @@ class CampaignTest(TestCase):
         ))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Donate")
+        self.assertContains(response, "This campaign has ended.")
 
     def test_dashboard_donations(self):
         self.client.login(username='testuser', password='testpassword')

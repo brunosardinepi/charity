@@ -14,6 +14,7 @@ Release date: TBD
 ### Changes
 
 * Removed "print donations" for users
+* Split user campaigns into active/past
 
 ### Fixes
 

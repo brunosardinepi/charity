@@ -1,9 +1,10 @@
+{% load campaign_extras %}
 {% load donation_extras %}
 {% load humanize %}
 
 
 <h1>{{ campaign.name }}</h1>
-<p class="small">This Campaign for <a href="{% url 'page' page_slug=campaign.page.page_slug %}">{{ campaign.page.name }}</a> ends {{ campaign.end_date|naturaltime }}.</p>
+<p class="small">This Campaign for <a href="{% url 'page' page_slug=campaign.page.page_slug %}">{{ campaign.page.name }}</a> {% if campaign.end_date|in_the_future %} ends{% else %} ended{% endif %} {{ campaign.end_date|naturaltime }}.</p>
 
 <div class="row mt-3 mb-1">
     <div class="col">

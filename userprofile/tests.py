@@ -198,7 +198,8 @@ class UserProfileTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "My Pages")
-        self.assertContains(response, "My Campaigns")
+        self.assertContains(response, "Active Campaigns")
+        self.assertContains(response, "Past Campaigns")
         self.assertContains(response, self.user.userprofile.subscribers.get(id=self.page.pk).name, status_code=200)
         self.assertContains(response, self.page.name, status_code=200)
         self.assertContains(response, self.page2.name, status_code=200)
