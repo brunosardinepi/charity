@@ -3,6 +3,23 @@
 This is the version history for PageFund development.
 
 
+## Version 0.31.0
+
+Release date: TBD
+
+### Additions
+
+* None
+
+### Changes
+
+* Removed "print donations" for users
+
+### Fixes
+
+* None
+
+
 ## Version 0.30.0
 
 Release date: 02/15/2018
