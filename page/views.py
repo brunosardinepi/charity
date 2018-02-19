@@ -206,7 +206,7 @@ class PageWizard(SessionWizardView):
             # and alert the user and me about it
             # note that the page doesn't get created if this happens
             except stripe.error.InvalidRequestError as e:
-                create_error(e, request)
+                create_error(e, self.request)
                 return redirect('notes:error_stripe_invalid_request')
 
             # send emails
@@ -215,11 +215,11 @@ class PageWizard(SessionWizardView):
                 substitutions = {
                     "-pagename-": page.name,
                 }
-                utils.email(request.user.email, "blank", "blank", "new_page_created", substitutions)
+                utils.email(self.request.user.email, "blank", "blank", "new_page_created", substitutions)
 
                 date = timezone.now().strftime("%Y-%m-%d %I:%M:%S %Z")
                 utils.email("gn9012@gmail.com", "blank", "blank", "admin_new_page", {
-                    '-user-': request.user.email,
+                    '-user-': self.request.user.email,
                     '-page-': page.name,
                     '-date-': date,
                 })

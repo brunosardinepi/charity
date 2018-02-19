@@ -15,10 +15,11 @@ Release date: TBD
 
 * Removed "print donations" for users
 * Split user campaigns into active/past
+* Expanded bank account number to 20 digits
 
 ### Fixes
 
-* None
+* Emails on Page creation were broken
 
 
 ## Version 0.30.0

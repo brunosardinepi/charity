@@ -49,7 +49,7 @@ class PageForm3(forms.Form):
 
 class PageForm4(forms.Form):
     ssn = forms.CharField(max_length=4, label="Last 4 of SSN", widget=forms.TextInput(attrs={'placeholder': '0000'}))
-    account_number = forms.CharField(max_length=12, widget=forms.TextInput(attrs={'placeholder': '000123456789'}))
+    account_number = forms.CharField(max_length=20, widget=forms.TextInput(attrs={'placeholder': '000123456789'}))
     routing_number = forms.CharField(max_length=9, widget=forms.TextInput(attrs={'placeholder': '110000000'}))
 
 class PageEditForm(forms.ModelForm):
