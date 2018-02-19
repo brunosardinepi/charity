@@ -17,6 +17,7 @@ Release date: TBD
 * Split user campaigns into active/past
 * Expanded bank account number to 20 digits
 * Shortened the Stripe verification poller from 1 hour to 2 minutes
+* Removed hyphens from auto-generated Page/Campaign slugs
 
 ### Fixes
 

@@ -91,6 +91,7 @@ class Campaign(models.Model):
         if not self.pk:
             # create a new campaign_slug
             self.campaign_slug = slugify(self.name)
+            self.campaign_slug = self.campaign_slug.replace('-', '')
 
         self.category = self.page.category
         super(Campaign, self).save(*args, **kwargs)

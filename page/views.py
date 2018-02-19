@@ -197,6 +197,9 @@ class PageWizard(SessionWizardView):
 
                 page.stripe_account_id = account.id
                 page.stripe_bank_account_id = ext_account.id
+                # give them the benefit of the doubt and let them accept donations right away
+                # it'll get fixed within 2 minutes if it's unverified
+                page.stripe_verified = True
                 # stripe processed it so we can save the page now
                 page.save()
                 # add the user as an admin and subscriber

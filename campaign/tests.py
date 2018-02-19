@@ -88,8 +88,8 @@ class CampaignTest(TestCase):
         self.campaign.campaign_managers.add(self.user4.userprofile)
 
         self.campaign2 = models.Campaign.objects.create(
-            name='Captain',
-            campaign_slug='captain',
+            name='Captain Underpants',
+            campaign_slug='captainunderpants',
             page=self.page,
             type='event',
             description='Im the captain',

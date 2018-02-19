@@ -396,7 +396,7 @@ class PageTest(TestCase):
             'page_wizard-current_step': 'account',
         }
         response = self.client.post('/create/page/', data)
-        self.assertRedirects(response, '/my-test-page/', 302, 200)
+        self.assertRedirects(response, '/mytestpage/', 302, 200)
 
     def test_pageform1(self):
         form = forms.PageForm1({
@@ -414,7 +414,7 @@ class PageTest(TestCase):
         page = form.save()
         self.assertEqual(page.name, "Ribeye Steak")
         self.assertEqual(page.type, "personal")
-        self.assertEqual(page.page_slug, "ribeye-steak")
+        self.assertEqual(page.page_slug, "ribeyesteak")
         self.assertEqual(page.city, "Atlanta")
         self.assertEqual(page.state, "GA")
         self.assertEqual(page.category, "animal")

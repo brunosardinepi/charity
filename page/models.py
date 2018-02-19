@@ -152,10 +152,11 @@ class Page(models.Model):
 
     def _get_unique_slug(self):
         slug = slugify(self.name)
+        slug = slug.replace('-', '')
         unique_slug = slug
         num = 1
         while Page.objects.filter(page_slug=unique_slug).exists():
-            unique_slug = '{}-{}'.format(slug, num)
+            unique_slug = '{}{}'.format(slug, num)
             num += 1
         return unique_slug
 
