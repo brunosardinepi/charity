@@ -20,6 +20,7 @@ Release date: TBD
 ### Fixes
 
 * Emails on Page creation were broken
+* Email logo was broken on new templates
 
 
 ## Version 0.30.0
