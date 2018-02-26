@@ -10,6 +10,7 @@ Release date: TBD
 ### Additions
 
 * #482 - Social Accounts description
+* #479 - commas on dollar amounts for readability
 
 ### Changes
 

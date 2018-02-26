@@ -15,6 +15,7 @@ from . import forms
 from . import models
 from . import views
 from donation.models import Donation
+from donation.templatetags.donation_extras import cents_to_dollars
 from invitations.models import ManagerInvitation
 from page.models import Page
 
@@ -241,7 +242,7 @@ class CampaignTest(TestCase):
         self.assertContains(response, self.vote_participant.name)
         self.assertContains(response, self.vote_participant2.name)
         self.assertContains(response, int(self.vote_participant.vote_amount() / 100))
-        self.assertContains(response, int(self.vote_participant2.vote_amount() / 100))
+        self.assertContains(response, cents_to_dollars(self.vote_participant2.vote_amount()))
 
     def test_campaign_status_logged_in(self):
         response = self.client.get('/%s/%s/%s/' % (self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
@@ -757,9 +758,9 @@ class CampaignTest(TestCase):
         self.assertEqual(response.status_code, 200)
         total_donations = Donation.objects.filter(campaign=self.campaign).aggregate(Sum('amount')).get('amount__sum')
         total_donations_count = Donation.objects.filter(campaign=self.campaign).count()
-        total_donations_avg = int((total_donations / total_donations_count) / 100)
-        self.assertContains(response, "${}".format(int(total_donations / 100)))
-        self.assertContains(response, "${}".format(total_donations_avg))
+        total_donations_avg = total_donations / total_donations_count
+        self.assertContains(response, cents_to_dollars(total_donations))
+        self.assertContains(response, cents_to_dollars(total_donations_avg))
 
     def test_dashboard_donation_history(self):
         self.client.login(username='testuser', password='testpassword')
