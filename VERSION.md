@@ -13,7 +13,7 @@ Release date: TBD
 
 ### Changes
 
-* None
+* #480 - Notifications description
 
 ### Fixes
 

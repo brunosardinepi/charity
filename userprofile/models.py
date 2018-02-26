@@ -148,11 +148,11 @@ class UserProfile(models.Model):
         notifications = OrderedDict()
         notifications["notification_email_campaign_created"] = {
             "value": self.notification_email_campaign_created,
-            "label": "A Campaign is created for your Page"
+            "label": "A Campaign is created for my Pages"
         }
         notifications["notification_email_donation"] = {
             "value": self.notification_email_donation,
-            "label": "You make a donation"
+            "label": "I make a donation"
         }
         return notifications
 
