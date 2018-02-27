@@ -22,6 +22,7 @@ Release date: TBD
 * #471 - "Add vote participant" button text
 * #469 - save card by default
 * #465 - removed "list all" options on Search
+* #450 - User profile design
 
 ### Fixes
 

@@ -45,9 +45,9 @@
                 <p>You haven't subscribed to any Pages!</p>
             {% endif %}
 
-            <h2>Active Campaigns</h2>
-            <div class="row mt-3 mb-5">
+            <div class="row mt-5 mb-5">
                 <div class="col-12">
+                    <h2>Active Campaigns</h2>
                     {% if userprofile.active_campaigns %}
                         <table class="table table-hover">
                             <thead>
@@ -78,9 +78,9 @@
                 </div>
             </div>
 
-            <h2>Past Campaigns</h2>
-            <div class="row justify-content-center mt-3 mb-5">
+            <div class="row justify-content-center mt-5 mb-5">
                 <div class="col-12">
+                    <h2>Past Campaigns</h2>
                     {% if userprofile.inactive_campaigns %}
                         <table class="table table-hover">
                             <thead>
