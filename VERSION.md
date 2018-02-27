@@ -17,6 +17,7 @@ Release date: TBD
 
 * #480 - Notifications description
 * #477 - invitation clarification
+* #474 - new window for Terms of Service
 
 ### Fixes
 
