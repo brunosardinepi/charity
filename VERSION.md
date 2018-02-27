@@ -11,7 +11,7 @@ Release date: TBD
 
 * #482 - Social Accounts description
 * #479 - commas on dollar amounts for readability
-* #475 - Twitter handle on Features page
+* #475 - Twitter handle on Features
 
 ### Changes
 
@@ -19,7 +19,8 @@ Release date: TBD
 * #477 - invitation clarification
 * #474 - new window for Terms of Service
 * #471 - "Add vote participant" button text
-* #469 - Save card by default
+* #469 - save card by default
+* #465 - removed "list all" options on Search
 
 ### Fixes
 
