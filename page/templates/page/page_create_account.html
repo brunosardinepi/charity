@@ -11,7 +11,14 @@
 {% block body_content %}
     <div class="row">
         <div class="col-12 mt-4 mb-3">
-            <h1>Create a Page</h1>
+            <div class="row">
+                <div class="col-lg-auto">
+                    <h1>Create a Page</h1>
+                </div>
+                <div class="col-lg-auto align-self-center">
+                    <img src="{% static 'img/powered_by_stripe_sd.svg' %}">
+                </div>
+            </div>
             {% include "page/page_create_progress.html" %}
         </div>
     </div>

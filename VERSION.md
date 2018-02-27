@@ -13,6 +13,7 @@ Release date: TBD
 * #479 - commas on dollar amounts for readability
 * #475 - Twitter handle on Features
 * #455 - metadata description on Home
+* #419 - powered by Stripe badge
 
 ### Changes
 

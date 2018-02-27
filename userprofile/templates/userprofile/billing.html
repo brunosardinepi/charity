@@ -15,8 +15,16 @@
             {% include "userprofile/profile_menu.html" %}
         </div>
         <div class="col-lg-9">
-            <h2>Saved Credit Cards</h2>
-            <hr>
+            <div class="row">
+                <div class="col-lg-auto">
+                    <h2>Saved Credit Cards</h2>
+                </div>
+                <div class="col-lg-auto align-self-center">
+                    <img src="{% static 'img/powered_by_stripe_sd.svg' %}">
+                </div>
+            </div>
+            <hr class="mt-2">
+
             <p>Please add a credit card to your account if you'd like to create a monthly donation for a Page.</p>
             {% if stripe_error %}
                 <p>We're having trouble communicating with our payment processor. This error generated an email and sent it to our dev team. We're looking into the issue now, thanks!</p>
@@ -65,8 +73,16 @@
             {% endif %}
 
             {% if not stripe_error %}
-                <h2 class="mt-5">Add Credit Card</h2>
-                <hr>
+                <div class="row mt-5">
+                    <div class="col-lg-auto">
+                        <h2>Add Credit Card</h2>
+                    </div>
+                    <div class="col-lg-auto align-self-center">
+                        <img src="{% static 'img/powered_by_stripe_sd.svg' %}">
+                    </div>
+                </div>
+                <hr class="mt-2">
+
                 <form action="{% url 'userprofile:add_card' %}" method="post" id="add-card-form">
                     {% csrf_token %}
                     <div class="form-group">
