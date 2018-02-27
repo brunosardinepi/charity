@@ -15,6 +15,7 @@ Release date: TBD
 * #455 - metadata description on Home
 * #419 - powered by Stripe badge
 * #483 - "how to donate" on "how it works" section
+* #467 - information about who can see the dashboard
 
 ### Changes
 

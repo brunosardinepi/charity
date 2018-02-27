@@ -16,151 +16,164 @@
         <div class="col-lg-9">
             <h2>Settings</h2>
             <hr>
-            {% if request.user.userprofile in page.admins.all %}
-                <p><a href="{% url 'page_edit' page_slug=page.page_slug %}">Edit Page</a></p>
-                <p><a href="{% url 'page_edit_bank_info' page_slug=page.page_slug %}">Edit Page bank information</a></p>
-                <p><a class="delete-page" href="{% url 'page_delete' page_slug=page.page_slug %}">Delete Page</a></p>
-                <p><a href="{% url 'page_invite' page_slug=page.page_slug  %}">Invite others to manage Page</a></p>
-                {% if page.managers_list %}
-                    <h2 class="mt-5">Managers</h2>
-                    <div class="row justify-content-center mt-3 mb-5">
-                        <div class="col-12">
-                            <p>Update permissions for existing managers and click "Save" when you're done.</p>
-                            <form method="POST" action"">
-                                {% csrf_token %}
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th class="text-center">Edit</th>
-                                            <th class="text-center">Delete</th>
-                                            <th class="text-center">Invite</th>
-                                            <th class="text-center">Images</th>
-                                            <th class="text-center">Analytics</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for manager in page.managers_list %}
-                                            {% get_obj_perms manager.user for page as "page_perms" %}
-                                            <tr>
-                                                <td>{{ manager.user.first_name }} {{ manager.user.last_name }}</td>
-                                                <td>{{ manager.user.email }}</td>
-                                                <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_edit" {% if 'manager_edit' in page_perms %}checked{% endif %} /></td>
-                                                <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_delete" {% if 'manager_delete' in page_perms %}checked{% endif %} /></td>
-                                                <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_invite" {% if 'manager_invite' in page_perms %}checked{% endif %} /></td>
-                                                <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_image_edit" {% if 'manager_image_edit' in page_perms %}checked{% endif %} /></td>
-                                                <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_view_dashboard" {% if 'manager_view_dashboard' in page_perms %}checked{% endif %} /></td>
-                                                <td class="text-center"><a href="{% url 'remove_manager' page_slug=page.page_slug manager_pk=manager.user.pk %}">Remove<a/></td>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                                <input class="btn btn-purple" type="submit" value="Save" />
-                            </form>
-                        </div>
+            <div class="row">
+                <div class="col-lg-8">
+                    {% if request.user.userprofile in page.admins.all %}
+                        <p><a href="{% url 'page_edit' page_slug=page.page_slug %}">Edit Page</a></p>
+                        <p><a href="{% url 'page_edit_bank_info' page_slug=page.page_slug %}">Edit Page bank information</a></p>
+                        <p><a class="delete-page" href="{% url 'page_delete' page_slug=page.page_slug %}">Delete Page</a></p>
+                        <p><a href="{% url 'page_invite' page_slug=page.page_slug  %}">Invite others to manage Page</a></p>
+                        {% if page.managers_list %}
+                            <h2 class="mt-5">Managers</h2>
+                            <div class="row justify-content-center mt-3 mb-5">
+                                <div class="col-12">
+                                    <p>Update permissions for existing managers and click "Save" when you're done.</p>
+                                    <form method="POST" action"">
+                                        {% csrf_token %}
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Email</th>
+                                                    <th class="text-center">Edit</th>
+                                                    <th class="text-center">Delete</th>
+                                                    <th class="text-center">Invite</th>
+                                                    <th class="text-center">Images</th>
+                                                    <th class="text-center">Analytics</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for manager in page.managers_list %}
+                                                    {% get_obj_perms manager.user for page as "page_perms" %}
+                                                    <tr>
+                                                        <td>{{ manager.user.first_name }} {{ manager.user.last_name }}</td>
+                                                        <td>{{ manager.user.email }}</td>
+                                                        <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_edit" {% if 'manager_edit' in page_perms %}checked{% endif %} /></td>
+                                                        <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_delete" {% if 'manager_delete' in page_perms %}checked{% endif %} /></td>
+                                                        <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_invite" {% if 'manager_invite' in page_perms %}checked{% endif %} /></td>
+                                                        <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_image_edit" {% if 'manager_image_edit' in page_perms %}checked{% endif %} /></td>
+                                                        <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_view_dashboard" {% if 'manager_view_dashboard' in page_perms %}checked{% endif %} /></td>
+                                                        <td class="text-center"><a href="{% url 'remove_manager' page_slug=page.page_slug manager_pk=manager.user.pk %}">Remove<a/></td>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        <input class="btn btn-purple" type="submit" value="Save" />
+                                    </form>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <p><a href="{% url 'remove_manager' page_slug=page.page_slug manager_pk=request.user.pk %}">Remove self as manager</a></p>
+                        {% get_obj_perms request.user for page as "page_perms" %}
+                        {% if "manager_edit" in page_perms %}
+                            <p><a href="{% url 'page_edit' page_slug=page.page_slug %}">Edit Page</a></p>
+                            <p><a href="{% url 'page_edit_bank_info' page_slug=page.page_slug %}">Edit Page bank information</a></p>
+                        {% endif %}
+                        {% if "manager_delete" in page_perms %}
+                            <p><a class="delete-page" href="{% url 'page_delete' page_slug=page.page_slug %}">Delete Page</a></p>
+                        {% endif %}
+                        {% if "manager_invite" in page_perms %}
+                            <p><a href="{% url 'page_invite' page_slug=page.page_slug  %}">Invite others to manage Page</a></p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="col-lg-4">
+                    <div class="alert alert-info" role="alert">
+                        This management section is only viewable by Page owners and managers.
                     </div>
-                {% endif %}
-            {% else %}
-                <p><a href="{% url 'remove_manager' page_slug=page.page_slug manager_pk=request.user.pk %}">Remove self as manager</a></p>
-                {% get_obj_perms request.user for page as "page_perms" %}
-                {% if "manager_edit" in page_perms %}
-                    <p><a href="{% url 'page_edit' page_slug=page.page_slug %}">Edit Page</a></p>
-                    <p><a href="{% url 'page_edit_bank_info' page_slug=page.page_slug %}">Edit Page bank information</a></p>
-                {% endif %}
-                {% if "manager_delete" in page_perms %}
-                    <p><a class="delete-page" href="{% url 'page_delete' page_slug=page.page_slug %}">Delete Page</a></p>
-                {% endif %}
-                {% if "manager_invite" in page_perms %}
-                    <p><a href="{% url 'page_invite' page_slug=page.page_slug  %}">Invite others to manage Page</a></p>
-                {% endif %}
-            {% endif %}
+                </div>
+            </div>
 
             {% if invitations %}
-                <h2 class="mt-5">Pending Invitations</h2>
-                <div class="row justify-content-center mt-3 mb-5">
-                    <table class="table table-hover">
-                        <tbody>
-                            <tr>
-                                <th scope="row">Sent to</th>
-                                {% for invitation in invitations %}
-                                    <td class="text-center">{{ invitation.invite_to }}</td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th scope="row">Sent from</th>
-                                {% for invitation in invitations %}
-                                    <td class="text-center">{{ invitation.invite_from.first_name }} {{ invitation.invite_from.last_name }}</td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th scope="row">Date sent</th>
-                                {% for invitation in invitations %}
-                                    <td class="text-center">{{ invitation.date_created|date:"m/d/y" }}</td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th scope="row">Edit Page</th>
-                                {% for invitation in invitations %}
-                                    <td class="text-center">
-                                        {% if invitation.manager_edit == True %}
-                                            <i class="fal fa-check text-success"></i>
-                                        {% else %}
-                                            <i class="fal fa-times text-danger"></i>
-                                        {% endif %}
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th scope="row">Delete Page</th>
-                                {% for invitation in invitations %}
-                                    <td class="text-center">
-                                        {% if invitation.manager_delete == True %}
-                                            <i class="fal fa-check text-success"></i>
-                                        {% else %}
-                                            <i class="fal fa-times text-danger"></i>
-                                        {% endif %}
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th scope="row">Invite to Page</th>
-                                {% for invitation in invitations %}
-                                    <td class="text-center">
-                                        {% if invitation.manager_invite == True %}
-                                            <i class="fal fa-check text-success"></i>
-                                        {% else %}
-                                            <i class="fal fa-times text-danger"></i>
-                                        {% endif %}
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th scope="row">Upload images</th>
-                                {% for invitation in invitations %}
-                                    <td class="text-center">
-                                        {% if invitation.manager_image_edit == True %}
-                                            <i class="fal fa-check text-success"></i>
-                                        {% else %}
-                                            <i class="fal fa-times text-danger"></i>
-                                        {% endif %}
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th scope="row">View analytics</th>
-                                {% for invitation in invitations %}
-                                    <td class="text-center">
-                                        {% if invitation.manager_view_dashboard == True %}
-                                            <i class="fal fa-check text-success"></i>
-                                        {% else %}
-                                            <i class="fal fa-times text-danger"></i>
-                                        {% endif %}
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="mt-5">Pending Invitations</h2>
+                        <div class="row justify-content-center mt-3 mb-5">
+                            <table class="table table-hover">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">Sent to</th>
+                                        {% for invitation in invitations %}
+                                            <td class="text-center">{{ invitation.invite_to }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Sent from</th>
+                                        {% for invitation in invitations %}
+                                            <td class="text-center">{{ invitation.invite_from.first_name }} {{ invitation.invite_from.last_name }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Date sent</th>
+                                        {% for invitation in invitations %}
+                                            <td class="text-center">{{ invitation.date_created|date:"m/d/y" }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Edit Page</th>
+                                        {% for invitation in invitations %}
+                                            <td class="text-center">
+                                                {% if invitation.manager_edit == True %}
+                                                    <i class="fal fa-check text-success"></i>
+                                                {% else %}
+                                                    <i class="fal fa-times text-danger"></i>
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Delete Page</th>
+                                        {% for invitation in invitations %}
+                                            <td class="text-center">
+                                                {% if invitation.manager_delete == True %}
+                                                    <i class="fal fa-check text-success"></i>
+                                                {% else %}
+                                                    <i class="fal fa-times text-danger"></i>
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Invite to Page</th>
+                                        {% for invitation in invitations %}
+                                            <td class="text-center">
+                                                {% if invitation.manager_invite == True %}
+                                                    <i class="fal fa-check text-success"></i>
+                                                {% else %}
+                                                    <i class="fal fa-times text-danger"></i>
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Upload images</th>
+                                        {% for invitation in invitations %}
+                                            <td class="text-center">
+                                                {% if invitation.manager_image_edit == True %}
+                                                    <i class="fal fa-check text-success"></i>
+                                                {% else %}
+                                                    <i class="fal fa-times text-danger"></i>
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">View analytics</th>
+                                        {% for invitation in invitations %}
+                                            <td class="text-center">
+                                                {% if invitation.manager_view_dashboard == True %}
+                                                    <i class="fal fa-check text-success"></i>
+                                                {% else %}
+                                                    <i class="fal fa-times text-danger"></i>
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             {% endif %}
         </div>

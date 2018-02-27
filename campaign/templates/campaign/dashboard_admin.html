@@ -16,159 +16,169 @@
         <div class="col-lg-9">
             <h2>Settings</h2>
             <hr>
-            {% if request.user.userprofile in campaign.campaign_admins.all %}
-                <p><a class="teal" href="{% url 'campaign_edit' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
-                <p><a class="teal delete-campaign" href="{% url 'campaign_delete' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
-                <p><a class="teal" href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
-                {% if campaign.type == "vote" %}<p><a class="teal" href="{% url 'campaign_edit_vote' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit vote participants</a></p>{% endif %}
-
-                {% if campaign.managers_list %}
-                    <h2 class="mt-5">Managers</h2>
-                    <div class="row justify-content-center mt-3 mb-5">
-                        <div class="col-12">
-                            <p>Update permissions for existing managers and click "Save" when you're done.</p>
-                            <form method="POST" action"">
-                                {% csrf_token %}
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th class="text-center">Edit</th>
-                                            <th class="text-center">Delete</th>
-                                            <th class="text-center">Invite</th>
-                                            <th class="text-center">Images</th>
-                                            <th class="text-center">Analytics</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for manager in campaign.managers_list %}
-                                            {% get_obj_perms manager.user for campaign as "campaign_perms" %}
-                                            <tr>
-                                                <td>{{ manager.user.first_name }} {{ manager.user.last_name }}</td>
-                                                <td>{{ manager.user.email }}</td>
-                                                <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_edit" {% if 'manager_edit' in campaign_perms %}checked{% endif %} /></td>
-                                                <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_delete" {% if 'manager_delete' in campaign_perms %}checked{% endif %} /></td>
-                                                <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_invite" {% if 'manager_invite' in campaign_perms %}checked{% endif %} /></td>
-                                                <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_image_edit" {% if 'manager_image_edit' in campaign_perms %}checked{% endif %} /></td>
-                                                <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_view_dashboard" {% if 'manager_view_dashboard' in campaign_perms %}checked{% endif %} /></td>
-                                                <td class="text-center"><a class="teal" href="{% url 'campaign_remove_manager' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug manager_pk=manager.user.pk %}">Remove<a/></td>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                                <input class="btn btn-teal" type="submit" value="Save" />
-                            </form>
-                        </div>
+            <div class="row">
+                <div class="col-lg-8">
+                    {% if request.user.userprofile in campaign.campaign_admins.all %}
+                        <p><a class="teal" href="{% url 'campaign_edit' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
+                        <p><a class="teal delete-campaign" href="{% url 'campaign_delete' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
+                        <p><a class="teal" href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
+                        {% if campaign.type == "vote" %}<p><a class="teal" href="{% url 'campaign_edit_vote' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit vote participants</a></p>{% endif %}
+        
+                        {% if campaign.managers_list %}
+                            <h2 class="mt-5">Managers</h2>
+                            <div class="row justify-content-center mt-3 mb-5">
+                                <div class="col-12">
+                                    <p>Update permissions for existing managers and click "Save" when you're done.</p>
+                                    <form method="POST" action"">
+                                        {% csrf_token %}
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Email</th>
+                                                    <th class="text-center">Edit</th>
+                                                    <th class="text-center">Delete</th>
+                                                    <th class="text-center">Invite</th>
+                                                    <th class="text-center">Images</th>
+                                                    <th class="text-center">Analytics</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for manager in campaign.managers_list %}
+                                                    {% get_obj_perms manager.user for campaign as "campaign_perms" %}
+                                                    <tr>
+                                                        <td>{{ manager.user.first_name }} {{ manager.user.last_name }}</td>
+                                                        <td>{{ manager.user.email }}</td>
+                                                        <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_edit" {% if 'manager_edit' in campaign_perms %}checked{% endif %} /></td>
+                                                        <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_delete" {% if 'manager_delete' in campaign_perms %}checked{% endif %} /></td>
+                                                        <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_invite" {% if 'manager_invite' in campaign_perms %}checked{% endif %} /></td>
+                                                        <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_image_edit" {% if 'manager_image_edit' in campaign_perms %}checked{% endif %} /></td>
+                                                        <td class="text-center"><input name="permissions[]" type="checkbox" value="{{ manager.user.pk }}_manager_view_dashboard" {% if 'manager_view_dashboard' in campaign_perms %}checked{% endif %} /></td>
+                                                        <td class="text-center"><a class="teal" href="{% url 'campaign_remove_manager' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug manager_pk=manager.user.pk %}">Remove<a/></td>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        <input class="btn btn-teal" type="submit" value="Save" />
+                                    </form>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <p><a class="teal" href="{% url 'campaign_remove_manager' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug manager_pk=request.user.pk %}">Remove self as manager<a/></p>
+                        {% get_obj_perms request.user for campaign as "campaign_perms" %}
+                        {% if "manager_edit" in campaign_perms %}
+                            <p><a class="teal" href="{% url 'campaign_edit' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
+                            {% if campaign.type == "vote" %}<p><a class="teal" href="{% url 'campaign_edit_vote' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit vote participants</a></p>{% endif %}
+                        {% endif %}
+                        {% if "manager_delete" in campaign_perms %}
+                            <p><a class="teal delete-campaign" href="{% url 'campaign_delete' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
+                        {% endif %}
+                        {% if "manager_invite" in campaign_perms %}
+                            <p><a class="teal" href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="col-lg-4">
+                    <div class="alert alert-info" role="alert">
+                        This management section is only viewable by Campaign owners and managers.
                     </div>
-                {% endif %}
-            {% else %}
-                <p><a class="teal" href="{% url 'campaign_remove_manager' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug manager_pk=request.user.pk %}">Remove self as manager<a/></p>
-                {% get_obj_perms request.user for campaign as "campaign_perms" %}
-                {% if "manager_edit" in campaign_perms %}
-                    <p><a class="teal" href="{% url 'campaign_edit' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit Campaign</a></p>
-                    {% if campaign.type == "vote" %}<p><a class="teal" href="{% url 'campaign_edit_vote' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Edit vote participants</a></p>{% endif %}
-                {% endif %}
-                {% if "manager_delete" in campaign_perms %}
-                    <p><a class="teal delete-campaign" href="{% url 'campaign_delete' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Delete Campaign</a></p>
-                {% endif %}
-                {% if "manager_invite" in campaign_perms %}
-                    <p><a class="teal" href="{% url 'campaign_invite' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}">Invite others to manage Campaign</a></p>
-                {% endif %}
-            {% endif %}
-
+                </div>
+            </div>
 
             {% if invitations %}
-                <h2 class="mt-5">Pending Invitations</h2>
-                <div class="row justify-content-center mt-3 mb-5">
-                    <table class="table table-hover">
-                        <tbody>
-                            <tr>
-                                <th scope="row">Sent to</th>
-                                {% for invitation in invitations %}
-                                    <td class="text-center">{{ invitation.invite_to }}</td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th scope="row">Sent from</th>
-                                {% for invitation in invitations %}
-                                    <td class="text-center">{{ invitation.invite_from.first_name }} {{ invitation.invite_from.last_name }}</td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th scope="row">Date sent</th>
-                                {% for invitation in invitations %}
-                                    <td class="text-center">{{ invitation.date_created|date:"m/d/y" }}</td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th scope="row">Edit Campaign</th>
-                                {% for invitation in invitations %}
-                                    <td class="text-center">
-                                        {% if invitation.manager_edit == True %}
-                                            <i class="fal fa-check text-success"></i>
-                                        {% else %}
-                                            <i class="fal fa-times text-danger"></i>
-                                        {% endif %}
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th scope="row">Delete Campaign</th>
-                                {% for invitation in invitations %}
-                                    <td class="text-center">
-                                        {% if invitation.manager_delete == True %}
-                                            <i class="fal fa-check text-success"></i>
-                                        {% else %}
-                                            <i class="fal fa-times text-danger"></i>
-                                        {% endif %}
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th scope="row">Invite to Campaign</th>
-                                {% for invitation in invitations %}
-                                    <td class="text-center">
-                                        {% if invitation.manager_invite == True %}
-                                            <i class="fal fa-check text-success"></i>
-                                        {% else %}
-                                            <i class="fal fa-times text-danger"></i>
-                                        {% endif %}
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th scope="row">Upload images</th>
-                                {% for invitation in invitations %}
-                                    <td class="text-center">
-                                        {% if invitation.manager_image_edit == True %}
-                                            <i class="fal fa-check text-success"></i>
-                                        {% else %}
-                                            <i class="fal fa-times text-danger"></i>
-                                        {% endif %}
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th scope="row">View analytics</th>
-                                {% for invitation in invitations %}
-                                    <td class="text-center">
-                                        {% if invitation.manager_view_dashboard == True %}
-                                            <i class="fal fa-check text-success"></i>
-                                        {% else %}
-                                            <i class="fal fa-times text-danger"></i>
-                                        {% endif %}
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="mt-5">Pending Invitations</h2>
+                        <div class="row justify-content-center mt-3 mb-5">
+                            <table class="table table-hover">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">Sent to</th>
+                                        {% for invitation in invitations %}
+                                            <td class="text-center">{{ invitation.invite_to }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Sent from</th>
+                                        {% for invitation in invitations %}
+                                            <td class="text-center">{{ invitation.invite_from.first_name }} {{ invitation.invite_from.last_name }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Date sent</th>
+                                        {% for invitation in invitations %}
+                                            <td class="text-center">{{ invitation.date_created|date:"m/d/y" }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Edit Campaign</th>
+                                        {% for invitation in invitations %}
+                                            <td class="text-center">
+                                                {% if invitation.manager_edit == True %}
+                                                    <i class="fal fa-check text-success"></i>
+                                                {% else %}
+                                                    <i class="fal fa-times text-danger"></i>
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Delete Campaign</th>
+                                        {% for invitation in invitations %}
+                                            <td class="text-center">
+                                                {% if invitation.manager_delete == True %}
+                                                    <i class="fal fa-check text-success"></i>
+                                                {% else %}
+                                                    <i class="fal fa-times text-danger"></i>
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Invite to Campaign</th>
+                                        {% for invitation in invitations %}
+                                            <td class="text-center">
+                                                {% if invitation.manager_invite == True %}
+                                                    <i class="fal fa-check text-success"></i>
+                                                {% else %}
+                                                    <i class="fal fa-times text-danger"></i>
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Upload images</th>
+                                        {% for invitation in invitations %}
+                                            <td class="text-center">
+                                                {% if invitation.manager_image_edit == True %}
+                                                    <i class="fal fa-check text-success"></i>
+                                                {% else %}
+                                                    <i class="fal fa-times text-danger"></i>
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">View analytics</th>
+                                        {% for invitation in invitations %}
+                                            <td class="text-center">
+                                                {% if invitation.manager_view_dashboard == True %}
+                                                    <i class="fal fa-check text-success"></i>
+                                                {% else %}
+                                                    <i class="fal fa-times text-danger"></i>
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             {% endif %}
-
-
-</div>
-</div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block body_extra %}
