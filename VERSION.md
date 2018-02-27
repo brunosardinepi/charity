@@ -14,6 +14,7 @@ Release date: TBD
 * #475 - Twitter handle on Features
 * #455 - metadata description on Home
 * #419 - powered by Stripe badge
+* #483 - "how to donate" on "how it works" section
 
 ### Changes
 
