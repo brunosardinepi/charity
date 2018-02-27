@@ -15,6 +15,7 @@ Release date: TBD
 ### Changes
 
 * #480 - Notifications description
+* #477 - invitation clarification
 
 ### Fixes
 
