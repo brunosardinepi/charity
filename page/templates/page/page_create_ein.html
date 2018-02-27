@@ -17,7 +17,9 @@
     </div>
 
     <div class="row pb-5">
-        <div class="col-8">
+        <div class="col-12">
+
+            <p>If you are a 501(c)(3) registered organization, please provide your EIN number.</p>
 
             {{ wizard.form.media }}
 
@@ -33,9 +35,8 @@
 
                 <div class="row">
                     <div class="col-12">
-
                         <div class="form-row">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-lg-4">
                                 <label for="{{ form.ein.id_for_label }}">
                                     EIN
                                 </label>
@@ -52,10 +53,12 @@
                     </div>
                 </div>
 
-                <hr>
-
-                <button id="form-input" class="mb-3 btn btn-purple" type="submit">Continue</button>
-                <button id="prev" class="mb-3 btn btn-outline-secondary" name="wizard_goto_step" value="{{ wizard.steps.prev }}">Back</button>
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <button id="prev" class="mb-3 btn btn-outline-secondary" name="wizard_goto_step" value="{{ wizard.steps.prev }}">Back</button>
+                        <button id="form-input" class="mb-3 btn btn-purple" type="submit">Continue</button>
+                    </div>
+                </div>
             </form>
         </div>
     </div>

@@ -14,11 +14,6 @@ class CampaignForm(forms.ModelForm):
             'end_date',
             'description',
         ]
-        widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'Fun Run for the Cure'}),
-            'description': forms.Textarea(attrs={'placeholder': 'Help us raise money during our Fun Run for the Cure!'}),
-            'goal': forms.NumberInput(attrs={'placeholder': '5000'}),
-        }
 
 class CampaignEditForm(forms.ModelForm):
     class Meta:
@@ -31,13 +26,6 @@ class CampaignEditForm(forms.ModelForm):
             'description',
             'website',
         ]
-        widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'Fun Run for the Cure'}),
-            'campaign_slug': forms.TextInput(attrs={'placeholder': 'funrunforthecure'}),
-            'website': forms.TextInput(attrs={'placeholder': 'http://funrunforthecure.com'}),
-            'description': forms.Textarea(attrs={'placeholder': 'Help us raise money during our Fun Run for the Cure!'}),
-            'goal': forms.NumberInput(attrs={'placeholder': '5000'}),
-        }
 
 class DeleteCampaignForm(forms.ModelForm):
     class Meta:

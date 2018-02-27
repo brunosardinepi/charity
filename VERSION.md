@@ -17,6 +17,7 @@ Release date: TBD
 * #483 - "how to donate" on "how it works" section
 * #467 - information about who can see the dashboard
 * #452 - flip Page banner on mobile
+* #418 - descriptions on Page creation form steps
 
 ### Changes
 
@@ -27,6 +28,7 @@ Release date: TBD
 * #469 - save card by default
 * #465 - removed "list all" options on Search
 * #450 - User profile design
+* Swapped the "continue" and "back" button location on Page creation form steps
 
 ### Fixes
 
