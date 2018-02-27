@@ -13,8 +13,12 @@
     <h1>Frequently Asked Questions (FAQs)</h1>
     <hr>
     {% for faq in faqs %}
-        <p class="mb-1 font-weight-bold">{{ faq.question }}</p>
-        <p class="mb-5">{{ faq.answer|safe }}</p>
+        <div class="row mb-5">
+            <div class="col-12">
+                <p class="mb-1 font-weight-bold">{{ faq.question }}</p>
+                {{ faq.answer|safe|linebreaks }}
+            </div>
+        </div>
     {% endfor %}
     <div class="pb-5"></div>
 {% endblock %}
