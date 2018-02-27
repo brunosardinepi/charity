@@ -19,6 +19,7 @@ Release date: TBD
 * #477 - invitation clarification
 * #474 - new window for Terms of Service
 * #471 - "Add vote participant" button text
+* #469 - Save card by default
 
 ### Fixes
 
