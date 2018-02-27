@@ -12,6 +12,7 @@ Release date: TBD
 * #482 - Social Accounts description
 * #479 - commas on dollar amounts for readability
 * #475 - Twitter handle on Features
+* #455 - metadata description on Home
 
 ### Changes
 
