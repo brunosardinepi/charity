@@ -16,6 +16,7 @@ Release date: TBD
 * #419 - powered by Stripe badge
 * #483 - "how to donate" on "how it works" section
 * #467 - information about who can see the dashboard
+* #452 - flip Page banner on mobile
 
 ### Changes
 
