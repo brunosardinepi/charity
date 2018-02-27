@@ -18,6 +18,7 @@ Release date: TBD
 * #467 - information about who can see the dashboard
 * #452 - flip Page banner on mobile
 * #418 - descriptions on Page creation form steps
+* #481 - Stripe payout schedule information visible to Page owners and/or managers
 
 ### Changes
 
