@@ -33,6 +33,7 @@ Release date: TBD
 * Home page doesn't scroll and information is moved to a separate About page
 * #280 -- content on About and Create
 * #463 -- preset donate amounts fill in the custom donate amount text input 
+* Create page moved to a single banner
 
 ### Fixes
 
