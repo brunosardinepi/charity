@@ -9,29 +9,30 @@ Release date: TBD
 
 ### Additions
 
-* #482 - Social Accounts description
-* #479 - commas on dollar amounts for readability
-* #475 - Twitter handle on Features
-* #455 - metadata description on Home
-* #419 - powered by Stripe badge
-* #483 - "how to donate" on "how it works" section
-* #467 - information about who can see the dashboard
-* #452 - flip Page banner on mobile
-* #418 - descriptions on Page creation form steps
-* #481 - Stripe payout schedule information visible to Page owners and/or managers
+* #482 -- Social Accounts description
+* #479 -- commas on dollar amounts for readability
+* #475 -- Twitter handle on Features
+* #455 -- metadata description on Home
+* #419 -- powered by Stripe badge
+* #483 -- "how to donate" on "how it works" section
+* #467 -- information about who can see the dashboard
+* #452 -- flip Page banner on mobile
+* #418 -- descriptions on Page creation form steps
+* #481 -- Stripe payout schedule information visible to Page owners and/or managers
 
 ### Changes
 
-* #480 - Notifications description
-* #477 - invitation clarification
-* #474 - new window for Terms of Service
-* #471 - "Add vote participant" button text
-* #469 - save card by default
-* #465 - removed "list all" options on Search
-* #450 - User profile design
+* #480 -- Notifications description
+* #477 -- invitation clarification
+* #474 -- new window for Terms of Service
+* #471 -- "Add vote participant" button text
+* #469 -- save card by default
+* #465 -- removed "list all" options on Search
+* #450 -- User profile design
 * Swapped the "continue" and "back" button location on Page creation form steps
 * Home page doesn't scroll and information is moved to a separate About page
-* #280 - content on About and Create
+* #280 -- content on About and Create
+* #463 -- preset donate amounts fill in the custom donate amount text input 
 
 ### Fixes
 
@@ -137,14 +138,14 @@ Release date: 02/09/2018
 
 ### Fixes
 
-* #420 - existing cards, adding a new card, saving new card
-* #421 - miscommunication between saved cards and new card
-* #422 - creating a monthly donation when the user already has a monthly donation for that page
-* #423 - hide overlay until donation is being processed so errors will still show up
-* #424 - detecting if a payment method is being used
-* #426 - goal can't be negative
-* #428 - admin emails for donations for unauthenticated users
-* #401 - delete the page on our end is ok if there is a balance in stripe
+* #420 -- existing cards, adding a new card, saving new card
+* #421 -- miscommunication between saved cards and new card
+* #422 -- creating a monthly donation when the user already has a monthly donation for that page
+* #423 -- hide overlay until donation is being processed so errors will still show up
+* #424 -- detecting if a payment method is being used
+* #426 -- goal can't be negative
+* #428 -- admin emails for donations for unauthenticated users
+* #401 -- delete the page on our end is ok if there is a balance in stripe
 
 
 ## Version 0.28.6
