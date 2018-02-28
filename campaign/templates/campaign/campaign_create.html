@@ -56,17 +56,17 @@
                 {% endif %}
 
                 <div class="form-group row">
-                    <label for="{{ form.name.id_for_label }}" class="col-md-2 col-form-label">
+                    <label for="{{ form.name.id_for_label }}" class="col-lg-2 col-form-label">
                         Campaign name
                     </label>
-                    <div class="col-md-5">
+                    <div class="col-lg-5">
                         {% render_field form.name class+="form-control" aria-describedby="name-help"%}
                         <small id="name-help" class="form-text text-muted">
                             This is how your name will be displayed on PageFund.
                         </small>
                     </div>
                     {% if form.name.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                        <div class="col-lg-10 offset-lg-2 mt-1 mb-4">
                             {% for error in form.name.errors %}
                                 <div class="alert alert-danger" role="alert">
                                     {{ error|escape }}
@@ -77,17 +77,17 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="{{ form.goal.id_for_label }}" class="col-md-2 col-form-label">
+                    <label for="{{ form.goal.id_for_label }}" class="col-lg-2 col-form-label">
                         Goal
                     </label>
-                    <div class="col-md-3">
+                    <div class="col-lg-3">
                         {% render_field form.goal class+="form-control" aria-describedby="goal-help" %}
                         <small id="goal-help" class="form-text text-muted">
                             How much do you want to raise?
                         </small>
                     </div>
                     {% if form.goal.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                        <div class="col-lg-10 offset-lg-2 mt-1 mb-4">
                             {% for error in form.goal.errors %}
                                 <div class="alert alert-danger" role="alert">
                                     {{ error|escape }}
@@ -98,17 +98,17 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="{{ form.end_date.id_for_label }}" class="col-md-2 col-form-label">
+                    <label for="{{ form.end_date.id_for_label }}" class="col-lg-2 col-form-label">
                         End date
                     </label>
-                    <div class="col-md-3">
+                    <div class="col-lg-3">
                         {% render_field form.end_date class+="form-control" aria-describedby="end_date-help" %}
                         <small id="end_date-help" class="form-text text-muted">
                             When will your Campaign end?
                         </small>
                     </div>
                     {% if form.end_date.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                        <div class="col-lg-10 offset-lg-2 mt-1 mb-4">
                             {% for error in form.end_date.errors %}
                                 <div class="alert alert-danger" role="alert">
                                     {{ error|escape }}
@@ -119,14 +119,14 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="{{ form.type.id_for_label }}" class="col-md-2 col-form-label">
+                    <label for="{{ form.type.id_for_label }}" class="col-lg-2 col-form-label">
                         Type
                     </label>
-                    <div class="col-md-2">
+                    <div class="col-lg-2">
                         {% render_field form.type class+="form-control" %}
                     </div>
                     {% if form.type.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                        <div class="col-lg-10 offset-lg-2 mt-1 mb-4">
                             {% for error in form.type.errors %}
                                 <div class="alert alert-danger" role="alert">
                                     {{ error|escape }}
@@ -137,17 +137,17 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="{{ form.description.id_for_label }}" class="col-md-2 col-form-label">
+                    <label for="{{ form.description.id_for_label }}" class="col-lg-2 col-form-label">
                         Description
                     </label>
-                    <div class="col-md-8">
+                    <div class="col-lg-8">
                         {% render_field form.description class+="form-control" aria-describedby="description-help" %}
                         <small id="description-help" class="form-text text-muted">
                             Optional
                         </small>
                     </div>
                     {% if form.description.errors %}
-                        <div class="col-md-10 offset-md-2 mt-1 mb-4">
+                        <div class="col-lg-10 offset-lg-2 mt-1 mb-4">
                             {% for error in form.description.errors %}
                                 <div class="alert alert-danger" role="alert">
                                     {{ error|escape }}
@@ -157,7 +157,7 @@
                     {% endif %}
                 </div>
 
-                <input class="offset-md-2 btn btn-teal mt-3" type="submit" value="Create Campaign" />
+                <input class="offset-lg-2 btn btn-teal mt-3" type="submit" value="Create Campaign" />
             </form>
         </div>
     </div>
