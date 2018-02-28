@@ -243,7 +243,6 @@ class HomeTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Our story")
-        self.assertContains(response, "Features")
 
     def test_about_logged_in(self):
         self.client.login(username='testuser', password='testpassword')
@@ -251,7 +250,6 @@ class HomeTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Our story")
-        self.assertContains(response, "Features")
 
     def test_login(self):
         response = self.client.get('/accounts/login/')
@@ -293,15 +291,35 @@ class HomeTest(TestCase):
         response = self.client.get('/accounts/social/signup/')
         self.assertRedirects(response, '/accounts/login/', 302, 200)
 
-    def test_create(self):
+    def test_create_logged_out(self):
         response = self.client.get('/create/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Create a Page")
         self.assertContains(response, "Create a Campaign")
         self.assertContains(response, "How it works")
         self.assertContains(response, "Select")
+        self.assertContains(response, "Features")
 
-    def test_features(self):
+    def test_create_logged_in(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/create/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Create a Page")
+        self.assertContains(response, "Create a Campaign")
+        self.assertContains(response, "How it works")
+        self.assertContains(response, "Select")
+        self.assertContains(response, "Features")
+
+    def test_features_logged_out(self):
+        response = self.client.get('/features/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Nonprofit verification")
+        self.assertContains(response, "Analytics")
+        self.assertContains(response, "Campaigns")
+        self.assertContains(response, "Share")
+
+    def test_features_logged_in(self):
+        self.client.login(username='testuser', password='testpassword')
         response = self.client.get('/features/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Nonprofit verification")
