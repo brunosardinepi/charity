@@ -30,6 +30,7 @@ Release date: TBD
 * #465 - removed "list all" options on Search
 * #450 - User profile design
 * Swapped the "continue" and "back" button location on Page creation form steps
+* Home page doesn't scroll and information is moved to a separate About page
 
 ### Fixes
 

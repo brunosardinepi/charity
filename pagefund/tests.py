@@ -229,8 +229,6 @@ class HomeTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '/invite/', status_code=200)
         self.assertContains(response, "Get started")
-        self.assertContains(response, "Our Story")
-        self.assertContains(response, "Features")
 
     def test_home_logged_in(self):
         self.client.login(username='testuser', password='testpassword')
@@ -239,7 +237,20 @@ class HomeTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '/invite/', status_code=200)
         self.assertContains(response, "Get started")
-        self.assertContains(response, "Our Story")
+
+    def test_about_logged_out(self):
+        response = self.client.get('/about/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Our story")
+        self.assertContains(response, "Features")
+
+    def test_about_logged_in(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/about/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Our story")
         self.assertContains(response, "Features")
 
     def test_login(self):
