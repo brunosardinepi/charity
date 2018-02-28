@@ -38,7 +38,7 @@ Release date: TBD
 
 ### Fixes
 
-* None
+* #453 -- monthly donations failing
 
 
 ## Version 0.31.0
