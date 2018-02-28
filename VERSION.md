@@ -31,6 +31,7 @@ Release date: TBD
 * #450 - User profile design
 * Swapped the "continue" and "back" button location on Page creation form steps
 * Home page doesn't scroll and information is moved to a separate About page
+* #280 - content on About and Create
 
 ### Fixes
 
