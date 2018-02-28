@@ -31,7 +31,7 @@
     </div>
     <div class="row pb-5">
         <div class="col-12">
-            <form action="{% url 'campaign_create' %}" method="post" enctype="multipart/form-data">
+            <form id="create-campaign" action="{% url 'campaign_create' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
                 <div id="results" class="mb-5">
@@ -166,6 +166,7 @@
 {% block body_extra %}
     <script src="{% static 'js/comment_csrf.js' %}"></script>
     <script src="{% static 'js/campaign_search_pages.js' %}"></script>
+    <script src="{% static 'js/campaign_amount.js' %}"></script>
     <script src="{% static 'js/datepicker.js' %}"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 {% endblock %}

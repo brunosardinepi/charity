@@ -1,0 +1,1 @@
+$(document).on('submit','#create-campaign',function(event){var goal=$('#id_goal').val();if(goal>2147483647){event.preventDefault();alert("Please enter a goal value less than $2,000,000,000")}})
