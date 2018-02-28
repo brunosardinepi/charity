@@ -19,7 +19,7 @@
     <div class="col">
         <div class="row pt-2">
             <div class="col-md-auto">
-                <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}">{{ c.name }}</a>
+                <a href="{% url 'campaign' page_slug=page.page_slug campaign_pk=c.pk campaign_slug=c.campaign_slug %}" class="teal">{{ c.name }}</a>
             </div>
             <div class="col-md-auto">
                 <span class="comment-date small"><i class="fal fa-clock"></i> ends {{ c.end_date|naturaltime }}<span>
