@@ -1,37 +1,42 @@
 <div class="fa-3x">
-    <span class="fa-layers fa-fw">
-        <i class="fas fa-circle"></i>
-        <i class="fal fa-inverse fa-briefcase" data-fa-transform="shrink-9"></i>
-    </span>
-
-    <span class="fa-layers fa-fw">
+    <span class="fa-layers fa-fw" data-toggle="tooltip" title="{{ page.get_type_display }}/{{ page.get_category_display }}">
         <i class="fas fa-circle"></i>
         <i class="fal fa-inverse fa-tag" data-fa-transform="shrink-9"></i>
     </span>
 
-    <span class="fa-layers fa-fw">
-        <i class="fas fa-circle"></i>
-        <i class="fal fa-inverse fa-desktop" data-fa-transform="shrink-9"></i>
+    {% if page.website %}
+        <span class="fa-layers fa-fw" data-toggle="tooltip" title="{{ page.website }}">
+            <a href="{{ page.website }}" target="_blank" class="page-icon">
+                <i class="fas fa-circle"></i>
+                <i class="fal fa-inverse fa-desktop" data-fa-transform="shrink-9"></i>
+            </a>
+        </span>
+    {% endif %}
+
+    <span class="fa-layers fa-fw" data-toggle="tooltip" title="Page settings">
+        <a href="{% url 'page_dashboard_admin' page_slug=page.page_slug %}" class="page-icon">
+            <i class="fas fa-circle"></i>
+            <i class="fal fa-inverse fa-cog" data-fa-transform="shrink-9"></i>
+        </a>
     </span>
 
-    <span class="fa-layers fa-fw">
-        <i class="fas fa-circle"></i>
-        <i class="fal fa-inverse fa-cog" data-fa-transform="shrink-9"></i>
+    <span class="fa-layers fa-fw" data-toggle="tooltip" title="Page analytics">
+        <a href="{% url 'page_dashboard_analytics' page_slug=page.page_slug %}" class="page-icon">
+            <i class="fas fa-circle"></i>
+            <i class="fal fa-inverse fa-chart-bar" data-fa-transform="shrink-9"></i>
+        </a>
     </span>
 
-    <span class="fa-layers fa-fw">
-        <i class="fas fa-circle"></i>
-        <i class="fal fa-inverse fa-chart-bar" data-fa-transform="shrink-9"></i>
+    <span class="fa-layers fa-fw" data-toggle="tooltip" title="Share on Facebook">
+        <a href="" id="share-facebook" class="page-icon">
+            <i class="fas fa-circle"></i>
+            <i class="fab fa-inverse fa-facebook-f" data-fa-transform="shrink-9"></i>
+        </a>
     </span>
 
-    <span class="fa-layers fa-fw">
-        <i class="fas fa-circle"></i>
-        <a href="" id="share-facebook"><i class="fab fa-inverse fa-facebook-f" data-fa-transform="shrink-9"></i></a>
-    </span>
-
-    <span class="fa-layers fa-fw">
-        <i class="fas fa-circle"></i>
-        <a href="https://twitter.com/intent/tweet?hashtags=raiseextra&url={{ request.build_absolute_uri }}&text=Help%20{{ page.name }}%20raise%20extra!">
+    <span class="fa-layers fa-fw" data-toggle="tooltip" title="Share on Twitter">
+        <a href="https://twitter.com/intent/tweet?hashtags=raiseextra&url={{ request.build_absolute_uri }}&text=Help%20{{ page.name }}%20raise%20extra!" id="share-twitter" class="page-icon">
+            <i class="fas fa-circle"></i>
             <i class="fab fa-inverse fa-twitter" data-fa-transform="shrink-9"></i>
         </a>
     </span>
@@ -57,7 +62,8 @@
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
-$("#share-facebook").click(function() {
+$("#share-facebook").click(function(event) {
+    event.preventDefault();
     FB.ui({
         method: 'share',
         href: '{{ request.build_absolute_uri }}',
