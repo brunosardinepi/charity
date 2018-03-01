@@ -23,4 +23,37 @@
         <i class="fas fa-circle"></i>
         <i class="fal fa-inverse fa-chart-bar" data-fa-transform="shrink-9"></i>
     </span>
+
+    <span class="fa-layers fa-fw">
+        <i class="fas fa-circle"></i>
+        <a href="" id="share-facebook"><i class="fab fa-inverse fa-facebook-f" data-fa-transform="shrink-9"></i></a>
+    </span>
 </div>
+
+<!-- <button class="ui facebook button">Share</button>-->
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId            : '128825374510028',
+      autoLogAppEvents : true,
+      xfbml            : true,
+      version          : 'v2.12'
+    });
+  };
+
+(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.12&appId=128825374510028&autoLogAppEvents=1';
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+
+$("#share-facebook").click(function() {
+    FB.ui({
+        method: 'share',
+        href: '{{ request.build_absolute_uri }}',
+    }, function(response){});
+});
+</script>
