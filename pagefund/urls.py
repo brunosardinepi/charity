@@ -13,10 +13,10 @@ from page.forms import PageForm1, PageForm2, PageForm3, PageForm4
 from page import views as PageViews
 
 
-FORMS = [("business", PageForm1),
-         ("personal", PageForm2),
-         ("ein", PageForm3),
-         ("account", PageForm4)]
+FORMS = [("Organization", PageForm1),
+         ("Personal", PageForm2),
+         ("EIN", PageForm3),
+         ("Bank", PageForm4)]
 
 urlpatterns = [
     url(r'^{}/'.format(config.settings['admin']), admin.site.urls),

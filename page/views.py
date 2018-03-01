@@ -41,10 +41,10 @@ from plans.models import StripePlan
 
 stripe.api_key = config.settings['stripe_api_sk']
 
-TEMPLATES = {"business": "page/page_create_business.html",
-             "personal": "page/page_create_personal.html",
-             "ein": "page/page_create_ein.html",
-             "account": "page/page_create_account.html"}
+TEMPLATES = {"Organization": "page/page_create_business.html",
+             "Personal": "page/page_create_personal.html",
+             "EIN": "page/page_create_ein.html",
+             "Bank": "page/page_create_account.html"}
 
 def page(request, page_slug):
     try:

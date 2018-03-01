@@ -20,6 +20,7 @@ Release date: TBD
 * #418 -- descriptions on Page creation form steps
 * #481 -- Stripe payout schedule information visible to Page owners and/or managers
 * #470 -- jquery validation on Campaign Create form so we don't lose the selected Page
+* #464 -- table of contents on Page creation form
 
 ### Changes
 

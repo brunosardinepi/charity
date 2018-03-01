@@ -9,12 +9,17 @@
 {% block title %}Create | {{ block.super }}{% endblock %}
 
 {% block body_content %}
-    <div class="row pb-5">
+    <div class="row">
         <div class="col-12 mt-4 mb-3">
             <h1>Create a Page</h1>
             {% include "page/page_create_progress.html" %}
         </div>
-        <div class="col-12">
+    </div>
+    <div class="row pb-5">
+        <div class="col-lg-3 mb-3">
+            {% include "page/_page_create.html" %}
+        </div>
+        <div class="col-lg-9">
 
             {{ wizard.form.media }}
 
