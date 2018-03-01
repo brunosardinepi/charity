@@ -193,6 +193,8 @@ def donate(request, form, page=None, campaign=None):
                 card = create_card(request, customer)
                 c["card_source"] = card.stripe_card_id
             else:
+                card = customer.sources.retrieve(card_source)
+                card = StripeCard.objects.get(stripe_card_id=card_source)
                 c["card_source"] = card_source
 
             # check if the user wants this to be a monthly payment
@@ -222,19 +224,37 @@ def donate(request, form, page=None, campaign=None):
                 )
 
             elif page is not None:
-                metadata["page"] = page.id
+                # check if the user wants this to be a monthly payment
+                if request.POST.get('monthly'):
+                    customer, card_source = get_card_source(request)
+                    # if card doesn't exist already,
+                    # create a new one
+                    if card_source is None:
+                        card = create_card(request, customer)
+                    else:
+                        card = customer.sources.retrieve(card_source)
+                        card = StripeCard.objects.get(stripe_card_id=card_source)
 
-                charge = stripe.Charge.create(
-                    amount=amount,
-                    currency="usd",
-                    source=request.POST.get('stripeToken'),
-                    description="${} donation to {}.".format(int(amount / 100), page.name),
-                    destination={
-                        "amount": final_amount,
-                        "account": page.stripe_account_id,
-                    },
-                    metadata=metadata,
-                )
+                    # set this saved card as the default card
+                    set_default_card(request, card.id)
+                    # create the plan and charge them
+                    create_plan(request, form, amount, page, campaign)
+                else:
+
+                    print("not monthly")
+                    metadata["page"] = page.id
+
+                    charge = stripe.Charge.create(
+                        amount=amount,
+                        currency="usd",
+                        source=request.POST.get('stripeToken'),
+                        description="${} donation to {}.".format(int(amount / 100), page.name),
+                        destination={
+                            "amount": final_amount,
+                            "account": page.stripe_account_id,
+                        },
+                        metadata=metadata,
+                    )
     else:
         metadata["first_name"] = form.cleaned_data['first_name']
         metadata["last_name"] = form.cleaned_data['last_name']

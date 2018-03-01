@@ -21,6 +21,7 @@ Release date: TBD
 * #481 -- Stripe payout schedule information visible to Page owners and/or managers
 * #470 -- jquery validation on Campaign Create form so we don't lose the selected Page
 * #464 -- table of contents on Page creation form
+* #430 -- creating a monthly donation with a new card will automatically save the new card for the recurring subscription
 
 ### Changes
 
