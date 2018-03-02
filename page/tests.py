@@ -272,7 +272,7 @@ class PageTest(TestCase):
 
         response = self.client.get('/%s/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Manage", status_code=200)
+        self.assertContains(response, "Page settings", status_code=200)
 
         response = self.client.get('/%s/manage/admin/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
@@ -282,7 +282,7 @@ class PageTest(TestCase):
         response = self.client.get('/%s/' % self.page.page_slug)
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Manage")
+        self.assertContains(response, "Page settings")
 
         response = self.client.get('/%s/manage/admin/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
@@ -333,16 +333,16 @@ class PageTest(TestCase):
         request.user = self.user2
         response = views.page(request, self.page.page_slug)
 
-        self.assertContains(response, 'name="subscribe"', status_code=200)
+        self.assertContains(response, 'Subscribe', status_code=200)
 
     def test_page_subscribed(self):
         self.client.login(username='newguy', password='imnewhere')
         response = self.client.get('/%s/' % self.page.page_slug)
-        self.assertContains(response, 'name="unsubscribe"', status_code=200)
+        self.assertContains(response, 'Unsubscribe', status_code=200)
 
     def test_page_subscribe_redirect(self):
-        response = self.client.get('/page/subscribe/%s/subscribe/' % self.page.pk)
-        self.assertRedirects(response, '/accounts/login/?next=/page/subscribe/%s/subscribe/' % self.page.pk, 302, 200)
+        response = self.client.get('/page/subscribe/{}/'.format(self.page.pk))
+        self.assertRedirects(response, '/accounts/login/?next=/page/subscribe/{}/'.format(self.page.pk), 302, 200)
 
     def test_page_create_logged_out(self):
         response = self.client.get('/create/page/')

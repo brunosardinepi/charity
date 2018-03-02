@@ -279,7 +279,7 @@ class CampaignTest(TestCase):
         response = self.client.get('/{}/{}/{}/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Manage", status_code=200)
+        self.assertContains(response, "Campaign settings", status_code=200)
 
         response = self.client.get('/{}/{}/{}/manage/admin/'.format(self.page.page_slug, self.campaign.pk, self.campaign.campaign_slug))
         self.assertEqual(response.status_code, 200)
@@ -748,8 +748,8 @@ class CampaignTest(TestCase):
         )
 
     def test_campaign_subscribe_redirect(self):
-        response = self.client.get('/campaign/subscribe/{}/subscribe/'.format(self.campaign.pk))
-        self.assertRedirects(response, '/accounts/login/?next=/campaign/subscribe/{}/subscribe/'.format(self.campaign.pk), 302, 200)
+        response = self.client.get('/campaign/subscribe/{}/'.format(self.campaign.pk))
+        self.assertRedirects(response, '/accounts/login/?next=/campaign/subscribe/{}/'.format(self.campaign.pk), 302, 200)
 
     def test_dashboard_total_donations(self):
         self.client.login(username='testuser', password='testpassword')
