@@ -34,6 +34,35 @@
         </span>
     {% endif %}
 
+
+    {% if request.user.is_authenticated %}
+        {% if request.user.userprofile not in page.admins.all and page_perms|length == 0 %}
+            {% if subscribed is False %}
+                <span class="fa-layers fa-fw" data-toggle="tooltip" title="Subscribe">
+                    <a href="{% url 'subscribe' page_pk=page.pk %}" class="page-icon">
+                        <i class="fas fa-circle"></i>
+                        <i class="fal fa-inverse fa-check" data-fa-transform="shrink-9"></i>
+                    </a>
+                </span>
+            {% else %}
+                <span class="fa-layers fa-fw" data-toggle="tooltip" title="Unsubscribe">
+                    <a href="{% url 'subscribe' page_pk=page.pk %}" class="page-icon">
+                        <i class="fas fa-circle"></i>
+                        <i class="fal fa-inverse fa-times" data-fa-transform="shrink-9"></i>
+                    </a>
+                </span>
+            {% endif %}
+        {% endif %}
+    {% else %}
+        <span class="fa-layers fa-fw" data-toggle="tooltip" title="Subscribe">
+            <a href="{% url 'subscribe' page_pk=page.pk %}" class="page-icon">
+                <i class="fas fa-circle"></i>
+                <i class="fal fa-inverse fa-check" data-fa-transform="shrink-9"></i>
+            </a>
+        </span>
+    {% endif %}
+
+
     <span class="fa-layers fa-fw" data-toggle="tooltip" title="Share on Facebook">
         <a href="" id="share-facebook" class="facebook-svg">
             <i class="fas fa-circle"></i>
