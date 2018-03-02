@@ -37,6 +37,7 @@ Release date: TBD
 * #280 -- content on About and Create
 * #463 -- preset donate amounts fill in the custom donate amount text input 
 * Create page moved to a single banner
+* #488 -- Page/Campaign information moved to icons with tooltips
 
 ### Fixes
 

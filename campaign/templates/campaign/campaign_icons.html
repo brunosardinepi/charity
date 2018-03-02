@@ -3,31 +3,31 @@
 
 
 <div class="fa-3x">
-    <span class="fa-layers fa-fw" data-toggle="tooltip" title="{{ page.get_type_display }}/{{ page.get_category_display }}">
+    <span class="fa-layers fa-fw" data-toggle="tooltip" title="{{ campaign.get_type_display }}/{{ campaign.get_category_display }}">
         <i class="fas fa-circle"></i>
         <i class="fal fa-inverse fa-tag" data-fa-transform="shrink-9"></i>
     </span>
 
-    {% if page.website %}
-        <span class="fa-layers fa-fw" data-toggle="tooltip" title="{{ page.website }}">
-            <a href="{{ page.website }}" target="_blank" class="page-icon">
+    {% if campaign.website %}
+        <span class="fa-layers fa-fw" data-toggle="tooltip" title="{{ campaign.website }}">
+            <a href="{{ campaign.website }}" target="_blank" class="page-icon">
                 <i class="fas fa-circle"></i>
                 <i class="fal fa-inverse fa-desktop" data-fa-transform="shrink-9"></i>
             </a>
         </span>
     {% endif %}
 
-    {% get_obj_perms request.user for page as "page_perms" %}
-    {% if request.user.userprofile in page.admins.all or page_perms %}
-        <span class="fa-layers fa-fw" data-toggle="tooltip" title="Page settings">
-            <a href="{% url 'page_dashboard_admin' page_slug=page.page_slug %}" class="page-icon">
+    {% get_obj_perms request.user for campaign as "campaign_perms" %}
+    {% if request.user.userprofile in campaign.campaign_admins.all or campaign_perms %}
+        <span class="fa-layers fa-fw" data-toggle="tooltip" title="Campaign settings">
+            <a href="{% url 'campaign_dashboard_admin' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}" class="page-icon">
                 <i class="fas fa-circle"></i>
                 <i class="fal fa-inverse fa-cog" data-fa-transform="shrink-9"></i>
             </a>
         </span>
     
-        <span class="fa-layers fa-fw" data-toggle="tooltip" title="Page analytics">
-            <a href="{% url 'page_dashboard_analytics' page_slug=page.page_slug %}" class="page-icon">
+        <span class="fa-layers fa-fw" data-toggle="tooltip" title="Campaign analytics">
+            <a href="{% url 'campaign_dashboard_analytics' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug %}" class="page-icon">
                 <i class="fas fa-circle"></i>
                 <i class="fal fa-inverse fa-chart-bar" data-fa-transform="shrink-9"></i>
             </a>
@@ -42,7 +42,7 @@
     </span>
 
     <span class="fa-layers fa-fw" data-toggle="tooltip" title="Share on Twitter">
-        <a href="https://twitter.com/intent/tweet?hashtags=raiseextra&url={{ request.build_absolute_uri }}&text=Help%20{{ page.name }}%20raise%20extra!" id="share-twitter" class="twitter-svg">
+        <a href="https://twitter.com/intent/tweet?hashtags=raiseextra&url={{ request.build_absolute_uri }}&text=Help%20{{ campaign.name }}%20raise%20extra!" id="share-twitter" class="twitter-svg">
             <i class="fas fa-circle"></i>
             <i class="fab fa-inverse fa-twitter" data-fa-transform="shrink-9"></i>
         </a>

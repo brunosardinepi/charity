@@ -31,19 +31,7 @@
         $(document).on('click', '#verified', function(event) {
             event.preventDefault();
         });
-
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip({
-                'trigger': 'hover focus',
-                'placement': 'bottom',
-            });
-        });
     </script>
-{% endblock %}
-
-{% block pre_nav %}
-    {% include "facebook_share.html" %}
-    {% include "twitter_share.html" %}
 {% endblock %}
 
 {% block body_content %}
@@ -101,4 +89,5 @@
     <script src="{% static 'js/comment_csrf.js' %}"></script>
     <script src="{% static 'js/subscribe.js' %}"></script>
     <script src="{% static 'js/lightbox.js' %}"></script>
+    <script src="{% static 'js/tooltip_icons.js' %}"></script>
 {% endblock %}
