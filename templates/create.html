@@ -13,43 +13,41 @@
     <meta property="og:url" content="https://page.fund/create/" />
 
     <style>
-        body {
-            font-size: 1.125rem;
-        }
-        nav {
-            margin: 0 !important;
-        }
-        .col-lg-4 svg {
-            color: #33cc99;
-        }
+        body{font-size: 1.125rem}nav{margin:0!important}.col-lg-4 svg{color: #33cc99}
     </style>
 {% endblock %}
 
 
 {% block body_content %}
-    <div class="page-banner">
+    <div class="campaign-banner">
         <div class="container-fluid">
-            <div class="create-row row justify-content-start">
-                <div class="create-text">
+            <div class="create-row row justify-content-between">
+                <div id="pages-text" class="create-text">
                     <div class="create-inside-text">
                         <h1>Pages</h1>
-                        <p>Pages are for an organization owner or individual looking to raise extra funds for <span class="font-weight-bold">their organization</span> or <span class="font-weight-bold">themselves</span>.</p>
+                        <p>Are you an organization or an individual looking to raise extra funds for <span class="font-weight-bold">yourself</span>? Create a Page to solicit direct donations!</p>
                         <a href="{% url 'page_create' %}" class="btn btn-block btn-lg btn-purple">Create a Page</a>
+                    </div>
+                </div>
+                <div id="campaigns-text" class="create-text">
+                    <div class="create-inside-text">
+                        <h1>Campaigns</h1>
+                        <p>Are you an individual looking to raise extra funds on behalf of <span class="font-weight-bold">someone else</span>? Create a Campaign to benefit an existing Page!</p>
+                        <a href="{% url 'campaign_create' %}" class="btn btn-block btn-lg btn-teal">Create a Campaign</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="campaign-banner">
-        <div class="container-fluid">
-            <div class="create-row row justify-content-end">
-                <div class="create-text">
-                    <div class="create-inside-text">
-                        <h1>Campaigns</h1>
-                        <p>Campaigns are for an individual looking to raise extra funds on behalf of <span class="font-weight-bold">another organization</span> or <span class="font-weight-bold">individual</span>.</p>
-                        <a href="{% url 'campaign_create' %}" class="btn btn-block btn-lg btn-teal">Create a Campaign</a>
-                    </div>
+    <div class="jumbotron">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-9 align-self-center text-center">
+                    <h3 id="features-banner" class="mb-0">See all the great features PageFund has to offer!</h3>
+                </div>
+                <div class="col-lg-3">
+                    <a href="/features/" class="btn btn-lg btn-block btn-purple">Features</a>
                 </div>
             </div>
         </div>
@@ -65,8 +63,9 @@
     
         <div class="row mb-3">
             <div class="col-12">
-                <p><span class="purple font-weight-bold">Pages</span> are fixed locations for anyone that is looking to raise extra funds for their cause. Use a <span class="purple font-weight-bold">Page</span> to tell a story to the world, solicit direct donations, and post pictures, all in one place.</p>
-                <p><span class="teal font-weight-bold">Campaigns</span> are goal-based fundraisers designed for anyone to raise funds on behalf of any Page. <span class="teal font-weight-bold">Campaigns</span> don’t require any affiliation, are easy to setup, and funnel donations directly to the Page they are benefiting without having to exchange funds.</p>
+                <p><span class="purple font-weight-bold">Pages</span> are perpetual locations for anyone that is looking to raise extra funds for their own organization or personal cause. A Page can be used to tell a story to the world, solicit direct donations, and post pictures, all in one place!</p>
+                <p><span class="teal font-weight-bold">Campaigns</span> are goal-based fundraisers, with a beginning and an end, that are designed for anyone to raise funds on behalf of any organization, individual, or cause that they are passionate about. Campaigns don't require any affiliation with the organization or cause and will funnel donations directly to the Page they are benefiting, without having to manually exchange funds!
+                <p>To <span class="font-weight-bold">donate</span> to a Page or a Campaign, search for it on PageFund and click "Donate". Select the amount you wish to donate and enter your payment details. Sign up for a free account on PageFund to save your payment details for future use, or to set up a monthly recurring donation. Your donation will then be sent securely and directly to the Page!</p>
             </div>
         </div>
     

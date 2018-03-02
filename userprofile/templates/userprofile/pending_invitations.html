@@ -8,7 +8,7 @@
     {% include "messages.html" %}
 
     <div class="row">
-        <div class="col-lg-3">
+        <div class="col-lg-3 mb-3">
             {% include "userprofile/profile_menu.html" %}
         </div>
 
@@ -48,7 +48,7 @@
                     </div>
                 {% endfor %}
             {% else %}
-                <p>You haven't received any invitations!</p>
+                <p>You haven't received any invitations to be a manager of a Page or Campaign.</p>
             {% endif %}
 
             <h2 class="mt-5">Invitations Sent</h2>
@@ -84,7 +84,7 @@
                     </div>
                 {% endfor %}
             {% else %}
-                <p>You haven't sent any invitations!</p>
+                <p>You haven't invited anyone to be a manager of any of your Pages or Campaigns.</p>
             {% endif %}
         </div>
     </div>

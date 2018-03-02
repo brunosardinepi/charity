@@ -1,10 +1,10 @@
 <footer class="footer">
     <div class="container">
         <div class="row">
-            <div class="col-md-auto copyright">
+            <div class="col-lg-3 copyright">
                 &copy; {% now "Y" %} PageFund, Inc.
             </div>
-            <div class="col-lg">
+            <div class="col-lg-6">
                 <ul id="footer-links" class="list-inline">
                     <li class="list-inline-item"><a {% if campaign %}class="teal" {% endif %}href="{% url 'faqs:faq_list' %}">FAQ</a></li>
                     <li class="list-inline-item"><a {% if campaign %}class="teal" {% endif %}href="/terms-of-service/">Terms of Service</a></li>
@@ -12,7 +12,7 @@
                     <li class="list-inline-item"><a {% if campaign %}class="teal" {% endif %}href="{% url 'invite' %}">Invite</a></li>
                 </ul>
             </div>
-            <div class="col-md-auto">
+            <div class="col-lg-3">
                 <ul id="footer-social" class="list-inline">
                     <li class="list-inline-item"><a {% if campaign %}class="teal" {% endif %}href="https://www.facebook.com/pagefund/" target="_blank"><i class="fab fa-facebook-f fa-lg"></i><span class="sr-only">PageFund Facebook</span></a></li>
                     <li class="list-inline-item"><a {% if campaign %}class="teal" {% endif %}href="https://www.instagram.com/pagefund/" target="_blank"><i class="fab fa-instagram fa-lg"></i><span class="sr-only">PageFund Instagram</span></a></li>

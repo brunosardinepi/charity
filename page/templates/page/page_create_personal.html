@@ -17,7 +17,14 @@
     </div>
 
     <div class="row pb-5">
-        <div class="col-8">
+        <div class="col-lg-3 mb-3">
+            {% include "page/_page_create.html" %}
+        </div>
+        <div class="col-9">
+
+            <div class="alert alert-info" role="alert">
+                <i class="fas fa-fw fa-info-circle"></i> This is the name and birthday of the owner of your Page. Our payment processor uses this information to verify your identity.
+            </div>
 
             {{ wizard.form.media }}
 
@@ -32,10 +39,9 @@
                 {% endif %}
 
                 <div class="row">
-                    <div class="col-12">
-
+                    <div class="col-lg-6">
                         <div class="form-row">
-                            <div class="form-group col-lg-6">
+                            <div class="form-group col-lg-12">
                                 <label for="{{ form.first_name.id_for_label }}">
                                     First name
                                 </label>
@@ -48,7 +54,13 @@
                                     {% endfor %}
                                 {% endif %}
                             </div>
-                            <div class="form-group col-lg-6">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-row">
+                            <div class="form-group col-lg-12">
                                 <label for="{{ form.last_name.id_for_label }}">
                                     Last name
                                 </label>
@@ -81,10 +93,12 @@
                     </div>
                 </div>
 
-                <hr>
-
-                <button id="form-input" class="mb-3 btn btn-purple" type="submit">Continue</button>
-                <button id="prev" class="mb-3 btn btn-outline-secondary" name="wizard_goto_step" value="{{ wizard.steps.prev }}">Back</button>
+                <div class="row mt-5">
+                    <div class="col-lg-12">
+                        <button id="prev" class="mb-3 btn btn-outline-secondary" name="wizard_goto_step" value="{{ wizard.steps.prev }}">Back</button>
+                        <button id="form-input" class="mb-3 btn btn-purple" type="submit">Continue</button>
+                    </div>
+                </div>
             </form>
         </div>
     </div>

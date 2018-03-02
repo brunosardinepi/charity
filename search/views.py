@@ -11,6 +11,7 @@ import operator
 
 from .utils import filter_list, query_list
 from campaign.models import Campaign
+from donation.templatetags.donation_extras import cents_to_dollars
 from page.models import Page
 
 
@@ -81,9 +82,9 @@ def create_search_result_html(r, sponsored, trending):
     )
 
     if isinstance(r, Page):
-        html += "<span class='purple font-weight-bold font-size-175'>${}</span>".format(int(r.donation_money() / 100))
+        html += "<span class='purple font-weight-bold font-size-175'>{}</span>".format(cents_to_dollars(r.donation_money()))
     elif isinstance(r, Campaign):
-        html += "<span class='teal font-weight-bold font-size-175'>${}</span>".format(int(r.donation_money() / 100))
+        html += "<span class='teal font-weight-bold font-size-175'>{}</span>".format(cents_to_dollars(r.donation_money()))
 
     html += (
         "</div>"
@@ -99,44 +100,36 @@ def results(request):
     if request.method == "POST":
         q = request.POST.get('q')
         f = request.POST.get('f')
-        a = request.POST.get('a')
 
-        if a == "false":
-            if f:
-                f = f.replace('"', '')
-                f = f.replace('[', '')
-                f = f.replace(']', '')
+        if f:
+            f = f.replace('"', '')
+            f = f.replace('[', '')
+            f = f.replace(']', '')
 
-            if q == "0":
-                q = False
-            elif f == "0":
-                f = False
+        if q == "0":
+            q = False
+        elif f == "0":
+            f = False
 
-            if all([q, f]):
-                results = []
-                sponsored = []
-                pages, sponsored_pages = query_list(q)
-                f = f.split(",")
-                for x in f:
-                    p = [n for n in pages if n.category == x]
-                    for y in p:
-                        results.append(y)
-                    s = [t for t in sponsored_pages if t.category == x]
-                    for y in s:
-                        sponsored.append(y)
-            elif q:
-                results, sponsored = query_list(q)
-            elif f:
-                results, sponsored = filter_list(f)
-            else:
-                results = None
-                sponsored = None
-        elif a == "pages":
-            results = Page.objects.filter(is_sponsored=False, deleted=False).order_by('name')
-            sponsored = Page.objects.filter(is_sponsored=True, deleted=False).order_by('name')
-        elif a == "campaigns":
-            results = Campaign.objects.filter(page__is_sponsored=False, deleted=False, is_active=True).order_by('name')
-            sponsored = Campaign.objects.filter(page__is_sponsored=True, deleted=False, is_active=True).order_by('name')
+        if all([q, f]):
+            results = []
+            sponsored = []
+            pages, sponsored_pages = query_list(q)
+            f = f.split(",")
+            for x in f:
+                p = [n for n in pages if n.category == x]
+                for y in p:
+                    results.append(y)
+                s = [t for t in sponsored_pages if t.category == x]
+                for y in s:
+                    sponsored.append(y)
+        elif q:
+            results, sponsored = query_list(q)
+        elif f:
+            results, sponsored = filter_list(f)
+        else:
+            results = None
+            sponsored = None
 
         trending_pages = Page.objects.filter(deleted=False).order_by('-trending_score')[:10]
         trending_campaigns = Campaign.objects.filter(deleted=False, is_active=True).order_by('-trending_score')[:10]

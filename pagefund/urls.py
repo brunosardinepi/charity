@@ -13,10 +13,10 @@ from page.forms import PageForm1, PageForm2, PageForm3, PageForm4
 from page import views as PageViews
 
 
-FORMS = [("business", PageForm1),
-         ("personal", PageForm2),
-         ("ein", PageForm3),
-         ("account", PageForm4)]
+FORMS = [("Organization", PageForm1),
+         ("Personal", PageForm2),
+         ("EIN", PageForm3),
+         ("Bank", PageForm4)]
 
 urlpatterns = [
     url(r'^{}/'.format(config.settings['admin']), admin.site.urls),
@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'^webhooks/', include('webhooks.urls', namespace='webhooks')),
     url(r'^plans/', include('plans.urls', namespace='plans')),
     url(r'^faq/', include('faqs.urls', namespace='faqs')),
+    url(r'^about/$', TemplateView.as_view(template_name="about.html")),
     url(r'^terms-of-service/$', TemplateView.as_view(template_name="terms_of_service.html")),
     url(r'^privacy-policy/$', TemplateView.as_view(template_name="privacy_policy.html")),
     url(r'^notes/', include('notes.urls', namespace='notes')),
@@ -47,7 +48,7 @@ urlpatterns = [
     url(r'^features/$', TemplateView.as_view(template_name="features.html")),
     url(r'^email-templates/', include('email_templates.urls', namespace='email_templates')),
 
-    url(r'^page/subscribe/(?P<page_pk>\d+)/(?P<action>[\w-]*)/$', PageViews.subscribe, name='subscribe'),
+    url(r'^page/subscribe/(?P<page_pk>\d+)/$', PageViews.subscribe, name='subscribe'),
     url(r'^create/page/$', login_required(PageViews.PageWizard.as_view(
         FORMS,
         condition_dict={ 'ein': PageViews.show_message_form_condition })),
@@ -70,7 +71,7 @@ urlpatterns = [
     url(r'^(?P<page_slug>[\w-]+)/managers/(?P<manager_pk>\d+)/remove/$', PageViews.remove_manager, name='remove_manager'),
     url(r'^(?P<page_slug>[\w-]+)/$', PageViews.page, name='page'),
 
-    url(r'^campaign/subscribe/(?P<campaign_pk>\d+)/(?P<action>[\w-]*)/$', CampaignViews.subscribe, name='campaign_subscribe'),
+    url(r'^campaign/subscribe/(?P<campaign_pk>\d+)/$', CampaignViews.subscribe, name='campaign_subscribe'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/donate/(?P<vote_participant_pk>\d+)/$', CampaignViews.CampaignDonate.as_view(), name='campaign_donate'),
     url(r'^(?P<page_slug>[\w-]+)/(?P<campaign_pk>\d+)/(?P<campaign_slug>[\w-]+)/donate/$', CampaignViews.CampaignDonate.as_view(), name='campaign_donate'),
     url(r'^create/campaign/$', login_required(CampaignViews.CampaignCreate.as_view()), name='campaign_create'),

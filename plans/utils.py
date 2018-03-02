@@ -28,8 +28,11 @@ def create_plan(request, form, amount, page=None, campaign=None):
         print('existing plan deleted in db')
         print('existing subscription deleted in stripe')
 
-    except InvalidRequestError as e:
-        if 'No such plan' in e:
+    except stripe.error.InvalidRequestError as e:
+        print(e)
+        error = str(e)
+        print(error)
+        if 'No such plan' in error:
             print('checked with stripe, there is no existing plan')
             pass
 

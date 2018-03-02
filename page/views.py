@@ -41,10 +41,10 @@ from plans.models import StripePlan
 
 stripe.api_key = config.settings['stripe_api_sk']
 
-TEMPLATES = {"business": "page/page_create_business.html",
-             "personal": "page/page_create_personal.html",
-             "ein": "page/page_create_ein.html",
-             "account": "page/page_create_account.html"}
+TEMPLATES = {"Organization": "page/page_create_business.html",
+             "Personal": "page/page_create_personal.html",
+             "EIN": "page/page_create_ein.html",
+             "Bank": "page/page_create_account.html"}
 
 def page(request, page_slug):
     try:
@@ -67,13 +67,13 @@ def page(request, page_slug):
                 user_subscription_check = None
 
             if user_subscription_check:
-                subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe"}
+                subscribed = True
             else:
-                subscribe_attr = {"name": "subscribe", "value": "Subscribe"}
+                subscribed = False
 
             template_params["page"] = page
             template_params["donate_form"] = donate_form
-            template_params["subscribe_attr"] = subscribe_attr
+            template_params["subscribed"] = subscribed
             template_params["api_pk"] = config.settings['stripe_api_pk']
             return render(request, 'page/page.html', template_params)
         else:
@@ -286,7 +286,6 @@ class PageEditBankInfo(View):
                     'country': 'US',
                     'currency': 'usd',
                     'account_number': form.cleaned_data['account_number'],
-#                    'account_holder_name': '%s %s' % (form.cleaned_data['first_name'], form.cleaned_data['last_name']),
                     'account_holder_type': stripe_type,
                     'routing_number': form.cleaned_data['routing_number'],
                     'default_for_currency': 'true',
@@ -365,19 +364,15 @@ def page_delete(request, page_slug):
 @login_required
 def subscribe(request, page_pk, action=None):
     page = get_object_or_404(Page, pk=page_pk)
-    if action == "subscribe":
-        page.subscribers.add(request.user.userprofile)
-        new_subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe"}
-    elif action == "unsubscribe":
+
+    if request.user.userprofile in page.subscribers.all():
         page.subscribers.remove(request.user.userprofile)
-        new_subscribe_attr = {"name": "subscribe", "value": "Subscribe"}
-    previous_page = request.META.get('HTTP_REFERER')
-    expected_url = "/accounts/login/?next=/page/subscribe/"
-    if expected_url in previous_page:
-        return HttpResponseRedirect(page.get_absolute_url())
+        messages.success(request, 'You are now unsubscribed from this Page', fail_silently=True)
     else:
-        new_subscribe_attr = json.dumps(new_subscribe_attr)
-        return HttpResponse(new_subscribe_attr)
+        page.subscribers.add(request.user.userprofile)
+        messages.success(request, 'You are now subscribed to this Page', fail_silently=True)
+
+    return HttpResponseRedirect(page.get_absolute_url())
 
 @login_required
 def page_invite(request, page_slug):

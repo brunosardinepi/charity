@@ -1,2 +1,1 @@
-$(document).on('input','#id_amount',function(){$('.preset-amount').prop('checked',!1);$('.preset-label').removeClass('focus active')});$(document).on('change','.preset-amount',function(){$('#id_amount').val('')})
-$("input.preset-amount").on("change",function(){$("input.preset-amount").not(this).prop("checked",!1);$("label.preset-label").not(this).removeClass("active")})
+$(document).on('input','#id_amount',function(){$('.preset-amount').prop('checked',!1);$('.preset-label').removeClass('focus active')});$(document).on('change','.preset-amount',function(){var amount = $(this).val();$('#id_amount').val(amount)});$("input.preset-amount").on("change",function(){$("input.preset-amount").not(this).prop("checked",!1);$("label.preset-label").not(this).removeClass("active")})

@@ -11,13 +11,30 @@
 {% block body_content %}
     <div class="row">
         <div class="col-12 mt-4 mb-3">
-            <h1>Create a Page</h1>
+            <div class="row">
+                <div class="col-sm-auto">
+                    <h1>Create a Page</h1>
+                </div>
+                <div id="stripe-logo-page-create-account" class="col-sm-auto align-self-center">
+                    <img src="{% static 'img/powered_by_stripe_sd.svg' %}">
+                </div>
+            </div>
             {% include "page/page_create_progress.html" %}
         </div>
     </div>
 
     <div class="row pb-5">
-        <div class="col-8">
+        <div class="col-lg-3 mb-3">
+            {% include "page/_page_create.html" %}
+        </div>
+        <div class="col-lg-9">
+
+            <div class="alert alert-info" role="alert">
+                <i class="fas fa-fw fa-info-circle"></i> This information will be used by our payment processor to deposit donations into your bank account.
+            </div>
+            <div class="alert alert-info" role="alert">
+                <i class="fas fa-fw fa-info-circle"></i> Payouts to your bank account occur every <span class="font-weight-bold">Monday</span>.
+            </div>
 
             {{ wizard.form.media }}
 
@@ -32,7 +49,7 @@
                 {% endif %}
 
                 <div class="form-row">
-                    <div class="form-group col-lg-3">
+                    <div class="form-group col-lg-4">
                         <label for="{{ form.ssn.id_for_label }}">
                             Last 4 digits of your SSN
                         </label>
@@ -47,7 +64,7 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-lg-4">
+                    <div class="form-group col-lg-6">
                         <label for="{{ form.account_number.id_for_label }}">
                            Bank account number
                         </label>
@@ -62,7 +79,7 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-lg-4">
+                    <div class="form-group col-lg-6">
                         <label for="{{ form.routing_number.id_for_label }}">
                             Bank routing number
                         </label>
@@ -77,9 +94,12 @@
                     </div>
                 </div>
 
-                <hr>
-                <button id="form-input" class="mb-3 btn btn-purple" type="submit">Create</button>
-                <button id="prev" class="mb-3 btn btn-outline-secondary" name="wizard_goto_step" value="{{ wizard.steps.prev }}">Back</button>
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <button id="prev" class="mb-3 btn btn-outline-secondary" name="wizard_goto_step" value="{{ wizard.steps.prev }}">Back</button>
+                        <button id="form-input" class="mb-3 btn btn-purple" type="submit">Create</button>
+                    </div>
+                </div>
             </form>
         </div>
     </div>

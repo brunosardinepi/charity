@@ -30,37 +30,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-2">
-
-                <fieldset>
-                    <h2 class="font-size-125"><legend>Filters</legend></h2>
-                    {% for k, v in categories.items %}
-                        <div class="form-check">
-                            <input class="form-check-input" name="filters[]" type="checkbox" id="{{ k }}" value="{{ k }}" />
-                            <label class="form-check-label" for="{{ k }}">{{ v }}</label>
-                        </div>
-                    {% endfor %}
-                </fieldset>
-
-                <div class="row mt-2">
-                    <div class="col-12">
-                        <a href="" id="checkall">Select all</a>
-                    </div>
-                </div>
-
-                <div class="row mt-5">
-                    <div class="col-12">
-                        <a href="" id="allPages">List all Pages</a>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <a href="" id="allCampaigns">List all Campaigns</a>
-                    </div>
-                </div>
-
-            </div>
-            <div class="col-lg-10">
+            <div class="col-lg-12">
                 <div id="results"></div>
             </div>
         </div>

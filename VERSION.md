@@ -3,6 +3,47 @@
 This is the version history for PageFund development.
 
 
+## Version 0.32.0
+
+Release date: TBD
+
+### Additions
+
+* #482 -- Social Accounts description
+* #479 -- commas on dollar amounts for readability
+* #475 -- Twitter handle on Features
+* #455 -- metadata description on Home
+* #419 -- powered by Stripe badge
+* #483 -- "how to donate" on "how it works" section
+* #467 -- information about who can see the dashboard
+* #452 -- flip Page banner on mobile
+* #418 -- descriptions on Page creation form steps
+* #481 -- Stripe payout schedule information visible to Page owners and/or managers
+* #470 -- jquery validation on Campaign Create form so we don't lose the selected Page
+* #464 -- table of contents on Page creation form
+* #430 -- creating a monthly donation with a new card will automatically save the new card for the recurring subscription
+
+### Changes
+
+* #480 -- Notifications description
+* #477 -- invitation clarification
+* #474 -- new window for Terms of Service
+* #471 -- "Add vote participant" button text
+* #469 -- save card by default
+* #465 -- removed "list all" options on Search
+* #450 -- User profile design
+* Swapped the "continue" and "back" button location on Page creation form steps
+* Home page doesn't scroll and information is moved to a separate About page
+* #280 -- content on About and Create
+* #463 -- preset donate amounts fill in the custom donate amount text input 
+* Create page moved to a single banner
+* #488 -- Page/Campaign information moved to icons with tooltips
+
+### Fixes
+
+* #453 -- monthly donations failing
+
+
 ## Version 0.31.0
 
 Release date: 02/19/2018
@@ -102,14 +143,14 @@ Release date: 02/09/2018
 
 ### Fixes
 
-* #420 donation error: existing cards, adding a new card, saving new card
-* #421 donation error: miscommunication between saved cards and new card
-* #422 donation error: creating a monthly donation when the user already has a monthly donation for that page
-* #423 donation error: hide overlay until donation is being processed so errors will still show up
-* #424 donation error: detecting if a payment method is being used
-* #426 campaign error: goal can't be negative
-* #428 donation error: admin emails for donations for unauthenticated users
-* #401 page error: delete the page on our end is ok if there is a balance in stripe
+* #420 -- existing cards, adding a new card, saving new card
+* #421 -- miscommunication between saved cards and new card
+* #422 -- creating a monthly donation when the user already has a monthly donation for that page
+* #423 -- hide overlay until donation is being processed so errors will still show up
+* #424 -- detecting if a payment method is being used
+* #426 -- goal can't be negative
+* #428 -- admin emails for donations for unauthenticated users
+* #401 -- delete the page on our end is ok if there is a balance in stripe
 
 
 ## Version 0.28.6

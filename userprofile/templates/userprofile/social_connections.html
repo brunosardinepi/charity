@@ -8,7 +8,7 @@
     {% include "messages.html" %}
 
     <div class="row">
-        <div class="col-lg-3">
+        <div class="col-lg-3 mb-3">
             {% include "userprofile/profile_menu.html" %}
         </div>
         <div class="col-lg-9">
@@ -47,7 +47,7 @@
                         </form>
                     
                     {% else %}
-                        <p>You currently have no social network accounts connected to this account.</p>
+                        <p>You currently have no social network accounts connected to your PageFund account.</p>
                     {% endif %}
                 </div>
             </div>
@@ -56,9 +56,8 @@
                 <div class="col-12">
                     <h2>Add a social account</h2>
                     <hr>
-                    
+                    <p>Link your social media accounts so they can be used to login to your PageFund account.</p>                    
                     {% include "socialaccount/snippets/provider_list.html" with process="connect" %}
-                    
                     {% include "socialaccount/snippets/login_extra.html" %}
                 </div>
             </div>

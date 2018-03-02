@@ -272,7 +272,7 @@ class PageTest(TestCase):
 
         response = self.client.get('/%s/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Manage", status_code=200)
+        self.assertContains(response, "Page settings", status_code=200)
 
         response = self.client.get('/%s/manage/admin/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
@@ -282,7 +282,7 @@ class PageTest(TestCase):
         response = self.client.get('/%s/' % self.page.page_slug)
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Manage")
+        self.assertContains(response, "Page settings")
 
         response = self.client.get('/%s/manage/admin/' % self.page.page_slug)
         self.assertEqual(response.status_code, 200)
@@ -333,16 +333,16 @@ class PageTest(TestCase):
         request.user = self.user2
         response = views.page(request, self.page.page_slug)
 
-        self.assertContains(response, 'name="subscribe"', status_code=200)
+        self.assertContains(response, 'Subscribe', status_code=200)
 
     def test_page_subscribed(self):
         self.client.login(username='newguy', password='imnewhere')
         response = self.client.get('/%s/' % self.page.page_slug)
-        self.assertContains(response, 'name="unsubscribe"', status_code=200)
+        self.assertContains(response, 'Unsubscribe', status_code=200)
 
     def test_page_subscribe_redirect(self):
-        response = self.client.get('/page/subscribe/%s/subscribe/' % self.page.pk)
-        self.assertRedirects(response, '/accounts/login/?next=/page/subscribe/%s/subscribe/' % self.page.pk, 302, 200)
+        response = self.client.get('/page/subscribe/{}/'.format(self.page.pk))
+        self.assertRedirects(response, '/accounts/login/?next=/page/subscribe/{}/'.format(self.page.pk), 302, 200)
 
     def test_page_create_logged_out(self):
         response = self.client.get('/create/page/')
@@ -354,46 +354,46 @@ class PageTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         data = {
-            'business-name': "My Test Page",
-            'business-address_line1': "123 Main St.",
-            'business-city': "Houston",
-            'business-state': "TX",
-            'business-zipcode': "77008",
-            'business-type': "nonprofit",
-            'business-category': "other",
-            'business-website': "test.com",
-            'business-tos_accepted': True,
-            'page_wizard-current_step': 'business',
+            'Organization-name': "My Test Page",
+            'Organization-address_line1': "123 Main St.",
+            'Organization-city': "Houston",
+            'Organization-state': "TX",
+            'Organization-zipcode': "77008",
+            'Organization-type': "nonprofit",
+            'Organization-category': "other",
+            'Organization-website': "test.com",
+            'Organization-tos_accepted': True,
+            'page_wizard-current_step': 'Organization',
         }
         response = self.client.post('/create/page/', data)
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'This field is required.')
 
         data = {
-            'personal-first_name': "Myname",
-            'personal-last_name': "Iswhat",
-            'personal-birthday_month': '6',
-            'personal-birthday_day': '14',
-            'personal-birthday_year': '1990',
-            'page_wizard-current_step': 'personal',
+            'Personal-first_name': "Myname",
+            'Personal-last_name': "Iswhat",
+            'Personal-birthday_month': '6',
+            'Personal-birthday_day': '14',
+            'Personal-birthday_year': '1990',
+            'page_wizard-current_step': 'Personal',
         }
         response = self.client.post('/create/page/', data)
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'This field is required.')
 
         data = {
-            'ein-ein': "000000001",
-            'page_wizard-current_step': 'ein',
+            'EIN-ein': "000000001",
+            'page_wizard-current_step': 'EIN',
         }
         response = self.client.post('/create/page/', data)
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'This field is required.')
 
         data = {
-            'account-ssn': "0000",
-            'account-account_number': "000123456789",
-            'account-routing_number': "111111100",
-            'page_wizard-current_step': 'account',
+            'Bank-ssn': "0000",
+            'Bank-account_number': "000123456789",
+            'Bank-routing_number': "111111100",
+            'page_wizard-current_step': 'Bank',
         }
         response = self.client.post('/create/page/', data)
         self.assertRedirects(response, '/mytestpage/', 302, 200)
