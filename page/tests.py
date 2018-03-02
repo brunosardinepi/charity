@@ -348,7 +348,7 @@ class PageTest(TestCase):
         response = self.client.get('/create/page/')
         self.assertRedirects(response, '/accounts/login/?next=/create/page/', 302, 200)
 
-    def test_page_create_logged_in(self):
+    def test_page_create_ein_logged_in(self):
         self.client.login(username='testuser', password='testpassword')
         response = self.client.get('/create/page/')
         self.assertEqual(response.status_code, 200)
@@ -384,6 +384,48 @@ class PageTest(TestCase):
         data = {
             'EIN-ein': "000000001",
             'page_wizard-current_step': 'EIN',
+        }
+        response = self.client.post('/create/page/', data)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'This field is required.')
+
+        data = {
+            'Bank-ssn': "0000",
+            'Bank-account_number': "000123456789",
+            'Bank-routing_number': "111111100",
+            'page_wizard-current_step': 'Bank',
+        }
+        response = self.client.post('/create/page/', data)
+        self.assertRedirects(response, '/mytestpage/', 302, 200)
+
+    def test_page_create_no_ein_logged_in(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/create/page/')
+        self.assertEqual(response.status_code, 200)
+
+        data = {
+            'Organization-name': "My Test Page",
+            'Organization-address_line1': "123 Main St.",
+            'Organization-city': "Houston",
+            'Organization-state': "TX",
+            'Organization-zipcode': "77008",
+            'Organization-type': "other",
+            'Organization-category': "other",
+            'Organization-website': "test.com",
+            'Organization-tos_accepted': True,
+            'page_wizard-current_step': 'Organization',
+        }
+        response = self.client.post('/create/page/', data)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'This field is required.')
+
+        data = {
+            'Personal-first_name': "Myname",
+            'Personal-last_name': "Iswhat",
+            'Personal-birthday_month': '6',
+            'Personal-birthday_day': '14',
+            'Personal-birthday_year': '1990',
+            'page_wizard-current_step': 'Personal',
         }
         response = self.client.post('/create/page/', data)
         self.assertEqual(response.status_code, 200)

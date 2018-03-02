@@ -97,7 +97,7 @@ def get_client_ip(request):
 
 def show_message_form_condition(wizard):
     # try to get the cleaned data of step 0
-    cleaned_data = wizard.get_cleaned_data_for_step('business') or {}
+    cleaned_data = wizard.get_cleaned_data_for_step('Organization') or {}
     # check if type is nonprofit
     return cleaned_data.get('type') == 'nonprofit'
 

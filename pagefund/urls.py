@@ -51,7 +51,7 @@ urlpatterns = [
     url(r'^page/subscribe/(?P<page_pk>\d+)/$', PageViews.subscribe, name='subscribe'),
     url(r'^create/page/$', login_required(PageViews.PageWizard.as_view(
         FORMS,
-        condition_dict={ 'ein': PageViews.show_message_form_condition })),
+        condition_dict={ 'EIN': PageViews.show_message_form_condition })),
         name='page_create'),
     url(r'^(?P<page_slug>[\w-]+)/edit/bank/$', login_required(PageViews.PageEditBankInfo.as_view()), name='page_edit_bank_info'),
     url(r'^(?P<page_slug>[\w-]+)/edit/$', PageViews.page_edit, name='page_edit'),

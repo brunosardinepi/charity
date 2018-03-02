@@ -3,6 +3,23 @@
 This is the version history for PageFund development.
 
 
+## Version 1.0.1
+
+Release date: 03/01/2018
+
+### Additions
+
+* None
+
+### Changes
+
+* None
+
+### Fixes
+
+* #490 -- EIN on Page creation form wasn't showing conditionally on Nonprofit type
+
+
 ## Version 1.0.0
 
 Release date: 03/01/2018
