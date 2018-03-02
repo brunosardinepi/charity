@@ -48,21 +48,6 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
 
         if not campaign.type == "vote":
             donate_form = BaseDonate()
-            if request.user.is_authenticated:
-                try:
-                    cards = get_user_credit_cards(request.user.userprofile)
-                    template_params["cards"] = cards
-                except Exception as e:
-                    template_params["stripe_error"] = True
-                    error = {
-                        "e": e,
-                        "user": request.user.pk,
-                        "page": campaign.page.pk,
-                        "campaign": campaign.pk,
-                    }
-                    error_email(error)
-            else:
-                user_subscription_check = None
         else:
             donate_form = None
 
@@ -72,9 +57,9 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
             user_subscription_check = None
 
         if user_subscription_check:
-            subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe", "color": "red"}
+            subscribed = True
         else:
-            subscribe_attr = {"name": "subscribe", "value": "Subscribe", "color": "green"}
+            subscribed = False
 
         if request.method == "POST":
             utils.update_manager_permissions(request.POST.getlist('permissions[]'), campaign)
@@ -82,7 +67,7 @@ def campaign(request, page_slug, campaign_pk, campaign_slug):
         template_params["campaign"] = campaign
         template_params["donate_form"] = donate_form
         template_params["api_pk"] = config.settings['stripe_api_pk']
-        template_params["subscribe_attr"] = subscribe_attr
+        template_params["subscribed"] = subscribed
         return render(request, 'campaign/campaign.html', template_params)
     else:
         return redirect('notes:error_campaign_does_not_exist')
@@ -394,19 +379,15 @@ class CampaignDonate(View):
 @login_required
 def subscribe(request, campaign_pk, action=None):
     campaign = get_object_or_404(Campaign, pk=campaign_pk)
-    if action == "subscribe":
-        campaign.campaign_subscribers.add(request.user.userprofile)
-        new_subscribe_attr = {"name": "unsubscribe", "value": "Unsubscribe", "color": "red"}
-    elif action == "unsubscribe":
+
+    if request.user.userprofile in campaign.campaign_subscribers.all():
         campaign.campaign_subscribers.remove(request.user.userprofile)
-        new_subscribe_attr = {"name": "subscribe", "value": "Subscribe", "color": "green"}
-    previous_page = request.META.get('HTTP_REFERER')
-    expected_url = "/accounts/login/?next=/campaign/subscribe/"
-    if expected_url in previous_page:
-        return HttpResponseRedirect(campaign.get_absolute_url())
+        messages.success(request, 'You are now unsubscribed from this Campaign', fail_silently=True)
     else:
-        new_subscribe_attr = json.dumps(new_subscribe_attr)
-        return HttpResponse(new_subscribe_attr)
+        campaign.campaign_subscribers.add(request.user.userprofile)
+        messages.success(request, 'You are now subscribed to this Campaign', fail_silently=True)
+
+    return HttpResponseRedirect(campaign.get_absolute_url())
 
 class CampaignAjaxDonations(View):
     def post(self, request):
