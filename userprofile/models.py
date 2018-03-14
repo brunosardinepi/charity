@@ -173,6 +173,12 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
 
+        date = timezone.now().strftime("%Y-%m-%d %I:%M:%S %Z")
+        email("gn9012@gmail.com", "blank", "blank", "admin_new_user_signup", {
+            '-email-': instance.email,
+            '-date-': date,
+        })
+
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.userprofile.save()
@@ -202,12 +208,6 @@ def email_confirmed_(request, email_address, **kwargs):
         response = sg.client.contactdb.recipients.post(request_body=data)
 
     email(user.email, "blank", "blank", "new_user_signup", {})
-
-    date = timezone.now().strftime("%Y-%m-%d %I:%M:%S %Z")
-    email("gn9012@gmail.com", "blank", "blank", "admin_new_user_signup", {
-        '-email-': user.email,
-        '-date-': date,
-    })
 
 def create_random_string(length=30):
     if length <= 0:

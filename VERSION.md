@@ -14,6 +14,7 @@ Release date: 03/20/2018
 ### Changes
 
 * #486 -- removed old code for Search filters
+* #504 -- admin email for user signup on user account creation instead of user account verification
 
 ### Fixes
 
