@@ -3,6 +3,23 @@
 This is the version history for PageFund development.
 
 
+## Version 1.1.0
+
+Release date: 03/20/2018
+
+### Additions
+
+* None
+
+### Changes
+
+* #486 -- removed old code for Search filters
+
+### Fixes
+
+* None
+
+
 ## Version 1.0.1
 
 Release date: 03/01/2018
