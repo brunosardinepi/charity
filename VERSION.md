@@ -15,6 +15,7 @@ Release date: 03/20/2018
 
 * #486 -- removed old code for Search filters
 * #504 -- admin email for user signup on user account creation instead of user account verification
+* #410 -- removed search bar on Campaign creation if coming straight from a Page
 
 ### Fixes
 

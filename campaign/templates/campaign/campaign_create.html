@@ -13,41 +13,42 @@
 {% endblock %}
 
 {% block body_content %}
-    <div class="row mt-4 mb-3">
-        <div class="col-12 text-center">
-            <h1>Which Page are you helping?</h1>
+    {% if page %}
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h1>New Campaign for: {{ page.name }}</h1>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-8 offset-2">
-            <form>
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="q" class="sr-only">Search for Pages</label>
-                    <input id="q" type="text" class="form-control form-control-lg" placeholder="Search for Pages">
-                </div>
-            </form>
+    {% else %}
+        <div class="row mt-4 mb-3">
+            <div class="col-12 text-center">
+                <h1>Which Page are you helping?</h1>
+            </div>
         </div>
-    </div>
+        <div class="row">
+            <div class="col-8 offset-2">
+                <form>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="q" class="sr-only">Search for Pages</label>
+                        <input id="q" type="text" class="form-control form-control-lg" placeholder="Search for Pages">
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
     <div class="row pb-5">
         <div class="col-12">
             <form id="create-campaign" action="{% url 'campaign_create' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
-                <div id="results" class="mb-5">
-                    {% if page %}
-                        <div class="row mb-4">
-                            <div class="col-md-10 offset-md-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="page" value="{{ page.pk }}" id="page{{ page.pk }}" checked>
-                                    <label class="form-check-label" for="page{{ page.pk }}">
-                                        <a class="pr-3" href="{% url 'page' page_slug=page.page_slug %}">{{ page.name }}</a>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
+                {% if page %}
+                    <input type="hidden" name="page" value="{{ page.pk }}">
+                {% else %}
+                    <div id="results" class="mb-5">
+                    </div>
+                {% endif %}
 
                 {% if form.non_field_errors %}
                     <div class="alert alert-danger" role="alert">
@@ -164,8 +165,11 @@
 {% endblock %}
 
 {% block body_extra %}
+    {% if not page %}
+        <script src="{% static 'js/campaign_search_pages.js' %}"></script>
+    {% endif %}
+
     <script src="{% static 'js/comment_csrf.js' %}"></script>
-    <script src="{% static 'js/campaign_search_pages.js' %}"></script>
     <script src="{% static 'js/campaign_amount.js' %}"></script>
     <script src="{% static 'js/datepicker.js' %}"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>

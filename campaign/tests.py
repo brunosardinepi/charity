@@ -356,7 +356,7 @@ class CampaignTest(TestCase):
         response = self.client.get('/%s/campaign/create/' % self.page.page_slug)
         self.assertRedirects(response, '/accounts/login/?next=/%s/campaign/create/' % self.page.page_slug, 302, 200)
 
-    def test_campaign_create_event_logged_in(self):
+    def test_campaign_create_general_logged_in(self):
         self.client.login(username='testuser', password='testpassword')
         response = self.client.get('/{}/campaign/create/'.format(self.page.page_slug))
         self.assertEqual(response.status_code, 200)
@@ -393,6 +393,12 @@ class CampaignTest(TestCase):
         self.assertEqual(models.Campaign.objects.filter(deleted=False).count(), 3)
         campaign = models.Campaign.objects.get(campaign_slug="mycampaign")
         self.assertRedirects(response, '/{}/{}/{}/vote/edit/'.format(campaign.page.page_slug, campaign.pk, campaign.campaign_slug), 302, 200)
+
+    def test_campaign_create_from_page(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get('/{}/campaign/create/'.format(self.page.page_slug))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "New Campaign for: {}".format(self.page.name))
 
     def test_campaignform(self):
         form = forms.CampaignForm({
