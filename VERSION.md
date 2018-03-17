@@ -9,7 +9,7 @@ Release date: 03/20/2018
 
 ### Additions
 
-* None
+* #507 -- information about who makes the Top Donor list
 
 ### Changes
 

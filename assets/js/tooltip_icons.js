@@ -1,1 +1,1 @@
-$(function(){$('[data-toggle="tooltip"]').tooltip({'trigger':'hover focus','placement':'bottom',})})
+$(function(){$('.page-icons').tooltip({'trigger':'hover focus','placement':'bottom',})})

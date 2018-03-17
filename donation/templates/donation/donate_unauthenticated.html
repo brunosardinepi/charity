@@ -13,6 +13,10 @@
     {% endif %}
 </div>
 
+<div class="alert alert-info" role="alert">
+    If you'd like your name to show up on the <span class="font-weight-bold">Top Donors</span> list, please <a href="{% url 'login' %}">login</a>.
+</div>
+
 <div class="row">
     <div class="col-lg-12">
         <h2>Donate</h2>
@@ -29,7 +33,7 @@
 {% else %}
 
     {% if page %}
-        <form action="{% url 'page_donate' page_slug=page.page_slug %}" method="post" id="payment-form">
+        <form action="{% url 'page_donate' page_slug=page.page_slug %}" method="post" id="payment-form" class="pb-5">
     {% elif campaign %}
         {% if campaign.type == "vote" %}
             <form action="{% url 'campaign_donate' page_slug=campaign.page.page_slug campaign_pk=campaign.pk campaign_slug=campaign.campaign_slug vote_participant_pk=vote_participant.pk %}" method="post" id="payment-form">
