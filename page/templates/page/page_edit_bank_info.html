@@ -24,7 +24,7 @@
                 </div>
             </div>
             <hr class="mt-2">
-
+            {% include "messages.html" %}
             {% if page.stripe_verified == 'True' %}
                 <div class="alert alert-info" role="alert">
                     <i class="fas fa-fw fa-info-circle"></i> Payouts to your bank account occur every <span class="font-weight-bold">Monday</span>.

@@ -43,12 +43,7 @@ def campaign_average_duration(page):
     campaigns = Campaign.objects.filter(page=page, is_active=False, deleted=False)
     durations = []
     for c in campaigns:
-        # find how much money the campaign raised
-#        donation_money = c.donation_money()
-        # check if the campaign met its goal
-#        if donation_money is not None and donation_money > c.goal:
-            # find this campaign's duration
-#            durations.append(campaign_duration(c))
+        # find this campaign's duration
         durations.append(campaign_duration(c))
     # find the average duration
     if len(durations) > 0:

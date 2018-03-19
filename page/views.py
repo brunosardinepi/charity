@@ -46,6 +46,15 @@ TEMPLATES = {"Organization": "page/page_create_business.html",
              "EIN": "page/page_create_ein.html",
              "Bank": "page/page_create_account.html"}
 
+def stripe_unverified(request, page):
+    if request.user.is_authenticated():
+        if request.user.userprofile in page.admins.all() or request.user.userprofile in page.managers.all():
+            return redirect('page_edit_bank_info', page_slug=page.page_slug)
+        else:
+            return redirect('notes:error_page_does_not_exist')
+    else:
+        return redirect('notes:error_page_does_not_exist')
+
 def page(request, page_slug):
     try:
         page = Page.objects.get(page_slug=page_slug)
@@ -77,13 +86,7 @@ def page(request, page_slug):
             template_params["api_pk"] = config.settings['stripe_api_pk']
             return render(request, 'page/page.html', template_params)
         else:
-            if request.user.is_authenticated():
-                if request.user.userprofile in page.admins.all() or request.user.userprofile in page.managers.all():
-                    return redirect('page_edit_bank_info', page_slug=page.page_slug)
-                else:
-                    return redirect('notes:error_page_does_not_exist')
-            else:
-                return redirect('notes:error_page_does_not_exist')
+            return stripe_unverified(request, page)
     else:
         return redirect('notes:error_page_does_not_exist')
 
@@ -317,49 +320,64 @@ class PageEditBankInfo(View):
 @login_required
 def page_edit(request, page_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
-    if utils.has_dashboard_access(request.user, page, 'manager_edit'):
-        form = forms.PageEditForm(instance=page)
-        if request.method == 'POST':
-            form = forms.PageEditForm(instance=page, data=request.POST)
-            if form.is_valid():
-                form.save()
-                messages.success(request, 'Page updated', fail_silently=True)
-                return redirect('page_dashboard_admin', page_slug=page.page_slug)
+
+    if page.deleted == False:
+        if page.stripe_verified == True:
+            if utils.has_dashboard_access(request.user, page, 'manager_edit'):
+                form = forms.PageEditForm(instance=page)
+                if request.method == 'POST':
+                    form = forms.PageEditForm(instance=page, data=request.POST)
+                    if form.is_valid():
+                        form.save()
+                        messages.success(request, 'Page updated', fail_silently=True)
+                        return redirect('page_dashboard_admin', page_slug=page.page_slug)
+            else:
+                return redirect('notes:error_permissions')
+        else:
+            return stripe_unverified(request, page)
     else:
-        return redirect('notes:error_permissions')
+        return redirect('notes:error_page_does_not_exist')
+
     return render(request, 'page/page_edit.html', {'page': page, 'form': form})
 
 @login_required
 def page_delete(request, page_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
-    if utils.has_dashboard_access(request.user, page, 'manager_delete'):
-        page.deleted = True
-        page.deleted_by = request.user
-        page.deleted_on = timezone.now()
-        page.name = page.name + "_deleted_" + timezone.now().strftime("%Y%m%d")
-        page.page_slug = page.page_slug + "deleted" + timezone.now().strftime("%Y%m%d")
-        page.save()
 
-        campaigns = Campaign.objects.filter(page=page, deleted=False)
-        if campaigns:
-            for c in campaigns:
-                c.deleted = True
-                c.deleted_by = request.user
-                c.deleted_on = timezone.now()
-                c.name = c.name + "_deleted_" + timezone.now().strftime("%Y%m%d")
-                c.campaign_slug = c.campaign_slug + "deleted" + timezone.now().strftime("%Y%m%d")
-                c.save()
+    if page.deleted == False:
+        if page.stripe_verified == True:
+            if utils.has_dashboard_access(request.user, page, 'manager_delete'):
+                page.deleted = True
+                page.deleted_by = request.user
+                page.deleted_on = timezone.now()
+                page.name = page.name + "_deleted_" + timezone.now().strftime("%Y%m%d")
+                page.page_slug = page.page_slug + "deleted" + timezone.now().strftime("%Y%m%d")
+                page.save()
 
-        if not settings.TESTING:
-            try:
-                account = stripe.Account.retrieve(page.stripe_account_id)
-                account.delete()
-            except stripe.error.InvalidRequestError:
-                pass
+                campaigns = Campaign.objects.filter(page=page, deleted=False)
+                if campaigns:
+                    for c in campaigns:
+                        c.deleted = True
+                        c.deleted_by = request.user
+                        c.deleted_on = timezone.now()
+                        c.name = c.name + "_deleted_" + timezone.now().strftime("%Y%m%d")
+                        c.campaign_slug = c.campaign_slug + "deleted" + timezone.now().strftime("%Y%m%d")
+                        c.save()
 
-        return HttpResponseRedirect(reverse('home'))
+                if not settings.TESTING:
+                    try:
+                        account = stripe.Account.retrieve(page.stripe_account_id)
+                        account.delete()
+                    except stripe.error.InvalidRequestError:
+                        pass
+
+                return HttpResponseRedirect(reverse('home'))
+            else:
+                return redirect('notes:error_permissions')
+        else:
+            return stripe_unverified(request, page)
     else:
-        return redirect('notes:error_permissions')
+        return redirect('notes:error_page_does_not_exist')
 
 @login_required
 def subscribe(request, page_pk, action=None):
@@ -377,58 +395,68 @@ def subscribe(request, page_pk, action=None):
 @login_required
 def page_invite(request, page_slug):
     page = get_object_or_404(Page, page_slug=page_slug)
-    if utils.has_dashboard_access(request.user, page, 'manager_invite'):
-        form = forms.ManagerInviteForm()
-        if request.method == 'POST':
-            form = forms.ManagerInviteForm(request.POST)
-            if form.is_valid():
 
-                # check if the person we are inviting is already a manager/admin
-                try:
-                    user = User.objects.get(email=form.cleaned_data['email'])
-                    if user.userprofile in page.admins.all() or user.userprofile in page.managers.all():
-                        return redirect('notes:error_invite_manager_exists')
-                except User.DoesNotExist:
-                    pass
-
-                data = {
-                    "request": request,
-                    "form": form,
-                    "page": page,
-                    "campaign": None
-                }
-
-                status = invite(data)
-                if status == True:
-                    messages.success(request, 'Invitation sent', fail_silently=True)
-                    # redirect the admin/manager to the Page
-                    return redirect('page_dashboard_admin', page_slug=page.page_slug)
-        return render(request, 'page/page_invite.html', {'form': form, 'page': page})
-    # the user isn't an admin or a manager, so they can't invite someone
-    # the only way someone got here was by typing the url manually
+    if page.deleted == False:
+        if page.stripe_verified == True:
+            if utils.has_dashboard_access(request.user, page, 'manager_invite'):
+                form = forms.ManagerInviteForm()
+                if request.method == 'POST':
+                    form = forms.ManagerInviteForm(request.POST)
+                    if form.is_valid():
+                        # check if the person we are inviting is already a manager/admin
+                        try:
+                            user = User.objects.get(email=form.cleaned_data['email'])
+                            if user.userprofile in page.admins.all() or user.userprofile in page.managers.all():
+                                return redirect('notes:error_invite_manager_exists')
+                        except User.DoesNotExist:
+                            pass
+                        data = {
+                            "request": request,
+                            "form": form,
+                            "page": page,
+                            "campaign": None
+                        }
+                        status = invite(data)
+                        if status == True:
+                            messages.success(request, 'Invitation sent', fail_silently=True)
+                            # redirect the admin/manager to the Page
+                            return redirect('page_dashboard_admin', page_slug=page.page_slug)
+                return render(request, 'page/page_invite.html', {'form': form, 'page': page})
+            # the user isn't an admin or a manager, so they can't invite someone
+            # the only way someone got here was by typing the url manually
+            else:
+                return redirect('notes:error_permissions')
+        else:
+            return stripe_unverified(request, page)
     else:
-        return redirect('notes:error_permissions')
+        return redirect('notes:error_page_does_not_exist')
 
 @login_required
 def remove_manager(request, page_slug, manager_pk):
     page = get_object_or_404(Page, page_slug=page_slug)
     manager = get_object_or_404(User, pk=manager_pk)
-    # only page admins can remove managers
-    if request.user.userprofile in page.admins.all() or manager == request.user:
-        # remove the manager
-        page.managers.remove(manager.userprofile)
-        # revoke the permissions
-        remove_perm('manager_edit', manager, page)
-        remove_perm('manager_delete', manager, page)
-        remove_perm('manager_invite', manager, page)
-        remove_perm('manager_image_edit', manager, page)
-        remove_perm('manager_view_dashboard', manager, page)
 
-        messages.success(request, 'Manager removed', fail_silently=True)
-        # redirect to page admin
-        return redirect('page_dashboard_admin', page_slug=page.page_slug)
+    if page.deleted == False:
+        if page.stripe_verified == True:
+            # only page admins can remove managers
+            if request.user.userprofile in page.admins.all() or manager == request.user:
+                # remove the manager
+                page.managers.remove(manager.userprofile)
+                # revoke the permissions
+                remove_perm('manager_edit', manager, page)
+                remove_perm('manager_delete', manager, page)
+                remove_perm('manager_invite', manager, page)
+                remove_perm('manager_image_edit', manager, page)
+                remove_perm('manager_view_dashboard', manager, page)
+                messages.success(request, 'Manager removed', fail_silently=True)
+                # redirect to page admin
+                return redirect('page_dashboard_admin', page_slug=page.page_slug)
+            else:
+                return redirect('notes:error_permissions')
+        else:
+            return stripe_unverified(request, page)
     else:
-        return redirect('notes:error_permissions')
+        return redirect('notes:error_page_does_not_exist')
 
 class PageDonate(View):
     def get(self, request, page_slug):
@@ -535,35 +563,47 @@ class PageAjaxDonations(View):
 class PageDashboardAnalytics(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        if utils.has_dashboard_access(request.user, page, 'manager_view_dashboard'):
-            graph = donation_graph(page, 30)
-            graph_dates = []
-            graph_donations = []
-            for k, v in graph.items():
-                graph_dates.append(k.strftime('%b %-d'))
-                graph_donations.append(int(v/100))
-            graph_dates = list(reversed(graph_dates))
-            graph_donations = list(reversed(graph_donations))
-            return render(self.request, 'page/dashboard_analytics.html', {
-                'page': page,
-                'donations': donation_statistics(page),
-                'graph_dates': graph_dates,
-                'graph_donations': graph_donations,
-            })
+        if page.deleted == False:
+            if page.stripe_verified == True:
+                if utils.has_dashboard_access(request.user, page, 'manager_view_dashboard'):
+                    graph = donation_graph(page, 30)
+                    graph_dates = []
+                    graph_donations = []
+                    for k, v in graph.items():
+                        graph_dates.append(k.strftime('%b %-d'))
+                        graph_donations.append(int(v/100))
+                    graph_dates = list(reversed(graph_dates))
+                    graph_donations = list(reversed(graph_donations))
+                    return render(self.request, 'page/dashboard_analytics.html', {
+                        'page': page,
+                        'donations': donation_statistics(page),
+                        'graph_dates': graph_dates,
+                        'graph_donations': graph_donations,
+                    })
+                else:
+                    return redirect('notes:error_permissions')
+            else:
+                return stripe_unverified(request, page)
         else:
-            return redirect('notes:error_permissions')
+            return redirect('notes:error_page_does_not_exist')
 
 class PageDashboardAdmin(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        invitations = ManagerInvitation.objects.filter(page=page, expired=False)
-        if utils.has_dashboard_access(request.user, page, None):
-            return render(self.request, 'page/dashboard_admin.html', {
-                'page': page,
-                'invitations': invitations,
-            })
+        if page.deleted == False:
+            if page.stripe_verified == True:
+                invitations = ManagerInvitation.objects.filter(page=page, expired=False)
+                if utils.has_dashboard_access(request.user, page, None):
+                    return render(self.request, 'page/dashboard_admin.html', {
+                        'page': page,
+                        'invitations': invitations,
+                    })
+                else:
+                    return redirect('notes:error_permissions')
+            else:
+                return stripe_unverified(request, page)
         else:
-            return redirect('notes:error_permissions')
+            return redirect('notes:error_page_does_not_exist')
 
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
@@ -574,39 +614,57 @@ class PageDashboardAdmin(View):
 class PageDashboardDonations(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        if utils.has_dashboard_access(request.user, page, 'manager_view_dashboard'):
-            return render(self.request, 'page/dashboard_donations.html', {
-                'page': page,
-                'donations': donation_statistics(page),
-            })
+        if page.deleted == False:
+            if page.stripe_verified == True:
+                if utils.has_dashboard_access(request.user, page, 'manager_view_dashboard'):
+                    return render(self.request, 'page/dashboard_donations.html', {
+                        'page': page,
+                        'donations': donation_statistics(page),
+                    })
+                else:
+                    return redirect('notes:error_permissions')
+            else:
+                return stripe_unverified(request, page)
         else:
-            return redirect('notes:error_permissions')
+            return redirect('notes:error_page_does_not_exist')
 
 class PageDashboardCampaigns(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        if utils.has_dashboard_access(request.user, page, 'manager_view_dashboard'):
-            return render(self.request, 'page/dashboard_campaigns.html', {
-                'page': page,
-                'donations': donation_statistics(page),
-                'campaign_types': campaign_types(page),
-                'campaign_average_duration': campaign_average_duration(page),
-                'campaign_success_pct': campaign_success_pct(page),
-            })
+        if page.deleted == False:
+            if page.stripe_verified == True:
+                if utils.has_dashboard_access(request.user, page, 'manager_view_dashboard'):
+                    return render(self.request, 'page/dashboard_campaigns.html', {
+                        'page': page,
+                        'donations': donation_statistics(page),
+                        'campaign_types': campaign_types(page),
+                        'campaign_average_duration': campaign_average_duration(page),
+                        'campaign_success_pct': campaign_success_pct(page),
+                    })
+                else:
+                    return redirect('notes:error_permissions')
+            else:
+                return stripe_unverified(request, page)
         else:
-            return redirect('notes:error_permissions')
+            return redirect('notes:error_page_does_not_exist')
 
 class PageDashboardImages(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
-            images = PageImage.objects.filter(page=page)
-            return render(self.request, 'page/dashboard_images.html', {
-                'page': page,
-                'images': images,
-            })
+        if page.deleted == False:
+            if page.stripe_verified == True:
+                if utils.has_dashboard_access(request.user, page, 'manager_image_edit'):
+                    images = PageImage.objects.filter(page=page)
+                    return render(self.request, 'page/dashboard_images.html', {
+                        'page': page,
+                        'images': images,
+                    })
+                else:
+                    return redirect('notes:error_permissions')
+            else:
+                return stripe_unverified(request, page)
         else:
-            return redirect('notes:error_permissions')
+            return redirect('notes:error_page_does_not_exist')
 
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
@@ -623,17 +681,23 @@ class PageDashboardImages(View):
 class PageCampaigns(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        campaigns = Campaign.objects.filter(page=page, is_active=True, deleted=False).order_by('end_date')
-        return render(self.request, 'page/page_campaigns_all.html', {
-            'page': page,
-            'campaigns': campaigns,
-        })
+        if page.deleted == False:
+            campaigns = Campaign.objects.filter(page=page, is_active=True, deleted=False).order_by('end_date')
+            return render(self.request, 'page/page_campaigns_all.html', {
+                'page': page,
+                'campaigns': campaigns,
+            })
+        else:
+            return redirect('notes:error_page_does_not_exist')
 
 class PageDonations(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
-        donations = Donation.objects.filter(page=page).order_by('-date')
-        return render(self.request, 'page/page_donations_all.html', {
-            'page': page,
-            'donations': donations,
-        })
+        if page.deleted == False:
+            donations = Donation.objects.filter(page=page).order_by('-date')
+            return render(self.request, 'page/page_donations_all.html', {
+                'page': page,
+                'donations': donations,
+            })
+        else:
+            return redirect('notes:error_page_does_not_exist')
