@@ -7,6 +7,8 @@ This is the version history for PageFund development.
 
 Release date: 03/20/2018
 
+18 files changed, 141 insertions(+), 165 deletions(-)
+
 ### Additions
 
 * #507 -- information about who makes the Top Donor list
