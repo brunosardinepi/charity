@@ -17,6 +17,7 @@ Release date: 03/20/2018
 * #504 -- admin email for user signup on user account creation instead of user account verification
 * #410 -- removed search bar on Campaign creation if coming straight from a Page
 * #508 -- changed Page/Campaign styling
+* #431 -- upgraded Stripe API to version 2018-02-28
 
 ### Fixes
 

@@ -230,3 +230,17 @@ def webhooks_test(request):
     # send test email
     email("gn9012@gmail.com", "blank", "blank", "admin_webhook_test", {})
     return HttpResponse(status=200)
+
+@require_POST
+@csrf_exempt
+def plan_deleted(request):
+    event_json = json.loads(request.body.decode('utf-8'))
+
+    # get the product id from the webhook json
+    product_id = event_json['data']['object']['product']
+
+    # delete the product in stripe
+    product = stripe.Product.retrieve(product_id)
+    product.delete()
+
+    return HttpResponse(status=200)
