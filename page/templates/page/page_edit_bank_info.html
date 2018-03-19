@@ -8,7 +8,11 @@
 {% block body_content %}
     <div class="row pb-5">
         <div class="col-lg-3">
-            {% include "page/dashboard_menu.html" %}
+            {% if page.stripe_verified == 'True' %}
+                {% include "page/dashboard_menu.html" %}
+            {% else %}
+                {% include "page/dashboard_menu_unverified.html" %}
+            {% endif %}
         </div>
         <div class="col-lg-9">
             <div class="row">
@@ -21,9 +25,16 @@
             </div>
             <hr class="mt-2">
 
-            <div class="alert alert-info" role="alert">
-                <i class="fas fa-fw fa-info-circle"></i> Payouts to your bank account occur every <span class="font-weight-bold">Monday</span>.
-            </div>
+            {% if page.stripe_verified == 'True' %}
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-fw fa-info-circle"></i> Payouts to your bank account occur every <span class="font-weight-bold">Monday</span>.
+                </div>
+            {% else %}
+                <div class="alert alert-danger" role="alert">
+                    <p><i class="fas fa-exclamation-triangle"></i> This Page is still waiting to clear our payment processor's verification process. We receive updates on this process every other minute. We'll show this Page to the public as soon as our payment processor has verified the account details for this Page. Please check back in a few minutes to see if this Page has been verified.</p>
+                    <p class="mb-0">If you have any questions or feel this is a mistake, please <a href="mailto:help@page.fund" class="alert-link">email us</a>.</p>
+                </div>
+            {% endif %}
 
             <form action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}

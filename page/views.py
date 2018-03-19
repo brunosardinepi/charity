@@ -79,7 +79,7 @@ def page(request, page_slug):
         else:
             if request.user.is_authenticated():
                 if request.user.userprofile in page.admins.all() or request.user.userprofile in page.managers.all():
-                    return render(request, 'page/page_unverified.html', {'page': page})
+                    return redirect('page_edit_bank_info', page_slug=page.page_slug)
                 else:
                     return redirect('notes:error_page_does_not_exist')
             else:
