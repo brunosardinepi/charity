@@ -44,7 +44,8 @@ stripe.api_key = config.settings['stripe_api_sk']
 TEMPLATES = {"Organization": "page/page_create_business.html",
              "Personal": "page/page_create_personal.html",
              "EIN": "page/page_create_ein.html",
-             "Bank": "page/page_create_account.html"}
+             "Bank": "page/page_create_account.html",
+             "Review": "page/page_create_review.html"}
 
 def stripe_unverified(request, page):
     if request.user.is_authenticated():
@@ -105,6 +106,12 @@ def show_message_form_condition(wizard):
     return cleaned_data.get('type') == 'nonprofit'
 
 class PageWizard(SessionWizardView):
+    def get_context_data(self, form, **kwargs):
+        context = super(PageWizard, self).get_context_data(form=form, **kwargs)
+        if self.steps.current == 'Review':
+            context.update({'all_data': self.get_all_cleaned_data()})
+        return context
+
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 

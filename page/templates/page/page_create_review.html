@@ -1,0 +1,174 @@
+{% extends '_layout.html' %}
+{% load static from staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+
+{% block meta %}
+    <meta name="description" content="Pages are fixed locations for anyone that is looking to raise extra funds for their cause. Use a Page to tell a story to the world, solicit direct donations, and post pictures, all in one place.">
+{% endblock %}
+
+{% block title %}Create | {{ block.super }}{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-12 mt-4 mb-3">
+            <h1>Create a Page</h1>
+            {% include "page/page_create_progress.html" %}
+        </div>
+    </div>
+
+    <div class="row pb-5">
+        <div class="col-lg-3 mb-3">
+            {% include "page/_page_create.html" %}
+        </div>
+        <div class="col-lg-9">
+
+            <div class="alert alert-info" role="alert">
+                <i class="fas fa-fw fa-info-circle"></i> Please review your Page and make sure the information is correct.
+            </div>
+
+            {{ wizard.form.media }}
+
+            <form id="create-form" action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ wizard.management_form }}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-md-3 font-weight-bold">
+                                Page name
+                            </div>
+                            <div class="col-md-9">
+                                {{ all_data.name }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 font-weight-bold">
+                                Type
+                            </div>
+                            <div class="col-md-9">
+                                {{ all_data.type|capfirst }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 font-weight-bold">
+                                Category
+                            </div>
+                            <div class="col-md-9">
+                                {{ all_data.category|capfirst }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 font-weight-bold">
+                                Description
+                            </div>
+                            <div class="col-md-9">
+                                {{ all_data.description|linebreaks }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 font-weight-bold">
+                                Address
+                            </div>
+                            <div class="col-md-9">
+                                {{ all_data.address_line1 }}
+                            </div>
+                        </div>
+                        {% if all_data.address_line2 %}
+                            <div class="row">
+                                <div class="col-md-3 font-weight-bold">
+                                    Address 2
+                                </div>
+                                <div class="col-md-9">
+                                    {{ all_data.address_line2 }}
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="row">
+                            <div class="col-md-3 font-weight-bold">
+                                City
+                            </div>
+                            <div class="col-md-9">
+                                {{ all_data.city }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 font-weight-bold">
+                                State
+                            </div>
+                            <div class="col-md-9">
+                                {{ all_data.state }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 font-weight-bold">
+                                Zipcode
+                            </div>
+                            <div class="col-md-9">
+                                {{ all_data.zipcode }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 font-weight-bold">
+                                First name
+                            </div>
+                            <div class="col-md-9">
+                                {{ all_data.first_name }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 font-weight-bold">
+                                Last name
+                            </div>
+                            <div class="col-md-9">
+                                {{ all_data.last_name }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 font-weight-bold">
+                                Last 4 of SSN
+                            </div>
+                            <div class="col-md-9">
+                                &bull;&bull;&bull;&bull;
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 font-weight-bold">
+                                Bank account number
+                            </div>
+                            <div class="col-md-9">
+                                {{ all_data.account_number }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 font-weight-bold">
+                                Bank routing number
+                            </div>
+                            <div class="col-md-9">
+                                {{ all_data.routing_number }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <button id="prev" class="mb-3 btn btn-outline-secondary" name="wizard_goto_step" value="{{ wizard.steps.prev }}">Back</button>
+                        <button id="form-input" class="mb-3 btn btn-purple" type="submit">Create</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_extra %}
+    <script src="{% static 'js/formwizard.js' %}"></script>
+{% endblock %}

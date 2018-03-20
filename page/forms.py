@@ -44,6 +44,9 @@ class PageForm4(forms.Form):
     account_number = forms.CharField(max_length=20)
     routing_number = forms.CharField(max_length=9)
 
+class PageForm5(forms.Form):
+    blank = forms.CharField(required=False, max_length=1)
+
 class PageEditForm(forms.ModelForm):
     class Meta:
         model = models.Page

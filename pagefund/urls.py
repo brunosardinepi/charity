@@ -9,14 +9,15 @@ from . import config
 from . import views
 from campaign import views as CampaignViews
 from invitations import views as InvitationsViews
-from page.forms import PageForm1, PageForm2, PageForm3, PageForm4
+from page.forms import PageForm1, PageForm2, PageForm3, PageForm4, PageForm5
 from page import views as PageViews
 
 
 FORMS = [("Organization", PageForm1),
          ("Personal", PageForm2),
          ("EIN", PageForm3),
-         ("Bank", PageForm4)]
+         ("Bank", PageForm4),
+         ("Review", PageForm5)]
 
 urlpatterns = [
     url(r'^{}/'.format(config.settings['admin']), admin.site.urls),
