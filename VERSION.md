@@ -13,6 +13,7 @@ Release date: 03/20/2018
 
 * #507 -- information about who makes the Top Donor list
 * #487 -- review Page details before creating Page
+* #277 -- Django Debug Toolbar
 
 ### Changes
 
