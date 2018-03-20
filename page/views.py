@@ -245,19 +245,34 @@ class PageEditBankInfo(View):
     def get(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
         if page.type == 'nonprofit':
-            form = forms.PageEditBankEINForm()
+            if page.stripe_verified == True:
+                form = forms.PageEditBankEINForm()
+            else:
+                form = forms.PageUnverifiedEditBankEINForm()
         else:
-            form = forms.PageEditBankForm()
-        return render(request, 'page/page_edit_bank_info.html', {'page': page, 'form': form})
+            if page.stripe_verified == True:
+                form = forms.PageEditBankForm()
+            else:
+                form = forms.PageUnverifiedEditBankForm()
+        if page.stripe_verified == True:
+            return render(request, 'page/page_edit_bank_info.html', {'page': page, 'form': form})
+        else:
+            return render(request, 'page/page_unverified_edit_bank_info.html', {'page': page, 'form': form})
 
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
         # if the page is a nonprofit,
         # we need their EIN
         if page.type == 'nonprofit':
-            form = forms.PageEditBankEINForm(request.POST)
+            if page.stripe_verified == True:
+                form = forms.PageEditBankEINForm(request.POST)
+            else:
+                form = forms.PageUnverifiedEditBankEINForm(request.POST)
         else:
-            form = forms.PageEditBankForm(request.POST)
+            if page.stripe_verified == True:
+                form = forms.PageEditBankForm(request.POST)
+            else:
+                form = forms.PageUnverifiedEditBankForm(request.POST)
         if form.is_valid():
             if not settings.TESTING:
 
@@ -270,8 +285,11 @@ class PageEditBankInfo(View):
                 # retrieve account from stripe
                 account = stripe.Account.retrieve(page.stripe_account_id)
                 # update stripe information
-                if account['legal_entity']['ssn_last_4_provided'] == False:
-                    account.legal_entity.ssn_last_4 = form.cleaned_data['ssn']
+                if page.stripe_verified == True:
+                    if account['legal_entity']['ssn_last_4_provided'] == False:
+                        account.legal_entity.ssn_last_4 = form.cleaned_data['ssn']
+                else:
+                    account.legal_entity.personal_id_number = form.cleaned_data['ssn']
                 if page.type == 'nonprofit':
                     account.legal_entity.business_tax_id = form.cleaned_data['ein']
 

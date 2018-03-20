@@ -1048,5 +1048,7 @@ class PageTest(TestCase):
 
         self.client.login(username='testuser', password='testpassword')
         response = self.client.get('/{}/'.format(self.page4.page_slug))
-        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, '/{}/edit/bank/'.format(self.page4.page_slug), 302, 200)
+
+        response = self.client.get('/{}/edit/bank/'.format(self.page4.page_slug))
         self.assertContains(response, "This Page is still waiting to clear our payment processor's verification process.")

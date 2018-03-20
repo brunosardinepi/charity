@@ -42,7 +42,8 @@ class ManagerInvitationTest(TestCase):
             name='Test Page',
             page_slug='testpage',
             description='This is a description for Test Page.',
-            category='Animal'
+            category='Animal',
+            stripe_verified=True,
         )
 
         self.page.admins.add(self.user.userprofile)

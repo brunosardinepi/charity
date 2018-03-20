@@ -8,7 +8,7 @@
 {% block body_content %}
     <div class="row pb-5">
         <div class="col-lg-3">
-            {% if page.stripe_verified == True %}
+            {% if page.stripe_verified == 'True' %}
                 {% include "page/dashboard_menu.html" %}
             {% else %}
                 {% include "page/dashboard_menu_unverified.html" %}
@@ -25,7 +25,7 @@
             </div>
             <hr class="mt-2">
             {% include "messages.html" %}
-            {% if page.stripe_verified == True %}
+            {% if page.stripe_verified == 'True' %}
                 <div class="alert alert-info" role="alert">
                     <i class="fas fa-fw fa-info-circle"></i> Payouts to your bank account occur every <span class="font-weight-bold">Monday</span>.
                 </div>
@@ -112,12 +112,12 @@
 
                 <div class="form-group row">
                     <label for="{{ form.ssn.id_for_label }}" class="col-md-4 col-form-label">
-                        Last 4 of SSN
+                        Full SSN
                     </label>
                     <div class="col-md-6">
                         {% render_field form.ssn class+="form-control" aria-describedby="ssn-help"%}
                         <small id="ssn-help" class="form-text text-muted">
-                            Last 4 digits of the account owner's Social Security Number (SSN).
+                            Stripe needs your full Social Security Number (SSN) to verify your identity.
                         </small>
                     </div>
                     {% if form.ssn.errors %}

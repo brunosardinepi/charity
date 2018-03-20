@@ -103,3 +103,14 @@ class PageEditBankForm(forms.Form):
 
 class PageEditBankEINForm(PageEditBankForm):
     ein = forms.CharField(max_length=20)
+
+class PageUnverifiedEditBankForm(forms.Form):
+    ssn = forms.CharField(max_length=9)
+    account_number = forms.CharField(max_length=12)
+    routing_number = forms.CharField(max_length=9)
+
+class PageUnverifiedEditBankEINForm(forms.Form):
+    ssn = forms.CharField(max_length=9)
+    account_number = forms.CharField(max_length=12)
+    routing_number = forms.CharField(max_length=9)
+    ein = forms.CharField(max_length=20)
