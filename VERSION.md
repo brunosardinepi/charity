@@ -12,6 +12,7 @@ Release date: 03/20/2018
 ### Additions
 
 * #507 -- information about who makes the Top Donor list
+* #487 -- review Page details before creating Page
 
 ### Changes
 

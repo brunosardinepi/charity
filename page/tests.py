@@ -396,6 +396,14 @@ class PageTest(TestCase):
             'page_wizard-current_step': 'Bank',
         }
         response = self.client.post('/create/page/', data)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'This field is required.')
+
+        data = {
+            'Review-blank': "",
+            'page_wizard-current_step': 'Review',
+        }
+        response = self.client.post('/create/page/', data)
         self.assertRedirects(response, '/mytestpage/', 302, 200)
 
     def test_page_create_no_ein_logged_in(self):
@@ -436,6 +444,14 @@ class PageTest(TestCase):
             'Bank-account_number': "000123456789",
             'Bank-routing_number': "111111100",
             'page_wizard-current_step': 'Bank',
+        }
+        response = self.client.post('/create/page/', data)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'This field is required.')
+
+        data = {
+            'Review-blank': "",
+            'page_wizard-current_step': 'Review',
         }
         response = self.client.post('/create/page/', data)
         self.assertRedirects(response, '/mytestpage/', 302, 200)
