@@ -158,7 +158,9 @@ class Campaign(models.Model):
         return p
 
     def unique_donors(self):
-        return Donation.objects.filter(campaign=self).distinct('user').count()
+        user_donations = Donation.objects.filter(campaign=self).exclude(user__isnull=True).distinct('user').count()
+        anon_donations = Donation.objects.filter(campaign=self, user__isnull=True).distinct('donor_first_name').count()
+        return user_donations + anon_donations
 
     def search_description(self):
         if len(self.description) > 300:
