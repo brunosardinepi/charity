@@ -1,0 +1,1 @@
+$(function(){$('.tooltip-top').tooltip({'trigger':'hover focus','placement':'top',})})
