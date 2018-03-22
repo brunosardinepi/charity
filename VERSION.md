@@ -3,6 +3,23 @@
 This is the version history for PageFund development.
 
 
+## Version 1.2.0
+
+Release date: 03/27/2018
+
+### Additions
+
+* None
+
+### Changes
+
+* #511 -- moved to Dustin's Google Analytics account
+
+### Fixes
+
+* None
+
+
 ## Version 1.1.0
 
 Release date: 03/20/2018
