@@ -89,7 +89,7 @@ def charge_source(c, page=None, campaign=None):
             currency='usd',
             customer=c['customer_id'],
             source=c['card_source'],
-            description='$%s donation to %s.' % (int(c['amount'] / 100), page.name),
+            description='${} donation to {}'.format(int(c['amount'] / 100), page.name),
             receipt_email=c['user_email'],
             destination={
                 'amount': c['final_amount'],
@@ -121,7 +121,7 @@ def charge_source(c, page=None, campaign=None):
                 currency='usd',
                 customer=c['customer_id'],
                 source=c['card_source'],
-                description='$%s donation to %s via the %s campaign.' % (int(c['amount'] / 100), campaign.page.name, campaign.name),
+                description='${} donation to {} via the {} campaign'.format(int(c['amount'] / 100), campaign.page.name, campaign.name),
                 receipt_email=c['user_email'],
                 destination={
                     'amount': c['final_amount'],
@@ -215,7 +215,7 @@ def donate(request, form, page=None, campaign=None):
                     amount=amount,
                     currency="usd",
                     source=request.POST.get('stripeToken'),
-                    description="${} donation to {} via the {} campaign.".format(int(amount / 100), campaign.page.name, campaign.name),
+                    description="${} donation to {} via the {} campaign".format(int(amount / 100), campaign.page.name, campaign.name),
                     destination={
                         "amount": final_amount,
                         "account": campaign.page.stripe_account_id,
@@ -240,15 +240,13 @@ def donate(request, form, page=None, campaign=None):
                     # create the plan and charge them
                     create_plan(request, form, amount, page)
                 else:
-
-                    print("not monthly")
                     metadata["page"] = page.id
 
                     charge = stripe.Charge.create(
                         amount=amount,
                         currency="usd",
                         source=request.POST.get('stripeToken'),
-                        description="${} donation to {}.".format(int(amount / 100), page.name),
+                        description="${} donation to {}".format(int(amount / 100), page.name),
                         destination={
                             "amount": final_amount,
                             "account": page.stripe_account_id,
@@ -266,7 +264,7 @@ def donate(request, form, page=None, campaign=None):
                 amount=amount,
                 currency="usd",
                 source=request.POST.get('stripeToken'),
-                description="${} donation to {} via the {} campaign.".format(int(amount / 100), campaign.page.name, campaign.name),
+                description="${} donation to {} via the {} campaign".format(int(amount / 100), campaign.page.name, campaign.name),
                 destination={
                     "amount": final_amount,
                     "account": campaign.page.stripe_account_id,
@@ -281,7 +279,7 @@ def donate(request, form, page=None, campaign=None):
                 amount=amount,
                 currency="usd",
                 source=request.POST.get('stripeToken'),
-                description="${} donation to {}.".format(int(amount / 100), page.name),
+                description="${} donation to {}".format(int(amount / 100), page.name),
                 destination={
                     "amount": final_amount,
                     "account": page.stripe_account_id,
@@ -294,26 +292,6 @@ def donate(request, form, page=None, campaign=None):
     if campaign is not None:
         campaign.save()
     page.save()
-
-#    substitutions = {
-#        "-amount-": "${}".format(int(amount / 100)),
-#    }
-
-#    if campaign:
-#        substitutions['-recipient-'] = campaign.name
-#    else:
-#        substitutions['-recipient-'] = page.name
-
-#    if request.user.is_authenticated():
-#        if has_notification(request.user, "notification_email_donation") == True:
-#            email(request.user.email, "blank", "blank", "donation", substitutions)
-#        substitutions['-user-'] = request.user.email
-#    else:
-#        substitutions['-user-'] = "unauthenticated user '{} {}'".format(form.cleaned_data['first_name'], form.cleaned_data['last_name'])
-
-#    date = timezone.now().strftime("%Y-%m-%d %I:%M:%S %Z")
-#    substitutions['-date-'] = date
-#    email("gn9012@gmail.com", "blank", "blank", "admin_new_donation", substitutions)
 
 def donation_statistics(obj):
     if obj.__class__ is Page:
