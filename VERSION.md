@@ -17,7 +17,7 @@ Release date: 03/27/2018
 
 ### Fixes
 
-* None
+* #514 -- unique donor count on Pages/Campaigns was calculated wrong
 
 
 ## Version 1.1.0

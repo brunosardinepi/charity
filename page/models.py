@@ -234,7 +234,7 @@ class Page(models.Model):
             return d
 
     def unique_donors(self):
-        return Donation.objects.filter(page=self).distinct('donor_first_name').distinct('donor_last_name').count()
+        return Donation.objects.filter(page=self).distinct('user').count()
 
     def search_description(self):
         if len(self.description) > 300:
