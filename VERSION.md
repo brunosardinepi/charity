@@ -18,6 +18,7 @@ Release date: 03/27/2018
 ### Fixes
 
 * #515 -- tooltip moved to top of icons where necessary on Pages/Campaigns
+* #509 -- trending score on Pages/Campaigns
 
 
 ## Version 1.1.1

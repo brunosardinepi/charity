@@ -46,7 +46,7 @@ def find_ties(cur):
     scores = []
 
     # get a list of the duplicate trending scores
-    query = "select trending_score from campaign_campaign order by trending_score desc;"
+    query = "select trending_score from campaign_campaign where deleted = 'f' and is_active = 't' order by trending_score desc;"
     cur.execute(query)
     rows = cur.fetchall()
     for row in rows:
@@ -83,6 +83,11 @@ def break_ties(cur, ties):
     # and add them to the current trending score instead of replacing it
 
 def trending(cur, campaign_ids, trim_pct, factor, breaking_ties=False):
+    # find the content type for pages
+    cur.execute("select id from django_content_type where model = 'campaign';")
+    c = cur.fetchone()
+    content_type_id = c[0]
+
     # find the comments, donation_count, and donation_amount for each campaign and put them in their own list
     # initialize the lists we need for storing data later
     comments, donation_count, donation_amount = [], [], []
@@ -90,7 +95,7 @@ def trending(cur, campaign_ids, trim_pct, factor, breaking_ties=False):
     # do for each campaign
     for p in campaign_ids:
         # find the number of comments for the campaign
-        query = "select count(*) from comments_comment where campaign_id = '%s' and deleted = 'f';" % p
+        query = "select count(*) from comments_comment where object_id = '{}' and content_type_id = '{}' and deleted = 'f';".format(p, content_type_id)
         cur.execute(query)
         c = cur.fetchall()
         c = c[0][0]
@@ -241,7 +246,7 @@ if __name__ == "__main__":
 
     cur = conn.cursor()
     # get all the active campaigns
-    query = "select id from campaign_campaign where is_active = 't';"
+    query = "select id from campaign_campaign where is_active = 't' and deleted = 'f';"
     cur.execute(query)
     rows = cur.fetchall()
     for r in rows:
