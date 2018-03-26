@@ -31,8 +31,8 @@ class PageForm1(forms.ModelForm):
 
 
 class PageForm2(forms.Form):
-    first_name = forms.CharField(max_length=255)
-    last_name = forms.CharField(max_length=255)
+    first_name = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'placeholder': "Bank account owner's first name"}))
+    last_name = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'placeholder': "Bank account owner's last name"}))
     YEAR_CHOICES = list(range(1900, datetime.now().year))[::-1]
     birthday = forms.DateField(widget=CustomSelectDateWidget(years=YEAR_CHOICES), initial='1990-06-14')
 

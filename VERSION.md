@@ -9,7 +9,7 @@ Release date: 03/27/2018
 
 ### Additions
 
-* None
+* #519 -- explicitly state who the Page name is for
 
 ### Changes
 
