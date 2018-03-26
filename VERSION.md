@@ -19,6 +19,7 @@ Release date: 03/27/2018
 
 * #515 -- tooltip moved to top of icons where necessary on Pages/Campaigns
 * #509 -- trending score on Pages/Campaigns
+* #518 -- removed Stripe-unverified Pages from search
 
 
 ## Version 1.1.1
