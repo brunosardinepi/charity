@@ -23,7 +23,13 @@ stripe.api_key = config.settings['stripe_api_sk']
 
 def home(request):
     donations = Donation.objects.all().aggregate(Sum('amount')).get('amount__sum')
-    return render(request, 'home.html', {'donations': donations})
+    pages = Page.objects.filter(deleted=False, stripe_verified=True).count()
+    campaigns = Campaign.objects.filter(deleted=False).count()
+    return render(request, 'home.html', {
+        'donations': donations,
+        'pages': pages,
+        'campaigns': campaigns,
+    })
 
 class LoginView(views.LoginView):
     template_name = 'login.html'

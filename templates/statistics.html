@@ -1,0 +1,19 @@
+{% load donation_extras %}
+
+
+<div id="statistics" class="container-fluid mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-3 text-center">
+            <h2>{{ donations|cents_to_dollars }}</h2>
+            <span>raised</span>
+        </div>
+        <div class="col-md-3 text-center">
+            <h2>{{ pages }}</h2>
+            <span>Pages</span>
+        </div>
+        <div class="col-md-3 text-center">
+            <h2>{{ campaigns }}</h2>
+            <span>Campaigns</span>
+        </div>
+    </div>
+</div>
