@@ -10,6 +10,7 @@ Release date: 03/27/2018
 ### Additions
 
 * #519 -- explicitly state who the Page name is for
+* #294 -- home page statistics
 
 ### Changes
 
