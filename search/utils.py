@@ -15,8 +15,8 @@ def query_list(q):
     vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
     rank_metric = 0.2
 
-    results_page = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, is_sponsored=False, deleted=False).order_by('-rank')
-    sponsored_page = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, is_sponsored=True, deleted=False).order_by('-rank')
+    results_page = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, is_sponsored=False, deleted=False, stripe_verified=True).order_by('-rank')
+    sponsored_page = Page.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, is_sponsored=True, deleted=False, stripe_verified=True).order_by('-rank')
     results_campaign = Campaign.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, page__is_sponsored=False, deleted=False, is_active=True).order_by('-rank')
     sponsored_campaign = Campaign.objects.annotate(rank=SearchRank(vector, query)).filter(rank__gte=rank_metric, page__is_sponsored=True, deleted=False, is_active=True).order_by('-rank')
 

@@ -44,7 +44,6 @@
         <script src="https://js.stripe.com/v3/"></script>
         <script defer src="{% static 'js/fontawesome-all.min.js' %}"></script>
 
-        <script src="{% static 'js/home_scroll.js' %}"></script>
         <script>
             if (window.location.hash == '#_=_' || window.location.hash == '#'){
                 if (history.replaceState) {
@@ -85,6 +84,7 @@
                 </div>
             </div>
             {% include "nav.html" %}
+            {% include "statistics.html" %}
         </div>
 
         {% include "footer.html" %}

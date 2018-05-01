@@ -109,7 +109,7 @@ def results(request):
             results = None
             sponsored = None
 
-        trending_pages = Page.objects.filter(deleted=False).order_by('-trending_score')[:10]
+        trending_pages = Page.objects.filter(deleted=False, stripe_verified=True).order_by('-trending_score')[:10]
         trending_campaigns = Campaign.objects.filter(deleted=False, is_active=True).order_by('-trending_score')[:10]
 
         response_data = []

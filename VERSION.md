@@ -3,9 +3,29 @@
 This is the version history for PageFund development.
 
 
-## Version 1.1.1
+## Version 1.2.0
 
 Release date: 03/27/2018
+
+### Additions
+
+* #519 -- explicitly state who the Page name is for
+* #294 -- home page statistics
+
+### Changes
+
+* None
+
+### Fixes
+
+* #515 -- tooltip moved to top of icons where necessary on Pages/Campaigns
+* #509 -- trending score on Pages/Campaigns
+* #518 -- removed Stripe-unverified Pages from search
+
+
+## Version 1.1.1
+
+Release date: 03/21/2018
 
 6 files changed, 37 insertions(+), 23 deletions(-)
 
