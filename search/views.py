@@ -38,11 +38,11 @@ def create_search_result_html(r, sponsored, trending):
         height = r.profile_picture().height
         width = r.profile_picture().width
         if height < (width - 60):
-            html += "<div class='circular-landscape'>"
+            html += "<div class='circular-landscape-sm'>"
         elif height > (width + 60):
-            html += "<div class='circular-portrait'>"
+            html += "<div class='circular-portrait-sm'>"
         else:
-            html += "<div class='circular-square'>"
+            html += "<div class='circular-square-sm'>"
     else:
         html += "<div class='circular-square'>"
         src = "/static/img/campaign_default.svg"

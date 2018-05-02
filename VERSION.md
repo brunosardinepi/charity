@@ -18,6 +18,7 @@ Release date: TBD
 ### Fixes
 
 * #526 -- optimized tests to be faster
+* #524 -- search pictures are now centered properly
 
 
 ## Version 1.2.0
