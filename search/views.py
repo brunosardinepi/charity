@@ -67,7 +67,7 @@ def create_search_result_html(r, sponsored, trending):
 
     html += (
         "</div>"
-        "<div class='trending col d-flex align-items-center h100'>"
+        "<div class='trending col-md-auto mr-auto d-flex align-items-center h100'>"
     )
 
     if sponsored == True:
@@ -78,7 +78,7 @@ def create_search_result_html(r, sponsored, trending):
 
     html += (
         "</div>"
-        "<div class='col-md-3 vote-amount'>"
+        "<div class='col-md-auto vote-amount'>"
     )
 
     if isinstance(r, Page):
