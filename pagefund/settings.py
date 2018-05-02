@@ -167,9 +167,6 @@ ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True
 ACCOUNT_USERNAME_REQUIRED = False
 
-# testing
-TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
-
 DEFAULT_FROM_EMAIL = 'no-reply@page.fund'
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = config.settings['sendgrid_username']
@@ -183,3 +180,39 @@ if DEBUG:
     INSTALLED_APPS += ['debug_toolbar']
     MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
     INTERNAL_IPS = ['127.0.0.1', '76.186.140.124']
+
+# testing
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
+if TESTING:
+    PASSWORD_HASHERS = (
+        'django.contrib.auth.hashers.MD5PasswordHasher',
+    )
+
+    INSTALLED_APPS.remove('debug_toolbar')
+    INSTALLED_APPS.remove('stripe')
+
+    MIDDLEWARE.remove('debug_toolbar.middleware.DebugToolbarMiddleware')
+
+    MIGRATION_MODULES = {
+        'account': None,
+        'admin': None,
+        'auth': None,
+        'campaign': None,
+        'comments': None,
+        'contenttypes': None,
+        'donation': None,
+        'email_templates': None,
+        'faqs': None,
+        'guardian': None,
+        'invitations': None,
+        'lib': None,
+        'notes': None,
+        'page': None,
+        'plans': None,
+        'search': None,
+        'sessions': None,
+        'sites': None,
+        'socialaccount': None,
+        'userprofile': None,
+        'webhooks': None,
+    }
