@@ -364,6 +364,14 @@ def page_edit(request, page_slug):
                 if request.method == 'POST':
                     form = forms.PageEditForm(instance=page, data=request.POST)
                     if form.is_valid():
+                        if 'page_slug' in form.changed_data:
+                            # update the stripe metadata for the url
+                            metadata = {
+                                'url': 'https://page.fund/{}/'.format(form.cleaned_data['page_slug']),
+                            }
+                            account = stripe.Account.retrieve(page.stripe_account_id)
+                            account.metadata = metadata
+                            account.save()
                         form.save()
                         messages.success(request, 'Page updated', fail_silently=True)
                         return redirect('page_dashboard_admin', page_slug=page.page_slug)
