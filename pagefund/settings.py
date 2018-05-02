@@ -177,9 +177,10 @@ EMAIL_USE_TLS = True
 
 # django-debug-toolbar
 if DEBUG:
-    INSTALLED_APPS += ['debug_toolbar']
-    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
-    INTERNAL_IPS = ['127.0.0.1', '76.186.140.124']
+    if not TESTING:
+        INSTALLED_APPS += ['debug_toolbar']
+        MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+        INTERNAL_IPS = ['127.0.0.1', '76.186.140.124']
 
 # testing
 TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
@@ -188,10 +189,7 @@ if TESTING:
         'django.contrib.auth.hashers.MD5PasswordHasher',
     )
 
-    INSTALLED_APPS.remove('debug_toolbar')
     INSTALLED_APPS.remove('stripe')
-
-    MIDDLEWARE.remove('debug_toolbar.middleware.DebugToolbarMiddleware')
 
     MIGRATION_MODULES = {
         'account': None,
