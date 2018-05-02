@@ -3,6 +3,23 @@
 This is the version history for PageFund development.
 
 
+## Version 1.3.0
+
+Release date: TBD
+
+### Additions
+
+* None
+
+### Changes
+
+* None
+
+### Fixes
+
+* #524 -- search pictures are now centered properly
+
+
 ## Version 1.2.0
 
 Release date: 05/01/2018
