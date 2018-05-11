@@ -3,7 +3,7 @@
 This is the version history for PageFund development.
 
 
-## Version 1.2.1
+## Version 1.3.0
 
 Release date: TBD
 
@@ -13,7 +13,7 @@ Release date: TBD
 
 ### Changes
 
-* None
+* #523 -- added PageFund URL to Stripe metadata
 
 ### Fixes
 
