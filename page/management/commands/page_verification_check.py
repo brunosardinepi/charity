@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand
 import stripe
 
 from page.models import Page
+from pagefund.utils import email, has_notification
 
 
 class Command(BaseCommand):
@@ -18,11 +19,14 @@ class Command(BaseCommand):
             else:
                 page.stripe_verified = False
 
-                # email the user
-                substitutions = {
-                    "-pagename-": page.name,
-                    "-pageslug-": page.page_slug,
-                }
-                utils.email(request.user.email, "blank", "blank", "page_verification", substitutions)
+                # email the admins
+                admins = page.admins.all()
+                for admin in admins:
+                    if has_notification(admin.user, "notification_email_campaign_created") == True:
+                        substitutions = {
+                            "-pagename-": page.name,
+                            "-pageslug-": page.page_slug,
+                        }
+                        email(admin.user.email, "blank", "blank", "page_verification", substitutions)
 
             page.save()
