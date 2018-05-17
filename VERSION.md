@@ -18,6 +18,7 @@ Release date: TBD
 ### Fixes
 
 * #528 -- Page verification check
+* #529 -- Stripe full SSN
 
 
 ## Version 1.3.0

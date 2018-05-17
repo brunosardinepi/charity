@@ -296,6 +296,15 @@ class PageTest(TestCase):
         response = self.client.get('/%s/edit/' % self.page.page_slug)
         self.assertRedirects(response, '/notes/error/permissions/', 302, 200)
 
+    def test_page_edit_bank_not_admin(self):
+        self.client.login(username='newguy', password='imnewhere')
+        response = self.client.get('/%s/edit/bank/' % self.page.page_slug)
+        self.assertRedirects(response, '/notes/error/permissions/', 302, 200)
+
+        self.client.login(username='batman', password='imbatman')
+        response = self.client.get('/%s/edit/bank/' % self.page.page_slug)
+        self.assertRedirects(response, '/notes/error/permissions/', 302, 200)
+
     def test_page_edit_admin(self):
         data = {
             'name': self.page.name,
