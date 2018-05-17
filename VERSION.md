@@ -3,6 +3,23 @@
 This is the version history for PageFund development.
 
 
+## Version 1.3.1
+
+Release date: TBD
+
+### Additions
+
+* None
+
+### Changes
+
+* None
+
+### Fixes
+
+* #528 -- Page verification check
+
+
 ## Version 1.3.0
 
 Release date: 05/11/2018
