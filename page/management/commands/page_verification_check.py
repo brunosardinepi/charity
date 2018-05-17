@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = 'Checks all Pages for their Stripe verification status'
 
     def handle(self, *args, **options):
-        pages = Page.objects.all()
+        pages = Page.objects.filter(deleted=False)
         for page in pages:
             account = stripe.Account.retrieve(page.stripe_account_id)
             status = account['legal_entity']['verification']['status']
