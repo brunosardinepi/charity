@@ -175,15 +175,16 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 
+# testing
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
+
 # django-debug-toolbar
 if DEBUG:
     if not TESTING:
         INSTALLED_APPS += ['debug_toolbar']
         MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
-        INTERNAL_IPS = ['127.0.0.1', '76.186.140.124']
+        INTERNAL_IPS = ['127.0.0.1', '76.182.236.110']
 
-# testing
-TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
 if TESTING:
     PASSWORD_HASHERS = (
         'django.contrib.auth.hashers.MD5PasswordHasher',
