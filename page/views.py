@@ -272,10 +272,16 @@ class PageEditBankInfo(View):
                 form = forms.PageEditBankForm()
             else:
                 form = forms.PageUnverifiedEditBankForm()
-        if page.stripe_verified == True:
-            return render(request, 'page/page_edit_bank_info.html', {'page': page, 'form': form})
+        if page.deleted == False:
+            if utils.has_dashboard_access(request.user, page, 'manager_edit'):
+                if page.stripe_verified == True:
+                    return render(request, 'page/page_edit_bank_info.html', {'page': page, 'form': form})
+                else:
+                    return render(request, 'page/page_unverified_edit_bank_info.html', {'page': page, 'form': form})
+            else:
+                return redirect('notes:error_permissions')
         else:
-            return render(request, 'page/page_unverified_edit_bank_info.html', {'page': page, 'form': form})
+            return redirect('notes:error_page_does_not_exist')
 
     def post(self, request, page_slug):
         page = get_object_or_404(Page, page_slug=page_slug)
@@ -291,67 +297,76 @@ class PageEditBankInfo(View):
                 form = forms.PageEditBankForm(request.POST)
             else:
                 form = forms.PageUnverifiedEditBankForm(request.POST)
-        if form.is_valid():
-            if not settings.TESTING:
+        if page.deleted == False:
+            if page.stripe_verified == True:
+                if utils.has_dashboard_access(request.user, page, 'manager_edit'):
+                    if form.is_valid():
+                        if not settings.TESTING:
 
-                # set the stripe type to determine if we need EIN
-                if page.type == 'nonprofit':
-                    stripe_type = 'company'
+                            # set the stripe type to determine if we need EIN
+                            if page.type == 'nonprofit':
+                                stripe_type = 'company'
+                            else:
+                                stripe_type = 'individual'
+
+                            # retrieve account from stripe
+                            account = stripe.Account.retrieve(page.stripe_account_id)
+                            # update stripe information
+                            if page.stripe_verified == True:
+                                if account['legal_entity']['ssn_last_4_provided'] == False:
+                                    account.legal_entity.ssn_last_4 = form.cleaned_data['ssn']
+                            else:
+                                account.legal_entity.personal_id_number = form.cleaned_data['ssn']
+                            if page.type == 'nonprofit':
+                                account.legal_entity.business_tax_id = form.cleaned_data['ein']
+
+                            # save the account or redirect for an exception
+                            try:
+                                account.save()
+                            except stripe.error.InvalidRequestError as e:
+                                print("e = {}".format(e))
+                                error = create_error(e, request)
+                                return redirect('notes:error_stripe_invalid_request')
+
+                            # create the bank account
+                            external_account = {
+                                'object': 'bank_account',
+                                'country': 'US',
+                                'currency': 'usd',
+                                'account_number': form.cleaned_data['account_number'],
+                                'account_holder_type': stripe_type,
+                                'routing_number': form.cleaned_data['routing_number'],
+                                'default_for_currency': 'true',
+                            }
+                            try:
+                                ext_account = account.external_accounts.create(external_account=external_account)
+                            except Exception as e:
+                                print("exception = {}".format(e))
+
+                            # delete the old account here
+                            # so that we can set the new one as default first
+                            try:
+                                account.external_accounts.retrieve(page.stripe_bank_account_id).delete()
+                            except:
+                                pass
+
+                            page.stripe_bank_account_id = ext_account.id
+                        page.save()
+
+                        # email the user
+                        substitutions = {
+                            "-pagename-": page.name,
+                        }
+                        utils.email(request.user.email, "blank", "blank", "page_bank_information_updated", substitutions)
+                        # add message
+                        messages.success(request, 'Bank information updated', fail_silently=True)
+                        return redirect('page_dashboard_admin', page_slug=page.page_slug)
                 else:
-                    stripe_type = 'individual'
-
-                # retrieve account from stripe
-                account = stripe.Account.retrieve(page.stripe_account_id)
-                # update stripe information
-                if page.stripe_verified == True:
-                    if account['legal_entity']['ssn_last_4_provided'] == False:
-                        account.legal_entity.ssn_last_4 = form.cleaned_data['ssn']
-                else:
-                    account.legal_entity.personal_id_number = form.cleaned_data['ssn']
-                if page.type == 'nonprofit':
-                    account.legal_entity.business_tax_id = form.cleaned_data['ein']
-
-                # save the account or redirect for an exception
-                try:
-                    account.save()
-                except stripe.error.InvalidRequestError as e:
-                    print("e = {}".format(e))
-                    error = create_error(e, request)
-                    return redirect('notes:error_stripe_invalid_request')
-
-                # create the bank account
-                external_account = {
-                    'object': 'bank_account',
-                    'country': 'US',
-                    'currency': 'usd',
-                    'account_number': form.cleaned_data['account_number'],
-                    'account_holder_type': stripe_type,
-                    'routing_number': form.cleaned_data['routing_number'],
-                    'default_for_currency': 'true',
-                }
-                try:
-                    ext_account = account.external_accounts.create(external_account=external_account)
-                except Exception as e:
-                    print("exception = {}".format(e))
-
-                # delete the old account here
-                # so that we can set the new one as default first
-                try:
-                    account.external_accounts.retrieve(page.stripe_bank_account_id).delete()
-                except:
-                    pass
-
-                page.stripe_bank_account_id = ext_account.id
-            page.save()
-
-            # email the user
-            substitutions = {
-                "-pagename-": page.name,
-            }
-            utils.email(request.user.email, "blank", "blank", "page_bank_information_updated", substitutions)
-            # add message
-            messages.success(request, 'Bank information updated', fail_silently=True)
-            return redirect('page_dashboard_admin', page_slug=page.page_slug)
+                    return redirect('notes:error_permissions')
+            else:
+                return stripe_unverified(request, page)
+        else:
+            return redirect('notes:error_page_does_not_exist')
 
 @login_required
 def page_edit(request, page_slug):

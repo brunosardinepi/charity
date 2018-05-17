@@ -17,4 +17,12 @@ class Command(BaseCommand):
                 page.stripe_verified = True
             else:
                 page.stripe_verified = False
+
+                # email the user
+                substitutions = {
+                    "-pagename-": page.name,
+                    "-pageslug-": page.page_slug,
+                }
+                utils.email(request.user.email, "blank", "blank", "page_verification", substitutions)
+
             page.save()

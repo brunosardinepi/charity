@@ -34,6 +34,7 @@ def email(user_email, subject, body, template, substitutions):
             'admin_webhook_test': '4ff6e428-bd27-4591-a4bc-9f6f6ca0c7d2',
             'email_confirmation': '969cdbf5-a4f1-4fb3-a1bc-91dfee474506',
             'email_confirmation_signup': '969cdbf5-a4f1-4fb3-a1bc-91dfee474506',
+            'page_verification': '3e410b88-b917-42c0-9eb6-04820f32e5ac',
         }
 
         data = {
