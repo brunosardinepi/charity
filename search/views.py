@@ -38,11 +38,11 @@ def create_search_result_html(r, sponsored, trending):
         height = r.profile_picture().height
         width = r.profile_picture().width
         if height < (width - 60):
-            html += "<div class='circular-landscape'>"
+            html += "<div class='circular-landscape-sm'>"
         elif height > (width + 60):
-            html += "<div class='circular-portrait'>"
+            html += "<div class='circular-portrait-sm'>"
         else:
-            html += "<div class='circular-square'>"
+            html += "<div class='circular-square-sm'>"
     else:
         html += "<div class='circular-square'>"
         src = "/static/img/campaign_default.svg"
@@ -67,7 +67,7 @@ def create_search_result_html(r, sponsored, trending):
 
     html += (
         "</div>"
-        "<div class='trending col d-flex align-items-center h100'>"
+        "<div class='trending col-md-auto mr-auto d-flex align-items-center h100'>"
     )
 
     if sponsored == True:
@@ -78,7 +78,7 @@ def create_search_result_html(r, sponsored, trending):
 
     html += (
         "</div>"
-        "<div class='col-md-3 vote-amount'>"
+        "<div class='col-md-auto vote-amount'>"
     )
 
     if isinstance(r, Page):

@@ -207,14 +207,25 @@ class PageWizard(SessionWizardView):
 
                 page.stripe_account_id = account.id
                 page.stripe_bank_account_id = ext_account.id
+
                 # give them the benefit of the doubt and let them accept donations right away
                 # it'll get fixed within 2 minutes if it's unverified
                 page.stripe_verified = True
+
                 # stripe processed it so we can save the page now
                 page.save()
+
+                # update the stripe metadata for the url
+                metadata = {
+                    'url': 'https://page.fund/{}/'.format(page.page_slug),
+                }
+                account.metadata = metadata
+                account.save()
+
                 # add the user as an admin and subscriber
                 page.admins.add(self.request.user.userprofile)
                 page.subscribers.add(self.request.user.userprofile)
+
             # catch stripe exceptions
             # and alert the user and me about it
             # note that the page doesn't get created if this happens
@@ -353,6 +364,14 @@ def page_edit(request, page_slug):
                 if request.method == 'POST':
                     form = forms.PageEditForm(instance=page, data=request.POST)
                     if form.is_valid():
+                        if 'page_slug' in form.changed_data:
+                            # update the stripe metadata for the url
+                            metadata = {
+                                'url': 'https://page.fund/{}/'.format(form.cleaned_data['page_slug']),
+                            }
+                            account = stripe.Account.retrieve(page.stripe_account_id)
+                            account.metadata = metadata
+                            account.save()
                         form.save()
                         messages.success(request, 'Page updated', fail_silently=True)
                         return redirect('page_dashboard_admin', page_slug=page.page_slug)

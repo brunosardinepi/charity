@@ -3,6 +3,24 @@
 This is the version history for PageFund development.
 
 
+## Version 1.3.0
+
+Release date: 05/11/2018
+
+### Additions
+
+* None
+
+### Changes
+
+* #523 -- added PageFund URL to Stripe metadata
+
+### Fixes
+
+* #526 -- optimized tests to be faster
+* #524 -- search pictures are now centered properly
+
+
 ## Version 1.2.0
 
 Release date: 05/01/2018
