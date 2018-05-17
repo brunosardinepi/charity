@@ -40,6 +40,7 @@ class Page(models.Model):
     stripe_account_id = models.CharField(max_length=255, blank=True)
     stripe_bank_account_id = models.CharField(max_length=255, blank=True)
     stripe_verified = models.BooleanField(default=True)
+    stripe_verification_requested = models.BooleanField(default=False)
     tos_accepted = models.BooleanField(default=False)
     trending_score = models.DecimalField(default=0, max_digits=10, decimal_places=1)
     verified = models.BooleanField(default=False)
